@@ -1,0 +1,205 @@
+.input-new_employee {
+    font-family: Poppins-Medium;
+    font-size: 15px;
+    line-height: 1.5;
+    color: rgb(78, 78, 78);
+    border: solid 1.65px rgba(87,184,70, 0.8);
+    display: block;
+    width: 100%;
+    font-weight: 500;
+    height: 50px;
+    border-radius: 5px;
+    padding: 0 10px;
+  }
+  .input-new_employee:focus {
+    background: rgba(27, 182, 0, 0.5);
+    color: #FFFFFF;
+    font-weight: lighter;
+  }
+  .input-new_employee::placeholder{
+    color: rgb(107, 102, 102, 0.8);
+    font-weight: 500;
+  }
+  .height-btn{
+    width: 100%;
+    height: 50px;
+    line-height: 1.5;
+  }
+  .modal-employee{
+    background: #FFFFFF;
+    width:100%;
+    display: flex;
+    border-radius: 15px;
+    padding: auto auto;
+  }
+  select{
+    border: solid 2px rgba(87,184,70, 0.8);
+    color: rgb(107, 102, 102, 0.8);
+  }
+  .title-text{
+    text-transform: capitalize;
+    font-size: 15px;
+    color: #000000;
+    font-weight: 500;
+    font-family: Poppins;
+    text-align: center;
+  }
+  
+  .info-text {
+    font-size: 13px;
+    color: #4c4d4d;
+    font-family: Poppins;
+    padding: 0 10px;
+  }
+  .img_contain{
+    border-radius: 15px;
+    object-fit: cover;
+    width: 150px;
+    height: 150px;
+  }
+  .hovered{
+    background-color: white;
+    cursor: pointer !important;
+    margin: 0 auto !important;
+    border: 0px solid transparent;
+    padding: 25px 15px !important;
+    border-radius: 15px !important;
+    height: 265px;
+    overflow: hidden;
+  }
+  .hovered:hover{
+    border: 1.8px solid #27A9E3;
+  }
+  @media screen and (max-width: 1897px) {
+    .col-md-4 {
+      width: 50% !important;
+    }
+    .col-md-4:nth-child(3) {
+      order: 3; 
+    }
+  }
+  @media  screen and (max-width:1300px) {
+    .col-md-4 {
+      width: 100% !important;
+    }
+    .info-text{
+      text-align: center;
+    }
+    .col-md-6{
+      width: 100% !important;
+    }
+    .hovered{
+      height: auto;
+    }
+  }
+  .navigation {
+    font-size: 50px;
+    color: #0B5ED7;
+    font-family: Poppins;
+    cursor: pointer;
+  }
+  .sheet-choice2 {
+    width: 75%;
+    height: 40px;
+    font-family: Poppins-Medium;
+    font-weight: lighter;
+    padding: 5px 20px;
+    border: solid 2px;
+    border-color: #27A9E3;
+    background-color: #27A9E3;
+    color:white;
+    font-weight: 500;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .input-choice2 {
+    width: 75%;
+    height: 40px;
+    font-family: Poppins-Medium;
+    font-weight: lighter;
+    padding: 5px 20px;
+    border: solid 2px;
+    border-color: #27A9E3;
+    color:#9999A9;
+    border-radius: 12px;
+  }
+  .input-choice2:focus{
+    background-color: #27A9E3;
+    color:white;
+    font-weight: 500;
+  }
+  .container-employee-right{
+    background-color: #EEEEEE;
+    padding: 25px 0px;
+    border-radius: 15px;
+    animation: leftRight 1s ease;
+    display: block;
+  }
+  .container-employee-left{
+    background-color: #EEEEEE;
+    padding: 25px 0px;
+    border-radius: 15px;
+    animation: rightLeft 1s ease;
+    display: block;
+  }
+  .hidden {
+    display: none !important;
+  }
+  .indicator{
+    width: 12px;
+    height: 12px;
+    background-color: rgba(39, 169, 227, 0.459);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .indicator.active{
+    width: 12px;
+    height: 12px;
+    background-color: rgba(32, 30, 30, 0.8);
+    border-radius: 50%;
+    margin-top: -25px;
+    box-shadow: -2px 5px 10px rgba(0, 0, 0, 0.5);
+    animation: slowly 0.7s ease;
+  }
+  @keyframes slowly {
+    from {
+      margin-top: 0;
+    }
+    to {
+      margin-top: -25px;
+    }
+  }
+  @keyframes leftRight {
+    from{
+      opacity:0;
+      transform: translateX(-100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes rightLeft {
+    from{
+      opacity:0;
+      transform: translateX(100%);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  .loading{
+    width: 100%;
+    height: 600px;
+    background-color: #EEEEEE;
+    text-align: center;
+    padding-top: 300px;
+  }
+  .btn-md{
+    width: auto;
+    height: 40px;
+    font-weight: lighter;
+    padding: 8px 15px;
+    border-radius: 15px;
+  }

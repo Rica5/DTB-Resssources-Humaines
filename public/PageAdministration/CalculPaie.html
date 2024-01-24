@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="solumada-clocking" />
+    <meta name="description" content="solumada-clocking" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Fiche de paie</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/images1/logo.jpg"
+    />
+    <!-- Fichier CSS Requis -->
+    <link rel="stylesheet" type="text/css" href="/assets/css1/main.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css1/newmain.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css1/drag.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css1/specific.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css1/feuillev2.css" />
+    <link
+      rel="stylesheet"
+      href="assets/libs/bootstrap/dist/css/bootstrap.css"
+    />
+    <link href="../dist/css/style.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css" />
+  </head>
+
+  <body>
+    <div class="preloader">
+      <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+      </div>
+    </div>
+    <div
+      id="main-wrapper"
+      data-layout="vertical"
+      data-navbarbg="skin5"
+      data-sidebartype="full"
+      data-sidebar-position="absolute"
+      data-header-position="absolute"
+      data-boxed-layout="full"
+    >
+      <header class="topbar" data-navbarbg="skin5">
+        <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+          <div class="navbar-header" data-logobg="skin5">
+            <a class="navbar-brand" href="/">
+              <b class="logo-icon ps-2">
+                <img
+                  src="../assets/images1/logo.jpg"
+                  alt="homepage"
+                  class="light-logo"
+                  width="45"
+                />
+              </b>
+              <span class="logo-text ms-3">
+                <b>SOLUMADA</b>
+              </span>
+            </a>
+            <a
+              class="nav-toggler waves-effect waves-light d-block d-md-none"
+              href="javascript:void(0)"
+              ><i class="ti-menu ti-close"></i
+            ></a>
+          </div>
+          <div
+            class="navbar-collapse collapse"
+            id="navbarSupportedContent"
+            data-navbarbg="skin5"
+          >
+            <ul class="navbar-nav float-start me-auto"></ul>
+            <ul class="navbar-nav float-end">
+              <li style="padding: 15px">
+                <form action="/change_interface" method="post">
+                  <input type="hidden" name="mail" value="<%= username %>" />
+                  <input type="hidden" name="opt" value="p" />
+                  <button type="submit" class="btn btn-info mx-5 text-white">
+                    <i class="mdi mdi-exit-to-app" width="31"> POINTAGE</i>
+                  </button>
+                </form>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle waves-effect waves-dark"
+                  href="#"
+                  id="2"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="font-24 mdi mdi-bell"
+                    ><span style="color: red" id="nbr-notif" class="badge"
+                      >0</span
+                    ></i
+                  >
+                </a>
+                <ul
+                  class="dropdown-menu dropdown-menu-end mailbox animated bounceInDown"
+                  aria-labelledby="2"
+                >
+                  <ul id="card-notif" class="list-style-none">
+                    <li>
+                      <div class="">
+                        <!-- Notification -->
+                        <a href="javascript:void(0)" class="link border-top">
+                          <div class="d-flex no-block align-items-center p-10">
+                            <span
+                              class="btn btn-success btn-circle d-flex align-items-center justify-content-center"
+                              ><i
+                                id="ring"
+                                class="mdi mdi-bell text-white fs-4"
+                              ></i>
+                            </span>
+                            <div class="ms-2">
+                              <h5 class="mb-0">Notification aujourd'hui</h5>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic"
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <img
+                    src="../assets/images/users/1.jpg"
+                    alt="user"
+                    class="rounded-circle"
+                    width="31"
+                  />
+                </a>
+                <ul
+                  class="dropdown-menu dropdown-menu-end user-dd animated"
+                  aria-labelledby="navbarDropdown"
+                >
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/exit_a"
+                    ><i class="fa fa-power-off me-1 ms-1"></i> Déconnexion</a
+                  >
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <aside class="left-sidebar" data-sidebarbg="skin5">
+        <div class="scroll-sidebar">
+          <nav class="sidebar-nav">
+            <ul id="sidebarnav" class="pt-4">
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/home"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-view-dashboard"></i
+                  ><span class="hide-menu">Dashboard</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/management"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-border-inside"></i
+                  ><span class="hide-menu">Status</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/userlist"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-account-key"></i
+                  ><span class="hide-menu">Liste utilisateurs</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/details"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-calendar-range"></i
+                  ><span class="hide-menu">Tableau des pointages</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/fiche"
+                  aria-expanded="false"
+                  ><i class="far fa-file-pdf"></i
+                  ><span class="hide-menu">Fiche de paie</span></a
+                >
+              </li>
+
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/absencelist"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-calendar-clock"></i
+                  ><span class="hide-menu">Liste des absences</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/validelate"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-alarm-check"></i
+                  ><span class="hide-menu">Validation retards</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link has-arrow waves-effect waves-dark"
+                  href="javascript:void(0)"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-account-off"></i
+                  ><span class="hide-menu">Congé </span></a
+                >
+                <ul aria-expanded="false" class="collapse first-level">
+                  <li class="sidebar-item">
+                    <a href="/leavelist" class="sidebar-link"
+                      ><i class="mdi mdi-format-list-bulleted"></i
+                      ><span class="hide-menu"
+                        >List des conges (global)</span
+                      ></a
+                    >
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="/leave" class="sidebar-link"
+                      ><i class="mdi mdi-account-off"></i
+                      ><span class="hide-menu"> Definir un congé</span></a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </aside>
+      <div class="page-wrapper">
+        <div class="page-breadcrumb">
+          <div class="row">
+            <div class="col-12 d-flex no-block align-items-center">
+              <b class="logo-icon ps-2">
+                <img
+                  src="../assets/images1/logo.jpg"
+                  alt="homepage"
+                  class="light-logo"
+                  width="45"
+                />
+              </b>
+              <span class="logo-text ms-3">
+                <b>FICHE DE PAIE</b>
+              </span>
+              <div class="ms-auto text-end">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="#"
+                        ><i class="far fa-file-pdf"></i> Fiche de paie</a
+                      >
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                      <i class="far fa-file-pdf"></i> Fiche de paie
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div id="info_page">
+            <div class="row">
+              <hr />
+              <h4 class="card-title">
+                Information pour le traitement du fiche de paie
+              </h4>
+              <div class="col-lg-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Date de début</label
+                >
+                <input
+                  type="date"
+                  class="sheet-choice"
+                  id="start"
+                  placeholder=""
+                />
+              </div>
+              <div class="col-lg-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Date fin</label
+                >
+                <input
+                  type="date"
+                  class="sheet-choice"
+                  id="end"
+                  placeholder=""
+                />
+              </div>
+              <div class="col-sm-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Nombre jours ouvrables</label
+                >
+                <input
+                  type="number"
+                  class="sheet-choice"
+                  id="ouvrable"
+                  placeholder="jours ouvrables"
+                />
+              </div>
+              <div class="col-sm-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Nombre jours ouvrés</label
+                >
+                <input
+                  type="number"
+                  class="sheet-choice"
+                  id="ouvre"
+                  placeholder="jours ouvrés"
+                />
+              </div>
+              <div class="col-sm-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Nombre jours calendaires</label
+                >
+                <input
+                  type="number"
+                  class="sheet-choice"
+                  id="calendaire"
+                  placeholder="jours calendaires"
+                />
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <h4 class="card-title">Option de traitement du fiche de paie</h4>
+              <div class="col-sm-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Sme cnaps</label
+                >
+                <input
+                  type="number"
+                  class="sheet-choice"
+                  id="sme"
+                  placeholder="SME Cnaps"
+                />
+              </div>
+              <div class="col-sm-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                >
+                  Coût transport</label
+                >
+                <input
+                  type="number"
+                  class="sheet-choice"
+                  id="valeur_transport"
+                  placeholder="cout d'un transport"
+                />
+              </div>
+              <div class="col-sm-2">
+                <label
+                  for="fname"
+                  class="col-sm-12 control-label col-form-label"
+                  >Coût repas</label
+                >
+                <input
+                  type="number"
+                  class="sheet-choice"
+                  id="valeur_repas"
+                  placeholder="cout d'un repas"
+                />
+              </div>
+            </div>
+
+            <hr />
+            <div class="row">
+              <div class="col-md-8">
+                <input id="file-upload" type="file" name="uploadFile" />
+                <label for="file-upload" id="file-drag">
+                  Selectionner un fichier
+                  <br />OU <br />Glisser un fichier ici <br /><br /><span
+                    id="file-upload-btn"
+                    class="button_drag"
+                    >Ajouter un fichier</span
+                  >
+                </label>
+
+                <progress id="file-progress" value="0">
+                  <span>0</span>%
+                </progress>
+
+                <output for="file-upload" id="messages"></output>
+              </div>
+
+              <div class="col-md-4">
+                <hr />
+                <div class="col-md-12 text-center">
+                  <button
+                    style="width: 300px"
+                    class="btn btn-circle btn-primary"
+                  >
+                    <i class="mdi mdi-folder-remove"
+                      >TELECHARGER EXCEL DE PAIE</i
+                    >
+                  </button>
+                </div>
+                <hr />
+                <div class="col-md-12 text-center">
+                  <button
+                    style="width: 300px"
+                    class="btn btn-circle btn-success"
+                  >
+                    <i class="mdi mdi-folder-remove">TELECHARGER LES FICHES</i>
+                  </button>
+                </div>
+                <hr />
+                <div class="col-md-12 text-center">
+                  <a
+                    class="mb-xs mt-xs mr-xs modal-with-zoom-anim"
+                    href="#modalAnim"
+                  >
+                    <button
+                      style="width: 300px"
+                      style="width: max-content"
+                      class="btn btn-circle btn-danger"
+                    >
+                      <i class="mdi mdi-folder-remove">VIDER DOSSIER</i>
+                    </button></a
+                  >
+                </div>
+                <hr />
+              </div>
+            </div>
+          </div>
+          <div
+            id="error_process"
+            class="alert alert-danger text-center"
+            role="alert"
+            style="display: none; margin-top: 20px"
+          >
+            Erreur dans le traitement verifier le fichier ou faite part de
+            l'erreur au developpeur
+          </div>
+          <div id="result_page" style="display: none">
+            <div class="row" style="margin-left: 20%">
+              <div class="col-sm-5">
+                <button
+                  id="prev"
+                  onclick="prev()"
+                  class="btn btn-sm btn-primary"
+                  style="float: right"
+                >
+                  PRECEDENT
+                </button>
+              </div>
+              <div class="col-sm-2 text-center">
+                <h3 id="navigator">1 / 164</h3>
+              </div>
+              <div class="col-sm-5">
+                <button
+                  id="next"
+                  onclick="next()"
+                  class="btn btn-sm btn-primary text-end"
+                  style="float: left"
+                >
+                  SUIVANT
+                </button>
+              </div>
+            </div>
+            <div class="row">
+              <div id="list_name" class="col-sm-4">
+                <input
+                  id="text"
+                  class="nosubmit"
+                  type="search"
+                  onkeyup="search()"
+                  placeholder="Search..."
+                />
+                <br />
+              </div>
+              <div class="col-sm-8">
+                <object
+                  id="show"
+                  data=""
+                  type="application/pdf"
+                  style="display: none"
+                  width="80%"
+                  height="1080px"
+                ></object>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="margin-left: 25%; background: rgba(5, 170, 235, 0.5); width: 50%"
+      id="modalAnim"
+      class="zoom-anim-dialog modal-block modal-block-primary mfp-hide"
+    >
+      <section class="card-body">
+        <header class="panel-heading">
+          <h2 class="panel-title" style="color: aliceblue">Vous êtes sur?</h2>
+        </header>
+        <div class="card-body">
+          <div class="modal-wrapper">
+            <div class="modal-icon">
+              <i class="fa fa-question-circle"></i>
+            </div>
+            <div class="modal-text">
+              <p style="color: aliceblue">
+                Si vous videz le dossier les fichiers dernierement traités
+                seront supprimés!
+              </p>
+            </div>
+          </div>
+
+          <footer class="card-footer">
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-primary modal-confirm" onclick="vider()">
+                  Confirmer
+                </button>
+                <button
+                  class="btn btn-default modal-dismiss"
+                  style="color: aliceblue"
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </section>
+    </div>
+    <!-- Fichier Javascript Requis -->
+    <script src="/js_code/socket.js"></script>
+    <script src="/js_code/paie_calculator.js"></script>
+    <script>
+      var opt = "<%= opt.paie_generated %>";
+      var list = "<%= opt.list_paie %>";
+      sme.value = "<%= opt.sme_cnaps %>";
+      valeur_repas.value = "<%= opt.lunch_value %>";
+      valeur_transport.value = "<%= opt.transport_value %>";
+      list = list.replace(/&#34;/g, '"');
+      if (opt == "y") {
+        showing_result(list);
+      }
+    </script>
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../assets/extra-libs/sparkline/sparkline.js"></script>
+    <script src="assets/magnific-popup/magnific-popup.js"></script>
+    <script src="assets/js1/examples.modals.js"></script>
+    <script src="../dist/js/waves.js"></script>
+    <script src="../dist/js/sidebarmenu.js"></script>
+    <script src="../dist/js/custom.min.js"></script>
+
+    <script>
+      var notif = "<%= notif %>".split(",");
+      var socket = io();
+      const audio = new Audio("ring.wav");
+      socket.on("notif", function (msg) {
+        setnotification(msg);
+        audio.play();
+      });
+      function setnotification(all_notifications) {
+        var notif =
+          "<li>" +
+          '<div class="">' +
+          '<a href="javascript:void(0)" class="link border-top">' +
+          '<div class="d-flex no-block align-items-center p-10">' +
+          "<span" +
+          ' class="' +
+          "btn btn-success btn-circle" +
+          "d-flex" +
+          "align-items-center" +
+          'justify-content-center"' +
+          '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
+          "</span>" +
+          '<div class="ms-2">' +
+          '<span id="alert" class="mail-desc"' +
+          ">Notifications de ce jour</span></div></div></a></div></li>";
+        for (i = 0; i < all_notifications.length; i++) {
+          if (
+            i != 8 &&
+            all_notifications[all_notifications.length - (i + 1)] != ""
+          ) {
+            notif +=
+              "<li>" +
+              '<div class="">' +
+              '<a href="javascript:void(0)" class="link border-top">' +
+              '<div class="d-flex no-block align-items-center p-10">' +
+              "<span" +
+              ' class="' +
+              "btn btn-warning btn-circle" +
+              "d-flex" +
+              "align-items-center" +
+              'justify-content-center"' +
+              '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
+              "</span>" +
+              '<div class="ms-2">' +
+              '<span id="alert" class="mail-desc"' +
+              ">" +
+              all_notifications[all_notifications.length - (i + 1)] +
+              "</span></div></div></a></div></li>";
+          } else {
+            break;
+          }
+        }
+        document.getElementById("card-notif").innerHTML = notif;
+        if (all_notifications[0] != "") {
+          document.getElementById("nbr-notif").innerHTML =
+            all_notifications.length;
+        } else {
+          document.getElementById("nbr-notif").innerHTML =
+            all_notifications.length - 1;
+        }
+      }
+      setnotification(notif);
+    </script>
+  </body>
+</html>

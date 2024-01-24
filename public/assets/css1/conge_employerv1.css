@@ -1,0 +1,217 @@
+.number-content{
+    width: 200px;
+    height: 125px;
+    border-radius: 12px;
+    border: 10px solid;
+    padding-top: 30px;
+    margin: 0 auto;
+    border-image-slice: 1;
+    animation: animatedCard 1.5s infinite;
+    border-radius: 15px;
+  }
+  .input-choice2date {
+    width: 100%;
+    height: 40px;
+    font-family: Poppins-Medium;
+    font-weight: lighter;
+    padding: 5px 20px;
+    border: solid 2px;
+    border-color: #27A9E3;
+    color:#9999A9;
+    border-radius: 4px;
+  }
+  .input-choice2date:focus{
+    background-color: #27A9E3;
+    color:white;
+    font-weight: 500;
+  }
+  .sheet-choice2 {
+    width: 75%;
+    height: 40px;
+    font-family: Poppins-Medium;
+    font-weight: lighter;
+    padding: 5px 20px;
+    border: solid 2px;
+    border-color: #27A9E3;
+    background-color: #27A9E3;
+    color:white;
+    font-weight: 500;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .input-choice2 {
+    width: 75%;
+    height: 40px;
+    font-family: Poppins-Medium;
+    font-weight: lighter;
+    padding: 5px 20px;
+    border: solid 2px;
+    border-color: #27A9E3;
+    color:#9999A9;
+    border-radius: 12px;
+  }
+  .input-choice2:focus{
+    background-color: #27A9E3;
+    color:white;
+    font-weight: 500;
+  }
+  @keyframes animatedCard {
+    0% {
+      border-image-source: linear-gradient(to right, rgba(16, 80, 216, 0.8), dodgerblue);
+    }
+    50% {
+      border-image-source: linear-gradient(to right,dodgerblue, rgba(16, 80, 216, 0.8));
+    }
+    100% {
+      border-image-source: linear-gradient(to right, rgba(16, 80, 216, 0.8), dodgerblue);
+    }
+  }
+  .text-number{
+    font-family: poppins-medium;
+    font-weight: 250;
+    font-size: 30px;
+  }
+  .top_down{
+    opacity: 1;
+    animation: topDown 2s ease;
+  }
+  .down_top{
+    opacity: 1;
+    animation: downTop 2s ease;
+  }
+  .hiding-hour{
+    opacity:1;
+    animation:hidingDownTop 2s ease;
+  }
+  .turn{
+    opacity: 1;
+    animation: turn 3.5s ease;
+  }
+  .hide{
+    display: none !important;
+  }
+  @keyframes topDown {
+    from {
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+    to{
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes hidingDownTop {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to{
+      opacity: 0;
+      transform: translateY(-100%);
+    }
+  }
+  @keyframes downTop {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+    to{
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes turn {
+    from {
+      opacity: 0;
+      transform: rotateY(180deg);
+    }
+    to{
+      opacity: 1;
+      transform: rotateY(0);
+    }
+  }
+  .modal_conge {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+  }
+  .modal_content{
+    background-color: #fff;
+    border-radius: 16px;
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    width: 75%;
+    height: auto;
+  }
+  @media screen and (max-width:1366px) {
+    .modal_content{
+      width: 85%;
+      height: 720px;
+    }
+    .scrollbar-container{
+      height: 720px !important;
+    }
+  }
+  @media screen and (max-width:1280px) {
+    .modal_content{
+      width: 100%;
+      height: 568px;
+      overflow: scroll;
+    }
+    .scrollbar-container{
+      height: 568px;
+    }
+    .content-container{
+      overflow: scroll;
+    }
+  }
+  .close-btn {
+    font-size: 50px;
+    float: right;
+    cursor: pointer;
+  }
+  .content-container{
+    width:100%;
+    height: 100%;
+    
+  }
+  /* Scrollbar */
+  
+  
+  
+  .scrollbar-container {
+    scrollbar-width: thin;
+    padding: 20px 20px;
+    border-bottom-left-radius: 16px;
+    border-top-left-radius: 16px;
+    overflow-y: scroll;
+    height: 768px;
+    background-color: #27A9E3;
+  }
+  .title-text_conge{
+    text-transform: capitalize;
+    font-size: 15px;
+    color: #000000;
+    font-weight: 500;
+    font-family: Poppins;
+  }
+  .time-leave{
+    background: #EAEFF1 !important;
+      border: none !important;
+      border-bottom: 4px solid #0884e9 !important;
+      display: block !important;
+      margin-bottom: 0.625em !important;
+      margin-top: 0.3em !important;
+      font-size: large !important;
+      outline-offset: 3px !important;
+      padding: 0.45em 0.45em 0.45em 0.65em !important;
+      width: 150px !important;
+  }
+  

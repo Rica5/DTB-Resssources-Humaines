@@ -1,0 +1,69 @@
+.content-home{
+    height: 90vh;
+    padding: 2em;
+    border-top-left-radius: 50px;
+   border-top-right-radius: 50px;
+   border-bottom-left-radius: 10px;
+   border-bottom-right-radius: 10px;
+    background-color: #fff;
+
+}
+.header-request{
+    width: 100%;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    height: auto;
+    background-color: rgb(71, 69, 69);
+    padding: 1em;
+}
+.text-historic{
+    color: #fff;
+}
+.text-title{
+    color: #fff;
+    font-size:12px;
+}
+.text-number{
+    color:#fff;
+    font-size: 20px;
+    font-weight: bolder;
+}
+.text-solde{
+    text-align: center;
+    color: #fff;
+    font-size: 22px;
+}
+.icon-check{
+    color: limegreen;
+    font-size: 16px;
+}
+.icon-wait{
+    color: rgb(240, 224, 6);
+    font-size: 16px;
+}
+.icon-x{
+    color: rgb(241, 89, 89);
+    font-size: 16px;
+}
+.case-number{
+    background-color: rgb(122, 119, 119);
+    font-size: 25px;
+}
+.accumulate-content{
+    width: 100%;
+    border-top: 5px solid rgb(240, 224, 6);
+    border-bottom: 5px solid rgb(240, 224, 6);
+    font-size: 45px;
+    padding: 0.20em;
+    color: #fff;
+    text-align: center;
+}
+.open-content{
+    width: 100%;
+    border-left: 5px solid limegreen;
+    border-right: 5px solid limegreen;
+    font-size: 45px;
+    padding: 0.20em;
+    color: #fff;
+    text-align: center;
+}

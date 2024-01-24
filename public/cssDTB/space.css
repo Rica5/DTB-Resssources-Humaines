@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&display=swap');
+body{
+    font-family: 'Sora';
+    background-image: url("../images1/space-back.png");
+}
+.menu-container{
+    background: linear-gradient(to bottom, #fff 95%, #34C100 95%);
+   border-bottom-left-radius: 50px;
+   border-bottom-right-radius: 50px;
+   border-top-left-radius: 15px;
+   border-top-right-radius: 15px;
+    padding: 0.5em;
+}
+.img-logo{
+    width:max-content;
+    height:50px;
+    padding: -10px -10px;
+}
+.menu{
+    display: flex;
+}
+.text-menu{
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 5px 15px;
+    color: rgb(71, 69, 69);
+    transition: margin 0.3s ease-in-out;
+}
+.logo{
+    margin-top: -5px;
+}
+.text-menu:hover{
+    padding: 5px 15px;
+    background-color: #34C100;
+    color:white !important;
+    text-decoration: none !important;
+    margin-top: -2px !important;
+    border-radius: 5px;
+    height: 35px;
+}
+.active-menu{
+    padding: 5px 15px;
+    background-color: #34C100;
+    color:white;
+    margin-top: -2px !important;
+    border-radius: 5px;
+    height: 35px;
+}
+.icons{
+    font-size: 25px;
+    cursor: pointer;
+}

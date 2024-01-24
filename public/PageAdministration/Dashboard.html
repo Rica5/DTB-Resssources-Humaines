@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="solumada-clocking" />
+    <meta name="description" content="solumada-clocking" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Dashboard</title>
+    <!-- Favicon icon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/images1/logo.jpg"
+    />
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/css1/newmain_gen.css"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/libs/bootstrap/dist/css/bootstrap.css"
+    />
+    <link href="../dist/css/style.min.css" rel="stylesheet" />
+     <link href="assets/css1/list_shownv1.css" rel="stylesheet" />
+      <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/fontawesome-free-6.4.0-web/css/all.css"
+    />
+  </head>
+
+  <body>
+    <div class="preloader">
+      <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+      </div>
+    </div>
+
+    <div
+      id="main-wrapper"
+      data-layout="vertical"
+      data-navbarbg="skin5"
+      data-sidebartype="full"
+      data-sidebar-position="absolute"
+      data-header-position="absolute"
+      data-boxed-layout="full"
+    >
+      <header class="topbar" data-navbarbg="skin5">
+        <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+          <div class="navbar-header" data-logobg="skin5">
+            <a class="navbar-brand" href="/">
+              <b class="logo-icon ps-2">
+                <img
+                  src="../assets/images1/logo.jpg"
+                  alt="homepage"
+                  class="light-logo"
+                  width="45"
+                />
+              </b>
+              <span class="logo-text ms-3">
+                <b>SOLUMADA</b>
+              </span>
+            </a>
+            <a
+              class="nav-toggler waves-effect waves-light d-block d-md-none"
+              href="javascript:void(0)"
+              ><i class="ti-menu ti-close"></i
+            ></a>
+          </div>
+          <div
+            class="navbar-collapse collapse"
+            id="navbarSupportedContent"
+            data-navbarbg="skin5"
+          >
+            <ul class="navbar-nav float-start me-auto"></ul>
+            <ul class="navbar-nav float-end">
+              <li style="padding: 15px">
+                <form action="/change_interface" method="post">
+                  <input type="hidden" name="mail" value="<%= username %>" />
+                  <input type="hidden" name="opt" value="p" />
+                  <button type="submit" class="btn btn-info mx-5 text-white">
+                    <i class="mdi mdi-exit-to-app" width="31"> POINTAGE</i>
+                  </button>
+                </form>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle waves-effect waves-dark"
+                  href="#"
+                  id="2"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="font-24 mdi mdi-bell"
+                    ><span style="color: red" id="nbr-notif" class="badge"
+                      >0</span
+                    ></i
+                  >
+                </a>
+                <ul
+                  class="dropdown-menu dropdown-menu-end mailbox animated bounceInDown"
+                  aria-labelledby="2"
+                >
+                  <ul id="card-notif" class="list-style-none">
+                    <li>
+                      <div class="">
+                        <!-- Notif -->
+                        <a href="javascript:void(0)" class="link border-top">
+                          <div class="d-flex no-block align-items-center p-10">
+                            <span
+                              class="btn btn-success btn-circle d-flex align-items-center justify-content-center"
+                              ><i
+                                id="ring"
+                                class="mdi mdi-bell text-white fs-4"
+                              ></i>
+                            </span>
+                            <div class="ms-2">
+                              <h5 class="mb-0">Notification aujourd'hui</h5>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </ul>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic"
+                  href="#"
+                  id="navbarDropdown"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <img
+                    src="../assets/images/users/1.jpg"
+                    alt="user"
+                    class="rounded-circle"
+                    width="31"
+                  />
+                </a>
+                <ul
+                  class="dropdown-menu dropdown-menu-end user-dd animated"
+                  aria-labelledby="navbarDropdown"
+                >
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/exit_a"
+                    ><i class="fa fa-power-off me-1 ms-1"></i> Déconnexion</a
+                  >
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <aside class="left-sidebar" data-sidebarbg="skin5">
+        <!-- Sidebar scroll-->
+        <div class="scroll-sidebar">
+          <!-- Sidebar navigation-->
+          <nav class="sidebar-nav">
+            <ul id="sidebarnav" class="pt-4">
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/home"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-view-dashboard"></i
+                  ><span class="hide-menu">Dashboard</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/management"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-border-inside"></i
+                  ><span class="hide-menu">Status</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/userlist"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-account-key"></i
+                  ><span class="hide-menu">Liste utilisateurs</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/details"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-calendar-range"></i
+                  ><span class="hide-menu">Tableau des pointages</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/fiche"
+                  aria-expanded="false"
+                  ><i class="far fa-file-pdf"></i
+                  ><span class="hide-menu">Fiche de paie</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/absencelist"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-calendar-clock"></i
+                  ><span class="hide-menu">Liste des absences</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/validelate"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-alarm-check"></i
+                  ><span class="hide-menu">Validation retards</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link has-arrow waves-effect waves-dark"
+                  href="javascript:void(0)"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-account-off"></i
+                  ><span class="hide-menu">Congé </span></a
+                >
+                <ul aria-expanded="false" class="collapse first-level">
+                  <li class="sidebar-item">
+                    <a href="/leavelist" class="sidebar-link"
+                      ><i class="mdi mdi-format-list-bulleted"></i
+                      ><span class="hide-menu"
+                        >List des conges (global)</span
+                      ></a
+                    >
+                  </li>
+                  <li class="sidebar-item">
+                    <a href="/leave" class="sidebar-link"
+                      ><i class="mdi mdi-account-off"></i
+                      ><span class="hide-menu"> Definir un congé</span></a
+                    >
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+          <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+      </aside>
+      <div class="page-wrapper">
+        <div class="page-breadcrumb">
+          <div class="row">
+            <div class="col-12 d-flex no-block align-items-center">
+              <b class="logo-icon ps-2">
+                <img
+                  src="../assets/images1/logo.jpg"
+                  alt="homepage"
+                  class="light-logo"
+                  width="45"
+                />
+              </b>
+              <span class="logo-text ms-3">
+                <b>DASHBOARD</b>
+              </span>
+              <div class="ms-auto text-end">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="#"
+                        ><i class="mdi mdi-view-dashboard"></i>Dashboard</a
+                      >
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                      <i class="mdi mdi-view-dashboard"></i>
+                      Dashboard
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <!-- Column -->
+            <div class="col-md-6 col-lg-3 col-xlg-3">
+              <a class="navbar-brand" href="/">
+                <div class="card card-hover">
+                  <div class="box bg-cyan text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-view-dashboard"></i>
+                    </h1>
+                    <h6 class="text-white">Dashboard</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <!-- Column -->
+            <div class="col-md-6 col-lg-2 col-xlg-3">
+              <a class="navbar-brand" href="/management">
+                <div class="card card-hover">
+                  <div class="box bg-danger text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-border-inside"></i>
+                    </h1>
+                    <h6 class="text-white">Status</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <!-- Column -->
+            <div class="col-md-6 col-lg-2 col-xlg-3">
+              <a class="navbar-brand" href="/UserList">
+                <div class="card card-hover">
+                  <div class="box bg-warning text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-account-key"></i>
+                    </h1>
+                    <h6 class="text-white">Liste utilisateurs</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <!-- Column -->
+            <div class="col-md-6 col-lg-2 col-xlg-3">
+              <a class="navbar-brand" href="/details">
+                <div class="card card-hover">
+                  <div class="box bg-success text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-calendar-range"></i>
+                    </h1>
+                    <h6 class="text-white">Tableau des pointages</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-3 col-xlg-3">
+              <a class="navbar-brand" href="/fiche">
+                <div class="card card-hover">
+                  <div class="box bg-info text-center">
+                    <h1 class="font-light text-white">
+                      <i class="far fa-file-pdf"></i>
+                    </h1>
+                    <h6 class="text-white">Fiche de paie</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-3 col-xlg-3">
+              <a class="navbar-brand" href="/absencelist">
+                <div class="card card-hover">
+                  <div class="box bg-dark text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-format-list-bulleted"></i>
+                    </h1>
+                    <h6 class="text-white">Liste des absences</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-3 col-xlg-3">
+              <a class="navbar-brand" href="/leave">
+                <div class="card card-hover">
+                  <div class="box bg-primary text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-account-off"></i>
+                    </h1>
+                    <h6 class="text-white">Definir un congé</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-3 col-xlg-3">
+              <a class="navbar-brand" href="/leavelist">
+                <div class="card card-hover">
+                  <div class="box bg-dark text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-format-list-bulleted"></i>
+                    </h1>
+                    <h6 class="text-white">Liste des congés</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6 col-lg-3 col-xlg-6">
+              <a class="navbar-brand" href="/validelate">
+                <div class="card card-hover">
+                  <div class="box bg-primary text-center">
+                    <h1 class="font-light text-white">
+                      <i class="mdi mdi-alarm-check"></i>
+                    </h1>
+                    <h6 class="text-white">Validation des retards</h6>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-md-flex align-items-center">
+                    <div>
+                      <h4 class="card-title">Analyse du Site</h4>
+                      <h5 class="card-subtitle">Vue globales</h5>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <!-- column -->
+                    <div class="col-md-10">
+                      <br /><br />
+                      <img
+                        src="../assets/images1/ls.jpg"
+                        id="logos"
+                        alt="homepage"
+                        class="light-logo image_rotate"
+                        width="100%"
+                      />
+                    </div>
+                    <div class="col-md-2">
+                      <div class="col-lg-9" style="float: right">
+                        <div class="flot-chart">
+                          <div
+                            class="flot-chart-content"
+                            id="flot-line-chart"
+                          ></div>
+                        </div>
+                      </div>
+                      <div class="col-lg-12" style="float: right">
+                        <div class="row">
+                          <div class="col-12">
+                            <div class="bg-dark p-10 text-white text-center">
+                              <i class="mdi mdi-account fs-3 mb-1 font-16"></i>
+                              <h5 id="nbr_emp" class="mb-0 mt-1">
+                                <%= nbr_emp.length %>
+                              </h5>
+                              <small class="font-light">Employer</small>
+                            </div>
+                          </div>
+                          <div class="col-12 mt-3" style="float: right">
+                            <div class="bg-dark p-10 text-white text-center">
+                              <i class="mdi mdi-clock fs-3 font-16"></i>
+                              <h5 id="nbr_actif" class="mb-0 mt-1">
+                                <%= nbr_act %>
+                              </h5>
+                              <small class="font-light">Actif</small>
+                            </div>
+                          </div>
+                          <div class="col-12 mt-3" onmouseover="openHovering('conge')"  style="float: right;cursor:pointer">
+                            <div class="hover-list" style="display:none;cursor:pointer" id="conge">
+                              <div class="row">
+                                <div class="col-sm-10">
+                                  <div class="content-element">
+                                    <div id="conge_element" class="row d-flex align-items-center justify-content-center">
+                                  
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-sm-2">
+                                  <div class="text-center mb-3">-----<i onclick=" closeHovering('conge')" class="fa-solid fa-scissors fa-shake fa-xl"></i>-----</div>
+                                  <div class="d-flex align-items-center">
+                                    <div class="point mx-1"></div>
+                                     <div class="point1 mx-1"></div>
+                                      <div class="point2 mx-1"></div>
+                                      <div class="point3 mx-1"></div>
+                                      <div class="point4 mx-1"></div>
+                                      <div class="point5 mx-1"></div>
+                                </div>
+                                </div>
+                                
+                              </div>
+                            </div>
+                            <div class="bg-dark p-10 text-white text-center">
+                              <i
+                                class="mdi mdi-account-off fs-3 mb-1 font-16"
+                              ></i>
+                              <h5 id="nbr_leave" class="mb-0 mt-1">
+                                <%= nbr_leave.length %>
+                              </h5>
+                              <small class="font-light">En congé</small>
+                            </div>
+                          </div>
+                          <div class="col-12 mt-3" onmouseover="openHovering('late')" style="float: right;cursor:pointer">
+                            <div class="hover-list"   style="display:none;cursor:pointer" id="late">
+                              <div class="row">
+                                <div class="col-sm-10">
+                                  <div class="content-element">
+                                    <div id="late_element" class="row d-flex align-items-center justify-content-center">
+                                      
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="col-sm-2">
+                                  <div class="text-center mb-3">-----<i onclick="closeHovering('late')" class="fa-solid fa-scissors fa-shake fa-xl"></i>-----</div>
+                                  <div class="d-flex align-items-center">
+                                    <div class="point mx-1"></div>
+                                     <div class="point1 mx-1"></div>
+                                      <div class="point2 mx-1"></div>
+                                      <div class="point3 mx-1"></div>
+                                      <div class="point4 mx-1"></div>
+                                      <div class="point5 mx-1"></div>
+                                </div>
+                                </div>
+                                
+                              </div>
+                            </div>
+                            <div class="bg-dark p-10 text-white text-center">
+                              <i
+                                class="mdi mdi-clock-alert fs-3 mb-1 font-16"
+                              ></i>
+                              <h5 id="nbr_retard" class="mb-0 mt-1">
+                                <%= nbr_retard.length %>
+                              </h5>
+                              <small class="font-light">Retard du jour</small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- column -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Fichier Javascript -->
+    <script src="/js_code/socket.js"></script>
+    <script>
+      var notif = "<%= notif %>".split(",");
+      var socket = io();
+      const audio = new Audio("ring.wav");
+      socket.on("notif", function (msg) {
+        setnotification(msg);
+        audio.play();
+      });
+      function setnotification(all_notifications) {
+        var notif =
+          "<li>" +
+          '<div class="">' +
+          '<a href="javascript:void(0)" class="link border-top">' +
+          '<div class="d-flex no-block align-items-center p-10">' +
+          "<span" +
+          ' class="' +
+          "btn btn-success btn-circle" +
+          "d-flex" +
+          "align-items-center" +
+          'justify-content-center"' +
+          '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
+          "</span>" +
+          '<div class="ms-2">' +
+          '<span id="alert" class="mail-desc"' +
+          ">Notifications de ce jour</span></div></div></a></div></li>";
+        for (i = 0; i < all_notifications.length; i++) {
+          if (
+            i != 8 &&
+            all_notifications[all_notifications.length - (i + 1)] != ""
+          ) {
+            notif +=
+              "<li>" +
+              '<div class="">' +
+              '<a href="javascript:void(0)" class="link border-top">' +
+              '<div class="d-flex no-block align-items-center p-10">' +
+              "<span" +
+              ' class="' +
+              "btn btn-warning btn-circle" +
+              "d-flex" +
+              "align-items-center" +
+              'justify-content-center"' +
+              '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
+              "</span>" +
+              '<div class="ms-2">' +
+              '<span id="alert" class="mail-desc"' +
+              ">" +
+              all_notifications[all_notifications.length - (i + 1)] +
+              "</span></div></div></a></div></li>";
+          } else {
+            break;
+          }
+        }
+        document.getElementById("card-notif").innerHTML = notif;
+        if (all_notifications[0] != "") {
+          document.getElementById("nbr-notif").innerHTML =
+            all_notifications.length;
+        } else {
+          document.getElementById("nbr-notif").innerHTML =
+            all_notifications.length - 1;
+        }
+      }
+      setnotification(notif);
+      var all_employees = JSON.parse('<%-JSON.stringify(nbr_emp)%>');
+      var all_leave = JSON.parse('<%-JSON.stringify(nbr_leave)%>');
+      var all_late = JSON.parse('<%-JSON.stringify(nbr_retard)%>');
+      function closeHovering(id){
+        document.getElementById(id).style.display = "none";
+      }
+      function openHovering(id){
+        if (id == "conge"){
+          document.getElementById(id).style.display = "block";
+           closeHovering("late")
+        }
+        else {
+           document.getElementById(id).style.display = "block"
+           id = "late";
+          closeHovering("conge")
+        }
+        
+      }
+      function rendering_users(){
+        var conge = document.getElementById("conge_element");
+        var lates = document.getElementById("late_element")
+        conge.innerHTML = "";
+        lates.innerHTML = "";
+        var count = 0;
+        all_leave.forEach(function (element) {
+          
+          var data = giveData(element.m_code);
+          conge_element.innerHTML += `
+          <div class="col-sm-2">
+                                      <h6 class="text-code mt-1 text-center">${data.m_code}</h6>
+                                      <img class="img-list" src="Profil/${data.profil}"></img>
+                                    </div>
+          `
+          count++ 
+          if (count == 5){
+             conge_element.innerHTML += "<hr>"
+             count = 0;
+          }
+        })
+        count = 0;
+        all_late.forEach(function (element) {
+          var data = giveData(element.m_code);
+          late_element.innerHTML += `
+          <div class="col-sm-2">
+                                      <h6 class="text-code mt-1 text-center">${data.m_code}</h6>
+                                      <img class="img-list" src="Profil/${data.profil}"></img>
+                                    </div>
+          `
+          count++;
+          if (count == 5){
+             late_element.innerHTML += "<hr>"
+             count = 0;
+          }
+        })
+      }
+      function giveData(code){
+        var data = all_employees.find(item => item.m_code == code);
+        return data
+      }
+      rendering_users();
+    </script>
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../assets/extra-libs/sparkline/sparkline.js"></script>
+    <script src="../dist/js/waves.js"></script>
+    <script src="../dist/js/sidebarmenu.js"></script>
+    <script src="../dist/js/custom.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Definir status</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="/assets/images1/logo.jpg" />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/vendor/bootstrap/css/bootstrap.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/vendor/animate/animate.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/vendor/css-hamburgers/hamburgers.min.css"
+    />
+    <!--===============================================================================================-->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/vendor/select2/select2.min.css"
+    />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/assets/css1/util.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css1/newmain2.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/css1/modal_workingv1.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/fontawesome-free-6.4.0-web/css/all.css"
+    />
+    <!--===============================================================================================-->
+  </head>
+
+  <body>
+    <div class="limiter" id="login">
+      <div class="container-login100">
+        <div class="wrap-login100">
+          <div>
+            <img
+              width="100%"
+              height="100%"
+              src="assets/images1/ls.jpg"
+              alt="IMG"
+            />
+          </div>
+          <center>
+            <div class="login101-pic">
+              <div
+                style="
+                  position: relative;
+                  width: 325px;
+                  height: 325px;
+                  overflow: auto;
+                "
+              >
+                <img
+                  style="
+                    border-radius: 50%;
+                    object-fit: cover;
+                    width: 100%;
+                    height: 100%;
+                  "
+                  src="Profil/<%= user.profil %>"
+                  id="my_profil"
+                  alt="IMG"
+                />
+                <button
+                  onclick="profil_click()"
+                  class="transparent-button"
+                  style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                  "
+                >
+                  Modifier Profil
+                </button>
+                <input
+                  id="file-upload"
+                  style="display: none"
+                  type="file"
+                  name="uploadFile"
+                />
+              </div>
+
+              <span class="login100-form-title" style="margin-top: 20px">
+                <%= user.first_name %> <%= user.last_name %>
+              </span>
+              <div id="profil_status" class="" style="display: none"></div>
+
+              <div class="text-center">
+                <a href="/exit_u"
+                  ><button class="login10l-form-btn">DECONNEXION</button></a
+                >
+              </div>
+
+              <div id="entry_agent" style="display: none">
+                <hr />
+                <label for="standard">
+                  Heure d'entrée pour aujourd'hui
+                  <br />
+                  <b>( A remplir a chaque début du shift )</b>
+                  <br />
+                  <i
+                    style="font-size: 50px"
+                    class="fa-solid fa-hand-point-down fa-bounce mt-3"
+                  ></i>
+                </label>
+                <br />
+                <div class="row">
+                  <div class="col-md-8">
+                    <input
+                      type="time"
+                      value="<%= user.entry %>"
+                      id="time_entry"
+                    />
+                  </div>
+                  <div class="col-md-4 ok-button">
+                    <button class="btn btn-primary" onclick="change_entry()">
+                      OK
+                    </button>
+                  </div>
+                </div>
+
+                <hr />
+              </div>
+              <div id="entry_other" style="display: none">
+                <hr />
+                <label for="standard"> Heure d'entrée fixe </label>
+                <br />
+                <input
+                  type="time"
+                  value="<%= user.entry %>"
+                  id="time_entry2"
+                  disabled
+                />
+                <hr />
+              </div>
+              <% if (another != "n") { %>
+              <hr />
+              <form action="/change_interface" method="post">
+                <input type="hidden" name="mail" value="<%= user.username %>" />
+                <input type="hidden" name="opt" value="c" />
+                <button type="submit" class="btn btn-md btn-primary">
+                  INFOS CONGES
+                  <i class="fa-solid fa-person-walking-luggage"></i>
+                </button>
+              </form>
+              <hr />
+              <% } %> <% if (status_poste != "n") { %>
+              <form action="/change_interface" method="post">
+                <input type="hidden" name="mail" value="<%= user.username %>" />
+                <input type="hidden" name="opt" value="s" />
+                <button type="submit" class="btn btn-md btn-success">
+                  STATUS EMPLOYER <i class="fa-solid fa-users"></i>
+                </button>
+              </form>
+              <hr />
+              <% } %> <% if ( administrator != "n") { %>
+              <form action="/change_interface" method="post">
+                <input type="hidden" name="mail" value="<%= user.username %>" />
+                <input type="hidden" name="opt" value="a" />
+                <button type="submit" class="btn btn-md btn-info">
+                  ADMINISTRATION <i class="fa-solid fa-book-open"></i>
+                </button>
+              </form>
+              <hr />
+              <% } %>
+            </div>
+          </center>
+
+          <div class="login100-form validate-form mt-3">
+            <span id="time" class="login100-form-title"> </span>
+            <span class="login100-form-title"> Definissez votre status </span>
+            <div id="forgetpage" style="display: none; margin-top: 20px">
+              <div id="forget" class="alert alert-info" role="alert">
+                Vous avez oublie de cliquer sur parti le :
+              </div>
+              <div class="wrap-input100 validate-input mb-3 mt-3">
+                <label for="exampleFormControlTextarea1" class="form-label"
+                  >Vous avez quitté le travail à :
+                </label>
+                <input type="time" id="timeforget" />
+              </div>
+              <div class="wrap-input100 validate-input">
+                <button
+                  id="bntsf"
+                  onclick="timeforget()"
+                  class="login100-form-btn"
+                >
+                  ENVOYER
+                </button>
+              </div>
+            </div>
+            <div id="latepage" style="display: none; margin-top: 20px">
+              <% if (latelist.length != 0) { %>
+              <div class="alert alert-danger" role="alert">
+                <h6>Liste de vos retard enregistrés ce mois-ci :</h6>
+                <ol>
+                  <% latelist.forEach(element => { %>
+                  <li><%= element %></li>
+                  <% }) %>
+                </ol>
+                <% if (latelist.length == 2) { %> "Faite attention a vos
+                retards" <% } %> <% if (latelist.length == 4) { %> "Retard trop
+                frequent, un alerte a été envoyé" <% } %>
+              </div>
+              <% } %>
+
+              <div id="late" class="alert alert-info" role="alert"></div>
+              <div class="wrap-input100 validate-input">
+                <label for="exampleFormControlTextarea1" class="form-label"
+                  >La raison de votre retard :</label
+                >
+                <textarea
+                  id="latereason"
+                  style="background: rgba(30, 152, 233, 0.5)"
+                  class="form-control"
+                >
+                </textarea>
+              </div>
+              <div class="wrap-input100 validate-input">
+                <button id="bntsr" onclick="reason()" class="login100-form-btn">
+                  ENVOYER
+                </button>
+              </div>
+            </div>
+            <div id="statpage">
+              <div class="wrap-input100 validate-input">
+                <div
+                  style="
+                    border-top-right-radius: 75px;
+                    border-bottom-left-radius: 75px;
+                    border-top-left-radius: 15px;
+                    border-bottom-right-radius: 15px;
+                  "
+                  id="consigne"
+                  class="alert alert-info"
+                  role="alert"
+                >
+                  <h6 class="text-center">Motivation du jour &#128578;</h6>
+                  <ul class="mt-3">
+                    <li>
+                      <small id="citation_jour">
+                      >
+                    </li>
+                    <h6 class="text-center mt-3">Ensemble nous avançons !!!</h6>
+                  </ul>
+                </div>
+                <select
+                  id="locaux"
+                  class="input100"
+                  onchange="passed()"
+                  style="border-color: transparent"
+                >
+                  <option value="Not defined">Ou vous etes ?</option>
+                  <option value="Tana Water Front">Tana Water Front</option>
+                  <option value="IKANO">IKANO</option>
+                  <option value="S2 Ivandry">S2 Ivandry</option>
+                  <option value="Travaille a domicile">
+                    Travaille à domicile
+                  </option>
+                  <option value="En dehors du bureau">
+                    En dehors du bureau
+                  </option>
+                </select>
+                <br />
+                <select
+                  id="hour"
+                  class="input100"
+                  onchange="passed()"
+                  style="border-color: transparent"
+                >
+                  <option value="">Choisissez l'heure de travaille</option>
+                  <option value="2">2 heures</option>
+                  <option value="4">4 heures</option>
+                  <option value="6">6 heures</option>
+                  <option value="8">8 heures</option>
+                  <option value="10">10 heures</option>
+                </select>
+                <div
+                  id="info"
+                  style="display: none; margin-top: 20px"
+                  class="alert alert-info"
+                  role="alert"
+                >
+                  Here is an information
+                </div>
+                <div id="waiting" style="display: none" class="text-center">
+                  <p>Prise en compte du pointage</p>
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+              </div>
+              <br />
+              <select
+                id="changing_hour"
+                class="input100"
+                onchange="changing_hour()"
+                style="border-color: transparent; display: none"
+              >
+                <option value="">Changer l'heure de travaille</option>
+                <option value="2">2 heures</option>
+                <option value="4">4 heures</option>
+                <option value="6">6 heures</option>
+                <option value="8">8 heures</option>
+                <option value="10">10 heures</option>
+              </select>
+              <br />
+              <div class="wrap-input100 validate-input">
+                <button
+                  id="w"
+                  style="display: none"
+                  onclick="working()"
+                  class="login100-form-btn"
+                >
+                  TRAVAILLER
+                </button>
+              </div>
+              <div class="wrap-input100">
+                <select
+                  id="a"
+                  style="display: none; border: 0 !important"
+                  class="login10a-form-btn text-center"
+                  onchange="away()"
+                >
+                  <option value="">ABSENT(E)</option>
+                  <option value="BREAK">Petit Break</option>
+                  <option value="DEJEUNER">Parti dejeuner</option>
+                  <option value="PAUSE">Parti en pause</option>
+                  <option value="ABSENT">Autre raison</option>
+                </select>
+                <div
+                  id="abr"
+                  class="wrap-input100 validate-input"
+                  style="display: none"
+                >
+                  <label for="exampleFormControlTextarea1" class="form-label"
+                    >La raison de votre absence :</label
+                  >
+                  <textarea
+                    id="awayreason"
+                    style="background: rgba(30, 152, 233, 0.5)"
+                    class="form-control"
+                  >
+                  </textarea>
+                  <div class="row my-2">
+                    <div class="col-md-6">
+                      <button
+                        id="btnarp"
+                        onclick="away_complete()"
+                        class="login102s-form-btn float-left"
+                      >
+                        PARTI
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="wrap-input100 validate-input">
+                <select
+                  id="l"
+                  style="display: none; border: 0 !important"
+                  class="login10l-form-btn text-center"
+                  onchange="left()"
+                >
+                  <option value="">PARTI</option>
+                  <option value="POSTE">Changer de poste</option>
+                  <option value="S2 Ivandry">Deplacement chez IKANO</option>
+                  <option value="S2 Ivandry">Deplacement chez S2 Ivandry</option>
+                  <option value="Tana Water Front">Deplacement chez TWF</option>
+                  <option value="Travaille a domicile">
+                    Changement en travaille à domicile
+                  </option>
+                  <option value="En dehors du bureau">
+                    Travailler en dehors du bureau
+                  </option>
+                  <option value="QUITTER">Fini pour aujourd'hui</option>
+                </select>
+              </div>
+              <span class="login100-form-title"> STATUS ACTUEL </span>
+              <div class="wrap-input100 validate-input">
+                <center>
+                  <button id="s" class="login101-form-btn"></button>
+                </center>
+              </div>
+            </div>
+            <div
+              id="denie"
+              class="alert alert-danger"
+              role="alert"
+              style="display: none; margin-top: 20px"
+            ></div>
+
+            <div class="text-center p-t-10">
+              <h1 class="txt2">Application Solumada, Copyright 2022</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="modalForm" class="modal-employee">
+      <div class="modal-element">
+        <h1 id="title_break" class="text-title">
+          VOTRE HEURE DE PAUSE SE TERMINE DANS
+        </h1>
+        <div class="timer-content mt-5">
+          <div class="box-hour mx-3">
+            <h1 id="minutes" class="text-timer"></h1>
+          </div>
+          <div class="box-hour mx-3">
+            <h1 id="secondes" class="text-timer"></h1>
+          </div>
+          <div class="box-hour mx-3">
+            <h1 id="tiers" class="text-timer"></h1>
+          </div>
+        </div>
+        <div class="advise-content mt-5">
+          <div class="box-advice">
+            <h3 id="advice_for_you" class="text-advice">
+              Les pauses permettent à l'esprit de se reposer et peuvent stimuler
+              la créativité. En prenant du recul par rapport à une tâche, vous
+              pourriez revenir avec des idées nouvelles et innovantes.
+            </h3>
+          </div>
+        </div>
+        <div class="d-flex justify-content-center align-items-center mt-5">
+          <button class="btn btn-md btn-secondary" onclick="closeModal()">
+            RETOURNER TRAVAILLER <i class="fa-solid fa-desktop"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="warning" class="modal-warning">
+      <div class="modal-element-warning">
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="card-warning">
+              <h3>Bonjour <%= user.usuel %></h3>
+              <h6 class="mt-3">Suite à la demande des ressources humaines concernant à ce que notre photo de profil sur le pointage soit notre photo récente, la votre ne correspond pas au type de photo attendu.</h6>
+              <h6 class="mt-2">Veuillez mettre une photo de profil qui vous représente vous.</h6>
+              <h6 class="mt-2">NB: Si vous ne pouvez pas copier votre photo de profil dans votre ordinateur, veuillez demander aux ADMIN.</h6>
+              <h6 class="mt-2">Merci!!!</h6>
+              <button onclick="closeWarn()" class="btn btn-sm btn-info mt-3">BIEN RECU <i class="fa-solid fa-thumbs-up fa-bounce"></i></button>
+        </div>
+          </div>
+      </div>
+    </div>
+    <script src="/js_code/socket.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    <script src="/js_code/momentz.js"></script>
+    <script src="/js_code/time_controle_gen7.js"></script>
+    <script src="/js_code/workinv7.js"></script>
+    <script>
+      var forget = '<%= forget %>';
+      var user_occup = '<%= user.shift %>';
+      var code_user = '<%= user.m_code %>';
+      var warn_you = '<%= warn_you %>'
+      forget_info = document.getElementById("forget");
+      var forgetpage = document.getElementById("forgetpage");
+      var latepage = document.getElementById("latepage");
+      var statpage = document.getElementById("statpage");
+      var time_entry = document.getElementById("time_entry");
+      var locatenow = document.getElementById("locaux");
+      var shift_exclude = ["COURSIER", "MANAGER", "RH", "DEV", "ENG", "GERANT"];
+      if (
+        time_entry.value == "" &&
+        shift_exclude.includes(user_occup) === false
+      ) {
+        locatenow.disabled = true;
+        hour_today.disabled = true;
+      } else {
+        locatenow.disabled = false;
+        hour_today.disabled = false;
+      }
+      var abr = document.getElementById("abr");
+      var btnars = document.getElementById("btnars");
+      var btnarc = document.getElementById("btnarc");
+      var err = document.getElementById("denie");
+      var get_hours = false;
+      if (forget != "n") {
+        forget = JSON.parse(forget.replace(/&#34;/g, '"'));
+        forget_info.innerHTML +=
+          "<br>Le " +
+          moment(forget.date).locale("Fr").format("dddd DD MMMM") +
+          ".<br>Est entrée à " +
+          forget.entry +
+          " pour " +
+          forget.worktime +
+          " heures de travaille.";
+        forgetpage.style.display = "block";
+        latepage.style.display = "none";
+        statpage.style.display = "none";
+      }
+
+      if (user_occup.includes("SHIFT") || user_occup.includes("IT")) {
+      } else {
+        hour_today.value = 8;
+        hour_today.style.display = "none";
+        ch_heure.style.display = "none";
+        get_hours = true;
+      }
+      if (exception_user.includes(code_user)) {
+        document.getElementById("entry_other").style.display = "block";
+        document.getElementById("entry_agent").style.display = "none";
+      } else if (no_display.includes(code_user)) {
+        document.getElementById("entry_agent").style.display = "none";
+        document.getElementById("entry_other").style.display = "none";
+      } else {
+        document.getElementById("entry_agent").style.display = "block";
+        document.getElementById("entry_other").style.display = "none";
+      }
+      var locaux = "<%= user.act_loc %>";
+      document.getElementById("locaux").value = locaux;
+      var awaystat = false;
+      var status = "<%= user.act_stat %>";
+      var ac_hour = "<%= user.user_ht %>";
+      if (locaux != "Not defined" && ac_hour) {
+        if (status == "WORKING") {
+          document.getElementById("consigne").style.display = "none";
+          awaystat = true;
+          hour_today.value = ac_hour;
+          hour_today.style.display = "none";
+          workings();
+          document.getElementById("s").innerHTML = "TRAVAILLER";
+          senddata1(code_user);
+        } else if (status == "LEFTING") {
+          lefts();
+          w.style.display = "none";
+          a.style.display = "none";
+          l.style.display = "none";
+          document.getElementById("s").innerHTML = "NON DEFINI";
+        } else {
+          document.getElementById("consigne").style.display = "none";
+          hour_today.value = ac_hour;
+          awaystat = true;
+          hour_today.style.display = "none";
+          aways();
+          document.getElementById("s").innerHTML = status;
+          a.value = status;
+          sendstatus(locatenow.value, status, code_user);
+        }
+      } else {
+        lefts();
+        w.style.display = "none";
+        a.style.display = "none";
+        l.style.display = "none";
+        document.getElementById("s").innerHTML = "NON DEFINI";
+      }
+
+      function working() {
+        a.value = "";
+        hour_today.style.display = "none";
+        workings();
+
+        if (awaystat == false) {
+          senddata1(code_user);
+        } else {
+          senddata1(code_user);
+          take_break();
+        }
+        awaystat = false;
+      }
+      function left() {
+        if (l.value == "QUITTER") {
+          senddata2(document.getElementById("locaux").value, code_user);
+          lefts();
+          awaystat = false;
+        } else if (l.value == "") {
+        } else {
+          senddata2_choice(document.getElementById("locaux").value, l.value);
+          awaystat = false;
+        }
+      }
+      function away() {
+        hour_today.style.display = "none";
+        if (a.value == "ABSENT") {
+          abr.style.display = "block";
+        } else {
+          awaystat = true;
+          abr.style.display = "none";
+          aways();
+          sendstatus(locatenow.value, a.value, code_user);
+        }
+      }
+      var latereason = document.getElementById("latereason");
+      function reason() {
+        if (latereason.value.trim() != "") {
+          err.style.display = "none";
+          document.getElementById("bntsr").disabled = true;
+          sendreason("/reason", latereason.value.trim());
+        } else {
+          err.innerHTML = "Le champ ne peut pas être vide";
+          err.style.display = "block";
+        }
+      }
+      var timeforgets = document.getElementById("timeforget");
+      function timeforget() {
+        if (timeforgets.value != "") {
+          err.style.display = "none";
+          forgettime("/forget", timeforgets.value);
+        } else {
+          err.innerHTML = "Le champ ne peut pas être vide";
+          err.style.display = "block";
+        }
+      }
+      function take_break() {
+        var http = new XMLHttpRequest();
+        http.open("POST", "/takebreak", true);
+        http.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        http.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+
+          }
+        };
+        http.send();
+      }
+      function sendreason(url, reasons) {
+        var http = new XMLHttpRequest();
+        http.open("POST", url, true);
+        http.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        http.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            document.getElementById("bntsr").disabled = false;
+            latepage.style.display = "none";
+            statpage.style.display = "block";
+            senddata1(code_user);
+          }
+        };
+        http.send("reason=" + reasons);
+      }
+      function passed() {
+        if (locatenow.value != "Not defined" && hour_today.value != "") {
+          w.style.display = "block";
+          a.style.display = "block";
+          l.style.display = "block";
+          a.disabled = true;
+          l.disabled = true;
+          document.getElementById("consigne").style.display = "none";
+          working();
+        } else {
+          if (get_hours) {
+            w.style.display = "block";
+            a.style.display = "block";
+            l.style.display = "block";
+            a.disabled = true;
+            l.disabled = true;
+            document.getElementById("consigne").style.display = "none";
+            w.click();
+          } else {
+            w.style.display = "none";
+            a.style.display = "none";
+            l.style.display = "none";
+          }
+        }
+      }
+      function changing_hour() {
+        if (ch_heure.value != "") {
+          send_changing_hour(code_user);
+        }
+      }
+      function change_entry() {
+        var entry_value = document.getElementById("time_entry").value;
+        if (entry_value != "") {
+          var http = new XMLHttpRequest();
+          http.open("POST", "/change_entry", true);
+          http.setRequestHeader(
+            "Content-type",
+            "application/x-www-form-urlencoded"
+          );
+          http.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+              if (this.responseText == "Ok") {
+                locatenow.disabled = false;
+                hour_today.disabled = false;
+              }
+            }
+          };
+          http.send("entry=" + entry_value);
+        } else {
+          locatenow.disabled = true;
+          hour_today.disabled = true;
+        }
+      }
+      var awayreason = document.getElementById("awayreason");
+      function away_complete() {
+        if (awayreason.value.trim() != "") {
+          err.style.display = "none";
+          sendawayreason(
+            "/absent",
+            awayreason.value.trim(),
+            "complete",
+            code_user
+          );
+        } else {
+          err.innerHTML = "Le champ ne peut pas être vide";
+          err.style.display = "block";
+        }
+      }
+      function sendawayreason(url, areasons, stat, cu) {
+        var http = new XMLHttpRequest();
+        http.open("POST", url, true);
+        http.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        http.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText == "complete") {
+              socket.emit("actuel", "LEFTING" + "," + cu);
+              socket.emit("loc", "Not defined");
+              window.location = "/exit_u";
+            } else if (this.responseText == "error") {
+              window.location = "/session_end";
+            }
+          }
+        };
+        http.send("reason=" + areasons + "&stat=" + stat);
+      }
+      function forgettime(url, tf) {
+        var http = new XMLHttpRequest();
+        http.open("POST", url, true);
+        http.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        http.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            if (this.responseText == "No") {
+              err.innerHTML =
+                "L'heure de travail dépasse le " +
+                forget.worktime +
+                " heures choisi";
+              err.style.display = "block";
+            } else if (this.responseText == "error") {
+              window.location = "/session_end";
+            } else {
+              window.location = "/employee";
+            }
+          }
+        };
+        http.send("timeforget=" + tf);
+      }
+      function openWarn(){
+        document.getElementById("warning").style.display = "block";
+      }
+      function closeWarn(){
+        document.getElementById("warning").style.display = "none";
+      }
+      if(warn_you == "y"){
+        openWarn()
+      }
+
+      function clockRunner() {
+        clock.innerHTML = moment
+          .tz("UTC")
+          .locale("Fr")
+          .add(3, "hours")
+          .format("dddd DD MMMM HH:mm:ss");
+        setTimeout(clockRunner, 1000);
+      }
+      window.onload = clockRunner();
+    </script>
+    <script src="/assets/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/assets/vendor/bootstrap/js/popper.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/assets/vendor/select2/select2.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/assets/vendor/tilt/tilt.jquery.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="/assets/js1/main.js"></script>
+  </body>
+</html>

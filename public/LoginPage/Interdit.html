@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="solumada" />
+    <meta name="description" content="clocking" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>ACCES INTERDIT</title>
+    <!-- Fichier CSS Requis  -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/images1/logo.jpg"
+    />
+    <link href="dist/css/style.min.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="main-wrapper">
+      <!-- Chargement du page -->
+      <div class="preloader">
+        <div class="lds-ripple">
+          <div class="lds-pos"></div>
+          <div class="lds-pos"></div>
+        </div>
+      </div>
+      <!-- Message d'erreur si un utilisateur n'a pas accès au plateforme -->
+      <div class="error-box">
+        <div class="error-body text-center">
+          <h1 class="error-title text-danger">503</h1>
+          <h3 class="text-uppercase error-subtitle">ACCES INTERDIT</h3>
+          <p class="text-muted mt-4 mb-4">
+            VEUILLEZ ENTRER DANS LE LOCAUX POUR VOUS CONNECTER
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- Fichier Javascript Requis  -->
+    <script src="assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      $(".preloader").fadeOut();
+    </script>
+  </body>
+</html>

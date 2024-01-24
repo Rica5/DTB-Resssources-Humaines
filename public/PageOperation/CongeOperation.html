@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="solumada-clocking" />
+    <meta name="description" content="solumada-clocking" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Liste des congés</title>
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../assets/images1/logo.jpg"
+    />
+    <!-- Custom CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../assets/extra-libs/multicheck/multicheck.css"
+    />
+    <link
+      href="../assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/css1/newmain_gen.css"
+    />
+    <link rel="stylesheet" type="text/css" href="/assets/css1/list_conge.css" />
+    <link
+      rel="stylesheet"
+      href="assets/libs/bootstrap/dist/css/bootstrap.css"
+    />
+    <link
+      rel="stylesheet"
+      href="assets/libs/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"
+    />
+    <link rel="stylesheet" href="assets/css1/pick.css" />
+    <link href="../dist/css/style.min.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/fontawesome-free-6.4.0-web/css/all.css"
+    />
+  </head>
+
+  <body>
+    <div class="preloader">
+      <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+      </div>
+    </div>
+    <div
+      id="main-wrapper"
+      data-layout="vertical"
+      data-navbarbg="skin5"
+      data-sidebartype="full"
+      data-sidebar-position="absolute"
+      data-header-position="absolute"
+      data-boxed-layout="full"
+    >
+      <header class="topbar" data-navbarbg="skin5">
+        <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+          <div class="navbar-header" data-logobg="skin5">
+            <a class="navbar-brand" href="/">
+              <b class="logo-icon ps-2">
+                <img
+                  src="../assets/images1/logo.jpg"
+                  alt="homepage"
+                  class="light-logo"
+                  width="45"
+                />
+              </b>
+              <span class="logo-text ms-3">
+                <b>SOLUMADA</b>
+              </span>
+            </a>
+            <a
+              class="nav-toggler waves-effect waves-light d-block d-md-none"
+              href="javascript:void(0)"
+              ><i class="ti-menu ti-close"></i
+            ></a>
+          </div>
+          <div
+            class="navbar-collapse collapse"
+            id="navbarSupportedContent"
+            data-navbarbg="skin5"
+          >
+            <ul class="navbar-nav float-start me-auto"></ul>
+            <ul class="navbar-nav float-end">
+              <% if (another != "n") { %>
+              <li class="nav-item dropdown">
+                <form action="/change_interface" method="post">
+                  <input type="hidden" name="mail" value="<%= username %>" />
+                  <input type="hidden" name="opt" value="s" />
+                  <button type="submit" class="btn btn-success text-white">
+                    <i class="mdi mdi-exit-to-app" width="31">INFOS STATUS</i>
+                  </button>
+                </form>
+              </li>
+              <% } %>
+              <li class="nav-item dropdown">
+                <form action="/change_interface" method="post">
+                  <input type="hidden" name="mail" value="<%= username %>" />
+                  <input type="hidden" name="opt" value="p" />
+                  <button type="submit" class="btn btn-info mx-5 text-white">
+                    <i class="mdi mdi-exit-to-app" width="31"> POINTAGE</i>
+                  </button>
+                </form>
+              </li>
+              <li class="nav-item dropdown">
+                <a href="/exit_a"
+                  ><button class="btn btn-danger">
+                    <i class="mdi mdi-exit-to-app" width="31"> SORTIR</i>
+                  </button></a
+                >
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <aside class="left-sidebar" data-sidebarbg="skin5">
+        <!-- Sidebar scroll-->
+        <div class="scroll-sidebar">
+          <!-- Sidebar navigation-->
+          <nav class="sidebar-nav">
+            <ul id="sidebarnav" class="pt-4">
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/conge"
+                  aria-expanded="false"
+                  ><i class="mdi mdi-alarm-check"></i
+                  ><span class="hide-menu">Liste des conges</span></a
+                >
+              </li>
+            </ul>
+          </nav>
+          <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+      </aside>
+      <div class="page-wrapper">
+        <div class="page-breadcrumb">
+          <div class="row">
+            <div class="col-12 d-flex no-block align-items-center">
+              <b class="logo-icon ps-2">
+                <img
+                  src="../assets/images1/logo.jpg"
+                  alt="homepage"
+                  class="light-logo"
+                  width="45"
+                />
+              </b>
+              <span class="logo-text ms-3">
+                <!-- dark Logo text -->
+                <b>LISTE DES CONGES</b>
+              </span>
+              <div class="ms-auto text-end">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="#"
+                        ><i class="mdi mdi-format-list-bulleted"></i>Liste</a
+                      >
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                      <i class="mdi mdi-format-list-bulleted"></i> Congés
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row">
+                    <div
+                      class="col-md-2 text-center disabled"
+                      id="year_month"
+                      style="z-index: 9999; background-color: white"
+                    >
+                      <p class="title-text">Choisir année</p>
+                      <hr />
+                      <div
+                        class="text-center d-flex justify-content-center align-items-center mb-3"
+                      >
+                        <i class="fa-solid fa-calendar mx-2"></i
+                        ><input
+                          type="text"
+                          class="annuel form-control"
+                          onchange="searching()"
+                          id="annuel"
+                        />
+                      </div>
+                      <hr />
+                      <div
+                        class="mb-1 month-active"
+                        id="TOUT"
+                        onclick="set_month('','0')"
+                      >
+                        <p class="month-text">
+                          TOUT
+                          <i class="fa-solid fa-arrow-right fa-beat mx-2"></i>
+                        </p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="JANVIER"
+                        onclick="set_month('01','1')"
+                      >
+                        <p class="month-text">JANVIER</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="FEVRIER"
+                        onclick="set_month('02','2')"
+                      >
+                        <p class="month-text">FEVRIER</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="MARS"
+                        onclick="set_month('03','3')"
+                      >
+                        <p class="month-text">MARS</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="AVRIL"
+                        onclick="set_month('04','4')"
+                      >
+                        <p class="month-text">AVRIL</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="MAI"
+                        onclick="set_month('05','5')"
+                      >
+                        <p class="month-text">MAI</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="JUIN"
+                        onclick="set_month('06','6')"
+                      >
+                        <p class="month-text">JUIN</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="JUILLET"
+                        onclick="set_month('07','7')"
+                      >
+                        <p class="month-text">JUILLET</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="AOUT"
+                        onclick="set_month('08','8')"
+                      >
+                        <p class="month-text">AOUT</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="SEPTEMBRE"
+                        onclick="set_month('09','9')"
+                      >
+                        <p class="month-text">SEPTEMBRE</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="OCTOBRE"
+                        onclick="set_month('10','10')"
+                      >
+                        <p class="month-text">OCTOBRE</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="NOVEMBRE"
+                        onclick="set_month('11','11')"
+                      >
+                        <p class="month-text">NOVEMBRE</p>
+                      </div>
+                      <div
+                        class="mb-1 month-standby"
+                        id="DECEMBRE"
+                        onclick="set_month('12','12')"
+                      >
+                        <p class="month-text">DECEMBRE</p>
+                      </div>
+                      <button
+                        class="btn btn-sm btn-success"
+                        onclick="generate()"
+                        id="download"
+                      >
+                        <i class="fa-solid fa-download"></i> INDISPONIBLE
+                      </button>
+                      <i
+                        id="waiting"
+                        class="fa-solid fa-rotate fa-spin text-center"
+                        style="font-size: 35px; display: none"
+                      ></i>
+                      <a
+                        href="/download"
+                        id="getfile"
+                        style="display: none"
+                      ></a>
+                    </div>
+                    <div class="col-md-10">
+                      <div id="loading" class="loading">
+                        <i
+                          class="fa-solid fa-rotate fa-spin"
+                          style="font-size: 35px"
+                        ></i>
+                        <span class="ms-3" style="font-size: 35px">
+                          <!-- dark Logo text -->
+                          <b>CHARGEMENT DES DONNEES ...</b>
+                          <p class="info-text text-center">
+                            Le chargement peut être plus long, veuillez
+                            patienter
+                          </p>
+                        </span>
+                      </div>
+                      <div
+                        id="container_conge"
+                        style="background-color: #eeeeee"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Modal -->
+                <div id="ModalConge" class="modal_conge">
+                  <div class="modal_content">
+                    <div class="row content-container">
+                      <div class="col-lg-12" style="padding: 20px 15px">
+                        <div class="text-center">
+                          <img
+                            src="Profil/avatar.png"
+                            id="profil"
+                            style="
+                              width: 240px;
+                              height: 240px;
+                              object-fit: cover;
+                              border-radius: 20px;
+                            "
+                          />
+                        </div>
+                        <p id="code" class="title-text mt-3 text-center">
+                          <i class="fa-solid fa-star"></i>M-CODE
+                        </p>
+                        <hr class="mb-3" />
+                        <div class="col-12">
+                          <select
+                            class="sheet-choice2_conge mb-3"
+                            id="type_leave"
+                          >
+                            <option value="Congé Payé">
+                              Congé Payé ( rien a deduire )
+                            </option>
+                            <option value="Congé sans solde">
+                              Congé Sans Solde ( a deduire sur salaire )
+                            </option>
+                            <option value="Permission exceptionelle">
+                              Permission exceptionelle ( rien a deduire )
+                            </option>
+                            <option value="Repos Maladie">
+                              Repos Maladie ( rien a deduire )
+                            </option>
+                            <option value="Absent">
+                              Absent ( a deduire sur salaire )
+                            </option>
+                            <option value="Congé de maternité">
+                              Congé de maternité ( rien a deduire )
+                            </option>
+                            <option value="Mise a Pied">
+                              Mise a pied ( a deduire sur salaire )
+                            </option>
+                          </select>
+                          <input
+                            id="motif"
+                            class="input-choice2 mb-3"
+                            type="text"
+                            placeholder="Motif du congé (optionelle)"
+                          />
+                          <div class="form-group row">
+                            <label class="col-md-3"
+                              ><p style="font-size: 14px; font-weight: 500">
+                                Quart / Démi / Une journée
+                              </p></label
+                            >
+                            <div class="col-md-9">
+                              <div class="form-check mr-sm-2">
+                                <input
+                                  type="checkbox"
+                                  class="form-check-input"
+                                  value="0.25"
+                                  onclick="dissapearq()"
+                                  id="quart"
+                                />
+                                <label
+                                  class="form-check-label mb-0"
+                                  for="customControlAutosizing3"
+                                  ><p style="font-size: 12px; font-weight: 500">
+                                    Quart de journée
+                                  </p></label
+                                >
+                              </div>
+                              <div class="form-check mr-sm-2">
+                                <input
+                                  type="checkbox"
+                                  onclick="dissapeard()"
+                                  class="form-check-input"
+                                  value="0.5"
+                                  id="demi"
+                                />
+                                <label
+                                  class="form-check-label mb-0"
+                                  for="customControlAutosizing1"
+                                  ><p style="font-size: 12px; font-weight: 500">
+                                    Démi journée
+                                  </p></label
+                                >
+                              </div>
+                              <div class="form-check mr-sm-2">
+                                <input
+                                  type="checkbox"
+                                  class="form-check-input"
+                                  value="1"
+                                  onclick="dissapearo()"
+                                  id="one"
+                                />
+                                <label
+                                  class="form-check-label mb-0"
+                                  for="customControlAutosizing3"
+                                  ><p style="font-size: 12px; font-weight: 500">
+                                    Une journée
+                                  </p></label
+                                >
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-sm-6">
+                              <div class="form-group">
+                                <label
+                                  ><p style="font-size: 14px; font-weight: 500">
+                                    Date de début
+                                  </p></label
+                                >
+                                <input
+                                  type="date"
+                                  class="input-choice2date"
+                                  id="datestart"
+                                  placeholder="Enter Date"
+                                />
+                              </div>
+                            </div>
+                            <div class="col-sm-6">
+                              <div id="pde" class="form-group">
+                                <label
+                                  ><p style="font-size: 14px; font-weight: 500">
+                                    Date de fin
+                                  </p></label
+                                >
+                                <input
+                                  type="date"
+                                  class="input-choice2date"
+                                  id="dateend"
+                                  placeholder="Enter Date"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div
+                                id="info"
+                                style="display: none"
+                                class="alert alert-info"
+                                role="alert"
+                              >
+                                Here is an information
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <button
+                                type="button"
+                                id="save_leave"
+                                class="btn btn-primary"
+                                style="float: right"
+                                onclick="Editing()"
+                              >
+                                <i
+                                  id="waiting_edit"
+                                  class="fa-solid fa-spinner fa-spin"
+                                ></i>
+                                ENREGISTRER
+                                <i class="fa-solid fa-floppy-disk"></i>
+                              </button>
+                              <button
+                                type="button"
+                                id=""
+                                class="btn btn-danger mx-3"
+                                style="float: right"
+                                onclick="closeModal()"
+                              >
+                                FERMER PAGE <i class="fa-solid fa-xmark"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <hr />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div id="ModalSuppr" class="modal_conge">
+                  <div class="modal_delete">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <span class="logo-text mt-3">
+                          <!-- dark Logo text -->
+                          <b>ANNULATION DES CONGES</b>
+                        </span>
+                      </div>
+                      <div class="col-md-6">
+                        <div id="notif" class="col-12 notification_suppr mb-2">
+                          Succéss
+                        </div>
+                      </div>
+                    </div>
+                    <p id="code_delete" class="warn-text mt-4">
+                      Voulez vous vraiment annuler le conge de
+                    </p>
+                    <p id="begin" class="title-text">Début :</p>
+                    <p id="end" class="title-text">Fin :</p>
+                    <p id="duration" class="title-text">Durée :</p>
+                    <div>
+                      <button
+                        onclick="delete_leave()"
+                        class="btn btn-sm btn-primary mx-1"
+                      >
+                        CONFIRMER <i class="fa-solid fa-check"></i>
+                      </button>
+                      <button
+                        onclick="abort_delete()"
+                        class="btn btn-sm btn-danger mx-1"
+                      >
+                        ANNULER <i class="fa-solid fa-ban"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/libs/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../assets/extra-libs/sparkline/sparkline.js"></script>
+    <script src="../dist/js/waves.js"></script>
+    <script src="../dist/js/sidebarmenu.js"></script>
+    <script src="../dist/js/custom.min.js"></script>
+    <script src="../assets/extra-libs/multicheck/datatable-checkbox-init.js"></script>
+    <script src="../assets/extra-libs/multicheck/jquery.multicheck.js"></script>
+    <script src="../assets/extra-libs/DataTables/datatables.min.js"></script>
+    <script src="assets/magnific-popup/magnific-popup.js"></script>
+    <script src="assets/js1/examples.modals.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    <script src="js_code/conge_operationsv1.js"></script>
+    <script src="/js_code/socket.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#annuel").datepicker({
+          format: "yyyy",
+          viewMode: "years",
+          minViewMode: "years",
+          autoclose: true,
+        });
+      });
+    </script>
+  </body>
+</html>

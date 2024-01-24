@@ -1,0 +1,141 @@
+.hover-list{
+    position: absolute;
+    width: 70%;
+    height: 100px;
+    margin-left: -70%;
+    border-radius: 15px;
+    animation: loading ease-in 0.5s;
+}
+.content-element{
+    background-color: rgb(5, 57, 109,0.9);
+    width:100%;
+    height:150px;
+    border-radius: 15px;
+    padding: 10px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.point{
+    width:30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgb(5, 57, 109,0.8);
+    animation: fade ease-in 1.25s infinite;
+}
+.point1{
+    width:25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: rgb(5, 57, 109,0.8);
+    animation: fade ease-in 1.20s infinite;
+}
+.point2{
+    width:20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgb(5, 57, 109,0.8);
+    animation: fade ease-in 1.15s infinite;
+}
+.point3{
+    width:15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: rgb(5, 57, 109,0.8);
+    animation: fade ease-in 1.10s infinite;
+}
+.point4{
+    width:10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgb(5, 57, 109,0.8);
+    animation: fade ease-in 1.05s infinite;
+}
+.point5{
+    width:5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: rgba(7, 81, 155, 0.8);
+    animation: fade ease-in 1s infinite;
+}
+.img-list{
+    margin-top: 0;
+    width:100%;
+    height:90px;
+    border-bottom-right-radius: 7px;
+    border-bottom-left-radius: 7px;
+    object-fit: cover;
+}
+.img-list2{
+    width:90%;
+    height:200px;
+    border-radius: 7px;
+    object-fit: cover;
+}
+@keyframes fade {
+    from {
+        opacity: 100%;
+    }
+    to {
+        opacity: 0;
+    }
+}
+@keyframes loading {
+    from {
+        width:0;
+        opacity: 0;
+    }
+    to {
+        width:70%;
+        opacity:100%;
+    }
+}
+
+.leave-list{
+    width: 100%;
+    height: 175px;
+    padding: 5px 5px;
+    border-radius: 7px;
+    background-color: #161616c9;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    cursor:pointer;
+    animation: rotateAnimation ease-in 1s;
+}
+@keyframes rotateAnimation {
+    0% {
+      transform: rotateY(90deg);
+      opacity: 0;
+    }
+    100% {
+      transform: rotateY(0deg);
+      opacity: 1;
+    }
+  }
+.text-code{
+    background-color: #0a5683;
+    font-weight: 900;
+    color: white;
+    padding: 5px 5px;
+    margin-bottom: 0;
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+}
+.text-code2{
+    background-color: #696868;
+    font-weight: 900;
+    color: white;
+    padding: 5px 5px;
+    margin-bottom: 0;
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+}
+.close-tag{
+    font-size:20px;
+    font-weight: 500;
+    color: white;
+}
+.close-tag:hover{
+    background-color: rgb(255, 241, 241,0.8);
+    border-radius: 25px;
+    color: rgb(68, 68, 68);
+}
