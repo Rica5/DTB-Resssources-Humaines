@@ -1,13 +1,10 @@
 const express = require("express");
 const routeExpDTB = express.Router();
+const Controller = require("../ControllerDTB/DTBController")
 
 // Space Home for Employee
-routeExpDTB.route("/mySpace").get(async function (req, res) {
-    res.render("PageEmployee/MySpace.html");
-});
+routeExpDTB.route("/mySpace").get(Controller.getHomePage);
 // Leave Request 
-routeExpDTB.route("/RequestLeave").get(async function (req, res) {
-    res.render("PageEmployee/LeaveRequest.html");
-});
+routeExpDTB.route("/RequestLeave").get(Controller.getLeaveRequest);
 
 module.exports = routeExpDTB;

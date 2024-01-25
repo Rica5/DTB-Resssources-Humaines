@@ -11,3 +11,29 @@ const crypto = require("crypto");
 const moment = require("moment");
 const fs = require("fs");
 const Notif = require("../models/notification");
+
+//Home page
+const getHomePage = async (req,res) => {
+    var session = req.session;
+   if ( session.occupation_u == "User"){
+        var user = await UserSchema.findOne({m_code:session.m_code});
+        res.render("PageEmployee/MySpace.html",{user:user});
+   }
+   else {
+    res.send("Bad authentification please log in");
+   }
+}
+const getLeaveRequest = async (req,res) => {
+    var session = req.session;
+   if ( session.occupation_u == "User"){
+    var user = await UserSchema.findOne({m_code:session.m_code});
+    res.render("PageEmployee/LeaveRequest.html",{user:user});
+   }
+   else {
+        res.send("Bad authentification please log in");
+   }
+}
+
+module.exports = {
+    getHomePage, getLeaveRequest
+}
