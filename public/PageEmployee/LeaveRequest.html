@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="content-home mt-2">
-            <div class="container">
+            <div class="container mb-3">
                 <div class="header-request">
                     <h6 class="text-historic">Leave Historic</h6>
                     <div class="row pl-3">
@@ -51,14 +51,14 @@
                             <div class="row">
                                 <div class="col-md-6 pl-2 text-center">
                                     <div class="row case-number">
-                                        <div class="col-md-6 mt-2">
-                                            <i class="fa-solid fa-circle-check icon-check"></i>
-                                            <p class="text-title w-100">Approved</p>
-                                        </div>
-                                        <div class="col-md-6 pt-3 mt-2">
-                                            <p id="approved" class="text-number">36.5</p>
-                                        </div>
-
+                                            <div class="col-md-6 mt-2">
+                                                <i class="fa-solid fa-circle-check icon-check"></i>
+                                                <p class="text-title w-100">Approved</p>
+                                            </div>
+                                            <div class="col-md-6 pt-3 mt-2">
+                                                <p id="approved" class="text-number">0</p>
+                                            </div>
+                                            
                                     </div>
                                 </div>
                                 <div class="col-md-6 pl-4 text-center">
@@ -68,7 +68,7 @@
                                             <p class="text-title w-100">Decline</p>
                                         </div>
                                         <div class="col-md-6 pt-3 mt-2">
-                                            <p id="declined" class="text-number">5</p>
+                                            <p id="declined" class="text-number">0</p>
                                         </div>
                                     </div>
                                 </div>
@@ -79,25 +79,24 @@
                                             <p class="text-title w-100">Pending</p>
                                         </div>
                                         <div class="col-md-6 pt-3 mt-2">
-                                            <p id="pending" class="text-number">2</p>
+                                            <p id="pending" class="text-number">0</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
                                     <p class="text-solde">Accumulate</p>
                                     <div id="accumulate" class="accumulate-content">
-                                        25
+                                        <%= user.leave_taked %>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <p class="text-solde">Open Leave</p>
                                     <div id="openLeave" class="open-content">
-                                        20
+                                        <%= user.remaining_leave %>
                                     </div>
 
                                 </div>
@@ -106,17 +105,33 @@
                     </div>
                 </div>
 
-                <div class="d-flex mt-2">
-                    <button id="makeRequest" class="switch-button active-btn">
-                        Make request
-                    </button>
-                    <button id="myRequest" class="switch-button mx-2">
-                        My request
-                    </button>
-                    <button id="myUpcoming" class="switch-button">
-                        My upcoming leave
-                    </button>
+                <div class="d-flex justify-content-between mt-2">
+                    <div>
+                        <button id="makeRequest" class="switch-button active-btn">
+                            Make request
+                        </button>
+                        <button id="myRequest" class="switch-button mx-2">
+                            My request
+                        </button>
+                        <button id="myUpcoming" class="switch-button">
+                            My upcoming leave
+                        </button>
+                    </div>
+                   <div>
+                        <div id="notification" class="notice-success">
+                            Your request has been sent
+                        </div>
+                   </div>
                 </div>
+                <!-- <div id="container-loading" class="container-make mt-2">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="snippet" data-title="dot-pulse">
+                          <div class="stage">
+                            <div class="dot-pulse"></div>
+                          </div>
+                        </div>
+                      </div>
+                </div> -->
                 <div id="container-none" class="container-none mt-2">
                     <div class="d-flex align-items-center justify-content-center h-100">
                         <div class="text-center">
