@@ -37,6 +37,7 @@
 .text-name{
     font-size: 30px;
     color: whitesmoke;
+    text-transform: uppercase !important;
 }
 .quote{
     padding-top: 3em;

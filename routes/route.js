@@ -494,7 +494,7 @@ async function login(username, pwd, session, res, req) {
                   });
                 } else {
                   session.reason = "N/A";
-                  res.redirect("/employee");
+                  res.redirect("/mySpace");
                 }
               } else {
                 var new_log = {
