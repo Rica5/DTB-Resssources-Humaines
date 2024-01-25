@@ -99,16 +99,6 @@
 .text-nothing{
     font-size: 30px;
 }
-@keyframes down {
-    from{
-        width: 0;
-        opacity: 0;
-    }
-    to{
-        width: 100%;
-        opacity: 100%;
-    }
-}
 .notice-success{
     padding: 0.5em;
     background-color: limegreen;
@@ -212,3 +202,86 @@
       box-shadow: 10014px 0 0 -5px;
     }
   }
+
+
+
+
+/* Demande congé */
+
+*{
+    font-family: 'Sora', sans-serif;
+}
+
+.image-logo{
+    width: 307px;
+}
+
+.titre-autorisation-d-absenc, .nom-prenom{
+    text-decoration: underline;
+}
+
+.all-demande{
+    margin-top: 2%;
+    padding: 15px;
+}
+
+.toutes-demande{
+    font-style: italic;
+    font-size: 13px;
+}
+.all-input{
+    margin-top: 1%;
+    
+}
+.nom-prenom, .matricule {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.input-name{
+    font-size: 16px;
+    margin-top: auto;
+    margin-left: 1%;
+}
+
+.matricule{
+    font-weight: 420;
+    text-decoration: underline;
+    width: 100px;
+}
+
+.date {
+    padding: 5px;
+    border-radius: 5px;
+    width: 140px;
+}
+
+.input-motif-recuperation{
+    border-radius: 5px;
+    height: 33px;
+    width: 80%;
+
+}
+
+.label-motif-recup{   
+    font-size: 16px;
+    font-weight: 420;
+    text-decoration: underline;
+    width: 170px;
+}
+
+
+
+
+
+#envoye-demande{
+    margin: 20px;
+}
+
+.nbreDuJours{
+    margin: 12px; border: solid; border-radius: 5px; width: 250px; height: 62px;
+}
+
+
+
+
