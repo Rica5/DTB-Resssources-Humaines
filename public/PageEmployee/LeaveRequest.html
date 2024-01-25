@@ -64,7 +64,7 @@ href="/assets/fontawesome-free-6.4.0-web/css/all.css"
                 </div>
             </div>
         </div>
-        <div class="content-home">
+        <div class="content-home mt-2">
             <div class="container">
                 <div class="header-request">
                     <h6 class="text-historic">Leave Historic</h6>
@@ -78,7 +78,7 @@ href="/assets/fontawesome-free-6.4.0-web/css/all.css"
                                                 <p class="text-title w-100">Approved</p>
                                             </div>
                                             <div class="col-md-6 pt-3 mt-2">
-                                                <p class="text-number">36.5</p>
+                                                <p id="approved" class="text-number">36.5</p>
                                             </div>
                                             
                                     </div>
@@ -90,7 +90,7 @@ href="/assets/fontawesome-free-6.4.0-web/css/all.css"
                                             <p class="text-title w-100">Decline</p>
                                         </div>
                                         <div class="col-md-6 pt-3 mt-2">
-                                            <p class="text-number">5</p>
+                                            <p id="declined" class="text-number">5</p>
                                         </div>
                                 </div>
                                 </div>
@@ -101,7 +101,7 @@ href="/assets/fontawesome-free-6.4.0-web/css/all.css"
                                             <p class="text-title w-100">Pending</p>
                                         </div>
                                         <div class="col-md-6 pt-3 mt-2">
-                                            <p class="text-number">2</p>
+                                            <p id="pending" class="text-number">2</p>
                                         </div>
                                 </div>
                                 </div>
@@ -112,13 +112,13 @@ href="/assets/fontawesome-free-6.4.0-web/css/all.css"
                             <div class="row">
                                 <div class="col-md-6">
                                     <p class="text-solde">Accumulate</p>
-                                    <div class="accumulate-content">
+                                    <div id="accumulate" class="accumulate-content">
                                         25
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <p class="text-solde">Open Leave</p>
-                                    <div class="open-content">
+                                    <div id="openLeave" class="open-content">
                                         20
                                     </div>
                                     
@@ -127,10 +127,49 @@ href="/assets/fontawesome-free-6.4.0-web/css/all.css"
                         </div>
                     </div>
                 </div>
+
+                <div class="d-flex mt-2">
+                    <button id="makeRequest" class="switch-button active-btn">
+                        Make request
+                    </button>
+                    <button id="myRequest" class="switch-button mx-2">
+                        My request
+                    </button>
+                    <button id="myUpcoming" class="switch-button">
+                        My upcoming leave
+                    </button>
+                </div>
+                <div id="container-none" class="container-none mt-2">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <p class="text-nothing">YOU HAVE NO REQUEST</p>
+                            <i class="fa-solid fa-folder-open text-nothing"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="container-make" class="container-make mt-2">
+                    
+                </div>
+                <div id="container-request" class="container-request mt-2">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <p class="text-nothing">YOU HAVE NO REQUEST</p>
+                            <i class="fa-solid fa-folder-open text-nothing"></i>
+                        </div>
+                    </div>
+                </div>
+                <div id="container-upcoming" class="container-request mt-2">
+                    <div class="d-flex align-items-center justify-content-center h-100">
+                        <div class="text-center">
+                            <p class="text-nothing">YOU HAVE NO REQUEST</p>
+                            <i class="fa-solid fa-folder-open text-nothing"></i>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../jsDTB/LeaveRequest.js"></script>
 </body>
 </html>
