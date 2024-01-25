@@ -5,10 +5,10 @@ body{
 }
 .menu-container{
     background: linear-gradient(to bottom, #fff 95%, #34C100 95%);
-   border-bottom-left-radius: 50px;
-   border-bottom-right-radius: 50px;
-   border-top-left-radius: 15px;
-   border-top-right-radius: 15px;
+   border-bottom-left-radius: 25px;
+   border-bottom-right-radius: 25px;
+   border-top-left-radius: 10px;
+   border-top-right-radius: 10px;
     padding: 0.5em;
 }
 .img-logo{
@@ -31,21 +31,21 @@ body{
     margin-top: -5px;
 }
 .text-menu:hover{
-    padding: 5px 15px;
+    padding: 7px 15px;
     background-color: #34C100;
     color:white !important;
     text-decoration: none !important;
     margin-top: -2px !important;
     border-radius: 5px;
-    height: 35px;
+    height: 40px;
 }
 .active-menu{
-    padding: 5px 15px;
+    padding: 7px 15px;
     background-color: #34C100;
     color:white;
     margin-top: -2px !important;
     border-radius: 5px;
-    height: 35px;
+    height: 40px;
 }
 .icons{
     font-size: 25px;

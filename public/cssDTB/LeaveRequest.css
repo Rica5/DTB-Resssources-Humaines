@@ -1,8 +1,8 @@
 .content-home{
     height: 90vh;
     padding: 2em;
-    border-top-left-radius: 50px;
-   border-top-right-radius: 50px;
+    border-top-left-radius: 25px;
+   border-top-right-radius: 25px;
    border-bottom-left-radius: 10px;
    border-bottom-right-radius: 10px;
     background-color: #fff;
@@ -10,8 +10,8 @@
 }
 .header-request{
     width: 100%;
-    border-bottom-right-radius: 15px;
-    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
     height: auto;
     background-color: rgb(71, 69, 69);
     padding: 1em;
@@ -66,4 +66,35 @@
     padding: 0.20em;
     color: #fff;
     text-align: center;
+}
+.switch-button{
+    padding: 0.5em;
+    background-color: rgb(202, 197, 197);
+    outline: none !important;
+    color: #666666;
+    border: none;
+    border-radius: 5px;
+    cursor:pointer;
+    transition: background-color 1s ease;
+}
+.switch-button:hover{
+    background-color: rgb(122, 119, 119);
+    color: #fff;
+}
+.active-btn{
+    background-color: rgb(122, 119, 119);
+    color: #fff;
+}
+.container-none,.container-make,.container-request,.container-upcoming,.container-none{
+    height: 50vh;
+    background-color: rgb(210, 211, 211,0.5);
+    border-top-left-radius:25px ;
+    width:100%;
+    display: none;
+}
+.container-make{
+    display: block;
+}
+.text-nothing{
+    font-size: 30px;
 }
