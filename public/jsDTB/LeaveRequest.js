@@ -33,25 +33,28 @@ $("#myUpcoming").click(() =>{
 
 
 
-$("#envoye-demande").on('click', function() {
-    var nom = $("#nom").text();
-    var matricule = $("#matricule").text();
-    var mcode = $("#mcode").text();
-    var dateDebut = $("#date-debut").val();
-    var heureDebut = $("#heure-debut").val();
-    var dateFin = $("#date-fin").val();
-    var heureFin = $("#heure-fin").val();
-    var motif = $("#motif").val().trim();
-    var recuperation = $("#recuperation").val().trim();
-
-    // Vous pouvez utiliser ces valeurs comme nécessaire
-    console.log("Nom:", nom);
-    console.log("Matricule:", matricule);
-    console.log("M-code:", mcode);
-    console.log("Date début:", dateDebut);
-    console.log("Heure début:", heureDebut);
-    console.log("Date fin:", dateFin);
-    console.log("Heure fin:", heureFin);
-    console.log("Motif:", motif);
-    console.log("Récupération:", recuperation);
+$("#sendRequest").on('click', () => {
+    var code = $("#code").text();
+    var startDate = $("#startDate").val();
+    var endDate = $("#endDate").val();
+    var startTime = $("#startTime").val();
+    var endTime = $("#endTime").val();
+    var motif = $("#motif").val();
+    var recovery = $("#recovery").val();
+    $('#loading').show();
+   $.ajax({
+        url:"/makeRequest",
+        method:"POST",
+        data:{
+            code:code,startDate:startDate,endDate:endDate,startTime:startTime,endTime:endTime,motif:motif,recovery:recovery
+        },
+        success: function(res) {
+            $('#loading').hide();
+            $("#notification").show();
+            setTimeout(() => {
+                $("#notification").hide();
+            }, 3000);
+        }
+   })
+    
 });
