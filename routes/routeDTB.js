@@ -6,5 +6,7 @@ const Controller = require("../ControllerDTB/DTBController")
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);
 // Leave Request 
 routeExpDTB.route("/RequestLeave").get(Controller.getLeaveRequest);
+// Leave Request 
+routeExpDTB.route("/makeRequest").post(Controller.makeLeaveRequest);
 
 module.exports = routeExpDTB;

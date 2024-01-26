@@ -85,13 +85,33 @@
     background-color: rgb(122, 119, 119);
     color: #fff;
 }
-.container-none,.container-make,.container-request,.container-upcoming,.container-none{
+.container-make,.container-request,.container-upcoming{
+    height: auto;
+    background-color: rgb(210, 211, 211,0.5);
+    border-bottom-left-radius:15px ;
+    border-bottom-right-radius:15px ;
+    width:100%;
+    display: none;
+    animation: slide 0.3s ease-in;
+    padding: 1em;
+}
+.container-none{
     height: 50vh;
     background-color: rgb(210, 211, 211,0.5);
     border-top-left-radius:25px ;
     width:100%;
     display: none;
-    animation: down 0.3s ease-in;
+    animation: slide 0.3s ease-in;
+}
+@keyframes slide {
+    from{
+        width: 0;
+        opacity: 0;
+    }
+    to{
+        width: 100%;
+        opacity: 1;
+    }
 }
 .container-make{
     display: block;
@@ -109,6 +129,7 @@
     cursor: pointer;
     display: none;
     animation: backwardLeft 1s ease-in;
+    transition: opacity 0.5s ease;
 }
 .notice-denied{
     padding: 0.5em;
@@ -202,86 +223,48 @@
       box-shadow: 10014px 0 0 -5px;
     }
   }
+  .snippet{
+    display: none;
+  }
 
 
 
 
 /* Demande congé */
 
-*{
-    font-family: 'Sora', sans-serif;
-}
-
-.image-logo{
-    width: 307px;
-}
-
-.titre-autorisation-d-absenc, .nom-prenom{
+.point-text{
     text-decoration: underline;
+    font-weight: 600;
+    font-size:14px;
+}
+.text-infos{
+    font-size:14px;
 }
 
-.all-demande{
-    margin-top: 2%;
-    padding: 15px;
-}
-
-.toutes-demande{
+.request-warning{
     font-style: italic;
     font-size: 13px;
 }
-.all-input{
-    margin-top: 1%;
-    
-}
-.nom-prenom, .matricule {
-    font-size: 16px;
-    font-weight: 500;
-}
 
-.input-name{
-    font-size: 16px;
-    margin-top: auto;
-    margin-left: 1%;
-}
-
-.matricule{
-    font-weight: 420;
-    text-decoration: underline;
-    width: 100px;
-}
-
-.date {
+.date{
+    width: 130px;
+    height: 30px;
+    border: 1px solid rgb(72, 75, 72);
+    border-radius: 5px;
+    margin-top: -5px;
     padding: 5px;
-    border-radius: 5px;
-    width: 140px;
 }
-
-.input-motif-recuperation{
-    border-radius: 5px;
-    height: 33px;
-    width: 80%;
-
+.filling{
+    opacity: 0;
 }
-
-.label-motif-recup{   
-    font-size: 16px;
-    font-weight: 420;
-    text-decoration: underline;
-    width: 170px;
+textarea{
+    width: 100%;
+    border-color: rgb(240, 224, 6);
+    height: 150px;
 }
-
-
-
-
-
-#envoye-demande{
-    margin: 20px;
+.day-number{
+    text-align: center;
+    border:2px solid #666666;
+    width: 50%;
+    margin-top: -5%;
 }
-
-.nbreDuJours{
-    margin: 12px; border: solid; border-radius: 5px; width: 250px; height: 62px;
-}
-
-
-
-
