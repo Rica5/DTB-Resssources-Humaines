@@ -23,13 +23,13 @@
                 </div>
                 <div class="menu mt-1">
                     <a href="/mySpace" class="text-menu mx-2">
-                        Home
+                        Accueil
                     </a>
                     <a href="RequestLeave" class="text-menu active-menu mx-2">
-                        Leave Request
+                        Demande d'absence
                     </a>
                     <a href="SalaryAdvance" class="text-menu mx-2">
-                        Salary Advance
+                        Avance sur salaire
                     </a>
                     <a href="News" class="text-menu mx-2">
                         Solumada News
@@ -45,7 +45,7 @@
         <div class="content-home mt-2">
             <div class="container mb-3">
                 <div class="header-request">
-                    <h6 class="text-historic">Leave Historic</h6>
+                    <h6 class="text-historic">Historique</h6>
                     <div class="row pl-3">
                         <div class="col-md-6">
                             <div class="row">
@@ -53,7 +53,7 @@
                                     <div class="row case-number">
                                             <div class="col-md-6 mt-2">
                                                 <i class="fa-solid fa-circle-check icon-check"></i>
-                                                <p class="text-title w-100">Approved</p>
+                                                <p class="text-title w-100">Approuver</p>
                                             </div>
                                             <div class="col-md-6 pt-3 mt-2">
                                                 <p id="approved" class="text-number">0</p>
@@ -65,7 +65,7 @@
                                     <div class="row case-number">
                                         <div class="col-md-6 mt-2">
                                             <i class="fa-solid fa-circle-xmark icon-x"></i>
-                                            <p class="text-title w-100">Decline</p>
+                                            <p class="text-title w-100">Refuser</p>
                                         </div>
                                         <div class="col-md-6 pt-3 mt-2">
                                             <p id="declined" class="text-number">0</p>
@@ -76,7 +76,7 @@
                                     <div class="row case-number">
                                         <div class="col-md-6 mt-2">
                                             <i class="fa-solid fa-hourglass-start icon-wait"></i>
-                                            <p class="text-title w-100">Pending</p>
+                                            <p class="text-title w-100">En attente</p>
                                         </div>
                                         <div class="col-md-6 pt-3 mt-2">
                                             <p id="pending" class="text-number">0</p>
@@ -88,13 +88,13 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="text-solde">Accumulate</p>
+                                    <p class="text-solde">Accumulée</p>
                                     <div id="accumulate" class="accumulate-content">
                                         <%= user.leave_taked %>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="text-solde">Open Leave</p>
+                                    <p class="text-solde">Ouvert</p>
                                     <div id="openLeave" class="open-content">
                                         <%= user.remaining_leave %>
                                     </div>
@@ -108,136 +108,118 @@
                 <div class="d-flex justify-content-between mt-2">
                     <div>
                         <button id="makeRequest" class="switch-button active-btn">
-                            Make request
+                           Demande congé
                         </button>
                         <button id="myRequest" class="switch-button mx-2">
-                            My request
+                            Mes requêtes
                         </button>
                         <button id="myUpcoming" class="switch-button">
-                            My upcoming leave
+                            Congés a vénir
                         </button>
                     </div>
                    <div>
                         <div id="notification" class="notice-success">
-                            Your request has been sent
+                           Requête envoyé
                         </div>
                    </div>
                 </div>
-                <!-- <div id="container-loading" class="container-make mt-2">
-                    <div class="col-12 d-flex align-items-center justify-content-center">
-                        <div class="snippet" data-title="dot-pulse">
-                          <div class="stage">
-                            <div class="dot-pulse"></div>
-                          </div>
-                        </div>
-                      </div>
-                </div> -->
+                
                 <div id="container-none" class="container-none mt-2">
                     <div class="d-flex align-items-center justify-content-center h-100">
                         <div class="text-center">
-                            <p class="text-nothing">YOU HAVE NO REQUEST</p>
+                            <p class="text-nothing">VOUS N'AVEZ PAS DE REQUÊTE</p>
                             <i class="fa-solid fa-folder-open text-nothing"></i>
                         </div>
                     </div>
                 </div>
                 <div id="container-make" class="container-make mt-2">
-                    
-                    <div class="container all-demande">
-                        <h5 class="demander">
-                            <span class="titre-autorisation-d-absenc">AUTORISATION D'ABSENCE / REGULARISATION D'ABSENCE</span>
+                        <h5 class="">
+                            <span class="point-text">AUTORISATION D'ABSENCE / REGULARISATION D'ABSENCE</span>
                         </h5>
-                        <label for="" class="toutes-demande">
+                        <label for="" class="request-warning">
                             Toutes demandes de : - congés > à 3 jours doivent être déposées au moins 10 jours ou une (1) semaine ouvrable,
                             - congés et permissions < à 3 jours à déposer dans les 48 heures ouvrables avant leurs dates effectives, sauf pour les congés
                             maladies ou Décès.
                         </label>
-
-                        <div class="all-input row">
-                            <div class="col-md-6">
-                                <label class="nom-prenom">Nom et prénoms :</label>
-                                <label class="input-name" id="nom">RAKOTO Jean De Dieu</label>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="nom-prenom" id="">Prénom usuel :</label>
-                                <label class="input-name">Jean De Dieu</label>
-                            </div>
-                                
-                        </div>
                         <div class="row">
-                            <div class="col-md-3">
-                                <span class="matricule">Matricule :</span>
-                                <span class="input-name" id="matricule">120</span>
+                            <div class="col-md-6 d-flex">
+                                <p class="point-text">Nom et prénoms :</p>
+                                <p class="text-infos mx-2"><%= user.first_name %> <%= user.last_name %></p>
                             </div>
-                            <div class="col-md-3">
-                                <span class="matricule">M-code :</span>
-                                <span class="input-name" id="mcode">M-CCC</span>
+                            <div class=" col-md-6 d-flex">
+                                <p class="point-text">Prenom usuel :</p>
+                                <p class="text-infos mx-2"><%= user.usuel %></p>
                             </div>
-                            <div class="col-md-3">
-                                <span class="matricule">Shift :</span>
-                                <span class="input-name">1</span>
+                        </div>
+                        <div class="row col-md-9 p-0">
+                            <div class="col-md-4 d-flex w-100">
+                                <p class="point-text">Matricule :</p>
+                                <p class="text-infos mx-2"><%= user.matr %></p>
+                            </div>
+                            <div class="col-md-4 d-flex w-100">
+                                <p class="point-text">M-code :</p>
+                                <p class="text-infos mx-2" id="code"><%= user.m_code %></p>
+                            </div>
+                            <div class="col-md-4 d-flex w-100">
+                                <p class="point-text">Shift :</p>
+                                <p class="text-infos mx-2"><%= user.shift %></p>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-2">
-                                <span class="matricule">Période sollicitée :</span>
+                            <div class="col-md-9">
+                                <div class="row col-md-12 p-0">
+                                    <div class="col-md-4 d-flex w-100">
+                                        <p class="point-text">Periode solicitée :</p>
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Date début :</p>
+                                        <input class="mx-1 date value" id="startDate" type="date" />
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Heure :</p>
+                                        <input class="mx-1 date value" id="startTime" type="time" />
+                                    </div>
+                                </div>
+                                <div class="row col-md-12 p-0">
+                                    <div class="col-md-4 d-flex w-100">
+                                      
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Date fin : <b class="filling">ish</b></p>
+                                        <input class="mx-1 date value" id="endDate" type="date" />
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Heure :</p>
+                                        <input class="mx-1 date value" id="endTime" type="time" />
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-10 row">
-                            <div class="col-md-4" style="margin: 12px;">
-                                <label class="matricule" >Date début :</label>
-                                <span class="input-name" >
-                                    <input type="date" name="" id="date-debut" class="date">
-                                </span>
-                            </div>
-                            <div class="col-md-4" style="margin: 12px;">
-                                <label class="matricule">Heure :</label>
-                                <span class="input-name"> 
-                                    <input type="time" class="date" name="" id="heure-debut">
-                                </span>
-                            </div>
-                        <!-- </div>
-                        <div class="row"> -->
-                            <div class="col-md-2 nbreDuJours">
-                                <label class="matricule" style="width: 105px;">Nb du jours :</label>
-                                <label class="input-name" style="margin: auto;"> 
-                                    10
-                                </label>
-                            </div>
-                            <div class="col-md-4" style="margin: 12px;">
-                                <label class="matricule">Date fin :</label>
-                                <span class="input-name" >
-                                    <input type="date" name="" id="date-fin" class="date">
-                                </span>
-                            </div>
-                            <div class="col-md-4" style="margin: 12px;">
-                                <label class="matricule">Heure :</label>
-                                <span class="input-name">
-                                    <input type="time" class="date" name="" id="heure-fin">
-                                </span>
-                            </div>
+                            <div class="col-md-3 align-items-center justify-content-center">
+                                <div class="day-number">
+                                    <p class="point-text">Nb de jour :</p>
+                                    <p id="dayNumber">7</p>
+                                </div>
                             </div>
                         </div>
+                       
                         <div class="row">
                             <div class="col-md-6">
-
-                                <label class="label-motif-recup">Motifs :</label>
-                                <textarea name="story" style="border-radius: 5px;" rows="3" cols="38" id="motif">
-                                    
-                                </textarea>
-
+                                <p class="point-text mb-2">Motifs :</p>
+                                <textarea  class="value" id="motif"></textarea>
                             </div>
                             <div class="col-md-6">
-                                
-                                <label class="label-motif-recup">Récupération :</label>
-                                <textarea name="story" style="border-radius: 5px;" rows="3" cols="38" id="recuperation">
-                                </textarea>
+                                <p class="point-text mb-2">Récupération :</p>
+                                <textarea id="recovery"></textarea>
                             </div>
                         </div>
-                        
-                        <button type="button" class="btn btn-success" id="envoye-demande">
-                            Envoyer une demande
-                        </button>
-                        <!-- <button class="demande-envoyer"></button> -->
-                    </div>
+                        <div class="d-flex justify-content-end">
+                            <button id="sendRequest" class="btn btn-md btn-success">Envoyer demande <i class="fa-solid fa-envelope"></i></button>
+                            <div class="snippet mx-4 p-3" id="loading" data-title="dot-pulse">
+                                <div class="stage">
+                                  <div class="dot-pulse"></div>
+                                </div>
+                              </div>
+                        </div>
                 </div>
                 <div id="container-request" class="container-request mt-2">
                     <div class="d-flex align-items-center justify-content-center h-100">

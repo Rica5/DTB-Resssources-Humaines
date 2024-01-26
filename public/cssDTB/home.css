@@ -33,11 +33,13 @@
 .text-welcome{
     font-size: 30px;
     color: whitesmoke;
+    white-space: nowrap;
 }
 .text-name{
     font-size: 30px;
     color: whitesmoke;
     text-transform: uppercase !important;
+    white-space: nowrap;
 }
 .quote{
     padding-top: 3em;
