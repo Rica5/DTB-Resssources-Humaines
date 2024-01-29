@@ -1,6 +1,8 @@
 var PendingAndDecline = [];
 var Approve = [];
 var myRequestContent;
+var leaveDuration = 0;
+var leaveDurationTwo = 0;
 $("#makeRequest").click(() =>{
     $("#makeRequest").attr("class","switch-button active-btn")
     $("#myRequest").attr("class","switch-button mx-2")
@@ -44,23 +46,30 @@ $("#sendRequest").on('click', () => {
     var endTime = $("#endTime").val();
     var motif = $("#motif").val();
     var recovery = $("#recovery").val();
-    var nb_jours = $("#dayNumber").text();
-    $('#loading').show();
-   $.ajax({
-        url:"/makeRequest",
-        method:"POST",
-        data:{
-            code:code,startDate:startDate,endDate:endDate,startTime:startTime,endTime:endTime,motif:motif,recovery:recovery
-        },
-        success: function(res) {
-            UpdateRequest();
-            $('#loading').hide();
-            $("#notification").show();
-            setTimeout(() => {
-                $("#notification").hide();
-            }, 3000);
-        }
-   })
+
+
+    (!startDate) ? $("#startDate").css({"border-color": "red"}) : $("#startDate").css({"border-color": ""});
+    (!endDate) ?  $("#endDate").css({"border-color": "red"}) : $("#endDate").css({"border-color": ""});
+    (!startTime) ? $("#startTime").css({"border-color": "red"}) : $("#startTime").css({"border-color": ""});
+    (!endTime) ? $("#endTime").css({"border-color": "red"}) : $("#endTime").css({"border-color": ""});
+    (!motif) ? $("#motif").css({"border-color": "red"}) : $("#motif").css({"border-color": ""});
+    var dateRequest = { code:code,startDate:startDate,endDate:endDate,startTime:startTime, endTime:endTime, motif:motif,recovery:recovery, duration: (leaveDuration + leaveDurationTwo),priority:$("#toggle").is(':checked')}
+    if ( startDate && endDate && startTime && endTime && motif) {
+        $('#loading').show();
+        $.ajax({
+                url:"/makeRequest",
+                method:"POST",
+                data:dateRequest,
+                success: function(res) {
+                    $('#loading').hide();
+                    $("#notification").show();
+                    UpdateRequest()
+                    setTimeout(() => {
+                        $("#notification").hide();
+                    }, 3000);
+                }
+        })
+    }
     
 });
 function UpdateRequest(){
@@ -223,128 +232,110 @@ var update = `
   </div>
 </div>
 `
-=======
-
-    var durt = $("#nbDay").val()
-
-    console.log("durt", durt);
-    (!startDate) ? $("#startDate").css({"border-color": "red"}) : $("#startDate").css({"border-color": ""});
-    (!endDate) ?  $("#endDate").css({"border-color": "red"}) : $("#endDate").css({"border-color": ""});
-    (!startTime) ? $("#startTime").css({"border-color": "red"}) : $("#startTime").css({"border-color": ""});
-    (!endTime) ? $("#endTime").css({"border-color": "red"}) : $("#endTime").css({"border-color": ""});
-    (!motif) ? $("#motif").css({"border-color": "red"}) : $("#motif").css({"border-color": ""});
-
-    var dateRequest = { code:code,startDate:startDate,endDate:endDate,startTime:startTime, endTime:endTime, motif:motif,recovery:recovery, duration: nb_jours}
-    if ( startDate && endDate && startTime && endTime && motif) {
-        $.ajax({
-                url:"/makeRequest",
-                method:"POST",
-                data:dateRequest,
-                success: function(res) {
-                    $('#loading').hide();
-                    $("#notification").show();
-                    setTimeout(() => {
-                        $("#notification").hide();
-                    }, 3000);
-                }
-        })
-    }
-    
-});
 
 
 $("#startDate").on('change',  () =>{
     
     var startDate = $("#startDate").val()
     var endDate = $("#endDate").val();
-    var startTime = $("#startTime").val();
-    var endTime = $("#endTime").val();
 
     (!startDate) ? $("#startDate").css({"border-color": "red"}) : (
         $("#startDate").css({"border-color": ""}),
-        (endDate && startTime && endTime) ? calculeDate(startDate, endDate, startTime, endTime) : ""
+        (endDate) ? dateDiff(startDate,endDate) : ""
     );
 })
 $("#endDate").on('change',  () =>{
 
     var startDate = $("#startDate").val()
     var endDate = $("#endDate").val();
-    var startTime = $("#startTime").val();
-    var endTime = $("#endTime").val();
 
     (!endDate) ?  $("#endDate").css({"border-color": "red"}) : ( 
         $("#endDate").css({"border-color": ""}),
-        (startDate && startTime && endTime) ? calculeDate(startDate, endDate, startTime, endTime) : ""
+        (startDate ) ? dateDiff(startDate,endDate) : ""
     );
 })
 $("#startTime").on('change',  () =>{
-    var startDate = $("#startDate").val()
-    var endDate = $("#endDate").val();
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
-
     (!startTime) ? $("#startTime").css({"border-color": "red"}) : (
         $("#startTime").css({"border-color": ""}),
-        (startDate && endDate && endTime) ? calculeDate(startDate, endDate, startTime, endTime) : ""
+        (endTime) ? hourDiff(startTime,endTime) : ""
     );
+   
 })
 $("#endTime").on('change',  () =>{
-    var startDate = $("#startDate").val()
-    var endDate = $("#endDate").val();
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
     
     (!endTime) ? $("#endTime").css({"border-color": "red"}) : (
         $("#endTime").css({"border-color": ""}),
-        (startDate && startTime && endDate) ? calculeDate(startDate, endDate, startTime, endTime) : ""
+        (startTime) ? hourDiff(startTime,endTime) : ""
     );
+    
 })
 $("#motif").on('change',  () =>{
     (!motif) ? $("#motif").css({"border-color": "red"}) : (
         $("#motif").css({"border-color": ""})
     );
 })
-var shift = $("#shift").text()
-var user_entry = $("#user-entry").val()
-console.log("shift", shift);
 
-function calculeDate (startDate, endDate, startTime, endTime)  {
-    var startDateTime = new Date(startDate);
-    var endDateTime = new Date(endDate);
+function dateDiff(starting, ending) {
+    if (ending != ""){
+        var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
+        var endings = moment(ending, "YYYY-MM-DD HH:mm");
+        var duration = moment.duration(endings.diff(startings));
+        var dayl = duration.asDays();
+        leaveDuration = dayl;
+        $("#dayNumber").text( (leaveDuration + leaveDurationTwo) + " jour(s)")
+    }
+    else {
+        leaveDuration = 0;
+        $("#dayNumber").text( (leaveDuration + leaveDurationTwo) + " jour(s)")
+    }
+  }
 
-    var timeDifference = endDateTime - startDateTime;
-
-    var daysDifference = timeDifference / (1000 * 3600 * 24);
-
-    var hours = ""
-    
-    const startT = new Date(`2000-01-01 ${startTime}`);
-    const endT = new Date(`2000-01-01 ${endTime}`);
-
-    const timeDiff = endT - startT;
-    hours = Math.floor(timeDiff / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-        
-    if (startDate == endDate) {
-        daysDifference = hours + " heures"
-        if (daysDifference <4) {
-            $("#nbDay").val(0.5) 
-            $("#nbDay").val() = 0.5
-        }
-    }else if((shift == "shift 1" && hours == 6) ||( shift == "shift 2" && hours == 6) || (shift == "shift 3" && hours == 6) || (shift == "shift weekend" && hours == 6)){
-        daysDifference = daysDifference + 1 + " jours "
-        $("#nbDay").val(daysDifference + 1)
-    }else if(hours == 8){
-        daysDifference = daysDifference + 1 + " jours "
-        $("#nbDay").val(daysDifference + 1)
-    } 
-    // else{
-    //     daysDifference = daysDifference + " jours " + hours + " heures"
-    // }
-    $("#dayNumber").html(daysDifference);
-    // return resultDate;
-
-}
-
+  function hourDiff(startTime, endTime) {
+    var hours = 0;
+    var minutes = 0;
+    if (endTime != "") {
+      startTime = moment(startTime, "HH:mm:ss a");
+      endTime = moment(endTime, "HH:mm:ss a");
+      var duration = moment.duration(endTime.diff(startTime));
+      //duration in hours
+      var hours_fictif = 0;
+      var minutes_fictif = 0;
+      hours_fictif += parseInt(duration.asHours());
+  
+      // duration in minutes
+      minutes_fictif += parseInt(duration.asMinutes()) % 60;
+      if (minutes_fictif < 0) {
+        hours_fictif = hours_fictif - 1;
+        minutes_fictif = 60 + minutes_fictif;
+      }
+      while (minutes_fictif > 60) {
+        hours_fictif += 1;
+        minutes_fictif = minutes_fictif - 60;
+      }
+      if (hours_fictif < 0) {
+        hours_fictif = hours_fictif + 24;
+      }
+      hours += hours_fictif;
+      minutes += minutes_fictif;
+      if (hours < 6){
+        leaveDurationTwo =  0.5;
+        $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+      }
+      else if(hours >= 6){
+        leaveDurationTwo = 1;
+        $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+      }
+      else {
+        leaveDurationTwo = 0;
+        $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+      }
+    }
+  }
+  function dateWrite(startTime,endTime){
+    dateDiff(startTime,endTime);
+    hourDiff(startTime,endTime)
+  }

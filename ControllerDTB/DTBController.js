@@ -30,7 +30,6 @@ const getLeaveRequest = async (req,res) => {
     var session = req.session;
    if ( session.occupation_u == "User"){
     var user = await UserSchema.findOne({m_code:session.m_code});
-    console.log("user", user);
     res.render("PageEmployee/LeaveRequest.html",{user:user});
    }
    else {
@@ -43,6 +42,7 @@ const makeLeaveRequest = async (req,res) => {
     if ( session.occupation_u == "User"){
         try{
             var user = await UserSchema.findOne({m_code:req.body.code})
+            console.log(req.body.priority)
                 var new_request = {
                     m_code:req.body.code,
                     num_agent:user.num_agent,
@@ -54,18 +54,20 @@ const makeLeaveRequest = async (req,res) => {
                     hour_end:req.body.endTime,
                     motif:req.body.motif,
                     recovery:req.body.recovery,
-                    duration:date_diff(req.body.startDate,req.body.endDate) + 1,
+                    duration:req.body.duration,
                     type:"",
                     status:"pending",
                     rest:0,
                     acc:0,
                     datetime:moment().add(3, "hours").format("DD/MM/YYYY HH:mm:ss"),
+                    priority:req.body.priority,
                     validation :[],
                 }
              await LeaveRequestTest(new_request).save();
              res.send("Success")
         }
-        catch{
+        catch(err){
+            console.log(err)
             res.send("Error")
         }
     }
@@ -73,13 +75,6 @@ const makeLeaveRequest = async (req,res) => {
          res.send("Bad authentification please log in");
     }
 }
-function date_diff(starting, ending) {
-    var startings = moment(moment(starting)).format("YYYY-MM-DD");
-    var endings = moment(ending, "YYYY-MM-DD");
-    var duration = moment.duration(endings.diff(startings));
-    var dayl = duration.asDays();
-    return parseInt(dayl.toFixed(0));
-  }
 //get My request
 const getMyRequest = async (req,res) => {
     var session = req.session;
@@ -88,7 +83,15 @@ const getMyRequest = async (req,res) => {
         res.json(myRequest)
     }
 }
+//See and act with request 
+const seeRequest = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_a == "Admin"){
+        var myRequest = await LeaveRequestTest.find({m_code:req.body.code,status:{$ne:"done"}}).sort({"date_start":1});
+        res.render("PageAdministration/DemandeConge.html",{myRequest:myRequest});
+    }
+}
 
 module.exports = {
-    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest
+    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seeRequest
 }
