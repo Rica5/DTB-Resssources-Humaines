@@ -42,7 +42,6 @@ const makeLeaveRequest = async (req,res) => {
     if ( session.occupation_u == "User"){
         try{
             var user = await UserSchema.findOne({m_code:req.body.code})
-            console.log(req.body.priority)
                 var new_request = {
                     m_code:req.body.code,
                     num_agent:user.num_agent,
