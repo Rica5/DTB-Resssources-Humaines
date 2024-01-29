@@ -53,7 +53,7 @@ const makeLeaveRequest = async (req,res) => {
                     hour_end:req.body.endTime,
                     motif:req.body.motif,
                     recovery:req.body.recovery,
-                    duration:req.body.duration,
+                    duration:date_diff(req.body.startDate,req.body.endDate) + 1,
                     type:"",
                     status:"pending",
                     rest:0,
@@ -61,8 +61,8 @@ const makeLeaveRequest = async (req,res) => {
                     datetime:moment().add(3, "hours").format("DD/MM/YYYY HH:mm:ss"),
                     validation :[],
                 }
-            console.log(new_request)
-            res.send("Success")
+             await LeaveRequestTest(new_request).save();
+             res.send("Success")
         }
         catch{
             res.send("Error")
@@ -72,8 +72,22 @@ const makeLeaveRequest = async (req,res) => {
          res.send("Bad authentification please log in");
     }
 }
-
+function date_diff(starting, ending) {
+    var startings = moment(moment(starting)).format("YYYY-MM-DD");
+    var endings = moment(ending, "YYYY-MM-DD");
+    var duration = moment.duration(endings.diff(startings));
+    var dayl = duration.asDays();
+    return parseInt(dayl.toFixed(0));
+  }
+//get My request
+const getMyRequest = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_u == "User"){
+        var myRequest = await LeaveRequestTest.find({m_code:req.body.code,status:{$ne:"done"}}).sort({"date_start":1});
+        res.json(myRequest)
+    }
+}
 
 module.exports = {
-    getHomePage, getLeaveRequest, makeLeaveRequest
+    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest
 }

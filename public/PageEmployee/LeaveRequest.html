@@ -72,7 +72,18 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-12 pl-2 pt-2 text-center">
+                                <div class="col-md-6 pl-2 pt-2 text-center">
+                                    <div class="row case-number">
+                                        <div class="col-md-6 mt-2">
+                                            <i class="fa-solid fa-hourglass-start icon-progress"></i>
+                                            <p class="text-title w-100">En traitement</p>
+                                        </div>
+                                        <div class="col-md-6 pt-3 mt-2">
+                                            <p id="progress" class="text-number">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 pl-4 pt-2 text-center">
                                     <div class="row case-number">
                                         <div class="col-md-6 mt-2">
                                             <i class="fa-solid fa-hourglass-start icon-wait"></i>
@@ -83,6 +94,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -127,7 +139,7 @@
                 <div id="container-none" class="container-none mt-2">
                     <div class="d-flex align-items-center justify-content-center h-100">
                         <div class="text-center">
-                            <p class="text-nothing">VOUS N'AVEZ PAS DE REQUÊTE</p>
+                            <p class="text-nothing">Aucune donnée pour l'instant</p>
                             <i class="fa-solid fa-folder-open text-nothing"></i>
                         </div>
                     </div>
@@ -197,7 +209,7 @@
                             <div class="col-md-3 align-items-center justify-content-center">
                                 <div class="day-number">
                                     <p class="point-text">Nb de jour :</p>
-                                    <p id="dayNumber">7</p>
+                                    <p id="dayNumber">0</p>
                                 </div>
                             </div>
                         </div>
@@ -222,12 +234,7 @@
                         </div>
                 </div>
                 <div id="container-request" class="container-request mt-2">
-                    <div class="d-flex align-items-center justify-content-center h-100">
-                        <div class="text-center">
-                            <p class="text-nothing">YOU HAVE NO REQUEST</p>
-                            <i class="fa-solid fa-folder-open text-nothing"></i>
-                        </div>
-                    </div>
+                   
                 </div>
                 <div id="container-upcoming" class="container-request mt-2">
                     <div class="d-flex align-items-center justify-content-center h-100">
@@ -241,6 +248,7 @@
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="../jsDTB/LeaveRequest.js"></script>
 
 </body>
