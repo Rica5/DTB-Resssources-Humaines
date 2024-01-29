@@ -223,7 +223,6 @@ var update = `
   </div>
 </div>
 `
-=======
 
     var durt = $("#nbDay").val()
 
@@ -250,7 +249,6 @@ var update = `
         })
     }
     
-});
 
 
 $("#startDate").on('change',  () =>{

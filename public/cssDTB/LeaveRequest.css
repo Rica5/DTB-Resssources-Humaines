@@ -71,23 +71,45 @@
     color: #fff;
     text-align: center;
 }
+.buttons-tab {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
 .switch-button{
     padding: 0.5em;
-    background-color: rgb(202, 197, 197);
+    font-size: 15px;
+    background-color: #E8E9E9;
     outline: none !important;
     color: #666666;
     border: none;
     border-radius: 5px;
     cursor:pointer;
     transition: background-color 1s ease;
+    padding-right: 12px;
+    padding-left: 12px;
+    box-shadow: 0 2px rgba(0, 0, 0, 0.2);
 }
 .switch-button:hover{
-    background-color: rgb(122, 119, 119);
-    color: #fff;
+    /* background-color: rgb(122, 119, 119); */
 }
 .active-btn{
-    background-color: rgb(122, 119, 119);
-    color: #fff;
+    /* background-color: rgb(122, 119, 119); */
+    box-shadow: 0 0 0 transparent;
+    color: #44b11d;
+    position: relative;
+    z-index: 1;
+}
+.active-btn::before {
+    content: '';
+    position: absolute;
+    height: 70%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    transform: translateY(90%);
+    background-color: #E8E9E9;
+    z-index: -1;
 }
 .container-make,.container-request,.container-upcoming{
     height: auto;
@@ -98,6 +120,7 @@
     display: none;
     animation: slide 0.3s ease-in;
     padding: 1em;
+    box-shadow: 0 2px rgba(0, 0, 0, 0.2);
 }
 .container-none{
     height: 50vh;
@@ -331,5 +354,19 @@ textarea{
     cursor: pointer;
 }
 
-
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid transparent; /* Border color */
+    border-radius: 5px; /* Border radius to round the corners */
+    outline: none; /* Remove default focus outline */
+    transition: border-color 0.3s ease;
+}
+textarea:focus {
+    border-color: #34d149;
+}
+input:focus {
+    outline: 2px solid #34d149;
+    border-color: transparent;
+}
 
