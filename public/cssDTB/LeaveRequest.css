@@ -354,6 +354,47 @@ textarea{
     cursor: pointer;
 }
 
+
+/* Hide the default checkbox */
+.hidden-checkbox {
+    display: none;
+  }
+  
+  /* Style for the toggle switch label */
+  .toggle-label {
+    display: inline-block;
+    width: 45px; /* Adjust the width as needed */
+    height: 22px; /* Adjust the height as needed */
+    background-color: #ccc;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  /* Styling for the slider (the visible part of the toggle) */
+  .toggle-label::after {
+    content: '';
+    display: block;
+    width: 20px; /* Adjust the width of the slider */
+    height: 20px; /* Adjust the height of the slider */
+    background-color: white;
+    border-radius: 50%;
+    top: 50%;
+    position: absolute;
+    transform: translate(20%, -50%);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Change the appearance of the slider when the checkbox is checked */
+  .hidden-checkbox:checked + .toggle-label::after{
+    transform: translate(100%, -50%);
+  }
+  .hidden-checkbox:checked + .toggle-label{
+    background-color: limegreen;
+  }
+  
+
+=======
 textarea {
     width: 100%;
     padding: 10px;

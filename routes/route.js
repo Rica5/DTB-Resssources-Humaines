@@ -5333,7 +5333,7 @@ function time_passed(starting) {
 }
 function date_diff(starting, ending) {
   var startings = moment(moment(starting)).format("YYYY-MM-DD");
-  var endings = moment(ending, "YYYY-MM-DD");
+  var endings = moment(moment(starting)).format("YYYY-MM-DD");
   var duration = moment.duration(endings.diff(startings));
   var dayl = duration.asDays();
   return parseInt(dayl.toFixed(0));
