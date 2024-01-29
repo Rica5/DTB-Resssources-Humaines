@@ -30,6 +30,7 @@ const getLeaveRequest = async (req,res) => {
     var session = req.session;
    if ( session.occupation_u == "User"){
     var user = await UserSchema.findOne({m_code:session.m_code});
+    console.log("user", user);
     res.render("PageEmployee/LeaveRequest.html",{user:user});
    }
    else {
