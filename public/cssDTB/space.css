@@ -31,6 +31,7 @@ body{
     display: flex;
     align-items: center;
     margin-top: 0 !important;
+    gap: .6rem;
 }
 .text-menu{
     font-size: 16px;
@@ -52,15 +53,35 @@ body{
     margin-top: 0 !important;
     padding: 0.7rem .8rem;
 }
-.notif i {
-    color: #535353;
+.notif button {
+    color: #7c7c7c;
     font-size: 24px;
+    transition: color 0.3s ease;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    position: relative;
 }
-.notif i:hover {
+.notif button:hover:not(.selected) {
+    color: #83AF85;
+}
+.notif > button span {
+    position: absolute;
+    font-size: 10px;
+    right: 7px;
+    top: 0;
+}
+
+.notif button.selected {
     color: #34C100;
 }
 
-.notif i:last-child:hover {
+.notif button:active {
+    transform: scale(0.9) !important;
+    color:rebeccapurple !important;
+}
+
+.notif button:last-child:hover {
     color: #c10000;
 }
 .text-menu:hover:not(.active-menu) {
@@ -123,6 +144,72 @@ body{
     margin: auto 0;
 }
 
+.notification-modal {
+    position: absolute;
+    height: 100%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    min-width: 450px;
+    background-color: #fff;
+    box-shadow: -10px 0 80px rgba(0, 0, 0, 0.2);
+    transform: translateX(200%);
+    max-height: calc(100%);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.39, 0.575, 0.565, 1);
+}
+.notification-modal > h2 {
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    color: #83AF85;
+    padding: 1rem;
+    border-bottom: 1px solid #dadada;
+}
+.notification-modal.show {
+    transform: translateX(0);
+}
+.notification-modal.hide {
+    transform: translateX(200%);
+}
+.notification-list {
+    padding: 1rem;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: .5rem;
+    padding-bottom: 1.5rem;
+}
+
+.notification-item {
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 5px 7px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid #dadada;
+    transition: border 0.3s ease-in;
+}
+
+.notification-item:hover {
+    border: 1px solid #83AF85;
+}
+.notification-item h1 {
+    font-size: 16px;
+    color: black;
+}
+
+.notification-item p {
+    font-size: 14px;
+    color: rgb(39, 39, 39);
+}
+.notification-item .date-time {
+    font-size: 12px;
+    color: #787878;
+}
+
 /* max-lg */
 @media screen and (max-width: 1280px) {
     .text-menu {
@@ -156,5 +243,8 @@ body{
     }
     .container {
         padding: 0 0;
+    }
+    .menu {
+        gap: .4rem;
     }
 }

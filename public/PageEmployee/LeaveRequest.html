@@ -37,13 +37,17 @@
                     </a>
                 </div>
                 <div class="notif d-flex justify-content-end mt-2">
-                    <i class="fa-solid fa-envelope icons mx-3"></i>
-                    <i class="fa-solid fa-bell icons mx-3"></i>
-                    <i class="fa-solid fa-power-off icons mx-3"></i>
+                    <button onclick="openNotif(this)">
+                        <i class="fa-solid fa-bell icons mx-3"></i>
+                        <span class="badge badge-danger">0</span>
+                    </button>
+                    <button>
+                        <i class="fa-solid fa-power-off icons mx-3"></i>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="content-home mt-2">
+        <div class="content-home my-2">
             <div class="container mb-3">
                 <div class="header-request">
                     <h6 class="text-historic">Historique</h6>
@@ -257,8 +261,83 @@
                     </div>
                 </div>
             </div>
+            
+            
+            <!-- notification modal -->
+            <div class="notification-modal">
+                <h2>
+                    <i class="fa-solid fa-bell icons"></i>
+                    Notifications:
+                </h2>
+                <div class="notification-list">
+                    <!-- notification item -->
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+    <script>
+        function openNotif(button) {
+            let notif_div = document.querySelector('.notification-modal');
+            // close modal
+            if (button.classList.contains('selected')) {
+                button.classList.remove('selected');
+                notif_div.classList.replace('show', 'hide');
+            } else {
+                // open modal
+                button.classList.add('selected');
+                if (notif_div.classList.contains('hide')) {
+                    notif_div.classList.replace('hide', 'show');
+                } else {
+                    notif_div.classList.add('show');
+                }
+                // click away 
+                document.onclick = (e) => {
+                    // close the notification modal when user click outsite its content
+                    if (!e.target.closest('.notification-modal') && 
+                    !e.target.closest('.notif')) {
+                        button.classList.remove('selected');
+                        notif_div.classList.remove('show');
+                        notif_div.classList.remove('hide');
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="../jsDTB/LeaveRequest.js"></script>
