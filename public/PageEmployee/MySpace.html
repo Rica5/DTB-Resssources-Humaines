@@ -1,91 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace employer</title>
-    <link
-    rel="stylesheet"
-    type="text/css"
-    href="/assets/vendor/bootstrap/css/bootstrap.min.css"
-  />
-  <!--===============================================================================================-->
-  <link
-    rel="stylesheet"
-    type="text/css"
-    href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css"
-  />
-  <link
-  rel="stylesheet"
-  type="text/css"
-  href="/cssDTB/space.css"
-/>
-<link
-  rel="stylesheet"
-  type="text/css"
-  href="/cssDTB/home.css"
-/>
-<link
-rel="stylesheet"
-type="text/css"
-href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css"
-/>
-<link
-rel="stylesheet"
-type="text/css"
-href="/assets/fontawesome-free-6.4.0-web/css/all.css"
-/>
+    <link rel="stylesheet" type="text/css" href="/assets/vendor/bootstrap/css/bootstrap.min.css" />
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="/cssDTB/space.css" />
+    <link rel="stylesheet" type="text/css" href="/cssDTB/home.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css" />
 </head>
+
 <body>
-    <div class="mr-5 ml-5 p-0 element-container">
+    <div class="element-container">
         <div class=" mt-3 menu-container">
             <div class="d-flex justify-content-between menu">
                 <div class="logo">
-                    <img class="img-logo" src="assets/images/solumada-logo.png"/>
+                    <img class="img-logo" src="assets/images/solumada-logo.png" />
                 </div>
-                <div class="menu mt-1">
-                    <a href="/mySpace" class="text-menu active-menu mx-2">
+                <div class="menu mt-1 mx-2">
+                    <a href="/mySpace" class="text-menu active-menu">
                         Accueil
                     </a>
-                    <a href="RequestLeave" class="text-menu mx-2">
+                    <a href="RequestLeave" class="text-menu">
                         Demande d'absence
                     </a>
-                    <a href="SalaryAdvance" class="text-menu mx-2">
+                    <a href="SalaryAdvance" class="text-menu">
                         Avance sur salaire
                     </a>
-                    <a href="News" class="text-menu mx-2">
+                    <a href="News" class="text-menu">
                         Solumada News
                     </a>
                 </div>
                 <div class="notif d-flex justify-content-end mt-2">
-                    <i class="fa-solid fa-envelope icons mx-3"></i>
-                    <i class="fa-solid fa-bell icons mx-3"></i>
-                    <i class="fa-solid fa-power-off icons mx-3"></i>
+                    <button onclick="openNotif(this)">
+                        <i class="fa-solid fa-bell icons mx-3"></i>
+                        <span class="badge badge-danger">0</span>
+                    </button>
+                    <button>
+                        <i class="fa-solid fa-power-off icons mx-3"></i>
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="content-home mt-2">
+        <div class="content-home my-2">
             <div class="quote">
-                <h3>UNE EQUIPE, ENSEMBLE NOUS AVANCONS.</h3>
+                <h3>
+                    <i class="fa-solid fa-quote-left"></i>
+                    UNE EQUIPE, ENSEMBLE NOUS AVANCONS.
+                    <i class="fa-solid fa-quote-right"></i>
+                </h3>
             </div>
             <div class="container h-100">
                 <div class="welcome-space">
-                    <div class="text-container mx-5">
-                        <h2 class="mb-4 text-welcome">BIENVENUE DANS VOTRE ESPACE</h2>
-                        <div class="text-center mb-lg-5">
-                            <h2 class="text-name"><%= user.usuel %></h2>
-                        </div>
-                        
+                    <div class="message-bulbe mb-4">
+                        <h2 class="mb-3 text-welcome animate-typing">Bienvenue dans votre espace</h2>
+                        <h2 class="text-name text-center">
+                            <%= user.usuel %>
+                        </h2>
                     </div>
-                    <div class="img-container">
-                            <img class="img-content" src="../Profil/<%= user.profil %>"/>
+                    <div class="img-container animate-delayed">
+                        <img class="img-content" src="../Profil/<%= user.profil %>" />
                     </div>
                 </div>
-                <div class="footer-text mt-3"><p>Solumada copyright 2024</p></div>
+            </div>
+            <div class="footer-text mt-3">
+                <p>Solumada copyright 2024</p>
+            </div>
+
+            <!-- notification modal -->
+            <div class="notification-modal">
+                <h2>
+                    <i class="fa-solid fa-bell icons"></i>
+                    Notifications:
+                </h2>
+                <div class="notification-list">
+                    <!-- notification item -->
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <h1>#titre de la notification</h1>
+                        <p class="message">Message notification blablabla ici</p>
+                        <div class="date-time">
+                            <span>30/01/2024 14:24</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
-    
-    
+
+    <script>
+        function openNotif(button) {
+            let notif_div = document.querySelector('.notification-modal');
+            // close modal
+            if (button.classList.contains('selected')) {
+                button.classList.remove('selected');
+                notif_div.classList.replace('show', 'hide');
+            } else {
+                // open modal
+                button.classList.add('selected');
+                if (notif_div.classList.contains('hide')) {
+                    notif_div.classList.replace('hide', 'show');
+                } else {
+                    notif_div.classList.add('show');
+                }
+                // click away 
+                document.onclick = (e) => {
+                    // close the notification modal when user click outsite its content
+                    if (!e.target.closest('.notification-modal') && 
+                    !e.target.closest('.notif')) {
+                        button.classList.remove('selected');
+                        notif_div.classList.remove('show');
+                        notif_div.classList.remove('hide');
+                    }
+                }
+            }
+        }
+    </script>
 </body>
+
 </html>
