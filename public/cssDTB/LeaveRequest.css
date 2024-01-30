@@ -294,13 +294,14 @@ textarea{
 }
 .day-number{
     text-align: center;
-    border:2px solid #666666;
+    border:2px solid #7c7c7c;
     width: 50%;
     margin-top: -5%;
+    padding-top: 10px;
 }
 .card-list{
     background-color: #fff;
-    border: 1px solid rgb(71, 69, 69);
+    border: 1px solid rgb(150, 150, 150);
     border-radius: 15px;
 }
 .leave-title-pending{
