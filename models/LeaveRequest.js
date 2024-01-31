@@ -17,6 +17,7 @@ const Leave = mongoose.Schema({
     acc:Number,
     datetime:String,
     priority:Boolean,
+    comment:String,
     validation:[{
         user:{
             type:mongoose.Types.ObjectId,

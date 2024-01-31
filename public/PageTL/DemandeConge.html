@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css">
   <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css">
   <link rel="stylesheet" href="cssDTB/allRequest.css">
+  <script>
+  var users = JSON.parse('<%-JSON.stringify(users)%>')
+  </script>
 </head>
 
 <body>
@@ -241,7 +244,7 @@
             <!-- Logo text -->
             <span class="logo-text ms-3">
               <!-- dark Logo text -->
-              <b>Demande des congés</b>
+              <b>DEMANDE DES CONGES</b>
             </span>
             <div class="ms-auto text-end">
               <nav aria-label="breadcrumb">
@@ -285,7 +288,7 @@
                       </button>
                   </div>
                   <div id="notification" class="notice-success">
-                    Requête envoyé
+                    Requête accepter
                  </div>
                   </div>
                  
@@ -305,18 +308,36 @@
                   </span>
                 </div>
               </div>
-              <p id="code_accept" class="warn-text mt-4">
+              <p id="codeAccept" class="warn-text mt-4">
                 Voulez vous vraiment accepter l'absence de M-FAM
               </p>
-              <p id="begin_delete" class="">Les projets impactés seront : </p>
+              <p id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
               <div class="allProject" id="project">
-                  <div class="project mb-1">
-                    ARCO
-                  </div>
+                  
               </div>
               <div class="mt-3">
-                <button id="accept"  class="btn btn-sm btn-primary mx-1"><i id="waiting_delete" class="fa-solid fa-spinner fa-spin"></i> CONFIRMER <i class="fa-solid fa-check"></i></button>
-                <button id="cancel" class="btn btn-sm btn-danger mx-1">ANNULER <i class="fa-solid fa-ban"></i></button>
+                <button id="accept" onclick="Approve()"  class="btn btn-sm btn-primary mx-1"><i style="opacity: 0;" id="waitingApprove" class="fa-solid fa-spinner fa-spin"></i> CONFIRMER <i class="fa-solid fa-check"></i></button>
+                <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">ANNULER <i class="fa-solid fa-ban"></i></button>
+              </div>
+            </div> 
+          </div>
+          <div id="ModalDecline" class="modal_conge">
+            <div class="modal_delete">
+              <div class="row">
+                <div class="col-md-6">
+                  <span class="logo-text mt-3">
+                    <!-- dark Logo text -->
+                    <b>REFUS DE CONGE</b>
+                  </span>
+                </div>
+              </div>
+              <p id="codeDecline" class="warn-text mt-4">
+                Voulez vous vraiment refuser l'absence de M-FAM
+              </p>
+              <textarea id="reason"></textarea>
+              <div class="mt-3">
+                <button id="accept" onclick="Decline()"  class="btn btn-sm btn-warning btn-send mx-1"><i style="opacity: 0;" id="waitingDecline" class="fa-solid fa-spinner fa-spin"></i> ENVOYER <i class="fa-solid fa-envelope"></i></button>
+                <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">ANNULER <i class="fa-solid fa-ban"></i></button>
               </div>
             </div> 
           </div>
