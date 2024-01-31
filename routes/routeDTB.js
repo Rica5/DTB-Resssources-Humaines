@@ -10,8 +10,9 @@ routeExpDTB.route("/RequestLeave").get(Controller.getLeaveRequest);
 routeExpDTB.route("/makeRequest").post(Controller.makeLeaveRequest);
 //Get all request
 routeExpDTB.route("/MyRequest").post(Controller.getMyRequest);
+//See pending request
+routeExpDTB.route("/leavePending").get(Controller.seePending);
 
-//See all request
-routeExpDTB.route("/allRequest").get(Controller.seeRequest);
+routeExpDTB.route("/allRequest").post(Controller.getPending);
 
 module.exports = routeExpDTB;
