@@ -82,15 +82,24 @@ const getMyRequest = async (req,res) => {
         res.json(myRequest)
     }
 }
-//See and act with request 
-const seeRequest = async (req,res) => {
+
+//See pending request
+const seePending = async (req,res) => {
     var session = req.session;
-    if ( session.occupation_a == "Admin"){
-        var myRequest = await LeaveRequestTest.find({m_code:req.body.code,status:{$ne:"done"}}).sort({"date_start":1});
-        res.render("PageAdministration/DemandeConge.html",{myRequest:myRequest});
+    if ( session.occupation_tl == "Surveillant"){
+        var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
+        res.render("PageTL/DemandeConge.html",{users:user});
+    }
+}
+//Every request pending
+const getPending = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_tl == "Surveillant"){
+        var allRequest = await LeaveRequestTest.find({status:{$ne:"done"},validation:[]});
+        res.json(allRequest);
     }
 }
 
 module.exports = {
-    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seeRequest
+    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending ,getPending
 }
