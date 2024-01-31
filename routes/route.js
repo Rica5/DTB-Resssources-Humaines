@@ -414,6 +414,7 @@ async function login(username, pwd, session, res, req) {
         });
         if (logger) {
           session.mailing = logger.username;
+          session.idUser = logger._id;
           //Tete
           if (logger.change != "n") {
             if (logger.occupation == "User") {
