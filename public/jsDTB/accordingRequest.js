@@ -65,7 +65,7 @@ function renderAllRequest(Leave){
                             </div>
                         ${approvingList(leave.validation)}
                             <div class="d-flex justify-content-end">
-                                <button onclick="According('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-success btn-response">Accorder <i class="fa-solid fa-thumbs-up"></i></button>
+                                <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response">Accorder <i class="fa-solid fa-thumbs-up"></i></button>
                                 <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response mx-3">Réfuser <i class="fa-solid fa-ban"></i></button>
                             </div>
                         </div>
@@ -105,7 +105,12 @@ function dateDiffers(created, now) {
         }
   }
 
-function According(id,code){
+function According(id,code,type){
+    if (typeof noType === 'undefined' || noType == "true"){
+        $("#typeLeave").val(type);
+        $("#typeLeave").prop("disabled",true);
+        $("#title").text("Le type de congé décidé par les ressource humaines est:")
+    }
     idActive = id;
     var userActive = users.find(user => user.m_code == code);
     $("#codeAccept").text(`Voulez vous vraiment accepter l'absence de ${code}`)
@@ -156,6 +161,40 @@ function Approve(){
         }   
    })
 }
+function ApproveLast(){
+    if (noType == "false"){
+        if ($('#typeLeave').val() != ""){
+            $("#waitingApprove").css('opacity','1')
+                $.ajax({
+                    url:"/requestAnswer",
+                    method:"POST",
+                    data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val()},
+                    success: function(res) {
+                        if (res == "Ok"){
+                        UpdateRequest();
+                        $("#waitingApprove").css('opacity','0')
+                        closeModal();
+                        $('#notification').text("Requête accepter avec success");
+                        $('#notification').show();
+                        setTimeout(() => {
+                            $('#notification').hide();
+                        }, 3000);
+                        }
+                        else {
+        
+                        }
+                        
+                    }   
+            })
+           }
+           else {
+            $('#typeLeave').css('borderColor','red')
+           }
+    }
+    else {
+     registerLeave()
+    }  
+ }
 function Decline(){
     if ($("#reason").val() != ""){
         $("#waitingDecline").css('opacity','1')
@@ -186,4 +225,36 @@ function approvingList(all){
         lists += `<span><i class="fa-solid fa-circle-check"></i> ${element.user.usuel}</span>`
     });
     return `<div class="d-flex approving-list">${lists}</div>`
+}
+$("#typeLeave").change(() => {
+    $("#typeLeave").css('borderColor','#5AC4EC')
+})
+function registerLeave(){
+    $("#waitingApprove").css('opacity','1')
+    $.ajax({
+        url:"/requestAnswer",
+        method:"POST",
+        data:{id:idActive,response:true,reason:""},
+        success: function(data) {
+            console.log(data)
+            $.ajax({
+                url:"/takeleave",
+                method:"POST",
+                data:{code:data.m_code,type:data.type,leavestart:data.date_start,leaveend:data.date_end,
+                      begin:data.hour_begin,end:data.hour_end,court:data.duration,motif:data.motif,idRequest:data._id},
+                success: function(res) {
+                    UpdateRequest();
+                    $("#waitingDecline").css('opacity','0')
+                    closeModal();
+                    $('#notification').text("La requête a été refuser");
+                    $('#notification').show();
+                    setTimeout(() => {
+                        $('#notification').hide();
+                    }, 3000);
+                }   
+           })
+        }   
+   })
+    
+
 }

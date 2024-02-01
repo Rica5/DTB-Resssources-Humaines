@@ -97,7 +97,8 @@ const seePending = async (req,res) => {
     }
     else if (session.occupation_a == "Admin") {
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
-        res.render("PageAdministration/DemandeConge.html",{users:user});
+        noType = session.idUser == "645a417e9d34ed8965caea9e" ? true : false;
+        res.render("PageAdministration/DemandeConge.html",{users:user,noType:noType});
     }
     else {
         res.send("Bad auth, please log in");
@@ -164,17 +165,25 @@ const answerRequest = async (req,res) => {
         var comment = req.body.reason;
         if (session.idUser == "645a417e9d34ed8965caea9e"){
             status = response == "true" ? "approved" : "declined";
+            var approbator = {
+                user:session.idUser,
+                approbation :response
+                }
+                await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
+                var thisLeave = await LeaveRequestTest.findOne({_id:id});
+                res.json(thisLeave);
         }
         else {
              status = response == "true" ? "progress" : "declined";
+             var type = req.body.typeleave;
+             var approbator = {
+                user:session.idUser,
+                approbation :response
+                }
+                await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type})
+                res.json("Ok");
         }
-        var approbator = {
-            user:session.idUser,
-            approbation :response
-            }
-            await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
-            res.json("Ok");
-       
+        
     }
     else {
         res.send("Bad auth, please log in");
