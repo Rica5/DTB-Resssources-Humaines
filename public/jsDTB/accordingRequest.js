@@ -236,7 +236,6 @@ function registerLeave(){
         method:"POST",
         data:{id:idActive,response:true,reason:""},
         success: function(data) {
-            console.log(data)
             $.ajax({
                 url:"/takeleave",
                 method:"POST",
@@ -244,9 +243,9 @@ function registerLeave(){
                       begin:data.hour_begin,end:data.hour_end,court:data.duration,motif:data.motif,idRequest:data._id},
                 success: function(res) {
                     UpdateRequest();
-                    $("#waitingDecline").css('opacity','0')
+                    $("#waitingApprove").css('opacity','0')
                     closeModal();
-                    $('#notification').text("La requête a été refuser");
+                    $('#notification').text("La requête a été valider");
                     $('#notification').show();
                     setTimeout(() => {
                         $('#notification').hide();
