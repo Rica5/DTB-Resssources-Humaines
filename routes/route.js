@@ -99,7 +99,6 @@ function shift_rename(shift, project) {
   }
 }
 async function daily_restart(req) {
-  
       var now = moment().format("dddd");
       var opt_daily = await OptSchema.findOne({
         _id: "636247a2c1f6301f15470344",
@@ -109,10 +108,10 @@ async function daily_restart(req) {
           { _id: "64f1e60ae3038813b45c2db1" },
           { notifications: [] }
         );
-        await conge_define(req);
-        await checkleave();
-        await leave_permission();
-        await contract_expiration();
+         conge_define(req);
+         checkleave();
+         leave_permission();
+         contract_expiration();
         maj_done = false;
         await OptSchema.findOneAndUpdate(
           { _id: "636247a2c1f6301f15470344" },
@@ -256,7 +255,7 @@ async function addin_leave() {
 //     }
 //   })
 async function contract_expiration() {
-      var contract = await UserSchema.find({ contrat: { $ne: "CDI" } });
+      var contract = await UserSchema.find({ contrat: { $ne: "CDI" }, date_fin:{$ne:""} });
       for (c = 0; c < contract.length; c++) {
         var remain = date_diff(
           moment().add(3, "hours").format("YYYY-MM-DD"),
@@ -295,8 +294,8 @@ routeExp.route("/").get(async function (req, res) {
   } else if (session.occupation_op == "Opération") {
     res.redirect("/conge");
   } else {
-    // await daily_restart(req);
-    // await monthly_restart();
+      daily_restart(req);
+      monthly_restart();
     res.render("LoginPage/Login.html", { erreur: "" });
   }
 });
@@ -415,6 +414,7 @@ async function login(username, pwd, session, res, req) {
         });
         if (logger) {
           session.mailing = logger.username;
+          session.idUser = logger._id;
           //Tete
           if (logger.change != "n") {
             if (logger.occupation == "User") {
@@ -5333,7 +5333,7 @@ function time_passed(starting) {
 }
 function date_diff(starting, ending) {
   var startings = moment(moment(starting)).format("YYYY-MM-DD");
-  var endings = moment(moment(starting)).format("YYYY-MM-DD");
+  var endings = moment(moment(ending)).format("YYYY-MM-DD");
   var duration = moment.duration(endings.diff(startings));
   var dayl = duration.asDays();
   return parseInt(dayl.toFixed(0));

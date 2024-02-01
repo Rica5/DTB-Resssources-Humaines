@@ -42,7 +42,6 @@ const makeLeaveRequest = async (req,res) => {
     if ( session.occupation_u == "User"){
         try{
             var user = await UserSchema.findOne({m_code:req.body.code})
-            console.log(req.body.priority)
                 var new_request = {
                     m_code:req.body.code,
                     num_agent:user.num_agent,
@@ -61,6 +60,7 @@ const makeLeaveRequest = async (req,res) => {
                     acc:0,
                     datetime:moment().add(3, "hours").format("DD/MM/YYYY HH:mm:ss"),
                     priority:req.body.priority,
+                    comment:"",
                     validation :[],
                 }
              await LeaveRequestTest(new_request).save();
@@ -83,15 +83,40 @@ const getMyRequest = async (req,res) => {
         res.json(myRequest)
     }
 }
-//See and act with request 
-const seeRequest = async (req,res) => {
+
+//See pending request
+const seePending = async (req,res) => {
     var session = req.session;
-    if ( session.occupation_a == "Admin"){
-        var myRequest = await LeaveRequestTest.find({m_code:req.body.code,status:{$ne:"done"}}).sort({"date_start":1});
-        res.render("PageAdministration/DemandeConge.html",{myRequest:myRequest});
+    if ( session.occupation_tl == "Surveillant"){
+        var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
+        res.render("PageTL/DemandeConge.html",{users:user});
+    }
+}
+//Every request pending
+const getPending = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_tl == "Surveillant"){
+        var allRequest = await LeaveRequestTest.find({status:{$ne:"done"},validation:[]});
+        res.json(allRequest);
+    }
+}
+
+const answerRequest = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_tl == "Surveillant"){
+       var id = req.body.id;
+       var response = req.body.response;
+       var comment = req.body.reason;
+       var status = response == "true" ? "progress" : "declined";
+       var approbator = {
+        user:session.idUser,
+        approbation :response
+       }
+       await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
+        res.json("Ok");
     }
 }
 
 module.exports = {
-    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seeRequest
+    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest
 }

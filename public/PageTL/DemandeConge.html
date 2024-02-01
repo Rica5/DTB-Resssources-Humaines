@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css">
   <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css">
   <link rel="stylesheet" href="cssDTB/allRequest.css">
+  <script>
+  var users = JSON.parse('<%-JSON.stringify(users)%>')
+  </script>
 </head>
 
 <body>
@@ -167,52 +170,53 @@
       <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
-          <ul id="sidebarnav" class="pt-4">
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/home" aria-expanded="false"><i
-                  class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/management" aria-expanded="false"><i
-                  class="mdi mdi-border-inside"></i><span class="hide-menu">Status</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/userlist" aria-expanded="false"><i
-                  class="mdi mdi-account-key"></i><span class="hide-menu">Liste utilisateurs</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/details" aria-expanded="false"><i
-                  class="mdi mdi-calendar-range"></i><span class="hide-menu">Tableau des pointages</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/fiche" aria-expanded="false"><i
-                  class="far fa-file-pdf"></i><span class="hide-menu">Fiche de paie</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/absencelist" aria-expanded="false"><i
-                  class="mdi mdi-calendar-clock"></i><span class="hide-menu">Liste des absences</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/validelate" aria-expanded="false"><i
-                  class="mdi mdi-alarm-check"></i><span class="hide-menu">Validation retards</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i
-                  class="mdi mdi-account-off"></i><span class="hide-menu">Congé </span></a>
-              <ul aria-expanded="false" class="collapse first-level">
+            <ul id="sidebarnav" class="pt-4">
                 <li class="sidebar-item">
-                  <a href="/leavelist" class="sidebar-link"><i class="mdi mdi-format-list-bulleted"></i><span
-                      class="hide-menu">List des conges (global)</span></a>
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/managementtl"
+                    aria-expanded="false"
+                    ><i class="fa-solid fa-users"></i>
+                    <span class="hide-menu">Status</span></a
+                  >
                 </li>
                 <li class="sidebar-item">
-                  <a href="/leave" class="sidebar-link"><i class="mdi mdi-account-off"></i><span class="hide-menu">
-                      Definir un congé</span></a>
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/pointagetl"
+                    aria-expanded="false"
+                    ><i class="fa-solid fa-book-open"></i>
+                    <span class="hide-menu">Tableau des pointages</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/absencetl"
+                    aria-expanded="false"
+                    ><i class="mdi mdi-border-inside"></i
+                    ><span class="hide-menu">Tableau des absences</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/validelatetl"
+                    aria-expanded="false"
+                    ><i class="mdi mdi-alarm-check"></i
+                    ><span class="hide-menu">Validation des retards</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/leavePending"
+                    aria-expanded="false"
+                    ><i class="fa-solid fa-envelope"></i>
+                    <span class="hide-menu">Demande de congé</span></a
+                  >
                 </li>
               </ul>
-  
-            </li>
-            
-          </ul>
         </nav>
         <!-- End Sidebar navigation -->
       </div>
@@ -240,7 +244,7 @@
             <!-- Logo text -->
             <span class="logo-text ms-3">
               <!-- dark Logo text -->
-              <b>Demande des congés</b>
+              <b>DEMANDE DES CONGES</b>
             </span>
             <div class="ms-auto text-end">
               <nav aria-label="breadcrumb">
@@ -284,42 +288,12 @@
                       </button>
                   </div>
                   <div id="notification" class="notice-success">
-                    Requête envoyé
+                    Requête accepter
                  </div>
                   </div>
                  
                 <div class="col-12 allRequest mt-2" id="content-allRequest">
                     <div class="card-item" id="allRequest">
-                      <div class="content-leave">
-                        <div class="col-md-4 code-person">
-                            <p id="codeUser" class="code-text">M-FAM</p>
-                        </div>
-                        <div class="col-md-8 leave-infos">
-                          <small id="since" class="text-end"><b>2 jours</b></small>
-                          <p id="motif" class="text-center">Congé a Ambatolampy</p>
-                          <div class="row mt-2">
-                            <div class="col-md-6">
-                                <div class="text-center">
-                                    <i class="fa-solid fa-calendar text-center"></i>
-                                </div>
-                                <p id="startDate" class="mt-2 text-center">Date début : 27/10/2024</p>
-                                <p id="endDate" class="text-center">Date fin : 27/10/2024</p>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="text-center">
-                                    <i class="fa-solid fa-clock"></i>
-                                </div>
-                                <p id="startTime" class="mt-2 text-center">Heure début : 08:00</p>
-                                <p id="endTime" class="text-center">Heure fin : 16:00</p>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button onclick="According()" class="btn btn-sm btn-success">ACCORDER <i class="fa-solid fa-thumbs-up"></i></button>
-                            <button onclick="Declined()" class="btn btn-sm btn-danger mx-3">REFUSER <i class="fa-solid fa-ban"></i></button>
-                        </div>
-                        </div>
-                      </div>
-                      
                       
                     </div>
                 </div>
@@ -334,18 +308,36 @@
                   </span>
                 </div>
               </div>
-              <p id="code_accept" class="warn-text mt-4">
+              <p id="codeAccept" class="warn-text mt-4">
                 Voulez vous vraiment accepter l'absence de M-FAM
               </p>
-              <p id="begin_delete" class="">Les projets impactés seront : </p>
+              <p id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
               <div class="allProject" id="project">
-                  <div class="project mb-1">
-                    ARCO
-                  </div>
+                  
               </div>
               <div class="mt-3">
-                <button id="accept"  class="btn btn-sm btn-primary mx-1"><i id="waiting_delete" class="fa-solid fa-spinner fa-spin"></i> CONFIRMER <i class="fa-solid fa-check"></i></button>
-                <button id="cancel" class="btn btn-sm btn-danger mx-1">ANNULER <i class="fa-solid fa-ban"></i></button>
+                <button id="accept" onclick="Approve()"  class="btn btn-sm btn-primary mx-1"><i style="opacity: 0;" id="waitingApprove" class="fa-solid fa-spinner fa-spin"></i> CONFIRMER <i class="fa-solid fa-check"></i></button>
+                <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">ANNULER <i class="fa-solid fa-ban"></i></button>
+              </div>
+            </div> 
+          </div>
+          <div id="ModalDecline" class="modal_conge">
+            <div class="modal_delete">
+              <div class="row">
+                <div class="col-md-6">
+                  <span class="logo-text mt-3">
+                    <!-- dark Logo text -->
+                    <b>REFUS DE CONGE</b>
+                  </span>
+                </div>
+              </div>
+              <p id="codeDecline" class="warn-text mt-4">
+                Voulez vous vraiment refuser l'absence de M-FAM
+              </p>
+              <textarea id="reason"></textarea>
+              <div class="mt-3">
+                <button id="accept" onclick="Decline()"  class="btn btn-sm btn-warning btn-send mx-1"><i style="opacity: 0;" id="waitingDecline" class="fa-solid fa-spinner fa-spin"></i> ENVOYER <i class="fa-solid fa-envelope"></i></button>
+                <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">ANNULER <i class="fa-solid fa-ban"></i></button>
               </div>
             </div> 
           </div>
