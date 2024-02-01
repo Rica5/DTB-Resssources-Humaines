@@ -23,37 +23,51 @@ function renderAllRequest(Leave){
     Leave.forEach(leave => {
         myRequestContent +=`
     <div class="content-leave">
-                        <div class="col-md-4 code-person">
+                        <div class="code-person">
                         <div>
                         <p id="codeUser" class="code-text">${leave.m_code}</p>
                         <p class='text-duration'>${leave.duration} jour(s)</p>
                         </div>
                             
                         </div>
-                        <div class="col-md-8 leave-infos">
-                          <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
-                          <p id="motif" class="text-center">${leave.motif}</p>
-                          <div class="row mt-2">
-                            <div class="col-md-6">
-                                <div class="text-center">
-                                    <i class="fa-solid fa-calendar text-center"></i>
+                        <div class="leave-infos">
+                            <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
+                            <p id="motif" class="text-center">${leave.motif}</p>
+                            <div class="date-heure">
+                                <div class="d">
+                                    <h1>
+                                        <i class="fa-solid fa-calendar"></i>
+                                        Date
+                                    </h1>
+                                    <div>
+                                        <span>Début:</span>
+                                        <span>${convertDate(leave.date_start)}</span>
+                                    </div>
+                                    <div>
+                                        <span>Fin:</span>
+                                        <span>${convertDate(leave.date_end)}</span>
+                                    </div>
                                 </div>
-                                <p id="startDate" class="mt-2 text-center">Date début : ${convertDate(leave.date_start)}</p>
-                                <p id="endDate" class="text-center">Date fin : ${convertDate(leave.date_end)}</p>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="text-center">
-                                    <i class="fa-solid fa-clock"></i>
+                                <div class="h">
+                                    <h1>
+                                        <i class="fa-solid fa-clock"></i>
+                                        Heure
+                                    </h1>
+                                    <div>
+                                        <span>Début:</span>
+                                        <span> ${leave.hour_begin}</span>
+                                    </div>
+                                    <div>
+                                        <span>Fin:</span>
+                                        <span> ${leave.hour_end}</span>
+                                    </div>
                                 </div>
-                                <p id="startTime" class="mt-2 text-center">Heure début : ${leave.hour_begin}</p>
-                                <p id="endTime" class="text-center">Heure fin : ${leave.hour_end}</p>
                             </div>
-                        </div>
-                       ${approvingList(leave.validation)}
-                        <div class="d-flex justify-content-end">
-                            <button onclick="According('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-success btn-response">ACCORDER <i class="fa-solid fa-thumbs-up"></i></button>
-                            <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response mx-3">REFUSER <i class="fa-solid fa-ban"></i></button>
-                        </div>
+                        ${approvingList(leave.validation)}
+                            <div class="d-flex justify-content-end">
+                                <button onclick="According('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-success btn-response">Accorder <i class="fa-solid fa-thumbs-up"></i></button>
+                                <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response mx-3">Réfuser <i class="fa-solid fa-ban"></i></button>
+                            </div>
                         </div>
                       </div>
     `
@@ -169,7 +183,7 @@ function Decline(){
 function approvingList(all){
     var lists = "";
     all.forEach(element => {
-        lists += `<i class="fa-solid fa-circle-check"></i> ${element.user.usuel}`
+        lists += `<span><i class="fa-solid fa-circle-check"></i> ${element.user.usuel}</span>`
     });
-    return `<div class="d-flex">${lists}</div>`
+    return `<div class="d-flex approving-list">${lists}</div>`
 }
