@@ -255,7 +255,7 @@ async function addin_leave() {
 //     }
 //   })
 async function contract_expiration() {
-      var contract = await UserSchema.find({ contrat: { $ne: "CDI" } });
+      var contract = await UserSchema.find({ contrat: { $ne: "CDI" }, date_fin:{$ne:""} });
       for (c = 0; c < contract.length; c++) {
         var remain = date_diff(
           moment().add(3, "hours").format("YYYY-MM-DD"),

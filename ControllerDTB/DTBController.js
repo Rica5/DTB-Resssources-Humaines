@@ -107,8 +107,7 @@ const answerRequest = async (req,res) => {
        var id = req.body.id;
        var response = req.body.response;
        var comment = req.body.reason;
-       var status = "";
-       response ? status = "progress" : status = "declined";
+       var status = response == "true" ? "progress" : "declined";
        var approbator = {
         user:session.idUser,
         approbation :response
