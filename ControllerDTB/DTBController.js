@@ -58,7 +58,7 @@ const makeLeaveRequest = async (req,res) => {
                     status:"pending",
                     rest:0,
                     acc:0,
-                    datetime:moment().add(3, "hours").format("DD/MM/YYYY HH:mm:ss"),
+                    datetime:moment().format("DD/MM/YYYY HH:mm:ss"),
                     priority:req.body.priority,
                     comment:"",
                     validation :[],
@@ -91,6 +91,17 @@ const seePending = async (req,res) => {
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
         res.render("PageTL/DemandeConge.html",{users:user});
     }
+    else if (session.occupation_op == "Opération"){
+        var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
+        res.render("PageOperation/DemandeConge.html",{users:user});
+    }
+    else if (session.occupation_a == "Admin") {
+        var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
+        res.render("PageAdministration/DemandeConge.html",{users:user});
+    }
+    else {
+        res.send("Bad auth, please log in");
+    }
 }
 //Every request pending
 const getPending = async (req,res) => {
@@ -99,6 +110,25 @@ const getPending = async (req,res) => {
         var allRequest = await LeaveRequestTest.find({status:{$ne:"done"},validation:[]});
         res.json(allRequest);
     }
+    else if (session.occupation_op == "Opération"){
+        var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 1] }}).populate({path:"validation.user",select:'usuel'});
+        res.json(allRequest);
+    }
+    else if (session.occupation_a == "Admin") {
+        if (session.idUser == "645a417e9d34ed8965caea9e"){
+            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 3] }}).populate({path:"validation.user",select:'usuel'});
+            res.json(allRequest);
+        }
+        else {
+            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 2] }}).populate({path:"validation.user",select:'usuel'});
+            res.json(allRequest);
+        }
+       
+    }
+    else {
+        res.send("Bad auth, please log in");
+    }
+    
 }
 
 const answerRequest = async (req,res) => {
@@ -114,6 +144,40 @@ const answerRequest = async (req,res) => {
        }
        await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
         res.json("Ok");
+    }
+    else if (session.occupation_op == "Opération"){
+        var id = req.body.id;
+        var response = req.body.response;
+        var comment = req.body.reason;
+        var status = response == "true" ? "progress" : "declined";
+        var approbator = {
+         user:session.idUser,
+         approbation :response
+        }
+        await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
+         res.json("Ok");
+    }
+    else if (session.occupation_a == "Admin") {
+        var status = "";
+        var id = req.body.id;
+        var response = req.body.response;
+        var comment = req.body.reason;
+        if (session.idUser == "645a417e9d34ed8965caea9e"){
+            status = response == "true" ? "approved" : "declined";
+        }
+        else {
+             status = response == "true" ? "progress" : "declined";
+        }
+        var approbator = {
+            user:session.idUser,
+            approbation :response
+            }
+            await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
+            res.json("Ok");
+       
+    }
+    else {
+        res.send("Bad auth, please log in");
     }
 }
 

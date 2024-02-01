@@ -99,6 +99,7 @@ function shift_rename(shift, project) {
   }
 }
 async function daily_restart(req) {
+  
       var now = moment().format("dddd");
       var opt_daily = await OptSchema.findOne({
         _id: "636247a2c1f6301f15470344",
@@ -108,10 +109,10 @@ async function daily_restart(req) {
           { _id: "64f1e60ae3038813b45c2db1" },
           { notifications: [] }
         );
-         conge_define(req);
-         checkleave();
-         leave_permission();
-         contract_expiration();
+        await conge_define(req);
+        await checkleave();
+        await leave_permission();
+        await contract_expiration();
         maj_done = false;
         await OptSchema.findOneAndUpdate(
           { _id: "636247a2c1f6301f15470344" },
@@ -129,7 +130,7 @@ async function monthly_restart() {
       });
       if (now != opt_daily.month_change) {
         await addin_leave();
-        //await send_email_attachement();
+        await send_email_attachement();
         await OptSchema.findOneAndUpdate(
           { _id: "636247a2c1f6301f15470344" },
           { month_change: now, email_sent: [] }
@@ -255,7 +256,7 @@ async function addin_leave() {
 //     }
 //   })
 async function contract_expiration() {
-      var contract = await UserSchema.find({ contrat: { $ne: "CDI" }, date_fin:{$ne:""} });
+      var contract = await UserSchema.find({ contrat: { $ne: "CDI" } });
       for (c = 0; c < contract.length; c++) {
         var remain = date_diff(
           moment().add(3, "hours").format("YYYY-MM-DD"),
@@ -294,8 +295,8 @@ routeExp.route("/").get(async function (req, res) {
   } else if (session.occupation_op == "Opération") {
     res.redirect("/conge");
   } else {
-      daily_restart(req);
-      monthly_restart();
+    await daily_restart(req);
+    await monthly_restart();
     res.render("LoginPage/Login.html", { erreur: "" });
   }
 });
@@ -494,7 +495,7 @@ async function login(username, pwd, session, res, req) {
                   });
                 } else {
                   session.reason = "N/A";
-                  res.redirect("/mySpace");
+                  res.redirect("/employee");
                 }
               } else {
                 var new_log = {
@@ -792,7 +793,7 @@ routeExp.route("/employee").get(async function (req, res) {
                 { _id: "636247a2c1f6301f15470344" },
                 { $push: { email_sent: session.m_code } }
               );
-              //send_alert_late(session.m_code, late_confirm, mailing_all);
+              send_alert_late(session.m_code, late_confirm, mailing_all);
             }
           } else {
             if (opt.email_sent.includes(session.m_code)) {
@@ -801,7 +802,7 @@ routeExp.route("/employee").get(async function (req, res) {
                 { _id: "636247a2c1f6301f15470344" },
                 { $push: { email_sent: session.m_code } }
               );
-              //send_alert_late(session.m_code, late_confirm, mailing_spec);
+              send_alert_late(session.m_code, late_confirm, mailing_spec);
             }
           }
         }
@@ -2571,10 +2572,9 @@ routeExp.route("/leavelist").get(async function (req, res) {
 routeExp.route("/list_leave").post(async function (req, res) {
   var session = req.session;
   if (session.occupation_a == "Admin" || session.occupation_op == "Opération") {
-        var all_leave = await LeaveSchema.find({}).sort({
+        var all_leave = await LeaveSchema.find({ validation: false}).sort({
           m_code: 1,
-          date_start: 1,
-          validation: false,
+          date_start: 1
         });
         var users = await UserSchema.find({
           m_code: { $ne: "N/A" },
@@ -3580,6 +3580,7 @@ async function readfile(
         }
         console.log("Excel file deleted");
       });
+      sme = ((sme * 8) / 100) * 2;
       test_paie(
         data,
         0,
@@ -3635,7 +3636,6 @@ function test_paie(
     var abbatement_enfant = parseFloat(data[number]["Enfant"]);
     var irsa = 0;
     var irsa_brut = 0;
-    sme = ((sme * 8) / 100) * 2;
     var rest_co = 0;
     //Variable stockage
     var gain_base = 0;
@@ -5333,7 +5333,7 @@ function time_passed(starting) {
 }
 function date_diff(starting, ending) {
   var startings = moment(moment(starting)).format("YYYY-MM-DD");
-  var endings = moment(moment(ending)).format("YYYY-MM-DD");
+  var endings = moment(ending, "YYYY-MM-DD");
   var duration = moment.duration(endings.diff(startings));
   var dayl = duration.asDays();
   return parseInt(dayl.toFixed(0));
@@ -6549,45 +6549,4 @@ function global_Report(all_data) {
   ws["!merges"] = merge;
   style2();
 }
-
-
 module.exports = routeExp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // "@pdftron/pdfnet-node": "^9.3.0",
-    // "body-parser": "^1.19.1",
-    // "cookie-session": "^2.0.0",
-    // "cors": "^2.8.5",
-    // "dns": "^0.2.2",
-    // "ejs": "^3.0.2",
-    // "express": "^4.17.2",
-    // "express-fileupload": "^1.4.0",
-    // "express-session": "^1.17.2",
-    // "formidable": "^2.0.1",
-    // "fs-extra": "^10.1.0",
-    // "http": "^0.0.1-security",
-    // "method-override": "^3.0.0",
-    // "moment": "^2.29.2",
-    // "mongoose": "^6.1.7",
-    // "node-sass": "^7.0.3",
-    // "nodemailer": "^6.7.3",
-    // "nodemon": "^2.0.15",
-    // "path": "^0.12.7",
-    // "sheetjs-style": "^0.15.8",
-    // "socket.io": "^4.4.1",
-    // "dotenv": "^16.4.0"
