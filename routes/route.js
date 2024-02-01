@@ -295,8 +295,8 @@ routeExp.route("/").get(async function (req, res) {
   } else if (session.occupation_op == "Opération") {
     res.redirect("/conge");
   } else {
-    await daily_restart(req);
-    await monthly_restart();
+    // await daily_restart(req);
+    // await monthly_restart();
     res.render("LoginPage/Login.html", { erreur: "" });
   }
 });
