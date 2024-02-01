@@ -49,6 +49,7 @@ function renderAllRequest(Leave){
                                 <p id="endTime" class="text-center">Heure fin : ${leave.hour_end}</p>
                             </div>
                         </div>
+                       ${approvingList(leave.validation)}
                         <div class="d-flex justify-content-end">
                             <button onclick="According('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-success btn-response">ACCORDER <i class="fa-solid fa-thumbs-up"></i></button>
                             <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response mx-3">REFUSER <i class="fa-solid fa-ban"></i></button>
@@ -164,4 +165,11 @@ function Decline(){
         $("#reason").attr("class","border-red")
     }  
    
+}
+function approvingList(all){
+    var lists = "";
+    all.forEach(element => {
+        lists += `<i class="fa-solid fa-circle-check"></i> ${element.user.usuel}`
+    });
+    return `<div class="d-flex">${lists}</div>`
 }

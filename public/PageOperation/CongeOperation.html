@@ -94,26 +94,6 @@
           >
             <ul class="navbar-nav float-start me-auto"></ul>
             <ul class="navbar-nav float-end">
-              <% if (another != "n") { %>
-              <li class="nav-item dropdown">
-                <form action="/change_interface" method="post">
-                  <input type="hidden" name="mail" value="<%= username %>" />
-                  <input type="hidden" name="opt" value="s" />
-                  <button type="submit" class="btn btn-success text-white">
-                    <i class="mdi mdi-exit-to-app" width="31">INFOS STATUS</i>
-                  </button>
-                </form>
-              </li>
-              <% } %>
-              <li class="nav-item dropdown">
-                <form action="/change_interface" method="post">
-                  <input type="hidden" name="mail" value="<%= username %>" />
-                  <input type="hidden" name="opt" value="p" />
-                  <button type="submit" class="btn btn-info mx-5 text-white">
-                    <i class="mdi mdi-exit-to-app" width="31"> POINTAGE</i>
-                  </button>
-                </form>
-              </li>
               <li class="nav-item dropdown">
                 <a href="/exit_a"
                   ><button class="btn btn-danger">
@@ -138,6 +118,15 @@
                   aria-expanded="false"
                   ><i class="mdi mdi-alarm-check"></i
                   ><span class="hide-menu">Liste des conges</span></a
+                >
+              </li>
+              <li class="sidebar-item">
+                <a
+                  class="sidebar-link waves-effect waves-dark sidebar-link"
+                  href="/leavePending"
+                  aria-expanded="false"
+                  ><i class="fa-solid fa-envelope"></i>
+                  <span class="hide-menu">Demande de congé</span></a
                 >
               </li>
             </ul>
