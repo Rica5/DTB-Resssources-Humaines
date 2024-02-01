@@ -358,7 +358,7 @@ select#type_leave::after {
 }
 
 /* Style the select#type_leave box */
-select#type_leave {
+select#typeLeave {
     padding: .3rem;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -366,10 +366,11 @@ select#type_leave {
     background-color: white;
     color: #333;
     width: auto;
+    cursor: pointer;
 }
 
 /* Style for when the dropdown is open */
-select#type_leave:focus {
+select#typeLeave:focus {
     outline: none;
     border-color: #5AC4EC;
     /* Change the border color on focus */

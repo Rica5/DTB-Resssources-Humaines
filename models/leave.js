@@ -13,6 +13,10 @@ const Leave = mongoose.Schema({
     motif:String,
     validation:Boolean,
     hour_begin:String,
-    hour_end:String
+    hour_end:String,
+    request: {
+        type:mongoose.Types.ObjectId,
+        ref:"LeaveRequestTest"
+    }
 })
 module.exports = mongoose.model('cleaveTest',Leave);

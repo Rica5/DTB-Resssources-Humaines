@@ -2622,6 +2622,7 @@ routeExp.route("/takeleave").post(async function (req, res) {
     var hour_end = req.body.end;
     var val = req.body.court;
     var motif = req.body.motif;
+    var idRequest = req.body.idRequest;
     var deduction = " ( rien à deduire )";
         var user = await UserSchema.findOne({ m_code: code });
         var taked;
@@ -2644,13 +2645,10 @@ routeExp.route("/takeleave").post(async function (req, res) {
           if (val == "n") {
             taked = date_diff(leavestart, leaveend) + 1;
           } else {
-            if (val == 0.5) {
+            if (val <= 1) {
               leaveend = leavestart;
-              taked = val;
-            } else {
-              leaveend = leavestart;
-              taked = val;
             }
+              taked = val;
           }
           var last_acc = 0;
           if (user.leave_stat == "y" && type == "Congé Payé") {
@@ -2708,6 +2706,7 @@ routeExp.route("/takeleave").post(async function (req, res) {
               motif: motif,
               validation: false,
               acc: last_acc,
+              request:idRequest
             };
             var last_rest = rest;
             indice_change.forEach(async (change) => {
