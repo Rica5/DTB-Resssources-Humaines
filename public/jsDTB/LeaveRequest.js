@@ -1,6 +1,7 @@
 var PendingAndDecline = [];
-var Approve = [];
+var Approves = [];
 var myRequestContent;
+var myUpcomingContent;
 var leaveDuration = 0;
 var leaveDurationTwo = 0;
 $("#makeRequest").click(() => {
@@ -35,7 +36,10 @@ $("#myUpcoming").click(() => {
     $("#container-request").hide()
     $("#container-upcoming").show()
     $("#container-make").hide()
-    Approved(Approve);
+    if (Approves.length == 0) {
+        $("#container-none").show()
+        $("#container-upcoming").hide()
+    }
 })
 
 $("#sendRequest").on('click', () => {
@@ -81,8 +85,10 @@ function UpdateRequest() {
         },
         success: function (res) {
             PendingAndDecline = res.filter(leave => leave.status != "approved");
-            Approve = res.filter(leave => leave.status == "approved");
+            Approves = res.filter(leave => leave.status == "approved");
+            console.log(Approves)
             myRequestRender(PendingAndDecline)
+            Approved(Approves)
         }
     })
 }
@@ -114,18 +120,65 @@ function myRequestRender(data) {
     $("#progress").text(progressNumber)
 }
 function Approved(data) {
-    if (data.length == 0) {
-        $("#container-none").show()
-        $("#container-upcoming").hide()
-    }
-    else {
+        myUpcomingContent = '<div class="row p-3">'
         var approvedNumber = 0;
         data.forEach(element => {
-
+            myUpcomingContent += `
+            <div class="col-md-6 p-1">
+            <div class="card-item">
+                <div class="card-header">
+                    <div class="motif">
+                        <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${element.motif}
+                    </div>
+                    <div class="buttons">
+                    </div>
+                    <div class="date-heure">
+                        <div class="d">
+                            <h1>
+                                <i class="fa-solid fa-calendar"></i>
+                                Date
+                            </h1>
+                            <div>
+                                <span>Début:</span>
+                                <span>${moment(element.date_start).format("DD/MM/YYYY")}</span>
+                            </div>
+                            <div>
+                                <span>Fin:</span>
+                                <span>${moment(element.date_end).format("DD/MM/YYYY")}</span>
+                            </div>
+                        </div>
+                        <div class="h">
+                            <h1>
+                                <i class="fa-solid fa-clock"></i>
+                                Heure
+                            </h1>
+                            <div>
+                                <span>Début:</span>
+                                <span> ${element.hour_begin}</span>
+                            </div>
+                            <div>
+                                <span>Fin:</span>
+                                <span> ${element.hour_end}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="duration">
+                        <span>Duration:</span>
+                        <span>${element.duration} jours</span>
+                    </div>
+                </div>
+                <div class="card-footer approved">
+                    ${allStat[element.status]}
+                </div>
+            </div>
+        </div>
+            `
             approvedNumber++
         });
+        myUpcomingContent += '</div>';
+        console.log(myUpcomingContent)
+        $('#container-upcoming').html(myUpcomingContent);
         $("#approved").text(approvedNumber)
-    }
 }
 var allStat = {
     pending: "En attente",
