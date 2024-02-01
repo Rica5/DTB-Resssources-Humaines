@@ -3,34 +3,34 @@ var Approve = [];
 var myRequestContent;
 var leaveDuration = 0;
 var leaveDurationTwo = 0;
-$("#makeRequest").click(() =>{
-    $("#makeRequest").attr("class","switch-button active-btn")
-    $("#myRequest").attr("class","switch-button mx-2")
-    $("#myUpcoming").attr("class","switch-button")
+$("#makeRequest").click(() => {
+    $("#makeRequest").attr("class", "switch-button active-btn")
+    $("#myRequest").attr("class", "switch-button mx-2")
+    $("#myUpcoming").attr("class", "switch-button")
     $("#container-none").hide()
     $("#container-request").hide()
     $("#container-upcoming").hide()
     $("#container-make").show()
 })
 
-$("#myRequest").click(() =>{
-    $("#myRequest").attr("class","switch-button active-btn mx-2")
-    $("#makeRequest").attr("class","switch-button")
-    $("#myUpcoming").attr("class","switch-button")
+$("#myRequest").click(() => {
+    $("#myRequest").attr("class", "switch-button active-btn mx-2")
+    $("#makeRequest").attr("class", "switch-button")
+    $("#myUpcoming").attr("class", "switch-button")
     $("#container-none").hide()
     $("#container-request").show()
     $("#container-upcoming").hide()
     $("#container-make").hide()
-    if (PendingAndDecline.length == 0){
+    if (PendingAndDecline.length == 0) {
         $("#container-none").show()
         $("#container-request").hide()
     }
 })
 
-$("#myUpcoming").click(() =>{
-    $("#makeRequest").attr("class","switch-button")
-    $("#myRequest").attr("class","switch-button mx-2")
-    $("#myUpcoming").attr("class","switch-button active-btn")
+$("#myUpcoming").click(() => {
+    $("#makeRequest").attr("class", "switch-button")
+    $("#myRequest").attr("class", "switch-button mx-2")
+    $("#myUpcoming").attr("class", "switch-button active-btn")
     $("#container-none").hide()
     $("#container-request").hide()
     $("#container-upcoming").show()
@@ -48,128 +48,143 @@ $("#sendRequest").on('click', () => {
     var recovery = $("#recovery").val();
 
 
-    (!startDate) ? $("#startDate").css({"border-color": "red"}) : $("#startDate").css({"border-color": ""});
-    (!endDate) ?  $("#endDate").css({"border-color": "red"}) : $("#endDate").css({"border-color": ""});
-    (!startTime) ? $("#startTime").css({"border-color": "red"}) : $("#startTime").css({"border-color": ""});
-    (!endTime) ? $("#endTime").css({"border-color": "red"}) : $("#endTime").css({"border-color": ""});
-    (!motif) ? $("#motif").css({"border-color": "red"}) : $("#motif").css({"border-color": ""});
-    var dateRequest = { code:code,startDate:startDate,endDate:endDate,startTime:startTime, endTime:endTime, motif:motif,recovery:recovery, duration: (leaveDuration + leaveDurationTwo),priority:$("#toggle").is(':checked')}
-    if ( startDate && endDate && startTime && endTime && motif) {
+    (!startDate) ? $("#startDate").css({ "border-color": "red" }) : $("#startDate").css({ "border-color": "" });
+    (!endDate) ? $("#endDate").css({ "border-color": "red" }) : $("#endDate").css({ "border-color": "" });
+    (!startTime) ? $("#startTime").css({ "border-color": "red" }) : $("#startTime").css({ "border-color": "" });
+    (!endTime) ? $("#endTime").css({ "border-color": "red" }) : $("#endTime").css({ "border-color": "" });
+    (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
+    var dateRequest = { code: code, startDate: startDate, endDate: endDate, startTime: startTime, endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked') }
+    if (startDate && endDate && startTime && endTime && motif) {
         $('#loading').show();
         $.ajax({
-                url:"/makeRequest",
-                method:"POST",
-                data:dateRequest,
-                success: function(res) {
-                    $('#loading').hide();
-                    $("#notification").show();
-                    UpdateRequest()
-                    setTimeout(() => {
-                        $("#notification").hide();
-                    }, 3000);
-                }
+            url: "/makeRequest",
+            method: "POST",
+            data: dateRequest,
+            success: function (res) {
+                $('#loading').hide();
+                $("#notification").show();
+                UpdateRequest()
+                setTimeout(() => {
+                    $("#notification").hide();
+                }, 3000);
+            }
         })
     }
-    
+
 });
-function UpdateRequest(){
+function UpdateRequest() {
     $.ajax({
-        url:"/MyRequest",
-        method:"POST",
-        data:{
-            code:$("#code").text()
+        url: "/MyRequest",
+        method: "POST",
+        data: {
+            code: $("#code").text()
         },
-        success: function(res) {
+        success: function (res) {
             PendingAndDecline = res.filter(leave => leave.status != "approved");
             Approve = res.filter(leave => leave.status == "approved");
             myRequestRender(PendingAndDecline)
-        }   
-   })
+        }
+    })
 }
 UpdateRequest();
-function myRequestRender(data){
+function myRequestRender(data) {
     myRequestContent = '<div class="row p-3">'
-        var pendingNumber = 0;
-        var declinedNumber = 0;
-        var progressNumber = 0;
-       
-        data.forEach(element => {
-            if (element.status == "pending"){
-                renderMyRequest(element,"pending");
-                pendingNumber ++;
-            }
-            else if (element.status == "declined"){
-                renderMyRequest(element,"declined");
-                declinedNumber ++;
-            }
-            else {
-                renderMyRequest(element,"progress");
-                progressNumber ++;
-            }
-        });
-        myRequestContent += '</div>'
-        $('#container-request').html(myRequestContent);
-        $("#pending").text(pendingNumber)
-        $("#declined").text(declinedNumber)
-        $("#progress").text(progressNumber)
+    var pendingNumber = 0;
+    var declinedNumber = 0;
+    var progressNumber = 0;
+
+    data.forEach(element => {
+        if (element.status == "pending") {
+            renderMyRequest(element, "pending");
+            pendingNumber++;
+        }
+        else if (element.status == "declined") {
+            renderMyRequest(element, "declined");
+            declinedNumber++;
+        }
+        else {
+            renderMyRequest(element, "progress");
+            progressNumber++;
+        }
+    });
+    myRequestContent += '</div>'
+    $('#container-request').html(myRequestContent);
+    $("#pending").text(pendingNumber)
+    $("#declined").text(declinedNumber)
+    $("#progress").text(progressNumber)
 }
-function Approved(data){
-    if (data.length == 0){
+function Approved(data) {
+    if (data.length == 0) {
         $("#container-none").show()
         $("#container-upcoming").hide()
     }
     else {
         var approvedNumber = 0;
         data.forEach(element => {
-           
-           approvedNumber++
+
+            approvedNumber++
         });
         $("#approved").text(approvedNumber)
     }
 }
 var allStat = {
-    pending:"En attente",
-    approved:"Approuver",
-    declined:"Refuser",
-    progress:"En traitement",
+    pending: "En attente",
+    approved: "Approuver",
+    declined: "Refuser",
+    progress: "En traitement",
 }
-function renderMyRequest(Leave,stat){
-    myRequestContent +=`
+function renderMyRequest(Leave, stat) {
+    myRequestContent += `
     <div class="col-md-6 p-1">
-        <div class="card-list">
-            <div class="col-md-12 leave-title-${stat}">
-                <div class="d-flex align-items-center justify-content-center">
-                    <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${Leave.motif.substring(0,30)}...
+        <div class="card-item">
+            <div class="card-header">
+                <div class="motif">
+                    <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${Leave.motif}
                 </div>
-                ${stat == "pending" ? `<div class="action-field">
-                <button class="btn btn-sm btn-secondary action"><i class="fa-solid fa-file-pen"></i></button> 
-                <button class="btn btn-sm btn-secondary action ml-2"> <i class="fa-solid fa-square-xmark"></i></button>
-            </div>` : ``} 
-            </div>
-            <div class="row mt-2">
-                <div class="col-md-6">
-                    <div class="text-center">
-                        <i class="fa-solid fa-calendar text-center"></i>
+                <div class="buttons">
+                    ${stat == "pending" ? `
+                    <div class="action-field">
+                        <button class="btn btn-sm action"><i class="fa-solid fa-file-pen"></i></button> 
+                        <button class="btn btn-sm action ml-2"> <i class="fa-solid fa-square-xmark"></i></button>
+                    </div>` : ''} 
+                </div>
+                <div class="date-heure">
+                    <div class="d">
+                        <h1>
+                            <i class="fa-solid fa-calendar"></i>
+                            Date
+                        </h1>
+                        <div>
+                            <span>Début:</span>
+                            <span>${moment(Leave.date_start).format("DD/MM/YYYY")}</span>
+                        </div>
+                        <div>
+                            <span>Fin:</span>
+                            <span>${moment(Leave.date_end).format("DD/MM/YYYY")}</span>
+                        </div>
                     </div>
-                    <p class="mt-2 text-center">Date début : ${ moment(Leave.date_start).format("DD/MM/YYYY")}</p>
-                    <p class="text-center">Date fin : ${moment(Leave.date_end).format("DD/MM/YYYY")}</p>
-                </div>
-                <div class="col-md-6">
-                    <div class="text-center">
-                        <i class="fa-solid fa-clock"></i>
+                    <div class="h">
+                        <h1>
+                            <i class="fa-solid fa-clock"></i>
+                            Heure
+                        </h1>
+                        <div>
+                            <span>Début:</span>
+                            <span> ${Leave.hour_begin}</span>
+                        </div>
+                        <div>
+                            <span>Fin:</span>
+                            <span> ${Leave.hour_end}</span>
+                        </div>
                     </div>
-                    <p class="mt-2 text-center">Heure début : ${Leave.hour_begin}</p>
-                    <p class="text-center">Heure fin : ${Leave.hour_end}</p>
+                </div>
+                <div class="duration">
+                    <span>Duration:</span>
+                    <span>${Leave.duration} jours</span>
                 </div>
             </div>
-            <hr>
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="text-center">Duration : ${Leave.duration} </p>
-                </div>
-                <div class="col-md-6">
-                    <p class="text-center">Status : ${allStat[Leave.status]}</p>
-                </div>
+            <div class="card-footer ${stat}">
+                ${allStat[Leave.status]}
             </div>
         </div>
     </div>
@@ -234,108 +249,108 @@ var update = `
 `
 
 
-$("#startDate").on('change',  () =>{
-    
-    var startDate = $("#startDate").val()
-    var endDate = $("#endDate").val();
-
-    (!startDate) ? $("#startDate").css({"border-color": "red"}) : (
-        $("#startDate").css({"border-color": ""}),
-        (endDate) ? dateDiff(startDate,endDate) : ""
-    );
-})
-$("#endDate").on('change',  () =>{
+$("#startDate").on('change', () => {
 
     var startDate = $("#startDate").val()
     var endDate = $("#endDate").val();
 
-    (!endDate) ?  $("#endDate").css({"border-color": "red"}) : ( 
-        $("#endDate").css({"border-color": ""}),
-        (startDate ) ? dateDiff(startDate,endDate) : ""
+    (!startDate) ? $("#startDate").css({ "border-color": "red" }) : (
+        $("#startDate").css({ "border-color": "" }),
+        (endDate) ? dateDiff(startDate, endDate) : ""
     );
 })
-$("#startTime").on('change',  () =>{
+$("#endDate").on('change', () => {
+
+    var startDate = $("#startDate").val()
+    var endDate = $("#endDate").val();
+
+    (!endDate) ? $("#endDate").css({ "border-color": "red" }) : (
+        $("#endDate").css({ "border-color": "" }),
+        (startDate) ? dateDiff(startDate, endDate) : ""
+    );
+})
+$("#startTime").on('change', () => {
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
-    (!startTime) ? $("#startTime").css({"border-color": "red"}) : (
-        $("#startTime").css({"border-color": ""}),
-        (endTime) ? hourDiff(startTime,endTime) : ""
+    (!startTime) ? $("#startTime").css({ "border-color": "red" }) : (
+        $("#startTime").css({ "border-color": "" }),
+        (endTime) ? hourDiff(startTime, endTime) : ""
     );
-   
+
 })
-$("#endTime").on('change',  () =>{
+$("#endTime").on('change', () => {
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
-    
-    (!endTime) ? $("#endTime").css({"border-color": "red"}) : (
-        $("#endTime").css({"border-color": ""}),
-        (startTime) ? hourDiff(startTime,endTime) : ""
+
+    (!endTime) ? $("#endTime").css({ "border-color": "red" }) : (
+        $("#endTime").css({ "border-color": "" }),
+        (startTime) ? hourDiff(startTime, endTime) : ""
     );
-    
+
 })
-$("#motif").on('change',  () =>{
-    (!motif) ? $("#motif").css({"border-color": "red"}) : (
-        $("#motif").css({"border-color": ""})
+$("#motif").on('change', () => {
+    (!motif) ? $("#motif").css({ "border-color": "red" }) : (
+        $("#motif").css({ "border-color": "" })
     );
 })
 
 function dateDiff(starting, ending) {
-    if (ending != ""){
+    if (ending != "") {
         var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
         var endings = moment(ending, "YYYY-MM-DD HH:mm");
         var duration = moment.duration(endings.diff(startings));
         var dayl = duration.asDays();
         leaveDuration = dayl;
-        $("#dayNumber").text( (leaveDuration + leaveDurationTwo) + " jour(s)")
+        $("#dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
     }
     else {
         leaveDuration = 0;
-        $("#dayNumber").text( (leaveDuration + leaveDurationTwo) + " jour(s)")
+        $("#dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
     }
-  }
+}
 
-  function hourDiff(startTime, endTime) {
+function hourDiff(startTime, endTime) {
     var hours = 0;
     var minutes = 0;
     if (endTime != "") {
-      startTime = moment(startTime, "HH:mm:ss a");
-      endTime = moment(endTime, "HH:mm:ss a");
-      var duration = moment.duration(endTime.diff(startTime));
-      //duration in hours
-      var hours_fictif = 0;
-      var minutes_fictif = 0;
-      hours_fictif += parseInt(duration.asHours());
-  
-      // duration in minutes
-      minutes_fictif += parseInt(duration.asMinutes()) % 60;
-      if (minutes_fictif < 0) {
-        hours_fictif = hours_fictif - 1;
-        minutes_fictif = 60 + minutes_fictif;
-      }
-      while (minutes_fictif > 60) {
-        hours_fictif += 1;
-        minutes_fictif = minutes_fictif - 60;
-      }
-      if (hours_fictif < 0) {
-        hours_fictif = hours_fictif + 24;
-      }
-      hours += hours_fictif;
-      minutes += minutes_fictif;
-      if (hours < 6){
-        leaveDurationTwo =  0.5;
-        $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
-      }
-      else if(hours >= 6){
-        leaveDurationTwo = 1;
-        $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
-      }
-      else {
-        leaveDurationTwo = 0;
-        $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
-      }
+        startTime = moment(startTime, "HH:mm:ss a");
+        endTime = moment(endTime, "HH:mm:ss a");
+        var duration = moment.duration(endTime.diff(startTime));
+        //duration in hours
+        var hours_fictif = 0;
+        var minutes_fictif = 0;
+        hours_fictif += parseInt(duration.asHours());
+
+        // duration in minutes
+        minutes_fictif += parseInt(duration.asMinutes()) % 60;
+        if (minutes_fictif < 0) {
+            hours_fictif = hours_fictif - 1;
+            minutes_fictif = 60 + minutes_fictif;
+        }
+        while (minutes_fictif > 60) {
+            hours_fictif += 1;
+            minutes_fictif = minutes_fictif - 60;
+        }
+        if (hours_fictif < 0) {
+            hours_fictif = hours_fictif + 24;
+        }
+        hours += hours_fictif;
+        minutes += minutes_fictif;
+        if (hours < 6) {
+            leaveDurationTwo = 0.5;
+            $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+        }
+        else if (hours >= 6) {
+            leaveDurationTwo = 1;
+            $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+        }
+        else {
+            leaveDurationTwo = 0;
+            $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+        }
     }
-  }
-  function dateWrite(startTime,endTime){
-    dateDiff(startTime,endTime);
-    hourDiff(startTime,endTime)
-  }
+}
+function dateWrite(startTime, endTime) {
+    dateDiff(startTime, endTime);
+    hourDiff(startTime, endTime)
+}
