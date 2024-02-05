@@ -42,7 +42,7 @@
                         <i class="fa-solid fa-bell icons mx-3"></i>
                         <span class="badge badge-danger">0</span>
                     </button>
-                    <button>
+                    <button onclick="logOut()">
                         <i class="fa-solid fa-power-off icons mx-3"></i>
                     </button>
                 </div>
@@ -332,6 +332,9 @@
                     }
                 }
             }
+        }
+        function logOut(){
+            window.location = "/exit_a";
         }
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
