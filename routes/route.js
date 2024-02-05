@@ -6,6 +6,7 @@ const StatusSchema = require("../models/status");
 const AbsentSchema = require("../models/absent");
 const OptSchema = require("../models/option");
 const LeaveSchema = require("../models/leave");
+const LeaveRequestTest = require("../models/LeaveRequest");
 const Log = require("../models/login_histo");
 const nodemailer = require("nodemailer");
 const extra_fs = require("fs-extra");
@@ -130,7 +131,7 @@ async function monthly_restart() {
       });
       if (now != opt_daily.month_change) {
         await addin_leave();
-        await send_email_attachement();
+        //await send_email_attachement();
         await OptSchema.findOneAndUpdate(
           { _id: "636247a2c1f6301f15470344" },
           { month_change: now, email_sent: [] }
@@ -287,7 +288,7 @@ async function contract_expiration() {
 routeExp.route("/").get(async function (req, res) {
   var session = req.session;
   if (session.occupation_u == "User") {
-    res.redirect("/employee");
+    res.redirect("/mySpace");
   } else if (session.occupation_a == "Admin") {
     res.redirect("/home");
   } else if (session.occupation_tl == "Surveillant") {
@@ -793,7 +794,7 @@ routeExp.route("/employee").get(async function (req, res) {
                 { _id: "636247a2c1f6301f15470344" },
                 { $push: { email_sent: session.m_code } }
               );
-              send_alert_late(session.m_code, late_confirm, mailing_all);
+              //send_alert_late(session.m_code, late_confirm, mailing_all);
             }
           } else {
             if (opt.email_sent.includes(session.m_code)) {
@@ -802,7 +803,7 @@ routeExp.route("/employee").get(async function (req, res) {
                 { _id: "636247a2c1f6301f15470344" },
                 { $push: { email_sent: session.m_code } }
               );
-              send_alert_late(session.m_code, late_confirm, mailing_spec);
+              //send_alert_late(session.m_code, late_confirm, mailing_spec);
             }
           }
         }
@@ -2746,12 +2747,14 @@ routeExp.route("/takeleave").post(async function (req, res) {
               new_leave.rest = new_leave.rest - second[2];
               new_leave.acc = new_leave.acc - second[2];
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
               res.send("Ok");
             } else {
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
@@ -2827,6 +2830,7 @@ routeExp.route("/takeleave").post(async function (req, res) {
               new_leave.date_end = second[1];
               new_leave.duration = second[2];
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
@@ -2834,6 +2838,7 @@ routeExp.route("/takeleave").post(async function (req, res) {
               res.send("Ok");
             } else {
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();

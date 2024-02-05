@@ -68,9 +68,10 @@ $("#sendRequest").on('click', () => {
                 $('#loading').hide();
                 $("#notification").show();
                 UpdateRequest()
+                restore();
                 setTimeout(() => {
                     $("#notification").hide();
-                }, 3000);
+                }, 5000);
             }
         })
     }
@@ -86,7 +87,6 @@ function UpdateRequest() {
         success: function (res) {
             PendingAndDecline = res.filter(leave => leave.status != "approved");
             Approves = res.filter(leave => leave.status == "approved");
-            console.log(Approves)
             myRequestRender(PendingAndDecline)
             Approved(Approves)
         }
@@ -162,10 +162,17 @@ function Approved(data) {
                             </div>
                         </div>
                     </div>
+                    <div class="d-flex justify-content-between">
                     <div class="duration">
-                        <span>Duration:</span>
+                        <span>Durée:</span>
                         <span>${element.duration} jours</span>
                     </div>
+                    <div class="duration">
+                        <span>Rest =></span>
+                        <span>Accumulée: ${element.acc} | ouvert: ${element.rest}</span>
+                    </div>
+                    </div>
+                    
                 </div>
                 <div class="card-footer approved">
                     ${allStat[element.status]}
@@ -232,7 +239,7 @@ function renderMyRequest(Leave, stat) {
                     </div>
                 </div>
                 <div class="duration">
-                    <span>Duration:</span>
+                    <span>Durée:</span>
                     <span>${Leave.duration} jours</span>
                 </div>
             </div>
@@ -406,4 +413,14 @@ function hourDiff(startTime, endTime) {
 function dateWrite(startTime, endTime) {
     dateDiff(startTime, endTime);
     hourDiff(startTime, endTime)
+}
+function restore(){
+    $("#startDate").val("");
+    $("#endDate").val("");
+    $("#startTime").val("");
+    $("#endTime").val("");
+    $("#motif").val("");
+    $("#recovery").val("");
+    $('#toggle').prop('checked', false);
+    $("#dayNumber").val("0");
 }

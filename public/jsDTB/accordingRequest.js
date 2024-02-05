@@ -109,7 +109,10 @@ function According(id,code,type){
     if (typeof noType === 'undefined' || noType == "true"){
         $("#typeLeave").val(type);
         $("#typeLeave").prop("disabled",true);
-        $("#title").text("Le type de congé décidé par les ressource humaines est:")
+        $("#title").text("Le type de congé décidé par la ressource humaine est:")
+    }
+    else {
+        $('#typeLeave').val("")
     }
     idActive = id;
     var userActive = users.find(user => user.m_code == code);
@@ -119,7 +122,7 @@ function According(id,code,type){
 }
 function Declined(id,code){
     idActive = id;
-    $("#codeDecline").text(`Veuilez ecrire en dessous le refus de l'absence de ${code}`);
+    $("#codeDecline").text(`Veuilez ecrire en dessous la raison du refus d'absence de ${code}`);
     $("#ModalDecline").show();
 }
 function closeModal(){
@@ -153,11 +156,12 @@ function Approve(){
             UpdateRequest();
             $("#waitingApprove").css('opacity','0')
             closeModal();
-            $('#notification').text("Requête refuser");
+            $('#notification').text("Requête accepter avec success");
+            $("#notification").attr("class","notice-success")
             $('#notification').show();
             setTimeout(() => {
                 $('#notification').hide();
-            }, 3000);
+            }, 5000);
         }   
    })
 }
@@ -175,10 +179,11 @@ function ApproveLast(){
                         $("#waitingApprove").css('opacity','0')
                         closeModal();
                         $('#notification').text("Requête accepter avec success");
+                        $("#notification").attr("class","notice-success")
                         $('#notification').show();
                         setTimeout(() => {
                             $('#notification').hide();
-                        }, 3000);
+                        }, 5000);
                         }
                         else {
         
@@ -207,10 +212,11 @@ function Decline(){
                 $("#waitingDecline").css('opacity','0')
                 closeModal();
                 $('#notification').text("La requête a été refuser");
+                $("#notification").attr("class","notice-denied")
                 $('#notification').show();
                 setTimeout(() => {
                     $('#notification').hide();
-                }, 3000);
+                }, 5000);
             }   
        })
     } 
@@ -246,10 +252,11 @@ function registerLeave(){
                     $("#waitingApprove").css('opacity','0')
                     closeModal();
                     $('#notification').text("La requête a été valider");
+                    $("#notification").attr("class","notice-success")
                     $('#notification').show();
                     setTimeout(() => {
                         $('#notification').hide();
-                    }, 3000);
+                    }, 5000);
                 }   
            })
         }   
