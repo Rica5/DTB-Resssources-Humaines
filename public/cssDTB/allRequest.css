@@ -379,3 +379,7 @@ select#typeLeave:focus {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     /* Add a subtle box-shadow on focus */
 }
+.disabled {
+    pointer-events: none; /* Disable pointer events */
+    opacity: 0.5; /* Apply opacity to visually indicate disabled state */
+  }

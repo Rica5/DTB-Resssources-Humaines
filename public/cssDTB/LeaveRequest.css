@@ -611,17 +611,21 @@ input:focus {
 .card-item .card-footer.pending {
     background: #e2df2b;
     color: #000;
+    transition: all 0.5s ease-in;
 }
 .card-item .card-footer.progress {
     background: #29ace9;
     color: #fff;
+    transition: all 0.5s ease-in;
 }
 
 .card-item .card-footer.declined {
     background: #e94040;
     color: #fff;
+    transition: all 0.5s ease-in;
 }
 .card-item .card-footer.approved {
     background: #22b929;
     color: #fff;
+    transition: all 0.5s ease-in;
 }
