@@ -2602,13 +2602,7 @@ routeExp.route("/list_leave").post(async function (req, res) {
 //       }
 //     )
 //     .then(async () => {
-//      var user = await UserSchema.find({status:"Actif",profil:"avatar.png",occupation:"User"})
-//       for(u=0;u<user.length;u++){
-//         await OptSchema.findOneAndUpdate(
-//           { _id: "636247a2c1f6301f15470344" },
-//           { $push: { warn_user: user[u].m_code } }
-//         );
-//       }
+//       await UserSchema.updateMany({$set:{myNotifications:[]}})
 //       console.log("Done")
 //     })
 
@@ -2718,9 +2712,19 @@ routeExp.route("/takeleave").post(async function (req, res) {
                   { rest: last_rest,
                   $inc:{acc : accs} },
                 );
+                await LeaveRequestTest.findOneAndUpdate(
+                  { _id: leave_specific[change].request },
+                  { rest: last_rest,
+                  $inc:{acc : accs} },
+                );
               } else {
                 await LeaveSchema.findOneAndUpdate(
                   { _id: leave_specific[change]._id },
+                  { rest: last_rest ,
+                    $inc:{acc : accs}}
+                );
+                await LeaveRequestTest.findOneAndUpdate(
+                  { _id: leave_specific[change].request },
                   { rest: last_rest ,
                     $inc:{acc : accs}}
                 );
@@ -2747,14 +2751,18 @@ routeExp.route("/takeleave").post(async function (req, res) {
               new_leave.rest = new_leave.rest - second[2];
               new_leave.acc = new_leave.acc - second[2];
               await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
+              var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+              const io = req.app.get("io");
+              io.sockets.emit("isTreated", [idRequest,thisLeave]);
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
               res.send("Ok");
             } else {
               await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
+              var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+              const io = req.app.get("io");
+              io.sockets.emit("isTreated", [idRequest,thisLeave]);
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
@@ -2816,6 +2824,7 @@ routeExp.route("/takeleave").post(async function (req, res) {
               motif: motif,
               validation: false,
               acc: last_acc,
+              request:idRequest
             };
             var d1 = moment(leavestart).format("YYYY-MM-DD");
             var d2 = moment(leaveend).format("YYYY-MM-DD");
@@ -2830,7 +2839,9 @@ routeExp.route("/takeleave").post(async function (req, res) {
               new_leave.date_end = second[1];
               new_leave.duration = second[2];
               await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
+              var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+              const io = req.app.get("io");
+              io.sockets.emit("isTreated", [idRequest,thisLeave]);
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
@@ -2838,7 +2849,9 @@ routeExp.route("/takeleave").post(async function (req, res) {
               res.send("Ok");
             } else {
               await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest})
+              var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+              const io = req.app.get("io");
+              io.sockets.emit("isTreated", [idRequest,thisLeave]);
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
@@ -3046,6 +3059,10 @@ routeExp.route("/editleave").post(async function (req, res) {
                   { _id: leave_specific[c]._id },
                   { rest: leave_specific[c].rest + leave_edit.duration, $inc:{acc:accs} }
                 );
+                await LeaveRequestTest.findOneAndUpdate(
+                  { _id: leave_specific[c].request },
+                  { rest: leave_specific[c].rest + leave_edit.duration, $inc:{acc:accs} }
+                );
               }
             }
             if (rest == "") {
@@ -3076,9 +3093,17 @@ routeExp.route("/editleave").post(async function (req, res) {
                   { _id: leave_specific[change]._id },
                   { rest: last_rest , $inc:{acc:accs}}
                 );
+                await LeaveRequestTest.findOneAndUpdate(
+                  { _id: leave_specific[change].request },
+                  { rest: last_rest , $inc:{acc:accs}}
+                );
               } else {
                 await LeaveSchema.findOneAndUpdate(
                   { _id: leave_specific[change]._id },
+                  { rest: last_rest , $inc:{acc:accs} }
+                );
+                await LeaveRequestTest.findOneAndUpdate(
+                  { _id: leave_specific[change].request },
                   { rest: last_rest , $inc:{acc:accs} }
                 );
               }
@@ -3104,12 +3129,14 @@ routeExp.route("/editleave").post(async function (req, res) {
               new_leave.rest = new_leave.rest - second[2];
               new_leave.acc = new_leave.acc - second[2];
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
               res.send("Ok");
             } else {
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
@@ -3181,6 +3208,10 @@ routeExp.route("/editleave").post(async function (req, res) {
                     { _id: leave_specific[c]._id },
                     { rest: leave_specific[c].rest + leave_edit.duration }
                   );
+                  await LeaveRequestTest.findOneAndUpdate(
+                    { _id: leave_specific[c].request },
+                    { rest: leave_specific[c].rest + leave_edit.duration }
+                  );
                 }
               } else {
                 var year_change = await LeaveSchema.find({
@@ -3234,12 +3265,14 @@ routeExp.route("/editleave").post(async function (req, res) {
               new_leave.date_end = second[1];
               new_leave.duration = second[2];
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();
               res.send("Ok");
             } else {
               await LeaveSchema(new_leave).save();
+              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave();

@@ -40,7 +40,7 @@
                 <div class="notif d-flex justify-content-end mt-2">
                     <button onclick="openNotif(this)">
                         <i class="fa-solid fa-bell icons mx-3"></i>
-                        <span class="badge badge-danger">0</span>
+                        <span id="numberNotification" class="badge badge-danger">0</span>
                     </button>
                     <button onclick="logOut()">
                         <i class="fa-solid fa-power-off icons mx-3"></i>
@@ -265,43 +265,8 @@
                     <i class="fa-solid fa-bell icons"></i>
                     Notifications:
                 </h2>
-                <div class="notification-list">
-                    <!-- notification item -->
-                    <div class="notification-item">
-                        <h1>#titre de la notification</h1>
-                        <p class="message">Message notification blablabla ici</p>
-                        <div class="date-time">
-                            <span>30/01/2024 14:24</span>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <h1>#titre de la notification</h1>
-                        <p class="message">Message notification blablabla ici</p>
-                        <div class="date-time">
-                            <span>30/01/2024 14:24</span>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <h1>#titre de la notification</h1>
-                        <p class="message">Message notification blablabla ici</p>
-                        <div class="date-time">
-                            <span>30/01/2024 14:24</span>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <h1>#titre de la notification</h1>
-                        <p class="message">Message notification blablabla ici</p>
-                        <div class="date-time">
-                            <span>30/01/2024 14:24</span>
-                        </div>
-                    </div>
-                    <div class="notification-item">
-                        <h1>#titre de la notification</h1>
-                        <p class="message">Message notification blablabla ici</p>
-                        <div class="date-time">
-                            <span>30/01/2024 14:24</span>
-                        </div>
-                    </div>
+                <div id="notifContent" class="notification-list">
+                    
                 </div>
             </div>
         </div>
@@ -339,7 +304,49 @@
     </script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    <script src="/js_code/socket.js"></script>
+    <script>
+        var socket = io();
+        socket.on('<%= codeUser %>',function (msg){
+              setnotification(msg);
+        })
+        socket.on("isTreated", function (response){
+            if (response[1].status == "approved"){
+              dropElementById(response[0])
+              Approves.push(response[1]);
+              Approved(Approves)
+            }
+            else {
+                replaceElementByIdPending(response[0],response[1])
+            }
+        })
+        function setnotification(theUser){
+          $.ajax({
+          url: "/getNotifications",
+          method: "POST",
+          data: {code:theUser},
+          success: function (data) {
+              var notifElement = ""; 
+              data.forEach(element => {
+                  notifElement += `
+                  <div class="notification-item">
+                      <h1>${element.title}</h1>
+                      <p class="message">${element.content}</p>
+                      <div class="date-time">
+                          <span>${element.datetime}</span>
+                      </div>
+                  </div>
+                  `
+              });
+              $("#numberNotification").text(data.length)
+              $("#notifContent").html(notifElement);
+          }
+      })
+        }
+        setnotification('<%= codeUser %>')
+  </script>
     <script src="../jsDTB/LeaveRequest.js"></script>
+
 
 </body>
 

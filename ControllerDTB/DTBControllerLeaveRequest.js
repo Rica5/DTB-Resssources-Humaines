@@ -18,7 +18,7 @@ const getHomePage = async (req,res) => {
     var session = req.session;
    if ( session.occupation_u == "User"){
         var user = await UserSchema.findOne({m_code:session.m_code});
-        res.render("PageEmployee/MySpace.html",{user:user});
+        res.render("PageEmployee/MonEspace.html",{user:user,codeUser:session.m_code});
    }
    else {
     res.send("Bad authentification please log in");
@@ -30,7 +30,7 @@ const getLeaveRequest = async (req,res) => {
     var session = req.session;
    if ( session.occupation_u == "User"){
     var user = await UserSchema.findOne({m_code:session.m_code});
-    res.render("PageEmployee/LeaveRequest.html",{user:user});
+    res.render("PageEmployee/FaireDemande.html",{user:user,codeUser:session.m_code});
    }
    else {
         res.send("Bad authentification please log in");
@@ -64,6 +64,7 @@ const makeLeaveRequest = async (req,res) => {
                     validation :[],
                 }
              await LeaveRequestTest(new_request).save();
+             await setGlobalAdminNotifications(`${new_request.m_code} à envoyé une demande d'absence pour ${new_request.duration} jour(s)`,req);
              res.send("Success")
         }
         catch(err){
@@ -89,16 +90,19 @@ const seePending = async (req,res) => {
     var session = req.session;
     if ( session.occupation_tl == "Surveillant"){
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
-        res.render("PageTL/DemandeConge.html",{users:user});
+        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        res.render("PageTL/DemandeConge.html",{users:user,notif:notif.notifications});
     }
     else if (session.occupation_op == "Opération"){
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
-        res.render("PageOperation/DemandeConge.html",{users:user});
+        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        res.render("PageOperation/DemandeConge.html",{users:user,notif:notif.notifications});
     }
     else if (session.occupation_a == "Admin") {
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
         noType = session.idUser == "645a417e9d34ed8965caea9e" ? true : false;
-        res.render("PageAdministration/DemandeConge.html",{users:user,noType:noType});
+        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        res.render("PageAdministration/DemandeConge.html",{users:user,noType:noType,notif:notif.notifications});
     }
     else {
         res.send("Bad auth, please log in");
@@ -116,15 +120,8 @@ const getPending = async (req,res) => {
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
-        if (session.idUser == "645a417e9d34ed8965caea9e"){
-            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 3] }}).populate({path:"validation.user",select:'usuel'});
-            res.json(allRequest);
-        }
-        else {
             var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 2] }}).populate({path:"validation.user",select:'usuel'});
             res.json(allRequest);
-        }
-       
     }
     else {
         res.send("Bad auth, please log in");
@@ -143,7 +140,16 @@ const answerRequest = async (req,res) => {
         user:session.idUser,
         approbation :response
        }
-       await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
+       var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true});
+       var title = `Absence pour ${thisLeave.motif}`
+        var content = "";
+        if (status == "declined"){
+           content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
+           setEachUserNotification(thisLeave.m_code,title,content,req);
+        }
+        const io = req.app.get("io");
+        io.sockets.emit("isTreated", [id,thisLeave]);
+        io.sockets.emit("tlDone", "Treated");
         res.json("Ok");
     }
     else if (session.occupation_op == "Opération"){
@@ -155,7 +161,16 @@ const answerRequest = async (req,res) => {
          user:session.idUser,
          approbation :response
         }
-        await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
+        var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true})
+        var title = `Absence pour ${thisLeave.motif}`
+        var content = "";
+        if (status == "declined"){
+           content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
+           setEachUserNotification(thisLeave.m_code,title,content,req);
+        }
+        const io = req.app.get("io");
+        io.sockets.emit("isTreated", [id,thisLeave]);
+        io.sockets.emit("ropDone", "Treated");
          res.json("Ok");
     }
     else if (session.occupation_a == "Admin") {
@@ -163,33 +178,58 @@ const answerRequest = async (req,res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
-        if (session.idUser == "645a417e9d34ed8965caea9e"){
-            status = response == "true" ? "approved" : "declined";
-            var approbator = {
-                user:session.idUser,
-                approbation :response
-                }
-                await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status})
-                var thisLeave = await LeaveRequestTest.findOne({_id:id});
-                res.json(thisLeave);
+        status = response == "true" ? "approved" : "declined";
+        var type = req.body.typeleave;
+        var approbator = {
+            user:session.idUser,
+            approbation :response
+        }
+        await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type})
+        var thisLeave = await LeaveRequestTest.findOne({_id:id});
+        var title = `Absence pour ${thisLeave.motif}`
+        var content = "";
+        if (status == "declined"){
+           content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`
         }
         else {
-             status = response == "true" ? "progress" : "declined";
-             var type = req.body.typeleave;
-             var approbator = {
-                user:session.idUser,
-                approbation :response
-                }
-                await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type})
-                res.json("Ok");
+            content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuver`
         }
-        
+        setEachUserNotification(thisLeave.m_code,title,content,req);
+        res.json(thisLeave);
     }
     else {
         res.send("Bad auth, please log in");
     }
 }
 
+//Get Notifications 
+const getNotifications = async (req,res) => {
+    var notifications = await UserSchema.findOne({m_code:req.body.code});
+    res.json(notifications.myNotifications);
+}
+async function setGlobalAdminNotifications(notification,req){
+    await Notif.findOneAndUpdate(
+      { _id: "64f1e60ae3038813b45c2db1" },
+      { $push: { notifications: notification } }
+    );
+    var notif = await Notif.findOne({
+      _id: "64f1e60ae3038813b45c2db1",
+    });
+    const io = req.app.get("io");
+    io.sockets.emit("notif", notif.notifications);
+}
+
+async function setEachUserNotification(code,title,content,req){
+   var myNotif = {
+        title:title,
+        content:content,
+        datetime:moment().format("DD/MM/YYYY hh:mm")
+   }
+   await UserSchema.findOneAndUpdate({m_code:code},{$push:{myNotifications:myNotif}})
+    const io = req.app.get("io");
+    io.sockets.emit(code, code);
+}
+
 module.exports = {
-    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest
+    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest, getNotifications
 }

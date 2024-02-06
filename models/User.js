@@ -34,6 +34,15 @@ const User = mongoose.Schema({
    entry:String,
    status:String,
    profil:String,
-   phone:String
+   phone:String,
+   myNotifications:[{
+      title:String,
+      content:String,
+      datetime:String,
+      isSeen:{
+         type:Boolean,
+         default:false
+      }
+   }]
 })
 module.exports = mongoose.model('cuserTest',User);

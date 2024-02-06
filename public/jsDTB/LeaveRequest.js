@@ -43,6 +43,7 @@ $("#myUpcoming").click(() => {
 })
 
 $("#sendRequest").on('click', () => {
+    $("#sendRequest").prop("disabled",true);
     var code = $("#code").text();
     var startDate = $("#startDate").val();
     var endDate = $("#endDate").val();
@@ -65,6 +66,7 @@ $("#sendRequest").on('click', () => {
             method: "POST",
             data: dateRequest,
             success: function (res) {
+                $("#sendRequest").prop("disabled",false);
                 $('#loading').hide();
                 $("#notification").show();
                 UpdateRequest()
@@ -174,7 +176,7 @@ function Approved(data) {
                     </div>
                     
                 </div>
-                <div class="card-footer approved">
+                <div id="${element._id}" class="card-footer approved">
                     ${allStat[element.status]}
                 </div>
             </div>
@@ -183,7 +185,6 @@ function Approved(data) {
             approvedNumber++
         });
         myUpcomingContent += '</div>';
-        console.log(myUpcomingContent)
         $('#container-upcoming').html(myUpcomingContent);
         $("#approved").text(approvedNumber)
 }
@@ -243,7 +244,7 @@ function renderMyRequest(Leave, stat) {
                     <span>${Leave.duration} jours</span>
                 </div>
             </div>
-            <div class="card-footer ${stat}">
+            <div id="${Leave._id}" class="card-footer ${stat}">
                 ${allStat[Leave.status]}
             </div>
         </div>
@@ -414,6 +415,19 @@ function dateWrite(startTime, endTime) {
     dateDiff(startTime, endTime);
     hourDiff(startTime, endTime)
 }
+function replaceElementByIdPending(id, newData) {
+    const index = PendingAndDecline.findIndex(item => item._id === id);
+
+    if (index !== -1) {
+        // Replace the element at the found index with the new data
+        PendingAndDecline[index] = { ...PendingAndDecline[index], ...newData };
+        myRequestRender(PendingAndDecline)
+    }
+}
+function dropElementById(id) {
+    PendingAndDecline = PendingAndDecline.filter(item => item._id != id);
+    myRequestRender(PendingAndDecline)
+}
 function restore(){
     $("#startDate").val("");
     $("#endDate").val("");
@@ -422,5 +436,5 @@ function restore(){
     $("#motif").val("");
     $("#recovery").val("");
     $('#toggle').prop('checked', false);
-    $("#dayNumber").val("0");
+    $("#dayNumber").text("0");
 }

@@ -22,7 +22,7 @@ function UpdateRequest(){
 function renderAllRequest(Leave){
     Leave.forEach(leave => {
         myRequestContent +=`
-    <div class="content-leave">
+    <div id="${leave._id}" class="content-leave">
                         <div class="code-person">
                         <div>
                         <p id="codeUser" class="code-text">${leave.m_code}</p>
@@ -168,37 +168,12 @@ function Approve(){
 function ApproveLast(){
     if (noType == "false"){
         if ($('#typeLeave').val() != ""){
-            $("#waitingApprove").css('opacity','1')
-                $.ajax({
-                    url:"/requestAnswer",
-                    method:"POST",
-                    data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val()},
-                    success: function(res) {
-                        if (res == "Ok"){
-                        UpdateRequest();
-                        $("#waitingApprove").css('opacity','0')
-                        closeModal();
-                        $('#notification').text("Requête accepter avec success");
-                        $("#notification").attr("class","notice-success")
-                        $('#notification').show();
-                        setTimeout(() => {
-                            $('#notification').hide();
-                        }, 5000);
-                        }
-                        else {
-        
-                        }
-                        
-                    }   
-            })
+            registerLeave()
            }
            else {
             $('#typeLeave').css('borderColor','red')
            }
     }
-    else {
-     registerLeave()
-    }  
  }
 function Decline(){
     if ($("#reason").val() != ""){
@@ -240,7 +215,7 @@ function registerLeave(){
     $.ajax({
         url:"/requestAnswer",
         method:"POST",
-        data:{id:idActive,response:true,reason:""},
+        data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val()},
         success: function(data) {
             $.ajax({
                 url:"/takeleave",
@@ -261,6 +236,4 @@ function registerLeave(){
            })
         }   
    })
-    
-
 }

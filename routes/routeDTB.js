@@ -1,6 +1,6 @@
 const express = require("express");
 const routeExpDTB = express.Router();
-const Controller = require("../ControllerDTB/DTBController")
+const Controller = require("../ControllerDTB/DTBControllerLeaveRequest")
 
 // Space Home for Employee
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);
@@ -16,5 +16,7 @@ routeExpDTB.route("/leavePending").get(Controller.seePending);
 routeExpDTB.route("/allRequest").post(Controller.getPending);
 //Response Request
 routeExpDTB.route("/requestAnswer").post(Controller.answerRequest);
+//getNotifications
+routeExpDTB.route("/getNotifications").post(Controller.getNotifications);
 
 module.exports = routeExpDTB;

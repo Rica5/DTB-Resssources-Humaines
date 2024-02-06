@@ -8,7 +8,7 @@
   <meta name="keywords" content="solumada-clocking" />
   <meta name="description" content="solumada-clocking" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Liste des congés</title>
+  <title>Demande des congés</title>
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images1/logo.jpg" />
   <!-- Fichier CSS -->
   <link rel="stylesheet" type="text/css" href="../assets/extra-libs/multicheck/multicheck.css" />
@@ -397,6 +397,73 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="/js_code/socket.js"></script>
   <script src="/jsDTB/accordingRequest.js"></script>
+  <script>
+    var notif = "<%= notif %>".split(",");
+    var socket = io();
+    const audio = new Audio("ring.wav");
+    socket.on("notif", function (msg) {
+      setnotification(msg);
+      UpdateRequest();
+      audio.play();
+    });
+    socket.on("isTreated", function (response){
+      $(`#${response[0]}`).addClass("disabled")
+    })
+    function setnotification(all_notifications) {
+      var notif =
+        "<li>" +
+        '<div class="">' +
+        '<a href="javascript:void(0)" class="link border-top">' +
+        '<div class="d-flex no-block align-items-center p-10">' +
+        "<span" +
+        ' class="' +
+        "btn btn-success btn-circle" +
+        "d-flex" +
+        "align-items-center" +
+        'justify-content-center"' +
+        '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
+        "</span>" +
+        '<div class="ms-2">' +
+        '<span id="alert" class="mail-desc"' +
+        ">Notifications de ce jour</span></div></div></a></div></li>";
+      for (i = 0; i < all_notifications.length; i++) {
+        if (
+          i != 8 &&
+          all_notifications[all_notifications.length - (i + 1)] != ""
+        ) {
+          notif +=
+            "<li>" +
+            '<div class="">' +
+            '<a href="javascript:void(0)" class="link border-top">' +
+            '<div class="d-flex no-block align-items-center p-10">' +
+            "<span" +
+            ' class="' +
+            "btn btn-warning btn-circle" +
+            "d-flex" +
+            "align-items-center" +
+            'justify-content-center"' +
+            '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
+            "</span>" +
+            '<div class="ms-2">' +
+            '<span id="alert" class="mail-desc"' +
+            ">" +
+            all_notifications[all_notifications.length - (i + 1)] +
+            "</span></div></div></a></div></li>";
+        } else {
+          break;
+        }
+      }
+      document.getElementById("card-notif").innerHTML = notif;
+      if (all_notifications[0] != "") {
+        document.getElementById("nbr-notif").innerHTML =
+          all_notifications.length;
+      } else {
+        document.getElementById("nbr-notif").innerHTML =
+          all_notifications.length - 1;
+      }
+    }
+    setnotification(notif);
+</script>
 </body>
 
 </html>
