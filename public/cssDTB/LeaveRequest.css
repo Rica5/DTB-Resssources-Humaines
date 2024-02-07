@@ -146,6 +146,11 @@
     box-shadow: 0 2px rgba(0, 0, 0, 0.2);
 }
 
+.container-request {
+    max-height: calc(200px * 3);
+    overflow-y: auto;
+}
+
 .container-none {
     height: 50vh;
     background-color: rgb(210, 211, 211, 0.5);
@@ -607,25 +612,53 @@ input:focus {
     flex-shrink: 0;
     font-size: 13px;
 }
+
+:root {
+    ---pending: #e2df2b;
+    ---declined: #e94040;
+    ---progress: #29ace9;
+    ---approved: #22b929;
+}
 /* status of card item */
 .card-item .card-footer.pending {
-    background: #e2df2b;
+    background: var(---pending);
     color: #000;
     transition: all 0.5s ease-in;
 }
 .card-item .card-footer.progress {
-    background: #29ace9;
+    background: var(---progress);
     color: #fff;
     transition: all 0.5s ease-in;
 }
 
 .card-item .card-footer.declined {
-    background: #e94040;
+    background: var(---declined);
     color: #fff;
     transition: all 0.5s ease-in;
 }
 .card-item .card-footer.approved {
-    background: #22b929;
+    background: var(---approved);
     color: #fff;
     transition: all 0.5s ease-in;
+}
+
+/* motif */
+.motif.declined > i{
+    color: var(---declined);
+}
+.motif.approved > i{
+    color: var(---approved);
+}
+.motif.progress > i{
+    color: var(---progress);
+}
+.motif.pending > i{
+    color: var(---pending);
+}
+
+@media screen and (max-width: 770px) {
+    
+    .day-number {
+        margin-top: 2px;
+    }
 }

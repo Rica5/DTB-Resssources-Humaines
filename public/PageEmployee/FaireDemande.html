@@ -20,8 +20,19 @@
      
         <div class="mt-3 menu-container">
             <div class="d-flex justify-content-between menu">
-                <div class="logo">
-                    <img class="img-logo" src="assets/images/solumada-logo.png" />
+                <div class="d-flex justy-content-start align-items-center">
+                    <div class="logo">
+                        <img class="img-logo" src="assets/images/solumada-logo.png" />
+                    </div> 
+                    <div class="notif notif-sm justify-content-end mt-2">
+                        <button onclick="openNotif(this)" class="notif-btn">
+                            <i class="fa-solid fa-bell icons mx-3"></i>
+                            <span id="numberNotification" class="badge badge-danger">0</span>
+                        </button>
+                        <button onclick="logOut()">
+                            <i class="fa-solid fa-power-off icons mx-3"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="menu mt-1">
                     <a href="/mySpace" class="text-menu mx-2">
@@ -37,8 +48,8 @@
                         Solumada News
                     </a>
                 </div>
-                <div class="notif d-flex justify-content-end mt-2">
-                    <button onclick="openNotif(this)">
+                <div class="notif notif-lg justify-content-end mt-2">
+                    <button onclick="openNotif(this)" class="notif-btn">
                         <i class="fa-solid fa-bell icons mx-3"></i>
                         <span id="numberNotification" class="badge badge-danger">0</span>
                     </button>
@@ -229,7 +240,7 @@
                                 <textarea id="recovery"></textarea>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between mt-3">
+                        <div class="d-flex justify-content-between flex-wrap mt-3">
                             <div class="d-flex justify-content-center align-items-center">
                                 <div>
                                     <p class="text-infos">Priorité haute </p>
@@ -265,6 +276,10 @@
                     <i class="fa-solid fa-bell icons"></i>
                     Notifications:
                 </h2>
+                <div class="notification-options">
+                    <button type="button" onclick="markAllAsRead()">Marquer tous comme lu</button>
+                    <button type="button" onclick="removeAllNotifications()">Effacer les notifications</button>
+                </div>
                 <div id="notifContent" class="notification-list">
                     
                 </div>
@@ -274,13 +289,18 @@
     <script>
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
+            let buttons = [...document.querySelectorAll('.notif button.notif-btn')];
+            console.log(buttons)
             // close modal
             if (button.classList.contains('selected')) {
-                button.classList.remove('selected');
+                buttons.forEach(btn => 
+                    btn.classList.remove('selected')
+                )
                 notif_div.classList.replace('show', 'hide');
             } else {
                 // open modal
-                button.classList.add('selected');
+                buttons.map(btn => btn.classList.add('selected'));
+
                 if (notif_div.classList.contains('hide')) {
                     notif_div.classList.replace('hide', 'show');
                 } else {
@@ -291,13 +311,16 @@
                     // close the notification modal when user click outsite its content
                     if (!e.target.closest('.notification-modal') && 
                     !e.target.closest('.notif')) {
-                        button.classList.remove('selected');
+                        buttons.forEach(btn => 
+                            btn.classList.remove('selected')
+                        )
                         notif_div.classList.remove('show');
                         notif_div.classList.remove('hide');
                     }
                 }
             }
         }
+
         function logOut(){
             window.location = "/exit_a";
         }
@@ -320,30 +343,130 @@
                 replaceElementByIdPending(response[0],response[1])
             }
         })
+
         function setnotification(theUser){
-          $.ajax({
-          url: "/getNotifications",
-          method: "POST",
-          data: {code:theUser},
-          success: function (data) {
-              var notifElement = ""; 
-              data.forEach(element => {
-                  notifElement += `
-                  <div class="notification-item">
-                      <h1>${element.title}</h1>
-                      <p class="message">${element.content}</p>
-                      <div class="date-time">
-                          <span>${element.datetime}</span>
-                      </div>
-                  </div>
-                  `
-              });
-              $("#numberNotification").text(data.length)
-              $("#notifContent").html(notifElement);
-          }
-      })
+            $.ajax({
+                url: "/getNotifications",
+                method: "POST",
+                data: {code:theUser},
+                success: function (data) {
+                    var notifElement = ""; 
+                    data.forEach(element => {
+                        notifElement += `
+                        <div id="${element._id}" class="notification-item ${element.isSeen ? 'seen' : ''}" onClick="markAsRead('${element._id}')">
+                            <h1>${element.title}</h1>
+                            <p class="message">${element.content}</p>
+                            <div class="date-time">
+                                <span>${element.datetime}</span>
+                            </div>
+                            <button type="button" class="remove-notif-btn" onClick="removeNotification('${element._id}')"><i class="fa-solid fa-times"></i></button>
+                        </div>
+                        `
+                    });
+                    let notificationCount = data.filter(e => !e.isSeen).length;
+                    $("#numberNotification").text(notificationCount);
+                    $("#notifContent").html(notifElement);
+                    // disable markAsRead and ClearNotifications
+                    if (notificationCount <= 0) {
+                        $('.notification-options > button').each((i, el) => {
+                            $(el).attr('disabled', '');
+                        })
+                    }
+                }
+            })
         }
-        setnotification('<%= codeUser %>')
+        setnotification('<%= codeUser %>');
+
+        function removeNotification(id) {
+            // supprimer une notification
+            // send request here
+            $.ajax({
+                url: `/remove-notification/${id}`,
+                method: "DELETE",
+                data: { notifId: id },
+                success: function (data) {
+                    if (data.ok) {
+                        $(`#${id}`).addClass('removing');
+                        setTimeout(() => {
+                            $(`#${id}`).remove();
+                        }, 200);
+                        let notifCount = $("#numberNotification").text();
+                        $("#numberNotification").text(notifCount - 1);
+                    } else {
+                        console.log(data.message)
+                    }
+                },
+                error: function(err) {
+                    console.error(err)
+                }
+            });
+
+        }
+
+        function removeAllNotifications() {
+            // supprimer toutes les notifications
+            $.ajax({
+                url: "/removeall-notification",
+                method: "DELETE",
+                success: function (data) {
+                    if (data.ok) {
+                        $('#notifContent > div').each((index, element) => {
+                            setTimeout(() => {
+                                $(element).addClass('removing');
+                                setTimeout(() => {
+
+                                    $(element).remove();
+                                }, 300);
+                            }, index * 300);
+                        });
+                    } else {
+                        console.log(data.message)
+                    }
+                },
+                error: function(err) {
+                    console.error(err)
+                }
+            });
+        }
+
+        function markAsRead(id) {
+            // send request to the server
+            $.ajax({
+                url: `/markAsRead-notification/${id}`,
+                method: "PUT",
+                success: function (data) {
+                    if (data.ok) {
+                        $(`#${id}`).addClass('seen');
+                        $(`#${id}`).removeAttr('onClick');
+                    } else {
+                        console.log(data.message)
+                    }
+                },
+                error: function(err) {
+                    console.error(err)
+                }
+            });
+        }
+
+        function markAllAsRead() {
+            $.ajax({
+                url: "/markAsReadAll-notification",
+                method: "PUT",
+                success: function (data) {
+                    if (data.ok) {
+                        $('#notifContent > div').each((index, element) => {
+                            $(element).addClass('seen');
+                        });
+                    } else {
+                        console.log(data.message)
+                    }
+                },
+                error: function(err) {
+                    console.error(err)
+                }
+            });
+        }
+
   </script>
     <script src="../jsDTB/LeaveRequest.js"></script>
 

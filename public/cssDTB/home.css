@@ -121,7 +121,7 @@
         border-top: 15px solid #6fc073;
         border-bottom: 15px solid #fff;
     }
-  }
+}
 
 /* max-lg */
 @media screen and (max-width: 1370px) {
@@ -178,7 +178,6 @@
     .quote {
         margin-bottom: 4rem;
     }
-    
 }
 :root {
     --ovy: #ffff;
