@@ -230,6 +230,99 @@ async function setEachUserNotification(code,title,content,req){
     io.sockets.emit(code, code);
 }
 
+async function removeNotification(req, res) {
+    let mCode = req.session.m_code;
+    try {
+        const removed = await UserSchema.findOneAndUpdate(
+            { m_code: mCode}, 
+            {$pull: { myNotifications: { _id: req.params.id} }},
+            { new: true}
+        );
+
+        console.log(removed)
+    
+        return res.json({
+            ok: true,
+            message: 'Notification supprimée'
+        })
+        
+    } catch (error) {
+        return res.json({
+            ok: true,
+            message: 'Erreur'
+        })
+    }
+}
+
+async function removeAllNotification(req, res) {
+    let mCode = req.session.m_code;
+    try {
+        const removed = await UserSchema.findOneAndUpdate(
+            { m_code: mCode}, 
+            {$unset: { myNotifications: "" }},
+            { new: true}
+        );
+
+    
+        return res.json({
+            ok: true,
+            message: 'Toutes les notifications ont été supprimées.'
+        })
+        
+    } catch (error) {
+        return res.json({
+            ok: true,
+            message: 'Erreur'
+        })
+    }
+}
+
+async function markAsReadNotification(req, res) {
+    let mCode = req.session.m_code;
+    try {
+        const updated = await UserSchema.findOneAndUpdate(
+            { m_code: mCode, 'myNotifications._id': req.params.id}, 
+            {$set: {"myNotifications.$.isSeen": true }},
+            { new: true}
+        );
+
+        return res.json({
+            ok: true,
+            message: 'Notification lu'
+        })
+        
+    } catch (error) {
+        return res.json({
+            ok: true,
+            message: 'Erreur'
+        })
+    }
+}
+
+async function markAsReadAllNotification(req, res) {
+    let mCode = req.session.m_code;
+    try {
+        const updated = await UserSchema.findOneAndUpdate(
+            { m_code: mCode}, 
+            { $set: { "myNotifications.$[].isSeen": true } },
+            { new: true}
+        );
+
+        return res.json({
+            ok: true,
+            message: 'Notifications lu'
+        })
+        
+    } catch (error) {
+        return res.json({
+            ok: true,
+            message: 'Erreur'
+        })
+    }
+    
+}
+
 module.exports = {
-    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest, getNotifications
+    getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest, getNotifications,
+    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification
 }

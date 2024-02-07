@@ -199,7 +199,7 @@ function renderMyRequest(Leave, stat) {
     <div class="col-md-6 p-1">
         <div class="card-item">
             <div class="card-header">
-                <div class="motif">
+                <div class="motif ${Leave.status}">
                     <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${Leave.motif}
                 </div>
                 <div class="buttons">
