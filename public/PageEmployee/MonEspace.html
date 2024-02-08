@@ -106,7 +106,6 @@
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
             let buttons = [...document.querySelectorAll('.notif button.notif-btn')];
-            console.log(buttons)
             // close modal
             if (button.classList.contains('selected')) {
                 buttons.forEach(btn => 
@@ -170,7 +169,9 @@
                         `
                     });
                     let notificationCount = data.filter(e => !e.isSeen).length;
-                    $("#numberNotification").text(notificationCount);
+                    $("span#numberNotification").each((i, element) => {
+                        $(element).text(notificationCount)
+                    });
                     $("#notifContent").html(notifElement);
                     // disable markAsRead and ClearNotifications
                     if (notificationCount <= 0) {
@@ -182,7 +183,6 @@
             })
         }
         setnotification('<%= codeUser %>')
-
 
         function removeNotification(id) {
             // supprimer une notification
@@ -198,9 +198,9 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = $("#numberNotification").text();
-                        $("#numberNotification").text(notifCount - 1);
-                    } else {
-                        console.log(data.message)
+                        $("span#numberNotification").each((i, element) => {
+                            $(element).text(notifCount - 1)
+                        });
                     }
                 },
                 error: function(err) {
@@ -221,13 +221,13 @@
                             setTimeout(() => {
                                 $(element).addClass('removing');
                                 setTimeout(() => {
-
+                                    $("span#numberNotification").each((i, element) => {
+                                        $(element).text(0)
+                                    });
                                     $(element).remove();
                                 }, 300);
                             }, index * 300);
                         });
-                    } else {
-                        console.log(data.message)
                     }
                 },
                 error: function(err) {
@@ -245,8 +245,10 @@
                     if (data.ok) {
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
-                    } else {
-                        console.log(data.message)
+                        let notifCount = $("#numberNotification").text();
+                        $("span#numberNotification").each((i, element) => {
+                            $(element).text(notifCount - 1)
+                        });
                     }
                 },
                 error: function(err) {
@@ -263,9 +265,10 @@
                     if (data.ok) {
                         $('#notifContent > div').each((index, element) => {
                             $(element).addClass('seen');
+                            $("span#numberNotification").each((i, element) => {
+                                $(element).text(0)
+                            });
                         });
-                    } else {
-                        console.log(data.message)
                     }
                 },
                 error: function(err) {

@@ -366,7 +366,7 @@ async function switch_interface(session, mail, opt, res) {
         } else {
           session.occupation_u = "User";
           session.occupation_a = null;
-          res.redirect("/employee");
+          res.redirect("/mySpace");
         }
       } else {
         res.redirect("/employee");
@@ -488,15 +488,8 @@ async function login(username, pwd, session, res, req) {
                   session.time = "n";
                   logger.late = "n";
                 }
-                if (logger.act_stat == "VACATION" && logger.project != "RH") {
-                  req.session = null;
-                  res.render("LoginPage/Login.html", {
-                    erreur: "Vous êtes en congé prenez votre temps",
-                  });
-                } else {
                   session.reason = "N/A";
                   res.redirect("/mySpace");
-                }
               } else {
                 var new_log = {
                   m_code: logger.m_code,

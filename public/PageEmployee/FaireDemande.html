@@ -366,7 +366,9 @@
                         `
                     });
                     let notificationCount = data.filter(e => !e.isSeen).length;
-                    $("#numberNotification").text(notificationCount);
+                    $("span#numberNotification").each((i, element) => {
+                        $(element).text(notificationCount)
+                    });
                     $("#notifContent").html(notifElement);
                     // disable markAsRead and ClearNotifications
                     if (notificationCount <= 0) {
@@ -393,7 +395,9 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = $("#numberNotification").text();
-                        $("#numberNotification").text(notifCount - 1);
+                        $("span#numberNotification").each((i, element) => {
+                            $(element).text(notifCount - 1)
+                        });
                     } else {
                         console.log(data.message)
                     }
@@ -416,7 +420,9 @@
                             setTimeout(() => {
                                 $(element).addClass('removing');
                                 setTimeout(() => {
-
+                                    $("span#numberNotification").each((i, element) => {
+                                        $(element).text(0)
+                                    });
                                     $(element).remove();
                                 }, 300);
                             }, index * 300);
@@ -440,6 +446,10 @@
                     if (data.ok) {
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
+                        let notifCount = $("#numberNotification").text();
+                        $("span#numberNotification").each((i, element) => {
+                            $(element).text(notifCount - 1)
+                        });
                     } else {
                         console.log(data.message)
                     }
@@ -458,6 +468,9 @@
                     if (data.ok) {
                         $('#notifContent > div').each((index, element) => {
                             $(element).addClass('seen');
+                            $("span#numberNotification").each((i, element) => {
+                                $(element).text(0)
+                            });
                         });
                     } else {
                         console.log(data.message)
