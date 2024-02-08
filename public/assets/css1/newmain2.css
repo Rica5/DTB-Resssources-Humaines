@@ -218,7 +218,6 @@ iframe {
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
-    backdrop-filter: blur(10px);
   border-radius: 25px;
 }
 .wrap-login100 {
@@ -234,6 +233,7 @@ iframe {
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 40px 0px 33px 95px;
+  backdrop-filter: blur(6px);
 }
 .wrap-login000 {
   width: 1000px;

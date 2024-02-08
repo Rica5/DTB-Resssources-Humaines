@@ -1,6 +1,8 @@
 const express = require("express");
 const routeExpDTB = express.Router();
 const Controller = require("../ControllerDTB/DTBControllerLeaveRequest")
+const ControllerSalaryAdvance = require("../ControllerDTB/DTBControllerSalaryAdvance")
+const ControllerNews = require("../ControllerDTB/DTBControllerNews")
 
 // Space Home for Employee
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);
@@ -27,5 +29,10 @@ routeExpDTB.route("/markAsRead-notification/:id").put(Controller.markAsReadNotif
 // Mark as read all notifications
 routeExpDTB.route("/markAsReadAll-notification").put(Controller.markAsReadAllNotification);
 
+
+//Salary Advance
+routeExpDTB.route("/SalaryAdvance").get(ControllerSalaryAdvance.getSalaryAdvance);
+//Solumada News
+routeExpDTB.route("/News").get(ControllerNews.getPageNews);
 
 module.exports = routeExpDTB;
