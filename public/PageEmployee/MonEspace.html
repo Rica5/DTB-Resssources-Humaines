@@ -90,8 +90,8 @@
                     Vos notifications
                 </h2>
                 <div class="notification-options">
-                    <button type="button" onclick="markAllAsRead()">Marquer tous comme lu</button>
-                    <button type="button" onclick="removeAllNotifications()">Effacer les notifications</button>
+                    <button type="button" class="mark" onclick="markAllAsRead()">Marquer tous comme lu</button>
+                    <button type="button" class="delete" onclick="removeAllNotifications()">Effacer les notifications</button>
                 </div>
                 <div id="notifContent" class="notification-list">
                     <!-- notification item -->
@@ -149,13 +149,13 @@
             setnotification(msg);
         })
 
-        function setnotification(theUser) {
+        function setnotification(theUser){
             $.ajax({
                 url: "/getNotifications",
                 method: "POST",
-                data: { code: theUser },
+                data: {code:theUser},
                 success: function (data) {
-                    var notifElement = "";
+                    var notifElement = ""; 
                     data.forEach(element => {
                         notifElement += `
                         <div id="${element._id}" class="notification-item ${element.isSeen ? 'seen' : ''}" onClick="markAsRead('${element._id}')">
@@ -174,15 +174,19 @@
                     });
                     $("#notifContent").html(notifElement);
                     // disable markAsRead and ClearNotifications
-                    if (notificationCount <= 0) {
-                        $('.notification-options > button').each((i, el) => {
-                            $(el).attr('disabled', '');
-                        })
+                    // if all notifications read
+                    if (notificationCount === 0) {
+                        // disable marquer tous comme lu
+                        $('.notification-options > button.mark').attr('disabled', '');
+                    }
+                    if (data.length === 0) {
+                        // disable effacer les notifications
+                        $('.notification-options > button.delete').attr('disabled', '');
                     }
                 }
             })
         }
-        setnotification('<%= codeUser %>')
+        setnotification('<%= codeUser %>');
 
         function removeNotification(id) {
             // supprimer une notification
@@ -198,9 +202,15 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = $("#numberNotification").text();
-                        $("span#numberNotification").each((i, element) => {
-                            $(element).text(notifCount - 1)
-                        });
+                        if (notifCount > 0)
+                            $("span#numberNotification").each((i, element) => {
+                                $(element).text(notifCount - 1)
+                            });
+                        // disable effacer les notifications
+                        if ($('.notification-item').length === 0)
+                            $('.notification-options > button.delete').attr('disabled', '');
+                    } else {
+                        console.log(data.message)
                     }
                 },
                 error: function(err) {
@@ -228,6 +238,8 @@
                                 }, 300);
                             }, index * 300);
                         });
+                    } else {
+                        console.log(data.message)
                     }
                 },
                 error: function(err) {
@@ -238,6 +250,8 @@
 
         function markAsRead(id) {
             // send request to the server
+            if ($(`#${id}`).hasClass('seen')) return;
+            
             $.ajax({
                 url: `/markAsRead-notification/${id}`,
                 method: "PUT",
@@ -246,9 +260,12 @@
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
                         let notifCount = $("#numberNotification").text();
-                        $("span#numberNotification").each((i, element) => {
-                            $(element).text(notifCount - 1)
-                        });
+                        if (notifCount > 0)
+                            $("span#numberNotification").each((i, element) => {
+                                $(element).text(notifCount - 1)
+                            });
+                    } else {
+                        console.log(data.message)
                     }
                 },
                 error: function(err) {
@@ -268,7 +285,11 @@
                             $("span#numberNotification").each((i, element) => {
                                 $(element).text(0)
                             });
+                            
+                            $('.notification-options > button.mark').attr('disabled', '');
                         });
+                    } else {
+                        console.log(data.message)
                     }
                 },
                 error: function(err) {

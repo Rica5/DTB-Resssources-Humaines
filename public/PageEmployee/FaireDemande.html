@@ -17,7 +17,7 @@
 
 <body>
     <div class="element-container">
-     
+    
         <div class="mt-3 menu-container">
             <div class="d-flex justify-content-between menu">
                 <div class="d-flex justy-content-start align-items-center">
@@ -210,7 +210,7 @@
                                 </div>
                                 <div class="row col-md-12 p-0">
                                     <div class="col-md-4 d-flex w-100">
-                                      
+                                    
                                     </div>
                                     <div class="col-md-4 d-flex justify-content-between w-100">
                                         <p class="point-text ">Date fin :</p>
@@ -229,7 +229,7 @@
                                 </div>
                             </div>
                         </div>
-                       
+                        
                         <div class="row">
                             <div class="col-md-6">
                                 <p class="point-text mb-2">Motifs :</p>
@@ -252,17 +252,17 @@
                             </div>
                             <div class="d-flex justify-content-center align-items-center">
                                 <button id="sendRequest" class="btn btn-md btn-success">Envoyer demande <i class="fa-solid fa-paper-plane-o"></i></button>
-                            <div class="snippet mx-4 p-3" id="loading" data-title="dot-pulse">
-                                <div class="stage">
-                                  <div class="dot-pulse"></div>
+                                <div class="snippet mx-4 p-3" id="loading" data-title="dot-pulse">
+                                    <div class="stage">
+                                        <div class="dot-pulse"></div>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
                             
                         </div>
                 </div>
                 <div id="container-request" class="container-request mt-2">
-                   
+                
                 </div>
                 <div id="container-upcoming" class="container-request mt-2">
                     
@@ -277,8 +277,8 @@
                     Notifications:
                 </h2>
                 <div class="notification-options">
-                    <button type="button" onclick="markAllAsRead()">Marquer tous comme lu</button>
-                    <button type="button" onclick="removeAllNotifications()">Effacer les notifications</button>
+                    <button type="button" class="mark" onclick="markAllAsRead()">Marquer tous comme lu</button>
+                    <button type="button" class="delete" onclick="removeAllNotifications()">Effacer les notifications</button>
                 </div>
                 <div id="notifContent" class="notification-list">
                     
@@ -331,15 +331,15 @@
     <script>
         var socket = io();
         socket.on('<%= codeUser %>',function (msg){
-              setnotification(msg);
+            setnotification(msg);
         })
         socket.on("isTreated", function (response){
             if (response[1].status == "approved"){
-              dropElementById(response[0])
-              Approves.push(response[1]);
-              Approved(Approves)
-              $("#accumulate").html(Approves[Approves.length - 1].acc)
-              $("#openLeave").html(Approves[Approves.length - 1].rest)
+                dropElementById(response[0])
+                Approves.push(response[1]);
+                Approved(Approves)
+                $("#accumulate").html(Approves[Approves.length - 1].acc)
+                $("#openLeave").html(Approves[Approves.length - 1].rest)
             }
             else {
                 replaceElementByIdPending(response[0],response[1])
@@ -371,10 +371,14 @@
                     });
                     $("#notifContent").html(notifElement);
                     // disable markAsRead and ClearNotifications
-                    if (notificationCount <= 0) {
-                        $('.notification-options > button').each((i, el) => {
-                            $(el).attr('disabled', '');
-                        })
+                    // if all notifications read
+                    if (notificationCount === 0) {
+                        // disable marquer tous comme lu
+                        $('.notification-options > button.mark').attr('disabled', '');
+                    }
+                    if (data.length === 0) {
+                        // disable effacer les notifications
+                        $('.notification-options > button.delete').attr('disabled', '');
                     }
                 }
             })
@@ -395,9 +399,13 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = $("#numberNotification").text();
-                        $("span#numberNotification").each((i, element) => {
-                            $(element).text(notifCount - 1)
-                        });
+                        if (notifCount > 0)
+                            $("span#numberNotification").each((i, element) => {
+                                $(element).text(notifCount - 1)
+                            });
+                        // disable effacer les notifications
+                        if ($('.notification-item').length === 0)
+                            $('.notification-options > button.delete').attr('disabled', '');
                     } else {
                         console.log(data.message)
                     }
@@ -439,6 +447,8 @@
 
         function markAsRead(id) {
             // send request to the server
+            if ($(`#${id}`).hasClass('seen')) return;
+            
             $.ajax({
                 url: `/markAsRead-notification/${id}`,
                 method: "PUT",
@@ -447,9 +457,10 @@
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
                         let notifCount = $("#numberNotification").text();
-                        $("span#numberNotification").each((i, element) => {
-                            $(element).text(notifCount - 1)
-                        });
+                        if (notifCount > 0)
+                            $("span#numberNotification").each((i, element) => {
+                                $(element).text(notifCount - 1)
+                            });
                     } else {
                         console.log(data.message)
                     }
@@ -471,6 +482,8 @@
                             $("span#numberNotification").each((i, element) => {
                                 $(element).text(0)
                             });
+                            
+                            $('.notification-options > button.mark').attr('disabled', '');
                         });
                     } else {
                         console.log(data.message)
@@ -482,7 +495,7 @@
             });
         }
 
-  </script>
+    </script>
     <script src="../jsDTB/LeaveRequest.js"></script>
 
 
