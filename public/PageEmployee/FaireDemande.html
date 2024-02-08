@@ -315,6 +315,8 @@
               dropElementById(response[0])
               Approves.push(response[1]);
               Approved(Approves)
+              $("#accumulate").html(Approves[Approves.length - 1].acc)
+              $("#openLeave").html(Approves[Approves.length - 1].rest)
             }
             else {
                 replaceElementByIdPending(response[0],response[1])

@@ -110,10 +110,10 @@ async function daily_restart(req) {
           { _id: "64f1e60ae3038813b45c2db1" },
           { notifications: [] }
         );
-        await conge_define(req);
         await checkleave();
+        await conge_define(req);
         await leave_permission();
-        await contract_expiration();
+        await contract_expiration();          
         maj_done = false;
         await OptSchema.findOneAndUpdate(
           { _id: "636247a2c1f6301f15470344" },
@@ -159,7 +159,6 @@ async function arrange_leave_year(){
     var user = await UserSchema.find({status:"Actif",m_code:{$ne:"N/A"}});
     for (let index = 0; index < user.length; index++) {
       const element = user[index];
-      console.log(element.m_code)
       var leave_specific = await LeaveSchema.find({
         m_code: element.m_code,
         validation: false,
@@ -3510,6 +3509,10 @@ async function checkleave() {
               { _id: all_leave2[j]._id },
               { status: "Terminée" }
             );
+            await LeaveSchema.findOneAndUpdate(
+              { _id: all_leave2[j].request },
+              { status: "done" }
+            );
             var temp_notif = all_leave2[j].nom + " devrait revenir du congé";
             await Notif.findOneAndUpdate(
               { _id: "64f1e60ae3038813b45c2db1" },
@@ -3916,7 +3919,6 @@ function test_paie(
       }
     });
   } catch (error) {
-    console.log(error);
     res.send("Erreur veuillez réessayer ou contactez le développeur");
   }
 
