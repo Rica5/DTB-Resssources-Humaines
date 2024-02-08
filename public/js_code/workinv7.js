@@ -186,7 +186,7 @@ function workings() {
     a.disabled = false;
     l.disabled = false;
     w.disabled = true;
-    s.setAttribute("style", "background:#57b846;font-size:12px;");
+    s.setAttribute("class", "login10w-form-btn");
     s.innerHTML = "TRAVAILLER";
     chloc.style.display = "none";
     showButtons();
@@ -204,7 +204,7 @@ function aways() {
     w.disabled = false;
     l.disabled = false;
     a.disabled = true;
-    s.setAttribute("style", "background:#FFBA00;font-size:12px;");
+    s.setAttribute("class", "login10away-form-btn");
     s.innerHTML = "ABSENT(E)";
     chloc.style.display = "none";
     showButtons();
@@ -220,7 +220,7 @@ function lefts() {
     ch_heure.style.display = "none";
     info.style.display = "none";
     chloc.value = "Not defined";
-    s.setAttribute("style", "background:#E53F31;font-size:12px;");
+    s.setAttribute("class", "login101-form-btn");
     s.innerHTML = "PARTI";
     w.style.display = "none";
     a.style.display = "none";
