@@ -96,6 +96,7 @@ function UpdateRequest() {
 }
 UpdateRequest();
 function myRequestRender(data) {
+    data.sort((a, b) => b.date_start - a.date_start);
     myRequestContent = '<div class="row p-3">'
     var pendingNumber = 0;
     var declinedNumber = 0;
@@ -122,6 +123,7 @@ function myRequestRender(data) {
     $("#progress").text(progressNumber)
 }
 function Approved(data) {
+    data.sort((a, b) => b.date_start - a.date_start);
         myUpcomingContent = '<div class="row p-3">'
         var approvedNumber = 0;
         data.forEach(element => {
