@@ -829,7 +829,7 @@ routeExp.route("/employee").get(async function (req, res) {
           administrator = "Admin";
         }
         if (session.time != "n") {
-          res.render("PageEmployee/Pointage.html", {
+          res.render("PageEmployee/MaPointage.html", {
             user: user,
             forget: session.forget,
             latelist: late_confirm,
@@ -837,9 +837,10 @@ routeExp.route("/employee").get(async function (req, res) {
             status_poste: status_poste,
             administrator: administrator,
             warn_you: warn_you,
+            codeUser:session.m_code
           });
         } else {
-          res.render("PageEmployee/Pointage.html", {
+          res.render("PageEmployee/Mapointage.html", {
             user: user,
             forget: session.forget,
             latelist: late_confirm,
@@ -847,6 +848,7 @@ routeExp.route("/employee").get(async function (req, res) {
             status_poste: status_poste,
             administrator: administrator,
             warn_you: warn_you,
+            codeUser:session.m_code
           });
         }
   } else {
