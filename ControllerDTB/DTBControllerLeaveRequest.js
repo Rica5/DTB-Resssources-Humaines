@@ -238,8 +238,6 @@ async function removeNotification(req, res) {
             {$pull: { myNotifications: { _id: req.params.id} }},
             { new: true}
         );
-
-        console.log(removed)
     
         return res.json({
             ok: true,
