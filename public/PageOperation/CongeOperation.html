@@ -7,6 +7,7 @@
     <meta name="keywords" content="solumada-clocking" />
     <meta name="description" content="solumada-clocking" />
     <meta name="robots" content="noindex,nofollow" />
+    <link rel="stylesheet" href="cssDTB/notification.css">
     <title>Liste des congés</title>
     <link
       rel="icon"
@@ -94,6 +95,41 @@
           >
             <ul class="navbar-nav float-start me-auto"></ul>
             <ul class="navbar-nav float-end">
+              <li class="nav-item">
+                <button class="nav-link notif-btn" href="#" role="button"
+                onclick="openNotif(this)">
+                  <i class="font-24 mdi mdi-bell"><span style="color:red" id="nbr-notif" class="badge">0</span></i>
+                </button>
+                <ul hidden class="
+                      dropdown-menu dropdown-menu-end
+                      mailbox
+                      animated
+                      bounceInDown
+                    " aria-labelledby="2">
+                  <ul id="card-notif" class="list-style-none">
+                    <li>
+                      <div class="">
+                        <!-- Notif -->
+                        <a href="javascript:void(0)" class="link border-top">
+                          <div class="d-flex no-block align-items-center p-10">
+                            <span class="
+                                btn btn-success btn-circle
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                              "><i id="ring" class="mdi mdi-bell text-white fs-4"></i>
+                            </span>
+                            <div class="ms-2">
+                              <h5 class="mb-0">Notification aujourd'hui</h5>
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </ul>
+              </li>
+              <ul class="navbar-nav justify-content-center align-items-center d-flex">
               <li class="nav-item dropdown">
                 <a href="/exit_a"
                   ><button class="btn btn-danger">
@@ -101,6 +137,7 @@
                   </button></a
                 >
               </li>
+              </ul>
             </ul>
           </div>
         </nav>
@@ -168,7 +205,7 @@
             </div>
           </div>
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid position-relative">
           <div class="row">
             <div class="col-12">
               <div class="card">
@@ -554,6 +591,30 @@
               </div>
             </div>
           </div>
+          
+          <!-- notification modal -->
+          <div class="notification-modal">
+            <h2>
+                <i class="fa-solid fa-bell icons"></i>
+                Notifications:
+            </h2>
+            <div id="notifContent" class="notification-list">
+              <div id="${element._id}" class="notification-item seen" onClick="markAsRead('${element._id}')">
+                <div class="d-flex items-center gap-3">
+                  <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
+                    <i class="mdi mdi-bell text-white"></i>
+                  </span>
+                  <div>
+                    <h1>${element.title}</h1>
+                    <p class="message">${element.content}</p>
+                    <div class="date-time">
+                      <span>${element.datetime}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -573,6 +634,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="js_code/conge_operationsv1.js"></script>
     <script src="/js_code/socket.js"></script>
+    <script src="/jsDTB/notification.js"></script>
     <script>
       $(document).ready(function () {
         $("#annuel").datepicker({
@@ -582,6 +644,21 @@
           autoclose: true,
         });
       });
+      var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
+      var socket = io();
+      const audio = new Audio("ring.wav");
+      socket.on("notif", function (msg) {
+        setnotification(msg);
+        UpdateRequest();
+        audio.play();
+      });
+      socket.on("isTreated", function (response){
+        $(`#${response[0]}`).addClass("disabled")
+      })
+      socket.on("tlDone", function (msg){
+        UpdateRequest();
+      })
+      setnotification(notif);
     </script>
   </body>
 </html>

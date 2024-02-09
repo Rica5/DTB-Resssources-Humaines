@@ -38,7 +38,6 @@ function openNotif(button) {
 
 
 function setnotification(all_notifications) {
-  console.log(all_notifications)
     var notif = "";
     for (i = 0; i < all_notifications.length; i++) {
       let notification = all_notifications[all_notifications.length - (i + 1)];
@@ -58,6 +57,7 @@ function setnotification(all_notifications) {
                 <div class="date-time">
                   <span>${notification.date}</span>
                 </div>
+              </div>
               </div>
           </div>`
       } else {

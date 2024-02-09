@@ -2558,9 +2558,11 @@ routeExp.route("/conge").get(async function (req, res) {
         if (occupations) {
           another_post = occupations.occupation;
         }
+        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
         res.render("PageOperation/CongeOperation.html", {
           another: another_post,
           username: session.mailing,
+          notif:notif.notifications
         });
   } else {
     res.redirect("/");
