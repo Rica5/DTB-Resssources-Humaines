@@ -615,7 +615,7 @@
     <script src="/jsDTB/notification.js"></script>
 
     <script>
-      var notif = "<%= notif %>".split(",");
+     var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {

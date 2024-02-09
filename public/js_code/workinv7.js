@@ -113,6 +113,7 @@ function getRandomString(array) {
 }
 citation_jour.textContent = getRandomString(citationsMotivantes)
 var countdown = 0;
+var contexte = "";
 var totalTiersDeSeconde = 0;
 var startTime = Date.now();
 
@@ -158,7 +159,7 @@ function send_notif() {
         
       }
     };
-    http.send("code="+code_user);
+    http.send("code="+code_user+"&contexte="+contexte);
   }
 
 function openModal() {

@@ -171,12 +171,14 @@ function sendstatus(loc, stat, uc) {
           if (this.responseText.split(",")[0] == "DEJEUNER") {
             title_break.textContent = "VOTRE HEURE DE PAUSE DEJEUNER SE TERMINE DANS"
             countdown = 30;
+            contexte = "déjeuner";
             advice_for_you.textContent = getRandomString(lunch_advice)
             openModal();
           }
           else if (this.responseText.split(",")[0] == "PAUSE") {
             title_break.textContent = "VOTRE HEURE DE PAUSE SE TERMINE DANS"
             countdown = 15;
+            contexte = "pause"
             advice_for_you.textContent = getRandomString(break_advice)
             openModal();
           }

@@ -263,19 +263,26 @@ async function contract_expiration() {
           contract[c].date_fin
         );
         if (remain <= 30 && remain > 0) {
-          var temp_notif =
-            "Le contrat de " +
+          var temp_notif = {
+            title:"Contrat expiré de "+contract[c].m_code,
+            message: "Le contrat de " +
             contract[c].m_code +
             " se termine dans " +
             remain +
-            "jours";
+            "jours",
+            date:moment().format("DD/MM/YYYY hh:mm:ss")
+          }
+           
           await Notif.findOneAndUpdate(
             { _id: "64f1e60ae3038813b45c2db1" },
             { $push: { notifications: temp_notif } }
           );
         } else if (remain == 0) {
-          var temp_notif =
-            "Le contrat de " + contract[c].m_code + " se termine aujourd'hui";
+            var temp_notif = {
+              title:"Contrat terminée de "+contract[c].m_code,
+              message: "Le contrat de " + contract[c].m_code + " se termine aujourd'hui",
+              date:moment().format("DD/MM/YYYY hh:mm:ss")
+            }
           await Notif.findOneAndUpdate(
             { _id: "64f1e60ae3038813b45c2db1" },
             { $push: { notifications: temp_notif } }
@@ -501,11 +508,15 @@ async function login(username, pwd, session, res, req) {
                   intrusion: true,
                 };
                 await Log(new_log).save();
-                var temp_notif =
-                  "L'agent " +
-                  new_log.m_code +
-                  " s'est connecté sur un réseaux non autorisée sur l'appareille " +
-                  new_log.device.split(";")[1];
+                  var temp_notif = {
+                    title:"Intrusion dans le système",
+                    message:  "L'agent " +
+                    new_log.m_code +
+                    " s'est connecté sur un réseaux non autorisée sur l'appareille " +
+                    new_log.device.split(";")[1],
+                    date:moment().format("DD/MM/YYYY hh:mm:ss")
+                  }
+                  
                 await Notif.findOneAndUpdate(
                   { _id: "64f1e60ae3038813b45c2db1" },
                   { $push: { notifications: temp_notif } }
@@ -1096,7 +1107,12 @@ async function status_change(lc, st, session, res) {
 routeExp.route("/notify").post(async function (req, res) {
   var session = req.session;
   var m_code = req.body.code;
-  var notification = m_code + " depasse le temp de pause";
+  var contexte = req.body.contexte;
+  var notification = {
+    title:"Dépassement de temps",
+    message:  m_code + " depasse le temp de " + contexte,
+    date:moment().format("DD/MM/YYYY hh:mm:ss")
+  }
       await Notif.findOneAndUpdate(
         { _id: "64f1e60ae3038813b45c2db1" },
         { $push: { notifications: notification } }
@@ -3508,7 +3524,11 @@ async function checkleave() {
               { _id: all_leave2[j].request },
               { status: "done" }
             );
-            var temp_notif = all_leave2[j].nom + " devrait revenir du congé";
+            var temp_notif = {
+              title:"Congé terminée",
+              message:  all_leave2[j].nom + " devrait revenir du congé",
+              date:moment().format("DD/MM/YYYY hh:mm:ss")
+            }
             await Notif.findOneAndUpdate(
               { _id: "64f1e60ae3038813b45c2db1" },
               { $push: { notifications: temp_notif } }
