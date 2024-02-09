@@ -1,0 +1,100 @@
+
+.notification-modal {
+    position: absolute;
+    z-index: 1000;
+    height: 100%;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    min-width: 450px;
+    background-color: #fff;
+    box-shadow: -10px 0 80px rgba(0, 0, 0, 0.2);
+    transform: translateX(200%);
+    max-height: calc(100%);
+    width: 520px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s cubic-bezier(0.39, 0.575, 0.565, 1);
+}
+.notification-modal > h2 {
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    color: #83AF85;
+    padding: 1rem;
+    border-bottom: 1px solid #dadada;
+}
+.notification-modal.show {
+    transform: translateX(0);
+}
+.notification-modal.hide {
+    transform: translateX(200%);
+}
+.notification-list {
+    padding: 1rem;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    gap: .5rem;
+    padding-bottom: 1.5rem;
+}
+
+.notification-item {
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 5px 7px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid #dadada;
+    transition: all 0.3s ease;
+    position: relative;
+}
+.notification-item.removing {
+    transform: scale(0);
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+}
+.notification-item span i.mdi-bell {
+    font-size: 1.5rem !important;
+}
+.notification-item:hover {
+    border: 1px solid #83AF85;
+}
+.notification-item h1 {
+    font-size: 16px;
+    color: black;
+}
+.notification-item button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    color: #dadada;
+    border: none;
+    background-color: transparent;
+    outline: none;
+}
+.notification-item:not(.seen) button {
+    color: #8f97f7;
+    display: none;
+}
+.notification-item button:hover {
+    color: #bd4f4f;
+    cursor: pointer;
+}
+
+.notification-item p {
+    font-size: 14px;
+    color: rgb(59, 59, 59);
+}
+
+.notification-item:not(.seen) {
+    background-color: #2833ad2f;
+    border-color: #8f97f7;
+}
+.notification-item .date-time {
+    font-size: 12px;
+    color: #787878;
+}
