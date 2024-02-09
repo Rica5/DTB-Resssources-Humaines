@@ -77,6 +77,9 @@ $("#sendRequest").on('click', () => {
             }
         })
     }
+    else {
+        $("#sendRequest").prop("disabled",false);
+    }
 
 });
 function UpdateRequest() {

@@ -565,7 +565,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="/jsDTB/notification.js"></script>
     <script>
-      var notif = "<%= notif %>".split(",");
+       var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {

@@ -64,11 +64,15 @@ const makeLeaveRequest = async (req,res) => {
                     validation :[],
                 }
              await LeaveRequestTest(new_request).save();
-             await setGlobalAdminNotifications(`${new_request.m_code} à envoyé une demande d'absence pour ${new_request.duration} jour(s)`,req);
+             var notification = {
+                title:"Demande d'absence",
+                message:`${new_request.m_code} à envoyé une demande d'absence pour ${new_request.duration} jour(s)`,
+                date:moment().format("DD/MM/YYYY hh:mm:ss")
+             }
+             await setGlobalAdminNotifications(notification,req);
              res.send("Success")
         }
         catch(err){
-            console.log(err)
             res.send("Error")
         }
     }

@@ -354,7 +354,7 @@
     setnotification(msg);
      audio.play();
  })
- var notif = '<%= notif %>'.split(",");
+ var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
  
 setnotification(notif);
   window.onload = clockRunner();
