@@ -41,6 +41,7 @@
     />
 
     <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css" />
+    <link rel="stylesheet" href="cssDTB/notification.css">
   </head>
 
   <body>
@@ -116,37 +117,29 @@
                   </button></a
                 >
               </li>
-              <li class="nav-item dropdown">
-                <a
-                  class="nav-link dropdown-toggle waves-effect waves-dark"
-                  href="#"
-                  id="2"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <i class="font-24 mdi mdi-bell"
-                    ><span style="color: red" id="nbr-notif" class="badge"
-                      >0</span
-                    ></i
-                  >
-                </a>
-                <ul
-                  class="dropdown-menu dropdown-menu-end mailbox animated bounceInDown"
-                  aria-labelledby="2"
-                >
+              <li class="nav-item">
+                <button class="nav-link notif-btn" href="#" role="button"
+                onclick="openNotif(this)">
+                  <i class="font-24 mdi mdi-bell"><span style="color:red" id="nbr-notif" class="badge">0</span></i>
+                </button>
+                <ul hidden class="
+                      dropdown-menu dropdown-menu-end
+                      mailbox
+                      animated
+                      bounceInDown
+                    " aria-labelledby="2">
                   <ul id="card-notif" class="list-style-none">
                     <li>
                       <div class="">
                         <!-- Notif -->
                         <a href="javascript:void(0)" class="link border-top">
                           <div class="d-flex no-block align-items-center p-10">
-                            <span
-                              class="btn btn-success btn-circle d-flex align-items-center justify-content-center"
-                              ><i
-                                id="ring"
-                                class="mdi mdi-bell text-white fs-4"
-                              ></i>
+                            <span class="
+                                btn btn-success btn-circle
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                              "><i id="ring" class="mdi mdi-bell text-white fs-4"></i>
                             </span>
                             <div class="ms-2">
                               <h5 class="mb-0">Notification aujourd'hui</h5>
@@ -252,7 +245,7 @@
             </div>
           </div>
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid position-relative">
           <div class="row">
             <div class="col-12">
               <div class="card">
@@ -298,6 +291,31 @@
               </div>
             </div>
           </div>
+          
+          <!-- notification modal -->
+          <div class="notification-modal">
+            <h2>
+                <i class="fa-solid fa-bell icons"></i>
+                Notifications:
+            </h2>
+            <div id="notifContent" class="notification-list">
+              <div id="${element._id}" class="notification-item seen" onClick="markAsRead('${element._id}')">
+                <div class="d-flex items-center gap-3">
+                  <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
+                    <i class="mdi mdi-bell text-white"></i>
+                  </span>
+                  <div>
+                    <h1>${element.title}</h1>
+                    <p class="message">${element.content}</p>
+                    <div class="date-time">
+                      <span>${element.datetime}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -317,6 +335,7 @@
     <script src="/js_code/momentz.js"></script>
     <script src="/js_code/socket.js"></script>
     <script src="/js_code/filter_abs.js"></script>
+    <script src="/jsDTB/notification.js"></script>
     <script>
       var notif = "<%= notif %>".split(",");
       var socket = io();
@@ -326,50 +345,32 @@
         audio.play();
       });
       function setnotification(all_notifications) {
-        var notif =
-          "<li>" +
-          '<div class="">' +
-          '<a href="javascript:void(0)" class="link border-top">' +
-          '<div class="d-flex no-block align-items-center p-10">' +
-          "<span" +
-          ' class="' +
-          "btn btn-success btn-circle" +
-          "d-flex" +
-          "align-items-center" +
-          'justify-content-center"' +
-          '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
-          "</span>" +
-          '<div class="ms-2">' +
-          '<span id="alert" class="mail-desc"' +
-          ">Notifications de ce jour</span></div></div></a></div></li>";
+        var notif = "";
         for (i = 0; i < all_notifications.length; i++) {
+          let notification = all_notifications[all_notifications.length - (i + 1)];
           if (
             i != 8 &&
-            all_notifications[all_notifications.length - (i + 1)] != ""
+            notification != ""
           ) {
-            notif +=
-              "<li>" +
-              '<div class="">' +
-              '<a href="javascript:void(0)" class="link border-top">' +
-              '<div class="d-flex no-block align-items-center p-10">' +
-              "<span" +
-              ' class="' +
-              "btn btn-warning btn-circle" +
-              "d-flex" +
-              "align-items-center" +
-              'justify-content-center"' +
-              '><i id="ring"  class="mdi mdi-bell text-white fs-4"></i>' +
-              "</span>" +
-              '<div class="ms-2">' +
-              '<span id="alert" class="mail-desc"' +
-              ">" +
-              all_notifications[all_notifications.length - (i + 1)] +
-              "</span></div></div></a></div></li>";
+              notif += `
+              <div id="${i}" class="notification-item seen">
+                <div class="d-flex items-center gap-3">
+                  <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
+                    <i class="mdi mdi-bell text-white"></i>
+                  </span>
+                  <div>
+                    <h1>${notification.title}</h1>
+                    <p class="message">${notification}</p>
+                    <div class="date-time">
+                      <span>${notification.date}</span>
+                    </div>
+                  </div>
+              </div>`
           } else {
             break;
           }
         }
-        document.getElementById("card-notif").innerHTML = notif;
+        document.getElementById("notifContent").innerHTML = notif;
         if (all_notifications[0] != "") {
           document.getElementById("nbr-notif").innerHTML =
             all_notifications.length;
