@@ -24,7 +24,8 @@
   <link rel="stylesheet" href="cssDTB/notification.css">
   
   <script>
-  var users = JSON.parse('<%-JSON.stringify(users)%>')
+  var users = JSON.parse('<%-JSON.stringify(users)%>');
+  var role = '<%= role %>'
   </script>
 </head>
 
@@ -402,9 +403,17 @@
     var socket = io();
     const audio = new Audio("ring.wav");
     socket.on("notif", function (msg) {
-      setnotification(msg);
-      UpdateRequest();
-      audio.play();
+      var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
+        UpdateRequest();
+        audio.play();
+      }
+     
     });
     socket.on("isTreated", function (response){
       $(`#${response[0]}`).addClass("disabled")
@@ -412,7 +421,7 @@
     socket.on("tlDone", function (msg){
       UpdateRequest();
     })
-    setnotification(notif);
+    setnotification(notif,role);
 </script>
 </body>
 

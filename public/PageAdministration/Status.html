@@ -34,6 +34,9 @@
     <link rel="stylesheet" href="assets/libs/bootstrap/dist/css/bootstrap.css">
     <link href="../dist/css/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="cssDTB/notification.css">
+    <script>
+      var role =  '<%= role %>';
+   </script>
   </head>
 
   <body>
@@ -391,6 +394,11 @@
   }
   socket.on('notif', function(msg) {
     setnotification(msg);
+    var theNotif = msg[msg.length -1];
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
      audio.play();
  })
  var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);

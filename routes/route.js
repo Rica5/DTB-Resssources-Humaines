@@ -270,7 +270,8 @@ async function contract_expiration() {
             " se termine dans " +
             remain +
             "jours",
-            date:moment().format("DD/MM/YYYY hh:mm:ss")
+            date:moment().format("DD/MM/YYYY hh:mm:ss"),
+            role:["Admin","Gerant"]
           }
            
           await Notif.findOneAndUpdate(
@@ -281,7 +282,8 @@ async function contract_expiration() {
             var temp_notif = {
               title:"Contrat terminée de "+contract[c].m_code,
               message: "Le contrat de " + contract[c].m_code + " se termine aujourd'hui",
-              date:moment().format("DD/MM/YYYY hh:mm:ss")
+              date:moment().format("DD/MM/YYYY hh:mm:ss"),
+              role:["Admin","Gerant"]
             }
           await Notif.findOneAndUpdate(
             { _id: "64f1e60ae3038813b45c2db1" },
@@ -514,7 +516,8 @@ async function login(username, pwd, session, res, req) {
                     new_log.m_code +
                     " s'est connecté sur un réseaux non autorisée sur l'appareille " +
                     new_log.device.split(";")[1],
-                    date:moment().format("DD/MM/YYYY hh:mm:ss")
+                    date:moment().format("DD/MM/YYYY hh:mm:ss"),
+                    role:["Admin","Surveillant","Opération","Gerant"]
                   }
                   
                 await Notif.findOneAndUpdate(
@@ -1111,7 +1114,8 @@ routeExp.route("/notify").post(async function (req, res) {
   var notification = {
     title:"Dépassement de temps",
     message:  m_code + " depasse le temp de " + contexte,
-    date:moment().format("DD/MM/YYYY hh:mm:ss")
+    date:moment().format("DD/MM/YYYY hh:mm:ss"),
+    role:["Admin","Surveillant","Opération","Gerant"]
   }
       await Notif.findOneAndUpdate(
         { _id: "64f1e60ae3038813b45c2db1" },
@@ -1349,6 +1353,7 @@ routeExp.route("/home").get(async function (req, res) {
           { late_entry: 0 }
         );
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
         res.render("PageAdministration/Dashboard.html", {
           notif: notif.notifications,
           username: session.mailing,
@@ -1356,6 +1361,7 @@ routeExp.route("/home").get(async function (req, res) {
           nbr_act: nbr_actif.length,
           nbr_leave: nbr_leave,
           nbr_retard: nbr_retard,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -1371,10 +1377,12 @@ routeExp.route("/management").get(async function (req, res) {
           status: "Actif",
         });
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
         res.render("PageAdministration/Status.html", {
           users: alluser,
           username: session.mailing,
           notif: notif.notifications,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -1397,11 +1405,13 @@ routeExp.route("/managementtl").get(async function (req, res) {
           show_another = occupations.occupation;
         }
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        var role = "Surveillant";
         res.render("PageTL/StatusTL.html", {
           users: alluser,
           notif: notif.notifications,
           username: session.mailing,
           show_another: show_another,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -1421,11 +1431,13 @@ routeExp.route("/pointagetl").get(async function (req, res) {
         if (session.filtrage == "" && data_desired[session.m_code]) {
           session.filtrage = null;
           var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+          var role = "Surveillant"
           res.render("PageTL/TableauPointageTL.html", {
             timesheets: data_desired[session.m_code].datatowrite,
             username: session.mailing,
             notif: notif.notifications,
             show_another: show_another,
+            role:role
           });
         } else {
           data_desired[session.m_code] = {};
@@ -1443,11 +1455,13 @@ routeExp.route("/pointagetl").get(async function (req, res) {
             ],
           });
           var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+          var role = "Surveillant"
           res.render("PageTL/TableauPointageTL.html", {
             timesheets: timesheets,
             username: session.mailing,
             notif: notif.notifications,
             show_another: show_another,
+            role:role
           });
         }
   } else {
@@ -1700,10 +1714,12 @@ routeExp.route("/absencetl").get(async function (req, res) {
         if (occupations) {
           show_another = occupations.occupation;
         }
+        var role = "Surveillant"
         res.render("PageTL/ListeAbsenceTL.html", {
           notif: notif.notifications,
           username: session.mailing,
           show_another: show_another,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -1730,9 +1746,11 @@ routeExp.route("/userlist").get(async function (req, res) {
           maj_done = true;
         }
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
         res.render("PageAdministration/ListeUtilisateurs.html", {
           notif: notif.notifications,
           username: session.mailing,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -2006,10 +2024,12 @@ routeExp.route("/details").get(async function (req, res) {
         if (session.filtrage == "" && data_desired[session.m_code]) {
           session.filtrage = null;
           var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+           var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
           res.render("PageAdministration/TableauPointage.html", {
             timesheets: data_desired[session.m_code].datatowrite,
             username: session.mailing,
             notif: notif.notifications,
+            role:role
           });
         } else {
           data_desired[session.m_code] = {};
@@ -2027,10 +2047,12 @@ routeExp.route("/details").get(async function (req, res) {
             ],
           });
           var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+           var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
           res.render("PageAdministration/TableauPointage.html", {
             timesheets: timesheets,
             username: session.mailing,
             notif: notif.notifications,
+            role:role
           });
         }
   } else {
@@ -2283,9 +2305,11 @@ routeExp.route("/absencelist").get(async function (req, res) {
   var session = req.session;
   if (session.occupation_a == "Admin") {
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
         res.render("PageAdministration/ListeAbsence.html", {
           notif: notif.notifications,
           username: session.mailing,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -2369,9 +2393,11 @@ routeExp.route("/validelate").get(async function (req, res) {
   if (session.occupation_a == "Admin") {
     session.filtrage = null;
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
         res.render("PageAdministration/ValidationRetards.html", {
           notif: notif.notifications,
           username: session.mailing,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -2390,10 +2416,12 @@ routeExp.route("/validelatetl").get(async function (req, res) {
         if (occupations) {
           show_another = occupations.occupation;
         }
+        var role = "Surveillant"
         res.render("PageTL/ValidationRetardsTL.html", {
           notif: notif.notifications,
           username: session.mailing,
           show_another: show_another,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -2537,11 +2565,13 @@ routeExp.route("/leave").get(async function (req, res) {
         });
         var leave_in_progress = await LeaveSchema.find({status:"en cours"})
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
         res.render("PageAdministration/CongeEmployer.html", {
           users: alluser,
           username: session.mailing,
           notif: notif.notifications,
-          leave_in_progress:leave_in_progress
+          leave_in_progress:leave_in_progress,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -2559,10 +2589,12 @@ routeExp.route("/conge").get(async function (req, res) {
           another_post = occupations.occupation;
         }
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        var role = "Opération"
         res.render("PageOperation/CongeOperation.html", {
           another: another_post,
           username: session.mailing,
-          notif:notif.notifications
+          notif:notif.notifications,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -2574,9 +2606,11 @@ routeExp.route("/leavelist").get(async function (req, res) {
   var session = req.session;
   if (session.occupation_a == "Admin") {
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
         res.render("PageAdministration/ListeConges.html", {
           notif: notif.notifications,
           username: session.mailing,
+          role:role
         });
   } else {
     res.redirect("/");
@@ -3529,7 +3563,8 @@ async function checkleave() {
             var temp_notif = {
               title:"Congé terminée",
               message:  all_leave2[j].nom + " devrait revenir du congé",
-              date:moment().format("DD/MM/YYYY hh:mm:ss")
+              date:moment().format("DD/MM/YYYY hh:mm:ss"),
+              role:["Admin","Surveillant","Opération","Gerant"]
             }
             await Notif.findOneAndUpdate(
               { _id: "64f1e60ae3038813b45c2db1" },
@@ -3546,10 +3581,12 @@ routeExp.route("/fiche").get(async function (req, res) {
   if (session.occupation_a == "Admin") {
         var opt = await OptSchema.findOne({ _id: "636247a2c1f6301f15470344" });
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
         res.render("PageAdministration/CalculPaie.html", {
           opt: opt,
           username: session.mailing,
           notif: notif.notifications,
+          role:role
         });
   } else {
     res.redirect("/");

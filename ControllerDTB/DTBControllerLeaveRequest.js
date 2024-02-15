@@ -21,7 +21,7 @@ const getHomePage = async (req,res) => {
         res.render("PageEmployee/MonEspace.html",{user:user,codeUser:session.m_code});
    }
    else {
-    res.send("Bad authentification please log in");
+    res.redirect("/");
    }
 }
 
@@ -33,7 +33,7 @@ const getLeaveRequest = async (req,res) => {
     res.render("PageEmployee/FaireDemande.html",{user:user,codeUser:session.m_code});
    }
    else {
-        res.send("Bad authentification please log in");
+    res.redirect("/");
    }
 }
 // Make request
@@ -66,8 +66,9 @@ const makeLeaveRequest = async (req,res) => {
              await LeaveRequestTest(new_request).save();
              var notification = {
                 title:"Demande d'absence",
-                message:`${new_request.m_code} à envoyé une demande d'absence pour ${new_request.duration} jour(s)`,
-                date:moment().format("DD/MM/YYYY hh:mm:ss")
+                message:`${new_request.m_code} à envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
+                date:moment().format("DD/MM/YYYY hh:mm:ss"),
+                role:["Admin","Surveillant","Opération","Gerant"]
              }
              await setGlobalAdminNotifications(notification,req);
              res.send("Success")
@@ -77,7 +78,7 @@ const makeLeaveRequest = async (req,res) => {
         }
     }
     else {
-         res.send("Bad authentification please log in");
+        res.redirect("/");
     }
 }
 //get My request
@@ -92,75 +93,55 @@ const getMyRequest = async (req,res) => {
 //See pending request
 const seePending = async (req,res) => {
     var session = req.session;
-    if ( session.occupation_tl == "Surveillant"){
+     if (session.occupation_op == "Opération"){
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
-        res.render("PageTL/DemandeConge.html",{users:user,notif:notif.notifications});
-    }
-    else if (session.occupation_op == "Opération"){
-        var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
-        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
-        res.render("PageOperation/DemandeConge.html",{users:user,notif:notif.notifications});
+        var role = "Opération";
+        res.render("PageOperation/DemandeConge.html",{users:user,notif:notif.notifications,role:role});
     }
     else if (session.occupation_a == "Admin") {
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
-        noType = session.idUser == "645a417e9d34ed8965caea9e" ? true : false;
+        var role = "Admin";
+        role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
-        res.render("PageAdministration/DemandeConge.html",{users:user,noType:noType,notif:notif.notifications});
+        res.render("PageAdministration/DemandeConge.html",{users:user,notif:notif.notifications,role:role});
     }
     else {
-        res.send("Bad auth, please log in");
+        res.redirect("/");
     }
 }
 //Every request pending
 const getPending = async (req,res) => {
     var session = req.session;
-    if ( session.occupation_tl == "Surveillant"){
+    if (session.occupation_op == "Opération"){
         var allRequest = await LeaveRequestTest.find({status:{$ne:"done"},validation:[]});
         res.json(allRequest);
     }
-    else if (session.occupation_op == "Opération"){
-        var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 1] }}).populate({path:"validation.user",select:'usuel'});
-        res.json(allRequest);
-    }
     else if (session.occupation_a == "Admin") {
+        if (session.idUser == "645a417e9d34ed8965caea9e"){
             var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 2] }}).populate({path:"validation.user",select:'usuel'});
             res.json(allRequest);
+        }
+        else {
+            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 1] }}).populate({path:"validation.user",select:'usuel'});
+            res.json(allRequest);
+        }  
     }
     else {
-        res.send("Bad auth, please log in");
+        res.redirect("/");
     }
     
 }
 
 const answerRequest = async (req,res) => {
     var session = req.session;
-    if ( session.occupation_tl == "Surveillant"){
-       var id = req.body.id;
-       var response = req.body.response;
-       var comment = req.body.reason;
-       var status = response == "true" ? "progress" : "declined";
-       var approbator = {
-        user:session.idUser,
-        approbation :response
-       }
-       var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true});
-       var title = `Absence pour ${thisLeave.motif}`
-        var content = "";
-        if (status == "declined"){
-           content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
-           setEachUserNotification(thisLeave.m_code,title,content,req);
-        }
-        const io = req.app.get("io");
-        io.sockets.emit("isTreated", [id,thisLeave]);
-        io.sockets.emit("tlDone", "Treated");
-        res.json("Ok");
-    }
-    else if (session.occupation_op == "Opération"){
+   
+    if (session.occupation_op == "Opération"){
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
         var status = response == "true" ? "progress" : "declined";
+        var forRH = ""
         var approbator = {
          user:session.idUser,
          approbation :response
@@ -171,10 +152,28 @@ const answerRequest = async (req,res) => {
         if (status == "declined"){
            content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
            setEachUserNotification(thisLeave.m_code,title,content,req);
+           forRH = `Le ROP a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+           var notification = {
+            title:"Traitement congé",
+            message:forRH,
+            date:moment().format("DD/MM/YYYY hh:mm:ss"),
+            role:["Admin"]
+         }
+         await setGlobalAdminNotifications(notification,req);
+        }
+        else{
+            forRH = `Le ROP a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
+            var notification = {
+                title:"Traitement congé",
+                message:forRH,
+                date:moment().format("DD/MM/YYYY hh:mm:ss"),
+                role:["Admin"]
+             }
+             await setGlobalAdminNotifications(notification,req);
         }
         const io = req.app.get("io");
         io.sockets.emit("isTreated", [id,thisLeave]);
-        io.sockets.emit("ropDone", "Treated");
+        io.sockets.emit("ropDone", forRH);
          res.json("Ok");
     }
     else if (session.occupation_a == "Admin") {
@@ -182,27 +181,65 @@ const answerRequest = async (req,res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
-        status = response == "true" ? "approved" : "declined";
-        var type = req.body.typeleave;
-        var approbator = {
-            user:session.idUser,
-            approbation :response
-        }
-        await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type})
-        var thisLeave = await LeaveRequestTest.findOne({_id:id});
-        var title = `Absence pour ${thisLeave.motif}`
-        var content = "";
-        if (status == "declined"){
-           content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`
+        if (session.idUser == "645a417e9d34ed8965caea9e"){
+            status = response == "true" ? "approved" : "declined";
+            var approbator = {
+                user:session.idUser,
+                approbation :response
+                }
+                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true})
+                var title = `Absence pour ${thisLeave.motif}`
+                var content = "";
+                if (status == "declined"){
+                   content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`
+                }
+                else {
+                    content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuver`
+                }
+                setEachUserNotification(thisLeave.m_code,title,content,req);
+                res.json(thisLeave);
         }
         else {
-            content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuver`
+             status = response == "true" ? "progress" : "declined";
+             var type = req.body.typeleave;
+             var forGerant ="";
+             var approbator = {
+                user:session.idUser,
+                approbation :response
+                }
+                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type},{new:true});
+                var title = `Absence pour ${thisLeave.motif}`
+                var content = "";
+                if (status == "declined"){
+                   content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
+                   setEachUserNotification(thisLeave.m_code,title,content,req);
+                   forGerant = `Le RH a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+                    var notification = {
+                        title:"Traitement congé",
+                        message:forGerant,
+                        date:moment().format("DD/MM/YYYY hh:mm:ss"),
+                        role:["Gerant"]
+                    }
+                    await setGlobalAdminNotifications(notification,req);
+                }
+                else {
+                    forGerant = `Le RH a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+                    var notification = {
+                        title:"Traitement congé",
+                        message:forGerant,
+                        date:moment().format("DD/MM/YYYY hh:mm:ss"),
+                        role:["Gerant"]
+                    }
+                    await setGlobalAdminNotifications(notification,req);
+                }
+                const io = req.app.get("io");
+                io.sockets.emit("rhDone", forGerant);
+                res.json("Ok");
         }
-        setEachUserNotification(thisLeave.m_code,title,content,req);
-        res.json(thisLeave);
+        
     }
     else {
-        res.send("Bad auth, please log in");
+        res.redirect("/");
     }
 }
 
@@ -227,11 +264,12 @@ async function setEachUserNotification(code,title,content,req){
    var myNotif = {
         title:title,
         content:content,
-        datetime:moment().format("DD/MM/YYYY hh:mm")
+        datetime:moment().format("DD/MM/YYYY hh:mm"),
+        isSeen:false
    }
-   await UserSchema.findOneAndUpdate({m_code:code},{$push:{myNotifications:myNotif}})
+  await UserSchema.findOneAndUpdate({m_code:code},{$push:{myNotifications:myNotif}},{new :true })
     const io = req.app.get("io");
-    io.sockets.emit(code, code);
+    io.sockets.emit(code, myNotif);
 }
 
 async function removeNotification(req, res) {

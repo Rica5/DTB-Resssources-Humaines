@@ -106,7 +106,7 @@ function dateDiffers(created, now) {
   }
 
 function According(id,code,type){
-    if (typeof noType === 'undefined' || noType == "true"){
+    if (role == 'Gerant' ){
         $("#typeLeave").val(type);
         $("#typeLeave").prop("disabled",true);
         $("#title").text("Le type de congé décidé par la ressource humaine est:")
@@ -166,14 +166,39 @@ function Approve(){
    })
 }
 function ApproveLast(){
-    if (noType == "false"){
+    if (role == "Admin"){
         if ($('#typeLeave').val() != ""){
-            registerLeave()
+            $("#waitingApprove").css('opacity','1')
+                $.ajax({
+                    url:"/requestAnswer",
+                    method:"POST",
+                    data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val()},
+                    success: function(res) {
+                        if (res == "Ok"){
+                        UpdateRequest();
+                        $("#waitingApprove").css('opacity','0')
+                        closeModal();
+                        $('#notification').text("Requête accepter avec success");
+                        $("#notification").attr("class","notice-success")
+                        $('#notification').show();
+                        setTimeout(() => {
+                            $('#notification').hide();
+                        }, 5000);
+                        }
+                        else {
+        
+                        }
+                        
+                    }   
+            })
            }
            else {
             $('#typeLeave').css('borderColor','red')
            }
     }
+    else {
+     registerLeave()
+    } 
  }
 function Decline(){
     if ($("#reason").val() != ""){

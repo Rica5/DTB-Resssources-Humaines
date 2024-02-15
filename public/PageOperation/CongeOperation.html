@@ -48,6 +48,9 @@
       type="text/css"
       href="/assets/fontawesome-free-6.4.0-web/css/all.css"
     />
+    <script>
+      var role =  '<%= role %>';
+   </script>
   </head>
 
   <body>
@@ -645,20 +648,28 @@
         });
       });
       var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
-      var socket = io();
-      const audio = new Audio("ring.wav");
-      socket.on("notif", function (msg) {
-        setnotification(msg);
+    var socket = io();
+    const audio = new Audio("ring.wav");
+    socket.on("notif", function (msg) {
+      var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
         UpdateRequest();
         audio.play();
-      });
-      socket.on("isTreated", function (response){
-        $(`#${response[0]}`).addClass("disabled")
-      })
-      socket.on("tlDone", function (msg){
-        UpdateRequest();
-      })
-      setnotification(notif);
+      }
+     
+    });
+    socket.on("isTreated", function (response){
+      $(`#${response[0]}`).addClass("disabled")
+    })
+    socket.on("tlDone", function (msg){
+      UpdateRequest();
+    })
+    setnotification(notif,role);
     </script>
   </body>
 </html>

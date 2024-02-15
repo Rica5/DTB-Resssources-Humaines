@@ -36,6 +36,9 @@
 
     <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css" />
     <link rel="stylesheet" href="cssDTB/notification.css">
+    <script>
+       var role =  '<%= role %>';
+    </script>
   </head>
 
   <body>
@@ -374,15 +377,36 @@
     <script src="/js_code/socket.js"></script>
     <script src="/jsDTB/notification.js"></script>
     <script>
-       var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
+      var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        setnotification(msg);
-        audio.play();
+        var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
+        UpdateRequest();
+        audio.play()
+        }
       });
-      
-      setnotification(notif);
+      socket.on("isTreated", function (response){
+      $(`#${response[0]}`).addClass("disabled")
+    })
+    if (role =="Admin"){
+        socket.on("ropDone", function (msg){
+        UpdateRequest();
+      })
+    }
+    else {
+      socket.on("rhDone", function (msg){
+        UpdateRequest();
+      })
+    }
+    
+    setnotification(notif,role);
       var table = $("#zero_config").DataTable();
       function reloading() {
         var http = new XMLHttpRequest();
