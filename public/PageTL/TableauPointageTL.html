@@ -44,6 +44,9 @@
       href="/assets/fontawesome-free-6.4.0-web/css/all.css"
     />
     <link rel="stylesheet" href="cssDTB/notification.css">
+    <script>
+      var role =  '<%= role %>';
+   </script>
   </head>
 
   <body>
@@ -198,15 +201,6 @@
                   aria-expanded="false"
                   ><i class="mdi mdi-alarm-check"></i
                   ><span class="hide-menu">Validation des retards</span></a
-                >
-              </li>
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="/leavePending"
-                  aria-expanded="false"
-                  ><i class="fa-solid fa-envelope"></i>
-                  <span class="hide-menu">Demande de congé</span></a
                 >
               </li>
             </ul>
@@ -580,15 +574,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="/jsDTB/notification.js"></script>
     <script>
-       var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
+        var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        setnotification(msg);
+        var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
         audio.play();
+        }
       });
-      
-      setnotification(notif);
+      setnotification(notif,role);
     </script>
     <script>
       /****************************************

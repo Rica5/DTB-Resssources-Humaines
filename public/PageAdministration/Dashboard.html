@@ -34,6 +34,9 @@
       href="/assets/fontawesome-free-6.4.0-web/css/all.css"
     />
     <link rel="stylesheet" href="cssDTB/notification.css">
+    <script>
+       var role =  '<%= role %>';
+    </script>
   </head>
 
   <body>
@@ -575,11 +578,32 @@
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        setnotification(msg);
-        audio.play();
+        var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
+        UpdateRequest();
+        audio.play()
+        }
       });
-      
-      setnotification(notif);
+      socket.on("isTreated", function (response){
+      $(`#${response[0]}`).addClass("disabled")
+    })
+    if (role =="Admin"){
+        socket.on("ropDone", function (msg){
+        UpdateRequest();
+      })
+    }
+    else {
+      socket.on("rhDone", function (msg){
+        UpdateRequest();
+      })
+    }
+    
+    setnotification(notif,role);
       var all_employees = JSON.parse('<%-JSON.stringify(nbr_emp)%>');
       var all_leave = JSON.parse('<%-JSON.stringify(nbr_leave)%>');
       var all_late = JSON.parse('<%-JSON.stringify(nbr_retard)%>');

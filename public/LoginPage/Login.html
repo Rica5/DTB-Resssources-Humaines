@@ -194,6 +194,9 @@
           document.getElementById("pwd").type = "password";
         }
       }
+      Notification.requestPermission().then(perm => {
+        console.log('presmission granted', perm)
+    }).catch(err => console.log(err));
     </script>
     <!--===============================================================================================-->
     <script src="/assets/vendor/bootstrap/js/popper.js"></script>

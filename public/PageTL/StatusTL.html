@@ -35,7 +35,9 @@
     <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css">
     <link href="../dist/css/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="cssDTB/notification.css">
-   
+    <script>
+      var role =  '<%= role %>';
+   </script>
   </head>
 
   <body>
@@ -173,15 +175,6 @@
                   class="mdi mdi-alarm-check"></i><span class="hide-menu">Validation des retards</span></a
                 >
               </li>
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="/leavePending"
-                  aria-expanded="false"
-                  ><i class="fa-solid fa-envelope"></i>
-                  <span class="hide-menu">Demande de congé</span></a
-                >
-              </li>
               </ul>
           </nav>
           <!-- End Sidebar navigation -->
@@ -313,6 +306,7 @@
     <script src="/jsDTB/notification.js"></script>
 <script>
   var clock = document.getElementById("clock");
+  var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
   var socket = io();
   var id ="";
   const audio = new Audio("ring.wav");
@@ -350,13 +344,18 @@
     clock.innerHTML = datetime;
     setTimeout(clockRunner, 1000);
   }
-  socket.on('notif', function(msg) {
-    setnotification(msg);
-     audio.play();
- })
- var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
- 
-setnotification(notif);
+  socket.on("notif", function (msg) {
+        var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
+        audio.play();
+        }
+      });
+      setnotification(notif,role);
   window.onload = clockRunner();
 
 </script>

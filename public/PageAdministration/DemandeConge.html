@@ -24,7 +24,7 @@
   <link rel="stylesheet" href="cssDTB/notification.css">
   <script>
   var users = JSON.parse('<%-JSON.stringify(users)%>')
-  var noType =  '<%= noType %>';
+  var role =  '<%= role %>';
   </script>
 </head>
 
@@ -508,18 +508,32 @@
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        setnotification(msg);
+        var theNotif = msg[msg.length -1];
+        if (theNotif.role.includes(role)){
+          setnotification(msg,role);
+        const notification = new Notification(theNotif.title, {
+                     body: `${theNotif.message}`,
+                    icon:  '../assets/images1/logo.jpg',
+            })
         UpdateRequest();
-        audio.play();
+        audio.play()
+        }
       });
       socket.on("isTreated", function (response){
       $(`#${response[0]}`).addClass("disabled")
     })
-    socket.on("ropDone", function (msg){
-      UpdateRequest();
-    })
+    if (role =="Admin"){
+        socket.on("ropDone", function (msg){
+        UpdateRequest();
+      })
+    }
+    else {
+      socket.on("rhDone", function (msg){
+        UpdateRequest();
+      })
+    }
     
-    setnotification(notif);
+    setnotification(notif,role);
   </script>
 </body>
 

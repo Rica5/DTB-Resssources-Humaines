@@ -652,6 +652,9 @@ input:focus {
 .motif.progress > i{
     color: var(---progress);
 }
+.motif.progress{
+    background-color: transparent !important;
+}
 .motif.pending > i{
     color: var(---pending);
 }

@@ -37,39 +37,31 @@ function openNotif(button) {
 }
 
 
-function setnotification(all_notifications) {
+function setnotification(all_notifications,role) {
     var notif = "";
+    var count = 0;
     for (i = 0; i < all_notifications.length; i++) {
       let notification = all_notifications[all_notifications.length - (i + 1)];
-      if (
-        i != 8 &&
-        notification != ""
-      ) {
-          notif += `
-          <div id="${i}" class="notification-item seen">
-            <div class="d-flex items-center gap-3">
-              <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
-                <i class="mdi mdi-bell text-white"></i>
-              </span>
-              <div>
-                <h1>${notification.title}</h1>
-                <p class="message">${notification.message}</p>
-                <div class="date-time">
-                  <span>${notification.date}</span>
-                </div>
+      if (notification.role.includes(role)){
+        count = count + 1;
+        notif += `
+        <div id="${i}" class="notification-item seen">
+          <div class="d-flex items-center gap-3">
+            <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
+              <i class="mdi mdi-bell text-white"></i>
+            </span>
+            <div>
+              <h1>${notification.title}</h1>
+              <p class="message">${notification.message}</p>
+              <div class="date-time">
+                <span>${notification.date}</span>
               </div>
-              </div>
-          </div>`
-      } else {
-        break;
+            </div>
+            </div>
+        </div>`
       }
+         
     }
     document.getElementById("notifContent").innerHTML = notif;
-    if (all_notifications[0] != "") {
-      document.getElementById("nbr-notif").innerHTML =
-        all_notifications.length;
-    } else {
-      document.getElementById("nbr-notif").innerHTML =
-        all_notifications.length - 1;
-    }
+      document.getElementById("nbr-notif").innerHTML = count;
   }
