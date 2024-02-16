@@ -136,7 +136,7 @@ function reset() {
 function rendu_conge(temp_conge) {
   return `<div class="col-md-6 leavelist  mb-3">
                                 <div class="row hovered">
-                                  <div class="col-sm-6 text-center" >
+                                  <div class="col-sm-6 text-center person" >
                                     <img class="img_contain"
                                 src="Profil/${retrieve_profil(temp_conge.m_code)}" id="my_profil"  alt="IMG">
                                 <p class="title-text mt-3"><i class="fa-solid fa-star"></i>${temp_conge.m_code}</p>

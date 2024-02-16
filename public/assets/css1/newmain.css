@@ -174,16 +174,40 @@ iframe {
 [ Utility ]*/
 .txt1 {
   font-family: Poppins-Regular;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
-  color: #999999;
+  color: #202020;
+  font-weight: 600;
 }
 
 .txt2 {
   font-family: Poppins-Regular;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
-  color: #666666;
+  color: #202020;
+  text-decoration: underline;
+  transition: all 0.3s ease;
+}
+.txt2:hover{
+  font-size: 16px;
+  text-decoration: underline;
+  color: #202020;
+}
+.txt3 {
+  font-family: Poppins-Regular;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #292828;
+}
+/* Override autofill styles */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    /* Override autofill background color */
+    background-color: initial !important;
+    /* Override autofill text color */
+    color: initial !important;
+    /* Add other styles as needed */
 }
 
 
@@ -212,6 +236,11 @@ iframe {
   background: -o-linear-gradient(-135deg, #50c886, #29c0e6);
   background: -moz-linear-gradient(-135deg, #50c8ae, #1587b4);
   background: linear-gradient(-135deg, #25682e, #034b7a);
+  background: rgba(0, 0, 0, 0.10) url("../images1/Solumada.JPEG");
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-blend-mode: darken;
 }
 .wrap-login100 {
   width: 1000px;
@@ -229,8 +258,8 @@ iframe {
 }
 .wrap-login000 {
   width: 1000px;
-  background: #fff;
-  border-radius: 10px;
+  background: #ffffff81;
+  border-radius: 20px;
   overflow: hidden;
   display: -webkit-box;
   display: -webkit-flex;
@@ -240,6 +269,7 @@ iframe {
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 100px 130px 33px 95px;
+  backdrop-filter: blur(1px);
 }
 .wrap-login101 {
   width: 1000px;
@@ -267,11 +297,20 @@ iframe {
   width: 316px;
   margin-top: 130px;
 }
+.login102-pic {
+  width: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .login101-pic {
   width: 325px;
 }
 
 .login100-pic img {
+  max-width: 100%;
+}
+.login102-pic img {
   max-width: 100%;
 }
 .login101-pic img {
@@ -325,7 +364,7 @@ iframe {
 
   display: block;
   width: 100%;
-  background: #e6e6e6;
+  background: rgb(232, 240, 254);
   height: 50px;
   border-radius: 25px;
   padding: 0 30px 0 68px;
@@ -421,7 +460,7 @@ iframe {
   width: 100%;
   height: 50px;
   border-radius: 25px;
-  background: #57b846;
+  background: #33c100ce;
   display: -webkit-box;
   display: -webkit-flex;
   display: -moz-box;
@@ -638,7 +677,7 @@ iframe {
 }
 
 .login100-form-btn:hover {
-  background: #2df10b;
+  background: #1f8a0c;
 }
 .login10l-form-btn:hover {
   background: #ff1500;
@@ -774,8 +813,9 @@ input[type="checkbox"].demo5 + label {
   height: 1.5rem;
   border-radius: 1.5rem;
   padding:2px;
-  background-color: #c0ceda ;
+  background-color: #666666 ;
   transition: all 0.5s ;
+  cursor: pointer;
 }
 input[type="checkbox"].demo5 + label::before {
   box-sizing: border-box;
@@ -788,7 +828,7 @@ input[type="checkbox"].demo5 + label::before {
   transition: all 0.5s ;
 }
 input[type="checkbox"].demo5:checked + label {
-  background-color: #00e80c ;
+  background-color: #33c100ce ;
 }
 input[type="checkbox"].demo5:checked + label::before {
   margin-left: 1.5rem ;

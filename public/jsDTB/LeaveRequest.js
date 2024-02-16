@@ -1,5 +1,6 @@
 var PendingAndDecline = [];
 var Approves = [];
+var allLeave = [];
 var myRequestContent;
 var myUpcomingContent;
 var leaveDuration = 0;
@@ -60,25 +61,45 @@ $("#sendRequest").on('click', () => {
     (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
     var dateRequest = { code: code, startDate: startDate, endDate: endDate, startTime: startTime, endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked') }
     if (startDate && endDate && startTime && endTime && motif) {
-        $('#loading').show();
-        $.ajax({
-            url: "/makeRequest",
-            method: "POST",
-            data: dateRequest,
-            success: function (res) {
-                $("#sendRequest").prop("disabled",false);
-                $('#loading').hide();
-                $("#notification").show();
-                UpdateRequest()
-                restore();
-                setTimeout(() => {
-                    $("#notification").hide();
-                }, 5000);
-            }
-        })
+        if (checkduplicata(allLeave,startDate,endDate)){
+            $("#notification").attr("class","notice-denied");
+            $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
+            $("#notification").show();
+            $("#sendRequest").prop("disabled",false);
+            setTimeout(() => {
+                $("#notification").hide();
+            }, 5000);
+        }
+        else{
+            $('#loading').show();
+            $.ajax({
+                url: "/makeRequest",
+                method: "POST",
+                data: dateRequest,
+                success: function (res) {
+                    $("#sendRequest").prop("disabled",false);
+                    $('#loading').hide();
+                    $("#notification").attr("class","notice-success");
+                    $("#notification").text("Requête envoyé avec succes");
+                    $("#notification").show();
+                    UpdateRequest()
+                    restore();
+                    setTimeout(() => {
+                        $("#notification").hide();
+                    }, 5000);
+                }
+            })
+        }
+        
     }
     else {
         $("#sendRequest").prop("disabled",false);
+        $("#notification").attr("class","notice-denied");
+            $("#notification").text("Veuillez remplir correctement les champs nécessaire");
+            $("#notification").show();
+            setTimeout(() => {
+                $("#notification").hide();
+            }, 5000);
     }
 
 });
@@ -90,6 +111,7 @@ function UpdateRequest() {
             code: $("#code").text()
         },
         success: function (res) {
+            allLeave = res.filter(leave => leave.status != "declined");
             PendingAndDecline = res.filter(leave => leave.status != "approved");
             Approves = res.filter(leave => leave.status == "approved");
             myRequestRender(PendingAndDecline)
@@ -443,3 +465,86 @@ function restore(){
     $('#toggle').prop('checked', false);
     $("#dayNumber").text("0");
 }
+
+function checkduplicata(leave, st, ed) {
+    var value = false;
+    for (l = 0; l < leave.length; l++) {
+      var all_date = date_concerning(
+        moment(leave[l].date_start).format("YYYY-MM-DD"),
+        moment(leave[l].date_end).format("YYYY-MM-DD")
+      );
+      if (
+        all_date.includes(moment(st).format("YYYY-MM-DD")) ||
+        all_date.includes(moment(ed).format("YYYY-MM-DD"))
+      ) {
+        value = true;
+      }
+    }
+    return value;
+  }
+  function date_concerning(date1, date2) {
+    var all_date = [];
+    if (date2 == date1) {
+      date1 = moment(date1).format("YYYY-MM-DD");
+      all_date.push(date1);
+      return all_date;
+    } else {
+      date1 = moment(date1).format("YYYY-MM-DD");
+      date2 = moment(date2).format("YYYY-MM-DD");
+      while (date1 != date2) {
+        all_date.push(date1);
+        date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+      }
+      all_date.push(date2);
+      return all_date;
+    }
+  }
+  function checkduplicata2(leave, st, ed, st1, ed1) {
+    var value = false;
+    var all_date = date_concerning2(
+      moment(st).format("YYYY-MM-DD"),
+      moment(ed).format("YYYY-MM-DD"),
+      moment(st1).format("YYYY-MM-DD"),
+      moment(ed1).format("YYYY-MM-DD")
+    );
+    for (l = 0; l < leave.length; l++) {
+      if (
+        all_date.includes(moment(leave[l].date_start).format("YYYY-MM-DD")) ||
+        all_date.includes(moment(leave[l].date_end).format("YYYY-MM-DD"))
+      ) {
+        value = true;
+      }
+    }
+    return value;
+  }
+  function date_concerning2(date1, date2, date3, date4) {
+    var all_date = [];
+    var not_in = date_concerning(date3, date4);
+    if (date2 == date1) {
+      date1 = moment(date1).format("YYYY-MM-DD");
+      if (not_in.includes(date1)) {
+      } else {
+        all_date.push(date1);
+      }
+  
+      return all_date;
+    } else {
+      date1 = moment(date1).format("YYYY-MM-DD");
+      date2 = moment(date2).format("YYYY-MM-DD");
+  
+      while (date1 != date2) {
+        if (not_in.includes(date1)) {
+          date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+        } else {
+          all_date.push(date1);
+          date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+        }
+      }
+      if (not_in.includes(date2)) {
+      } else {
+        all_date.push(date2);
+      }
+  
+      return all_date;
+    }
+  }

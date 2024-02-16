@@ -190,18 +190,20 @@
     cursor: pointer;
     display: none;
     animation: backwardLeft 1s ease-in;
-    transition: opacity 0.5s ease;
+    transition: opacity 1s ease;
 }
 
 .notice-denied {
     padding: 0.5em;
     background-color: red;
     color: #fff;
-    font-weight: 600;
+    font-weight: 400;
     border-bottom-left-radius: 10px;
     border-top-right-radius: 10px;
     cursor: pointer;
     display: none;
+    animation: backwardLeft 1s ease-in;
+    transition: opacity 1s ease;
 }
 
 @keyframes backwardLeft {
