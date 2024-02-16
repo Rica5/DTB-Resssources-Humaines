@@ -1352,6 +1352,17 @@ routeExp.route("/home").get(async function (req, res) {
           },
           { late_entry: 0 }
         );
+        var cdi_contract = await UserSchema.find({
+          act_stat: { $ne: "VACATION" },
+          m_code: { $ne: "N/A" },
+          status: "Actif",
+          contrat:"CDI"
+        });
+        var cdd_contract = await UserSchema.find({
+          m_code: { $ne: "N/A" },
+          status: "Actif",
+          contrat:"CDD"
+        });
         var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
          var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
         res.render("PageAdministration/Dashboard.html", {
@@ -1361,6 +1372,8 @@ routeExp.route("/home").get(async function (req, res) {
           nbr_act: nbr_actif.length,
           nbr_leave: nbr_leave,
           nbr_retard: nbr_retard,
+          cdi:cdi_contract.length,
+          cdd:cdd_contract.length,
           role:role
         });
   } else {
@@ -4266,6 +4279,8 @@ routeExp.route("/leave_report").post(async function (req, res) {
               count++;
               if (monthly_leave[i].type.includes("Congé de maternité")) {
               } else {
+                monthly_leave[i].type = monthly_leave[i].type.replace("rien à deduire","rien à déduire")
+                monthly_leave[i].type = monthly_leave[i].type.replace("a déduire sur salaire","à déduire sur salaire")
                 leave_report.push([
                   monthly_leave[i].num_agent,
                   monthly_leave[i].m_code,
@@ -4294,25 +4309,18 @@ routeExp.route("/leave_report").post(async function (req, res) {
                     monthly_leave[i].hour_end
                   ),
                   monthly_leave[i].duration == 0.25
-                    ? monthly_leave[i].type +
-                      motif_rendered(monthly_leave[i].motif) +
+                    ? calcul_timediff_absencereport(monthly_leave[i].hour_begin, monthly_leave[i].hour_end) +
+                      motif_rendered(monthly_leave[i].motif,monthly_leave[i].type) +
                       date_rendered(
                         monthly_leave[i].date_start,
-                        monthly_leave[i].date_end,
-                        monthly_leave[i].duration,
-                        monthly_leave[i].hour_begin,
-                        monthly_leave[i].hour_end
+                        monthly_leave[i].date_end
                       )
                     : monthly_leave[i].duration +
-                      " jour(s) de " +
-                      monthly_leave[i].type +
-                      motif_rendered(monthly_leave[i].motif) +
+                      " jour(s) " +
+                      motif_rendered(monthly_leave[i].motif,monthly_leave[i].type) +
                       date_rendered(
                         monthly_leave[i].date_start,
-                        monthly_leave[i].date_end,
-                        monthly_leave[i].duration,
-                        monthly_leave[i].hour_begin,
-                        monthly_leave[i].hour_end
+                        monthly_leave[i].date_end
                       ),
                 ]);
               }
@@ -4503,25 +4511,35 @@ function sans_solde(motif, number, hb, he) {
     return "";
   }
 }
-function motif_rendered(mt) {
-  if (mt == "") {
-    return "";
-  } else {
-    return " pour " + mt;
-  }
-}
-function date_rendered(d1, d2, number, hb, he) {
-  if (d1 == d2) {
-    if (number == 0.25) {
-      return (
-        " le " +
-        moment(d1).format("DD/MM/YYYY") +
-        " de durée de " +
-        calcul_timediff_absencereport(hb, he)
-      );
+function motif_rendered(mt, type) {
+  if (type.includes("Repos Maladie")){
+    if (mt == "") {
+      return precede(type) + type;
     } else {
-      return " le " + moment(d1).format("DD/MM/YYYY");
+      return precede(mt) + mt;
     }
+  }
+  else {
+    if (mt == "") {
+      return precede(type) + type;
+    } else {
+      return precede(type) + type + " pour " + mt;
+    }
+  }
+  function precede(letter){
+    var vowels = ["a","e","i","o","y"];
+    if (vowels.includes(letter[0].toLowerCase())){
+      return " d' "
+    }
+    else {
+      return " de "
+    }
+  }
+  
+}
+function date_rendered(d1, d2) {
+  if (d1 == d2) {
+    return " du " +  moment(d1).format("DD/MM/YYYY")
   } else {
     return (
       " du " +

@@ -530,5 +530,11 @@
     font-weight: 500;
     font-family: Poppins;
   }
+  .person{
+    display: flex;
+    flex-direction: column;
+    justify-content:center ;
+    align-items: center;
+  }
   
   
