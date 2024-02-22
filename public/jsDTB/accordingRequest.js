@@ -29,7 +29,7 @@ function renderAllRequest(Leave){
                         <div class="code-person">
                         <div>
                         <p id="codeUser" class="code-text">${leave.m_code}</p>
-                        <p class='text-duration'>${leave.duration} jour(s)</p>
+                        <p class='text-duration'>${leave.duration == 0.25 ? calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)" }</p>
                         </div>
                             
                         </div>
@@ -104,6 +104,43 @@ function renderButton(role,leave){
 function convertDate(given){
     return moment(given).format("DD/MM/YYYY")
 }
+function calcul_timediff_absencetl(startTime, endTime) {
+    if (startTime != "") {
+      startTime = moment(startTime, "HH:mm:ss a");
+      endTime = moment(endTime, "HH:mm:ss a");
+      var duration = moment.duration(endTime.diff(startTime));
+      //duration in hours
+      var hours_fictif = 0;
+      var minutes_fictif = 0;
+      hours_fictif += parseInt(duration.asHours());
+  
+      // duration in minutes
+      minutes_fictif += parseInt(duration.asMinutes()) % 60;
+      if (minutes_fictif < 0) {
+        hours_fictif = hours_fictif - 1;
+        minutes_fictif = 60 + minutes_fictif;
+      }
+      while (minutes_fictif > 60) {
+        hours_fictif += 1;
+        minutes_fictif = minutes_fictif - 60;
+      }
+      if (hours_fictif < 0) {
+        hours_fictif = hours_fictif + 24;
+      }
+      if (hours_fictif == 0) {
+        return minutes_fictif + " minutes";
+      }
+      else if (minutes_fictif == 0) {
+        return hours_fictif + " heures";
+      }
+      else {
+        return hours_fictif + "h " + minutes_fictif + " mn";
+      }
+    }
+    else {
+      return "heure non défini"
+    }
+  }
 function dateDiffers(created, now) {
         created = moment(created,"DD/MM/YYYY HH:mm:ss");
         var endings = moment(now, "DD/MM/YYYY HH:mm:ss");

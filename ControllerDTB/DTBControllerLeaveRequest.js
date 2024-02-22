@@ -59,6 +59,7 @@ const makeLeaveRequest = async (req,res) => {
                     recovery:req.body.recovery,
                     duration:req.body.duration,
                     type:"",
+                    exceptType:"",
                     status:"pending",
                     rest:0,
                     acc:0,

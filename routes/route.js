@@ -367,7 +367,6 @@ async function switch_interface(session, mail, opt, res) {
           session.occupation_tl = null;
           session.m_code = theUser.m_code;
           session.idUser = theUser._id
-          
           res.redirect("/employee");
         } else if (opt == "s") {
           session.occupation_tl = "Surveillant";
