@@ -429,10 +429,11 @@
                         setTimeout(() => {
                             $(`#${id}`).remove();
                         }, 200);
-                        let notifCount = $("#numberNotification").text();
+                        let notifCount = +$("#numberNotification").text();
                         if (notifCount > 0)np
                             $("span#numberNotification").each((i, element) => {
-                                $(element).text(notifCount - 1)
+                                if (parseInt($(element).text()) > 0)
+                                    $(element).text(notifCount - 1)
                             });
                         // disable effacer les notifications
                         if ($('.notification-item').length === 0)
@@ -487,7 +488,7 @@
                     if (data.ok) {
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
-                        let notifCount = $("#numberNotification").text();
+                        let notifCount = +$("#numberNotification").text();
                         if (notifCount > 0)
                             $("span#numberNotification").each((i, element) => {
                                 $(element).text(notifCount - 1)

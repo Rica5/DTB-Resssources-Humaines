@@ -896,8 +896,9 @@
                         setTimeout(() => {
                             $(`#${id}`).remove();
                         }, 200);
-                        let notifCount = $("#numberNotification").text();
+                        let notifCount = +$("#numberNotification").text();
                         $("span#numberNotification").each((i, element) => {
+                            if (parseInt($(element).text()) > 0)
                             $(element).text(notifCount - 1)
                         });
                     }
@@ -944,7 +945,7 @@
                     if (data.ok) {
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
-                        let notifCount = $("#numberNotification").text();
+                        let notifCount = +$("#numberNotification").text();
                         $("span#numberNotification").each((i, element) => {
                             $(element).text(notifCount - 1)
                         });
