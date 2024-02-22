@@ -4,6 +4,9 @@ var idActive = "";
 var allRequest = [];
 var emergencyRequest = [];
 var normalRequest = [];
+var order = false;
+var seeFile = true;
+var idForFile = "";
 function UpdateRequest(){
     $.ajax({
         url:"/allRequest",
@@ -65,8 +68,7 @@ function renderAllRequest(Leave){
                             </div>
                         ${approvingList(leave.validation)}
                             <div class="d-flex justify-content-end">
-                                <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response">Accorder <i class="fa-solid fa-thumbs-up"></i></button>
-                                <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response mx-3">Réfuser <i class="fa-solid fa-ban"></i></button>
+                                ${renderButton(role,leave)}
                             </div>
                         </div>
                       </div>
@@ -75,6 +77,30 @@ function renderAllRequest(Leave){
     
 }
 UpdateRequest();
+function renderButton(role,leave){
+    var button = ""
+    switch(role){
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
+                                     <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
+        case "Admin" : button = `${renderPiece(leave)}
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        default : "" 
+    }
+    return button
+
+    function renderPiece(leave){
+        if (leave.piece == ""){
+            return `<button onclick="addPiece('${leave._id}')" class="btn btn-sm btn-secondary btn-response">Pièce Justificative <i class="fa-solid fa-paperclip"></i></button>`
+        }
+        else {
+            
+            return `<i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1 mt-3"></i><button onclick="seePiece('${leave._id}','${leave.piece}','${leave.m_code}','${leave.date_start}','${leave.date_end}')" class="btn btn-sm btn-secondary btn-response">Pièce Justificative <i class="fa-solid fa-paperclip"></i></button>`;
+        }
+    }
+}
 function convertDate(given){
     return moment(given).format("DD/MM/YYYY")
 }
@@ -109,6 +135,7 @@ function According(id,code,type){
     if (role == 'Gerant' ){
         $("#typeLeave").val(type);
         $("#typeLeave").prop("disabled",true);
+        $("#orderCheck").hide();
         $("#title").text("Le type de congé décidé par la ressource humaine est:")
     }
     else {
@@ -172,23 +199,38 @@ function ApproveLast(){
                 $.ajax({
                     url:"/requestAnswer",
                     method:"POST",
-                    data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val()},
-                    success: function(res) {
-                        if (res == "Ok"){
-                        UpdateRequest();
-                        $("#waitingApprove").css('opacity','0')
-                        closeModal();
-                        $('#notification').text("Requête accepter avec success");
-                        $("#notification").attr("class","notice-success")
-                        $('#notification').show();
-                        setTimeout(() => {
-                            $('#notification').hide();
-                        }, 5000);
+                    data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val(),order:order},
+                    success: function(data) {
+                        if (order){
+                            $.ajax({
+                                url:"/takeleave",
+                                method:"POST",
+                                data:{code:data.m_code,type:data.type,leavestart:data.date_start,leaveend:data.date_end,
+                                      begin:data.hour_begin,end:data.hour_end,court:data.duration,motif:data.motif,idRequest:data._id},
+                                success: function(res) {
+                                    UpdateRequest();
+                                    $("#waitingApprove").css('opacity','0')
+                                    closeModal();
+                                    $('#notification').text("Requête approuver par ordre du gerant");
+                                    $("#notification").attr("class","notice-success")
+                                    $('#notification').show();
+                                    setTimeout(() => {
+                                        $('#notification').hide();
+                                    }, 5000);
+                                }   
+                           })
                         }
                         else {
-        
+                            UpdateRequest();
+                            $("#waitingApprove").css('opacity','0')
+                            closeModal();
+                            $('#notification').text("Requête accepter avec success");
+                            $("#notification").attr("class","notice-success")
+                            $('#notification').show();
+                            setTimeout(() => {
+                                $('#notification').hide();
+                            }, 5000);
                         }
-                        
                     }   
             })
            }
@@ -262,3 +304,73 @@ function registerLeave(){
         }   
    })
 }
+function checkboxControl(check){
+    if (check =="yes"){
+        $('#sayNo').prop('checked', false);
+        order = true;
+    }
+    else {
+        $('#sayYes').prop('checked', false);
+        order = false;
+    }
+}
+function seePiece(id,piece,code,start,end){
+    $("#ModalPiece").show();
+    $('#who').text(`Pièce jointe de ${code} pour le congé du ${moment(start).format("DD/MM/YYYY")} au ${moment(end).format("DD/MM/YYYY")}`)
+    renderPiece(piece);
+    idForFile = id;
+}
+function closePiece(){
+    $("#ModalPiece").hide();
+    $("#PieceContent").html("")
+}
+function renderPiece(piece){
+    $("#PieceContent").html(`<object class="d-flex justify-content-center align-align-items-baseline mt-3 w-100 overflow-auto" height="600px" data="../PieceJointe/${piece}">
+  </object>`)
+}
+function addPiece(id){
+    idForFile = id;
+    $("#join").click();
+}
+$('#join').on('change', function (event) {
+    var selectedFile = event.target.files[0];
+    if (selectedFile){
+        var joinPiece = new FormData();
+        joinPiece.append("join",selectedFile);
+        joinPiece.append("idLeave",idForFile)
+        $.ajax({
+            url: "/joinFileLeave",
+            method: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: joinPiece,
+            success: function (res) {
+                if (res.status == "Success"){
+                    $("#notification").attr("class","notice-success");
+                    $("#notification").text("Pièce jointe attacher avec succès");
+                    $("#notification").show();
+                    seePiece(res.idLeave,res.fileName,res.code,res.start,res.end);
+                    UpdateRequest();
+                    setTimeout(() => {
+                        $("#notification").hide();
+                    }, 5000);
+                }
+                else {
+                    $("#sendRequest").prop("disabled",false);
+                    $('#loading').hide();
+                    $("#notification").attr("class","notice-denied");
+                    $("#notification").text("Une erreur est survenue lors de l'upload du fichier");
+                    $("#notification").show();
+                    setTimeout(() => {
+                        $("#notification").hide();
+                    }, 5000);
+                }
+               
+            }
+        })
+    }
+ })
+ function replacePiece(){
+    addPiece(idForFile);
+ }

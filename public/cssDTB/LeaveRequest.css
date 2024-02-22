@@ -217,7 +217,12 @@
         opacity: 1;
     }
 }
-
+.file-ok{
+    color: limegreen;
+    opacity: 0;
+    transition: all 1s ease;
+    cursor: pointer;
+}
 /**
  * ==============================================
  * Dot Pulse

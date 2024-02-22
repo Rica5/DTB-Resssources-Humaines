@@ -147,7 +147,9 @@ function rendu_conge(temp_conge) {
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Début: ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_start) + " à " + temp_conge.hour_begin : date_conversion(temp_conge.date_start)}</p>
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Fin : ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_end) + " à " + temp_conge.hour_end : date_conversion(temp_conge.date_end)}</p>
                                       ${give_motif(temp_conge.motif)}
-                                      <p class="info-text text-center">Durée : ${temp_conge.duration == 0.25 ? calcul_timediff_absencetl(temp_conge.hour_begin, temp_conge.hour_end) : temp_conge.duration + " jour(s)"}  || Reste : ${temp_conge.rest} || Acc : ${temp_conge.acc}</p>
+                                      <p class="info-text text-center">Durée : ${temp_conge.duration == 0.25 ? calcul_timediff_absencetl(temp_conge.hour_begin, temp_conge.hour_end) : temp_conge.duration + " jour(s)"}
+                                        | 2024: ${(temp_conge.acc - temp_conge.rest)} | 2023: ${itCount(temp_conge.type) ? (temp_conge.rest + temp_conge.duration) :  temp_conge.rest} |</p>
+                                      <p class="info-text text-center">Reste aprés autorisation | ${(temp_conge.acc)} |</p>
                                       </div>
                                       <div class="text-center">
                                         ${render_button(temp_conge)}
@@ -155,6 +157,14 @@ function rendu_conge(temp_conge) {
                                   </div>
                                 </div>
                               </div>`
+}
+function itCount(theType){
+  if (theType.includes("Congé Payé")){
+      return true
+  }
+  else {
+      return false
+  }
 }
 function calcul_timediff_absencetl(startTime, endTime) {
   if (startTime != "") {
@@ -186,7 +196,7 @@ function calcul_timediff_absencetl(startTime, endTime) {
       return hours_fictif + " heures";
     }
     else {
-      return hours_fictif + " heures " + minutes_fictif + " minutes";
+      return hours_fictif + " heures " + minutes_fictif + " mn";
     }
   }
   else {

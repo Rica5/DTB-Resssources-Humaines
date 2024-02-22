@@ -42,6 +42,10 @@ const makeLeaveRequest = async (req,res) => {
     if ( session.occupation_u == "User"){
         try{
             var user = await UserSchema.findOne({m_code:req.body.code})
+            var files = ""
+            if (req.body.fileIn == "true"){
+                files = req.files['join']
+            }
                 var new_request = {
                     m_code:req.body.code,
                     num_agent:user.num_agent,
@@ -61,20 +65,56 @@ const makeLeaveRequest = async (req,res) => {
                     datetime:moment().format("DD/MM/YYYY HH:mm:ss"),
                     priority:req.body.priority,
                     comment:"",
+                    order:false,
+                    piece:files != "" ? files.name : files,
                     validation :[],
                 }
+                files != "" ? files.mv("public/PieceJointe/" + new_request.piece) : "";
              await LeaveRequestTest(new_request).save();
              var notification = {
                 title:"Demande d'absence",
-                message:`${new_request.m_code} à envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
-                date:moment().format("DD/MM/YYYY hh:mm:ss"),
-                role:["Admin","Surveillant","Opération","Gerant"]
+                content:`${new_request.m_code} à envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
+                datetime:moment().format("DD/MM/YYYY hh:mm:ss")
              }
-             await setGlobalAdminNotifications(notification,req);
+             var concerned = ["Admin","Surveillant","Opération"]
+             await setGlobalAdminNotifications(notification,concerned,true,req);
              res.send("Success")
         }
         catch(err){
+            console.log(err)
             res.send("Error")
+        }
+    }
+    else {
+        res.redirect("/");
+    }
+}
+
+//Attached file
+const attachedFile = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_a == "Admin"){
+        try{
+                var files = req.files['join'];
+                var idLeave = req.body.idLeave;
+                var extension = files.name.split(".");
+                var name = `${idLeave}.${extension[extension.length - 1]}`
+                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idLeave},{piece:name});
+               files.mv("public/PieceJointe/" + name);
+             res.json({
+                status:"Success",
+                idLeave:thisLeave._id,
+                fileName:name,
+                code:thisLeave.m_code,
+                start:thisLeave.date_start,
+                end:thisLeave.date_end
+             })
+        }
+        catch(err){
+            res.json({
+                status:"Error",
+                err:err
+            })
         }
     }
     else {
@@ -93,18 +133,24 @@ const getMyRequest = async (req,res) => {
 //See pending request
 const seePending = async (req,res) => {
     var session = req.session;
-     if (session.occupation_op == "Opération"){
+    if ( session.occupation_tl == "Surveillant"){
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
-        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
+        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+        var role = "Surveillant";
+        res.render("PageTL/DemandeConge.html",{users:user,notif:dataUser.myNotifications,role:role,dataUser:dataUser});
+    }
+     else if (session.occupation_op == "Opération"){
+        var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
+        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
         var role = "Opération";
-        res.render("PageOperation/DemandeConge.html",{users:user,notif:notif.notifications,role:role});
+        res.render("PageOperation/DemandeConge.html",{users:user,notif:dataUser.myNotifications,role:role,dataUser:dataUser});
     }
     else if (session.occupation_a == "Admin") {
         var user = await UserSchema.find({status:"Actif",occupation:"User"}).select('m_code project');
         var role = "Admin";
         role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
-        var notif = await Notif.findOne({ _id: "64f1e60ae3038813b45c2db1" });
-        res.render("PageAdministration/DemandeConge.html",{users:user,notif:notif.notifications,role:role});
+        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+        res.render("PageAdministration/DemandeConge.html",{users:user,notif:dataUser.myNotifications,role:role,dataUser:dataUser});
     }
     else {
         res.redirect("/");
@@ -113,30 +159,62 @@ const seePending = async (req,res) => {
 //Every request pending
 const getPending = async (req,res) => {
     var session = req.session;
-    if (session.occupation_op == "Opération"){
+    if ( session.occupation_tl == "Surveillant"){
         var allRequest = await LeaveRequestTest.find({status:{$ne:"done"},validation:[]});
+        res.json(allRequest);
+    }
+    else if (session.occupation_op == "Opération"){
+        var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 1] }}).populate({path:"validation.user",select:'usuel'});
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
         if (session.idUser == "645a417e9d34ed8965caea9e"){
-            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 2] }}).populate({path:"validation.user",select:'usuel'});
+            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 3] }}).populate({path:"validation.user",select:'usuel'});
             res.json(allRequest);
         }
         else {
-            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 1] }}).populate({path:"validation.user",select:'usuel'});
+            var allRequest = await LeaveRequestTest.find({status:"progress", $expr: { $eq: [{ $size: '$validation' }, 2] }}).populate({path:"validation.user",select:'usuel'});
             res.json(allRequest);
         }  
     }
     else {
         res.redirect("/");
     }
-    
 }
-
+async function empty_notification(){
+    await UserSchema.updateMany({},{myNotifications:[]})
+    console.log("Empty now")
+}
+//empty_notification();
 const answerRequest = async (req,res) => {
     var session = req.session;
-   
-    if (session.occupation_op == "Opération"){
+    if ( session.occupation_tl == "Surveillant"){
+        var id = req.body.id;
+        var response = req.body.response;
+        var comment = req.body.reason;
+        var status = "progress";
+        var approbator = {
+         user:session.idUser,
+         approbation :true
+        }
+        var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true});
+        var extension = thisLeave.piece.split(".")
+        thisLeave.piece != "" ? renameFile(id,`${thisLeave.piece}`,`${thisLeave._id}.${extension[extension.length - 1]}`) : "";
+        var title = `Traitement congé`
+        var forRop = `Le TL est mis au courant du congé de ${thisLeave.m_code} du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+        var notification = {
+            title:"Traitement congé",
+            content:forRop,
+            datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
+         }
+         var concerned = ["Opération"]
+         await setGlobalAdminNotifications(notification,concerned,false,req);
+         const io = req.app.get("io");
+         io.sockets.emit("isTreated", [id,thisLeave]);
+         io.sockets.emit("tlDone", forRop);
+         res.json("Ok");
+     }
+    else if (session.occupation_op == "Opération"){
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
@@ -155,21 +233,21 @@ const answerRequest = async (req,res) => {
            forRH = `Le ROP a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
            var notification = {
             title:"Traitement congé",
-            message:forRH,
-            date:moment().format("DD/MM/YYYY hh:mm:ss"),
-            role:["Admin"]
+            content:forRH,
+            datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
          }
-         await setGlobalAdminNotifications(notification,req);
+         var concerned = ["Admin"]
+         await setGlobalAdminNotifications(notification,concerned,false,req);
         }
         else{
             forRH = `Le ROP a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
             var notification = {
                 title:"Traitement congé",
-                message:forRH,
-                date:moment().format("DD/MM/YYYY hh:mm:ss"),
-                role:["Admin"]
+                content:forRH,
+                datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
              }
-             await setGlobalAdminNotifications(notification,req);
+             var concerned = ["Admin"]
+             await setGlobalAdminNotifications(notification,concerned,false,req);
         }
         const io = req.app.get("io");
         io.sockets.emit("isTreated", [id,thisLeave]);
@@ -200,14 +278,16 @@ const answerRequest = async (req,res) => {
                 res.json(thisLeave);
         }
         else {
-             status = response == "true" ? "progress" : "declined";
+            var order = req.body.order;
+            var preStatus = order == "false" ? "progress" : "approved";
+             status = response == "true" ? preStatus : "declined";
              var type = req.body.typeleave;
              var forGerant ="";
              var approbator = {
                 user:session.idUser,
                 approbation :response
                 }
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type},{new:true});
+                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type,order:req.body.order},{new:true});
                 var title = `Absence pour ${thisLeave.motif}`
                 var content = "";
                 if (status == "declined"){
@@ -216,25 +296,40 @@ const answerRequest = async (req,res) => {
                    forGerant = `Le RH a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
                     var notification = {
                         title:"Traitement congé",
-                        message:forGerant,
-                        date:moment().format("DD/MM/YYYY hh:mm:ss"),
-                        role:["Gerant"]
+                        content:forGerant,
+                        datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
                     }
-                    await setGlobalAdminNotifications(notification,req);
+                    var concerned = []
+                    await setGlobalAdminNotifications(notification,concerned,true,req);
                 }
                 else {
-                    forGerant = `Le RH a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+                    if (order == "false" ){
+                        forGerant = `Le RH a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
                     var notification = {
                         title:"Traitement congé",
-                        message:forGerant,
-                        date:moment().format("DD/MM/YYYY hh:mm:ss"),
-                        role:["Gerant"]
+                        content:forGerant,
+                        datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
                     }
-                    await setGlobalAdminNotifications(notification,req);
+                    var concerned = []
+                    await setGlobalAdminNotifications(notification,concerned,true,req);
+                    }
+                    else {
+                        forGerant = `Le RH a approuvé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} par ordre`;
+                    var notification = {
+                        title:"Traitement congé",
+                        content:forGerant,
+                        datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
+                    }
+                        var concerned = []
+                        await setGlobalAdminNotifications(notification,concerned,true,req);
+                        content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuver`
+                        setEachUserNotification(thisLeave.m_code,title,content,req);
+                    }
+                    
                 }
                 const io = req.app.get("io");
                 io.sockets.emit("rhDone", forGerant);
-                res.json("Ok");
+                res.json(thisLeave);
         }
         
     }
@@ -248,18 +343,19 @@ const getNotifications = async (req,res) => {
     var notifications = await UserSchema.findOne({m_code:req.body.code});
     res.json(notifications.myNotifications);
 }
-async function setGlobalAdminNotifications(notification,req){
-    await Notif.findOneAndUpdate(
-      { _id: "64f1e60ae3038813b45c2db1" },
-      { $push: { notifications: notification } }
-    );
-    var notif = await Notif.findOne({
-      _id: "64f1e60ae3038813b45c2db1",
-    });
+async function setGlobalAdminNotifications(notification,concerned,spec,req){
+   await UserSchema.updateMany({occupation:{$in:concerned},_id:{$ne:"645a417e9d34ed8965caea9e"}},{$push:{myNotifications:notification}});
+   var idNotif = await UserSchema.findOne({occupation:{$in:concerned}});
+   if (spec){
+    concerned.push("Gerant")
+    var otherId = await UserSchema.findOneAndUpdate({_id:"645a417e9d34ed8965caea9e"},{$push:{myNotifications:notification}},{new:true});
+    notification.otherId = otherId.myNotifications[otherId.myNotifications.length - 1]._id
+   }
+   var idNotif = await UserSchema.findOne({occupation:{$in:concerned}});
+   idNotif ? notification.idNotif = idNotif.myNotifications[idNotif.myNotifications.length - 1]._id : notification.idNotif = ""
     const io = req.app.get("io");
-    io.sockets.emit("notif", notif.notifications);
+    io.sockets.emit("notif",[concerned,notification]);
 }
-
 async function setEachUserNotification(code,title,content,req){
    var myNotif = {
         title:title,
@@ -361,8 +457,20 @@ async function markAsReadAllNotification(req, res) {
     }
     
 }
+async function renameFile(id,actualPath,newPaths){
+    const oldPath = `Public/PieceJointe/${actualPath}`;
+    const newPath = `Public/PieceJointe/${newPaths}`;
+    fs.rename(oldPath, newPath, async (err) => {
+        if (err) {
+          console.error('Error renaming file:', err);
+        } else {
+          await LeaveRequestTest.findOneAndUpdate({_id:id},{piece:newPaths});
+          console.log('File renamed successfully.');
+        }
+      })
+}
 
 module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest, getNotifications,
-    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification
+    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile
 }

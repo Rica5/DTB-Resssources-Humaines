@@ -13,6 +13,10 @@
     <link rel="stylesheet" type="text/css" href="cssDTB/leaveRequest.css" />
     <link rel="stylesheet" type="text/css" href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css" />
+    <script>
+        var accumulate = parseFloat('<%= user.leave_taked %>');
+        var openLeave = parseFloat('<%= user.remaining_leave %>');
+    </script>
 </head>
 
 <body>
@@ -119,15 +123,15 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p class="text-solde">Accumulée</p>
+                                    <p class="text-solde" id="thisYear"></p>
                                     <div id="accumulate" class="accumulate-content">
-                                        <%= user.leave_taked %>
+                                        
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <p class="text-solde">Ouvert</p>
+                                    <p class="text-solde" id="lastYear">Ouvert</p>
                                     <div id="openLeave" class="open-content">
-                                        <%= user.remaining_leave %>
+                                        
                                     </div>
 
                                 </div>
@@ -254,8 +258,9 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center align-items-center">
-                                <button id="joinFile" class="btn btn-md btn-secondary">Joindre fichier <i class="fa-solid fa-paperclip"></i></button>
-                                <button id="sendRequest" class="btn btn-md btn-success  mx-4">Envoyer demande <i class="fa-solid fa-paper-plane-o"></i></button>
+                                <input type="file" class="d-none" id="join">
+                                <div class="d-flex"><i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1 mt-4"></i><button id="joinFile" onclick="triggerButton()" class="btn btn-md btn-secondary">Joindre fichier <i class="fa-solid fa-paperclip"></i></button></div>
+                                <button id="sendRequest" class="btn btn-md btn-success mx-4">Envoyer demande <i class="fa-solid fa-paper-plane-o"></i></button>
                                 <div class="snippet p-3" id="loading" data-title="dot-pulse">
                                     <div class="stage">
                                         <div class="dot-pulse"></div>
@@ -346,7 +351,7 @@
                 dropElementById(response[0])
                 Approves.push(response[1]);
                 Approved(Approves)
-                $("#accumulate").html(Approves[Approves.length - 1].acc)
+                $("#accumulate").html((Approves[Approves.length - 1].acc - Approves[Approves.length - 1].rest))
                 $("#openLeave").html(Approves[Approves.length - 1].rest)
             }
             else {
@@ -520,6 +525,14 @@
                 }
             });
         }
+        function setSolde(accumulate,open){
+            $("#thisYear").text(moment().format('YYYY'))
+            $("#lastYear").text(moment().add(-1,"years").format('YYYY'));
+            var showAccumulate = accumulate - open;
+            $("#accumulate").text(showAccumulate);
+            $("#openLeave").text(openLeave);
+        }
+        setSolde(accumulate,openLeave)
 
     </script>
     <script src="../jsDTB/LeaveRequest.js"></script>
