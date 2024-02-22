@@ -369,10 +369,10 @@ async function setEachUserNotification(code,title,content,req){
 }
 
 async function removeNotification(req, res) {
-    let mCode = req.session.m_code;
+    let userId = req.session.idUser;
     try {
         const removed = await UserSchema.findOneAndUpdate(
-            { m_code: mCode}, 
+            { _id: userId}, 
             {$pull: { myNotifications: { _id: req.params.id} }},
             { new: true}
         );
@@ -391,10 +391,10 @@ async function removeNotification(req, res) {
 }
 
 async function removeAllNotification(req, res) {
-    let mCode = req.session.m_code;
+    let userId = req.session.idUser;
     try {
         const removed = await UserSchema.findOneAndUpdate(
-            { m_code: mCode}, 
+            { _id: userId}, 
             {$unset: { myNotifications: "" }},
             { new: true}
         );
@@ -414,10 +414,10 @@ async function removeAllNotification(req, res) {
 }
 
 async function markAsReadNotification(req, res) {
-    let mCode = req.session.m_code;
+    let userId = req.session.idUser;
     try {
         const updated = await UserSchema.findOneAndUpdate(
-            { m_code: mCode, 'myNotifications._id': req.params.id}, 
+            { _id: userId, 'myNotifications._id': req.params.id}, 
             {$set: {"myNotifications.$.isSeen": true }},
             { new: true}
         );
@@ -436,10 +436,10 @@ async function markAsReadNotification(req, res) {
 }
 
 async function markAsReadAllNotification(req, res) {
-    let mCode = req.session.m_code;
+    let userId = req.session.idUser;
     try {
         const updated = await UserSchema.findOneAndUpdate(
-            { m_code: mCode}, 
+            { _id: userId}, 
             { $set: { "myNotifications.$[].isSeen": true } },
             { new: true}
         );

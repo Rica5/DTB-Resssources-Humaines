@@ -98,3 +98,36 @@
     font-size: 12px;
     color: #787878;
 }
+
+
+.notification-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem 1rem;
+}
+.notification-options > button {
+    border: none;
+    background-color: transparent;
+    font-size: 13px;
+    color: #6b6b6b;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    outline: none;
+}
+.notification-options > button:disabled {
+    color: #6b6b6b !important;
+    opacity: 0.6;
+    cursor: not-allowed !important;
+}
+.notification-options > button:focus {
+    color:#bd4f4f;
+}
+.notification-options > button:active {
+    transform: scale(0.9);
+}
+
+.notification-options > button:hover {
+    cursor: pointer;
+    color: #000;
+}

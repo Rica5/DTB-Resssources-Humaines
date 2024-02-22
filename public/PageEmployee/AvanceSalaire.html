@@ -205,7 +205,7 @@
                         setTimeout(() => {
                             $(`#${id}`).remove();
                         }, 200);
-                        let notifCount = $("#numberNotification").text();
+                        let notifCount = +$("#numberNotification").text();
                         if (notifCount > 0)
                             $("span#numberNotification").each((i, element) => {
                                 $(element).text(notifCount - 1)
@@ -263,7 +263,7 @@
                     if (data.ok) {
                         $(`#${id}`).addClass('seen');
                         $(`#${id}`).removeAttr('onClick');
-                        let notifCount = $("#numberNotification").text();
+                        let notifCount = +$("#numberNotification").text();
                         if (notifCount > 0)
                             $("span#numberNotification").each((i, element) => {
                                 $(element).text(notifCount - 1)
