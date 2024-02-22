@@ -10,6 +10,8 @@ routeExpDTB.route("/mySpace").get(Controller.getHomePage);
 routeExpDTB.route("/RequestLeave").get(Controller.getLeaveRequest);
 // Leave Request 
 routeExpDTB.route("/makeRequest").post(Controller.makeLeaveRequest);
+//Attached file
+routeExpDTB.route("/joinFileLeave").post(Controller.attachedFile);
 //Get all request
 routeExpDTB.route("/MyRequest").post(Controller.getMyRequest);
 //See pending request

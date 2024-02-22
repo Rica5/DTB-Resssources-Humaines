@@ -5,6 +5,8 @@ var myRequestContent;
 var myUpcomingContent;
 var leaveDuration = 0;
 var leaveDurationTwo = 0;
+var joinedFile = [];
+var fileIn = false;
 $("#makeRequest").click(() => {
     $("#makeRequest").attr("class", "switch-button active-btn")
     $("#myRequest").attr("class", "switch-button mx-2")
@@ -59,7 +61,21 @@ $("#sendRequest").on('click', () => {
     (!startTime) ? $("#startTime").css({ "border-color": "red" }) : $("#startTime").css({ "border-color": "" });
     (!endTime) ? $("#endTime").css({ "border-color": "red" }) : $("#endTime").css({ "border-color": "" });
     (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
-    var dateRequest = { code: code, startDate: startDate, endDate: endDate, startTime: startTime, endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked') }
+    const formData = new FormData();
+    
+    var dateRequest = {join:joinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime, 
+        endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked') }
+    formData.append("join",joinedFile)
+    formData.append("code",code)
+    formData.append("startDate",startDate)
+    formData.append("endDate",endDate)
+    formData.append("startTime",startTime)
+    formData.append("endTime",endTime)
+    formData.append("motif",motif)
+    formData.append("recovery",recovery)
+    formData.append("duration",(leaveDuration + leaveDurationTwo))
+    formData.append("priority",$("#toggle").is(':checked'))
+    formData.append("fileIn",fileIn)
     if (startDate && endDate && startTime && endTime && motif) {
         if (checkduplicata(allLeave,startDate,endDate)){
             $("#notification").attr("class","notice-denied");
@@ -75,18 +91,34 @@ $("#sendRequest").on('click', () => {
             $.ajax({
                 url: "/makeRequest",
                 method: "POST",
-                data: dateRequest,
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
                 success: function (res) {
-                    $("#sendRequest").prop("disabled",false);
-                    $('#loading').hide();
-                    $("#notification").attr("class","notice-success");
-                    $("#notification").text("Requête envoyé avec succes");
-                    $("#notification").show();
-                    UpdateRequest()
-                    restore();
-                    setTimeout(() => {
-                        $("#notification").hide();
-                    }, 5000);
+                    if (res == "Success"){
+                        $("#sendRequest").prop("disabled",false);
+                        $('#loading').hide();
+                        $("#notification").attr("class","notice-success");
+                        $("#notification").text("Requête envoyé avec succes");
+                        $("#notification").show();
+                        UpdateRequest()
+                        restore();
+                        setTimeout(() => {
+                            $("#notification").hide();
+                        }, 5000);
+                    }
+                    else {
+                        $("#sendRequest").prop("disabled",false);
+                        $('#loading').hide();
+                        $("#notification").attr("class","notice-denied");
+                        $("#notification").text("Une erreur est survenue");
+                        $("#notification").show();
+                        setTimeout(() => {
+                            $("#notification").hide();
+                        }, 5000);
+                    }
+                   
                 }
             })
         }
@@ -193,15 +225,19 @@ function Approved(data) {
                     </div>
                     <div class="d-flex justify-content-between">
                     <div class="duration">
+                        <div>
                         <span>Durée:</span>
-                        <span>${element.duration} jours</span>
+                        <span>${element.duration == 0.25 ? calcul_timediff_absencetl(element.hour_begin,element.hour_end) : element.duration + " jour(s)" } </span>
+                        </div>
+                        <div><span>Décision : ${decided(element.type)}</span></div>
                     </div>
                     <div class="duration">
-                        <span>Rest =></span>
-                        <span>Accumulée: ${element.acc} | ouvert: ${element.rest}</span>
+                        ${itCount(element.type) == true ? `<div><span> 2024 | ${(element.acc + element.duration) - (element.rest + element.duration)  } | 2023 | ${element.rest + element.duration} |</span> </div>
+                        <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>`:
+                        `<div><span>| 2024: ${element.acc - element.rest } | 2023: ${element.rest} |</span></div>
+                        <div><span>Reste après autorisation | </span>${element.acc} |</span></div>`}
                     </div>
                     </div>
-                    
                 </div>
                 <div id="${element._id}" class="card-footer approved">
                     ${allStat[element.status]}
@@ -214,6 +250,25 @@ function Approved(data) {
         myUpcomingContent += '</div>';
         $('#container-upcoming').html(myUpcomingContent);
         $("#approved").text(approvedNumber)
+}
+function decided(decision){
+    var response = "";
+    if (decision.includes("Congé Payé")){
+        response = "A déduire s/ congé payés"
+    }
+    else if (decision.includes("Permission exceptionelle")){
+        response = "Permission exceptionnelle"
+    }
+    else if (decision.includes("Repos Maladie")){
+        response = "Rien à déduire"
+    }
+    else if (decision.includes("Congé de maternité")){
+        response = "Congé de maternité/paternité"
+    }
+    else {
+        response = "A déduire sur salaire"
+    }
+    return response
 }
 var allStat = {
     pending: "En attente",
@@ -381,7 +436,18 @@ $("#motif").on('change', () => {
         $("#motif").css({ "border-color": "" })
     );
 })
-
+$('#join').on('change', function (event) {
+    var selectedFile = event.target.files[0];
+    if (selectedFile){
+        fileIn = true;
+        joinedFile = selectedFile;
+        $('#fileOk').css({"opacity":"1"});
+    }
+    else {
+        fileIn = false
+        $('#fileOk').css({"opacity":"0"});
+    }
+ })
 function dateDiff(starting, ending) {
     if (ending != "") {
         var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
@@ -425,8 +491,14 @@ function hourDiff(startTime, endTime) {
         hours += hours_fictif;
         minutes += minutes_fictif;
         if (hours < 6) {
-            leaveDurationTwo = 0.5;
-            $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+            hours <= 2 ? leaveDurationTwo = 0.25 : leaveDurationTwo = 0.5;
+            if (leaveDurationTwo == 0.25){
+                $("#dayNumber").text(calcul_timediff_absencetl(startTime, endTime))
+            }
+            else {
+                $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+            }
+           
         }
         else if (hours >= 6) {
             leaveDurationTwo = 1;
@@ -438,6 +510,43 @@ function hourDiff(startTime, endTime) {
         }
     }
 }
+function calcul_timediff_absencetl(startTime, endTime) {
+    if (startTime != "") {
+      startTime = moment(startTime, "HH:mm:ss a");
+      endTime = moment(endTime, "HH:mm:ss a");
+      var duration = moment.duration(endTime.diff(startTime));
+      //duration in hours
+      var hours_fictif = 0;
+      var minutes_fictif = 0;
+      hours_fictif += parseInt(duration.asHours());
+  
+      // duration in minutes
+      minutes_fictif += parseInt(duration.asMinutes()) % 60;
+      if (minutes_fictif < 0) {
+        hours_fictif = hours_fictif - 1;
+        minutes_fictif = 60 + minutes_fictif;
+      }
+      while (minutes_fictif > 60) {
+        hours_fictif += 1;
+        minutes_fictif = minutes_fictif - 60;
+      }
+      if (hours_fictif < 0) {
+        hours_fictif = hours_fictif + 24;
+      }
+      if (hours_fictif == 0) {
+        return minutes_fictif + " minutes";
+      }
+      else if (minutes_fictif == 0) {
+        return hours_fictif + " heures";
+      }
+      else {
+        return hours_fictif + " heures " + minutes_fictif + " minutes";
+      }
+    }
+    else {
+      return "heure non défini"
+    }
+  }
 function dateWrite(startTime, endTime) {
     dateDiff(startTime, endTime);
     hourDiff(startTime, endTime)
@@ -464,6 +573,9 @@ function restore(){
     $("#recovery").val("");
     $('#toggle').prop('checked', false);
     $("#dayNumber").text("0");
+    $('#join').val('');
+    fileIn = false
+    $('#fileOk').css({"opacity":"0"});
 }
 
 function checkduplicata(leave, st, ed) {
@@ -548,3 +660,14 @@ function checkduplicata(leave, st, ed) {
       return all_date;
     }
   }
+  function triggerButton(){
+    $("#join").click();
+ }
+ function itCount(theType){
+    if (theType.includes("Congé Payé")){
+        return true
+    }
+    else {
+        return false
+    }
+ }

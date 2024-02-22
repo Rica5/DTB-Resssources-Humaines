@@ -22,10 +22,9 @@
   <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css">
   <link rel="stylesheet" href="cssDTB/allRequest.css">
   <link rel="stylesheet" href="cssDTB/notification.css">
-  
   <script>
-  var users = JSON.parse('<%-JSON.stringify(users)%>');
-  var role = '<%= role %>'
+  var users = JSON.parse('<%-JSON.stringify(users)%>')
+  var role = '<%= role %>';
   </script>
 </head>
 
@@ -177,24 +176,51 @@
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
             <ul id="sidebarnav" class="pt-4">
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="/conge"
-                  aria-expanded="false"
-                  ><i class="mdi mdi-alarm-check"></i
-                  ><span class="hide-menu">Liste des conges</span></a
-                >
-              </li>
-              <li class="sidebar-item">
-                <a
-                  class="sidebar-link waves-effect waves-dark sidebar-link"
-                  href="/leavePending"
-                  aria-expanded="false"
-                  ><i class="fa-solid fa-envelope"></i>
-                  <span class="hide-menu">Demande de congé</span></a
-                >
-              </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/managementtl"
+                    aria-expanded="false"
+                    ><i class="fa-solid fa-users"></i>
+                    <span class="hide-menu">Status</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/pointagetl"
+                    aria-expanded="false"
+                    ><i class="fa-solid fa-book-open"></i>
+                    <span class="hide-menu">Tableau des pointages</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/absencetl"
+                    aria-expanded="false"
+                    ><i class="mdi mdi-border-inside"></i
+                    ><span class="hide-menu">Tableau des absences</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/validelatetl"
+                    aria-expanded="false"
+                    ><i class="mdi mdi-alarm-check"></i
+                    ><span class="hide-menu">Validation des retards</span></a
+                  >
+                </li>
+                <li class="sidebar-item">
+                  <a
+                    class="sidebar-link waves-effect waves-dark sidebar-link"
+                    href="/leavePending"
+                    aria-expanded="false"
+                    ><i class="fa-solid fa-envelope"></i>
+                    <span class="hide-menu">Demande de congé</span></a
+                  >
+                </li>
               </ul>
         </nav>
         <!-- End Sidebar navigation -->
@@ -268,8 +294,8 @@
                   </div>
                   <div id="notification" class="notice-success">
                     Requête accepter
+                 </div>
                   </div>
-                </div>
                  
                 <div class="col-12 allRequest mt-2" id="content-allRequest">
                     <div class="card-item" id="allRequest">
@@ -300,25 +326,6 @@
               </div>
             </div> 
           </div>
-          <div id="ModalPiece" class="modal_conge">
-            <div class="modal_piece">
-              <div class="row">
-                <div class="text-center modal-dismiss mb-3">
-                  <i onclick="closePiece()" class="fa-solid close-modal fa-circle-xmark"></i>
-                </div>
-                <div class="col-md-12">
-                  <span class="logo-text mt-3">
-                    <!-- dark Logo text -->
-                    <b>PIECE JOINTE</b>
-                    <p id="who"></p>
-                  </span>
-                </div>
-              </div>
-              <div id="PieceContent">
-
-              </div>
-            </div> 
-          </div>
           <div id="ModalDecline" class="modal_conge">
             <div class="modal_delete">
               <div class="row">
@@ -339,7 +346,6 @@
               </div>
             </div> 
           </div>
-          
             </div>
           </div>
         </div>
@@ -353,7 +359,7 @@
         <!-- ============================================================== -->
         <!-- End Right sidebar -->
         <!-- ============================================================== -->
-      
+        
         <!-- notification modal -->
         <div class="notification-modal">
           <h2>
@@ -361,7 +367,20 @@
               Notifications:
           </h2>
           <div id="notifContent" class="notification-list">
-            
+            <div id="${element._id}" class="notification-item seen" onClick="markAsRead('${element._id}')">
+              <div class="d-flex items-center gap-3">
+                <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
+                  <i class="mdi mdi-bell text-white"></i>
+                </span>
+                <div>
+                  <h1>${element.title}</h1>
+                  <p class="message">${element.content}</p>
+                  <div class="date-time">
+                    <span>${element.datetime}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -409,11 +428,11 @@
   <script src="/jsDTB/accordingRequest.js"></script>
   <script src="/jsDTB/notification.js"></script>
   <script>
-     var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
+    var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
     var socket = io();
     const audio = new Audio("ring.wav");
     socket.on("notif", function (msg) {
-      var theNotif = msg[1];
+        var theNotif = msg[1];
       var concerned = msg[0];
         if (concerned.includes(role)){
         const notification = new Notification(theNotif.title, {
@@ -423,15 +442,12 @@
         UpdateRequest();
         pushNotification(theNotif,role)
         audio.play();
-      }
-     
-    });
+          }
+      });
     socket.on("isTreated", function (response){
       $(`#${response[0]}`).addClass("disabled")
     })
-    socket.on("tlDone", function (msg){
-      UpdateRequest();
-    })
+    
     setnotification(notif);
 </script>
 </body>

@@ -83,7 +83,7 @@
                   <input type="hidden" name="mail" value="<%= username %>" />
                   <input type="hidden" name="opt" value="p" />
                   <button type="submit" class="btn btn-info mx-5 text-white">
-                    <i class="mdi mdi-exit-to-app" width="31"> POINTAGE</i>
+                    <i class="mdi mdi-exit-to-app" width="31"> MON ESPACE</i>
                   </button>
                 </form>
               </li>
@@ -121,32 +121,24 @@
                   </ul>
                 </ul>
               </li>
-              <li class="nav-item dropdown">
+              <li class="nav-item dropdown d-flex p-1">
                 <a
-                  class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic"
-                  href="#"
-                  id="navbarDropdown"
-                  role="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  <img
-                    src="../assets/images/users/1.jpg"
-                    alt="user"
-                    class="rounded-circle"
-                    width="31"
-                  />
-                </a>
-                <ul
-                  class="dropdown-menu dropdown-menu-end user-dd animated"
-                  aria-labelledby="navbarDropdown"
-                >
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="/exit_a"
-                    ><i class="fa fa-power-off me-1 ms-1"></i> Déconnexion</a
-                  >
-                </ul>
-              </li>
+                class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic"
+              >
+              <div class="content-circle">
+                <img
+                  src="../Profil/<%= dataUser.profil %>"
+                  alt="user"
+                  class="img-circle"
+                />
+              </div>
+                
+              </a>
+              <div class="flex-row">
+                <span class="name-admin"><%= dataUser.usuel %></span>
+                <div><a class="logout" href="/exit_a">Se déconnecter</a></div>
+              </div>
+            </li>
             </ul>
           </div>
         </nav>
@@ -533,20 +525,7 @@
                 Notifications:
             </h2>
             <div id="notifContent" class="notification-list">
-              <div id="${element._id}" class="notification-item seen" onClick="markAsRead('${element._id}')">
-                <div class="d-flex items-center gap-3">
-                  <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
-                    <i class="mdi mdi-bell text-white"></i>
-                  </span>
-                  <div>
-                    <h1>${element.title}</h1>
-                    <p class="message">${element.content}</p>
-                    <div class="date-time">
-                      <span>${element.datetime}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -622,32 +601,19 @@
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        var theNotif = msg[msg.length -1];
-        if (theNotif.role.includes(role)){
-          setnotification(msg,role);
+        var theNotif = msg[1];
+      var concerned = msg[0];
+        if (concerned.includes(role)){
         const notification = new Notification(theNotif.title, {
-                     body: `${theNotif.message}`,
+                     body: `${theNotif.content}`,
                     icon:  '../assets/images1/logo.jpg',
             })
-        UpdateRequest();
-        audio.play()
-        }
+        pushNotification(theNotif,role)
+        audio.play();
+          }
       });
-      socket.on("isTreated", function (response){
-      $(`#${response[0]}`).addClass("disabled")
-    })
-    if (role =="Admin"){
-        socket.on("ropDone", function (msg){
-        UpdateRequest();
-      })
-    }
-    else {
-      socket.on("rhDone", function (msg){
-        UpdateRequest();
-      })
-    }
     
-    setnotification(notif,role);
+    setnotification(notif);
     </script>
   </body>
 </html>

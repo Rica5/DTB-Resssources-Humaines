@@ -225,8 +225,8 @@ function getdata(code) {
           profil.setAttribute("src", `Profil/${initData[d].profil}`)
           full_name.innerHTML = `${initData[d].first_name} ${initData[d].last_name}`;
           post.innerHTML = "POSTE => " + initData[d].project;
-          opens.innerHTML = " Congé ouvert cette année : " + initData[d].remaining_leave;
-          sum.innerHTML = "Congé accumulée : " + initData[d].leave_taked;
+          opens.innerHTML = "Acquis ..." +moment().add(-1,"years").format("YYYY") + " => " + initData[d].remaining_leave;
+          sum.innerHTML = "Acquis "+moment().format("YYYY") + " => " + (initData[d].leave_taked - initData[d].remaining_leave);
           if (data[1]) {
             last.innerHTML = `Recement en congé le : ${convert_date(data[1].date_start, data[1].date_end)}`;
           }

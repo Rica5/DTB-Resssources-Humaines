@@ -316,6 +316,32 @@ select:-webkit-autofill {
 .login101-pic img {
   max-width: 100%;
 }
+.content-circle{
+  object-fit: cover;
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background: transparent;
+  transform: scale(1.1);
+  overflow: hidden;
+}
+.img-circle{
+  object-fit: cover;
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  background: transparent;
+}
+.name-admin{
+  color: #FFFFFF;
+}
+.logout{
+  color: #29c0e6;
+}
+.logout:hover{
+  color: lightgrey;
+  text-decoration: underline;
+}
 
 
 /*------------------------------------------------------------------

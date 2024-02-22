@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css">
   <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css">
   <link rel="stylesheet" href="cssDTB/allRequest.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css1/checkbox.css" />
   <link rel="stylesheet" href="cssDTB/notification.css">
   <script>
   var users = JSON.parse('<%-JSON.stringify(users)%>')
@@ -138,21 +139,24 @@
             <!-- ============================================================== -->
             <!-- User profile and search -->
             <!-- ============================================================== -->
-            <li class="nav-item dropdown">
-              <a class="
-                    nav-link
-                    dropdown-toggle
-                    text-muted
-                    waves-effect waves-dark
-                    pro-pic
-                  " href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="../assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31" />
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="/exit_a"><i class="fa fa-power-off me-1 ms-1"></i> Déconnexion</a>
-              </ul>
-            </li>
+            <li class="nav-item dropdown d-flex p-1">
+              <a
+              class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic"
+            >
+            <div class="content-circle">
+              <img
+                src="../Profil/<%= dataUser.profil %>"
+                alt="user"
+                class="img-circle"
+              />
+            </div>
+              
+            </a>
+            <div class="flex-row">
+              <span class="name-admin"><%= dataUser.usuel %></span>
+              <div><a class="logout" href="/exit_a">Se déconnecter</a></div>
+            </div>
+          </li>
             <!-- ============================================================== -->
             <!-- User profile and search -->
             <!-- ============================================================== -->
@@ -365,34 +369,52 @@
               <p id="codeAccept" class="warn-text mt-4">
                 Voulez vous vraiment accepter l'absence de M-FAM
               </p>
-              <div>
-                <label id="title" for="type_leave">Veuillez séléctionner le type de congé:</label>
-                <select class="mb-3" id="typeLeave">
-                  <option value="">Type de congé</option>
-                  <option value="Congé Payé">
-                    Congé Payé ( rien à déduire )
-                  </option>
-                  <option value="Congé sans solde">
-                    Congé Sans Solde ( à déduire sur salaire )
-                  </option>
-                  <option value="Permission exceptionelle">
-                    Permission exceptionelle ( rien à déduire )
-                  </option>
-                  <option value="Repos Maladie">
-                    Repos Maladie ( rien à déduire )
-                  </option>
-                  <option value="Absent">
-                    Absent ( à déduire sur salaire )
-                  </option>
-                  <option value="Congé de maternité">
-                    Congé de maternité ( rien à déduire )
-                  </option>
-                  <option value="Mise a Pied">
-                    Mise a pied ( à déduire sur salaire )
-                  </option>
-                </select>
+              <div class="d-flex justify-content-between">
+                <div class="col-md-8">
+                  <label id="title" for="type_leave">Veuillez séléctionner le type de congé:</label>
+                  <select class="mt-3" id="typeLeave">
+                    <option value="">Type de congé</option>
+                    <option value="Congé Payé">
+                      Congé Payé ( rien à déduire )
+                    </option>
+                    <option value="Congé sans solde">
+                      Congé Sans Solde ( à déduire sur salaire )
+                    </option>
+                    <option value="Permission exceptionelle">
+                      Permission exceptionelle ( rien à déduire )
+                    </option>
+                    <option value="Repos Maladie">
+                      Repos Maladie ( rien à déduire )
+                    </option>
+                    <option value="Absent">
+                      Absent ( à déduire sur salaire )
+                    </option>
+                    <option value="Congé de maternité">
+                      Congé de maternité ( rien à déduire )
+                    </option>
+                    <option value="Mise a Pied">
+                      Mise a pied ( à déduire sur salaire )
+                    </option>
+                  </select>
+                </div>
+                <div id="orderCheck" class="col-md-4 container-order"> 
+                  <div>
+                      <label class="text-center">Par ordre</label>
+                  </div>
+                  <div class="d-flex justify-content-between gap-5">
+                    <div class="d-flex flex-column text-center">
+                      <input id="sayYes" type="checkbox" class="checking" value="yes" onchange="checkboxControl('yes')">
+                      <label>OUI</label>
+                    </div>
+                    <div class="d-flex flex-column text-center">
+                      <input id="sayNo" type="checkbox" class="checking" value="no" onchange="checkboxControl('no')" checked>
+                      <label>NON</label>
+                    </div>
+                  </div>
               </div>
-              <p id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
+               
+              </div>
+              <p class="mt-3" id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
               <div class="allProject" id="project">
                   
               </div>
@@ -400,6 +422,32 @@
                 <button id="accept" onclick="ApproveLast()"  class="btn btn-sm btn-primary mx-1"><i style="opacity: 0;" id="waitingApprove" class="fa-solid fa-spinner fa-spin"></i> Confirmer <i class="fa-solid fa-check"></i></button>
                 <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">Annuler <i class="fa-solid fa-ban"></i></button>
               </div>
+            </div> 
+          </div>
+          </div>
+          <input type="file" class="d-none" id="join">
+          <div id="ModalPiece" class="modal_conge">
+            <div class="modal_piece">
+              <div class="row">
+                <div class="text-center modal-dismiss mb-3">
+                  <i onclick="closePiece()" class="fa-solid close-modal fa-circle-xmark"></i>
+                </div>
+                <div class="col-md-6">
+                  <span class="logo-text mt-3">
+                    <!-- dark Logo text -->
+                    <b>PIECE JOINTE</b>
+                    <p id="who"></p>
+                  </span>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-end">
+                  <button onclick="replacePiece()" class="btn btn-md btn-success">Remplacer la pièce <i class="fa-solid fa-file-pen"></i></button>
+                </div>
+              </div>
+              <div id="PieceContent">
+
+              </div>
+             
+            
             </div> 
           </div>
           <div id="ModalDecline" class="modal_conge">
@@ -443,20 +491,6 @@
               Notifications:
           </h2>
           <div id="notifContent" class="notification-list">
-            <div id="${element._id}" class="notification-item seen" onClick="markAsRead('${element._id}')">
-              <div class="d-flex items-center gap-3">
-                <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
-                  <i class="mdi mdi-bell text-white"></i>
-                </span>
-                <div>
-                  <h1>${element.title}</h1>
-                  <p class="message">${element.content}</p>
-                  <div class="date-time">
-                    <span>${element.datetime}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -508,16 +542,17 @@
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        var theNotif = msg[msg.length -1];
-        if (theNotif.role.includes(role)){
-          setnotification(msg,role);
+        var theNotif = msg[1];
+      var concerned = msg[0];
+        if (concerned.includes(role)){
         const notification = new Notification(theNotif.title, {
-                     body: `${theNotif.message}`,
+                     body: `${theNotif.content}`,
                     icon:  '../assets/images1/logo.jpg',
             })
         UpdateRequest();
-        audio.play()
-        }
+        pushNotification(theNotif,role)
+        audio.play();
+          }
       });
       socket.on("isTreated", function (response){
       $(`#${response[0]}`).addClass("disabled")
@@ -532,8 +567,7 @@
         UpdateRequest();
       })
     }
-    
-    setnotification(notif,role);
+    setnotification(notif);
   </script>
 </body>
 

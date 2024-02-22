@@ -235,7 +235,30 @@
     padding: 25px 25px;
     animation: flating 1s ease-in;
 }
-
+.modal_piece {
+    background-color: #fff;
+    border-radius: 16px;
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    width: 950px;
+    height: auto;
+    padding: 25px 25px;
+    animation: flating 1s ease-in;
+}
+.close-modal{
+    font-size: 35px;
+    cursor: pointer;
+    padding: 0.15em;
+    transition: all 0.3s ease;
+  }
+  .close-modal:hover{
+    background-color: #d42828c5;
+    border-radius: 50%;
+    color: #EEEEEE;
+  }
 .warn-text {
     font-size: 16px;
     color: #9c1111;
@@ -383,3 +406,22 @@ select#typeLeave:focus {
     pointer-events: none; /* Disable pointer events */
     opacity: 0.5; /* Apply opacity to visually indicate disabled state */
   }
+
+.checking{
+    margin: auto !important;
+}
+.container-order{
+    border:solid 1px #252424;
+    border-radius: 10px;
+    padding: 0.25em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.file-ok{
+    color: limegreen;
+    opacity: 1;
+    transition: all 1s ease;
+    cursor: pointer;
+}
