@@ -164,6 +164,17 @@ async function setGlobalAdminNotifications(notification,concerned,spec,req){
    const io = req.app.get("io");
    io.sockets.emit("notif",[concerned,notification]);
 }
+async function setEachUserNotification(code,title,content,req){
+  var myNotif = {
+       title:title,
+       content:content,
+       datetime:moment().format("DD/MM/YYYY hh:mm"),
+       isSeen:false
+  }
+ await UserSchema.findOneAndUpdate({m_code:code},{$push:{myNotifications:myNotif}},{new :true })
+   const io = req.app.get("io");
+   io.sockets.emit(code, myNotif);
+}
 async function arrange_leave_year(){
     var user = await UserSchema.find({status:"Actif",m_code:{$ne:"N/A"}});
     for (let index = 0; index < user.length; index++) {
@@ -2693,6 +2704,7 @@ routeExp.route("/takeleave").post(async function (req, res) {
     var val = req.body.court;
     var motif = req.body.motif;
     var idRequest = req.body.idRequest;
+    var exceptType = req.body.exceptType;
     var deduction = " ( rien à deduire )";
         var user = await UserSchema.findOne({ m_code: code });
         var taked;
@@ -2776,7 +2788,8 @@ routeExp.route("/takeleave").post(async function (req, res) {
               motif: motif,
               validation: false,
               acc: last_acc,
-              request:idRequest
+              request:idRequest,
+              exceptType:exceptType
             };
             var last_rest = rest;
             indice_change.forEach(async (change) => {
@@ -2899,7 +2912,8 @@ routeExp.route("/takeleave").post(async function (req, res) {
               motif: motif,
               validation: false,
               acc: last_acc,
-              request:idRequest
+              request:idRequest,
+              exceptType:exceptType
             };
             var d1 = moment(leavestart).format("YYYY-MM-DD");
             var d2 = moment(leaveend).format("YYYY-MM-DD");
@@ -3414,7 +3428,19 @@ routeExp.route("/delete_leave").post(async function (req, res) {
             );
           }
         }
-        await arrangeAccumulate(code, leave_delete.date_start);
+        await LeaveRequestTest.findOneAndDelete({_id:leave_delete.request});
+        var notification = {
+          title:"Annulation congé",
+          content:`Congé du ${moment(leave_delete.date_start).format("DD/MM/YYYY")} au ${moment(leave_delete.date_end).format("DD/MM/YYYY")} pour ${leave_delete.m_code} a été annuler`,
+          datetime:moment().format("DD/MM/YYYY hh:mm:ss")
+       }
+       var concerned = ["Admin","Surveillant","Opération"];
+       await setGlobalAdminNotifications(notification,concerned,true,req);
+       notification.content = `Congé du ${moment(leave_delete.date_start).format("DD/MM/YYYY")} au ${moment(leave_delete.date_end).format("DD/MM/YYYY")} pour vous a été annuler`
+       setEachUserNotification(leave_delete.m_code,notification.title,notification.content,req);
+       leave_delete.status = "aborted";
+       const io = req.app.get("io");
+       io.sockets.emit("isTreated", [leave_delete.request,leave_delete]);
         res.send("Ok");
   } else {
     res.redirect("/");

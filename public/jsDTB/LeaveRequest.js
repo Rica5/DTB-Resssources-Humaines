@@ -461,6 +461,7 @@ function dateDiff(starting, ending) {
         leaveDuration = 0;
         $("#dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
     }
+    notValid()
 }
 
 function hourDiff(startTime, endTime) {
@@ -493,7 +494,7 @@ function hourDiff(startTime, endTime) {
         if (hours < 6) {
             hours <= 2 ? leaveDurationTwo = 0.25 : leaveDurationTwo = 0.5;
             if (leaveDurationTwo == 0.25){
-                $("#dayNumber").text(calcul_timediff_absencetl(startTime, endTime))
+                $("#dayNumber").text(leaveDuration ? `${leaveDuration} jr ${calcul_timediff_absencetl(startTime, endTime)}` : `${calcul_timediff_absencetl(startTime, endTime)}`)
             }
             else {
                 $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
@@ -508,6 +509,8 @@ function hourDiff(startTime, endTime) {
             leaveDurationTwo = 0;
             $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
         }
+        notValid()
+        
     }
 }
 function calcul_timediff_absencetl(startTime, endTime) {
@@ -563,6 +566,10 @@ function replaceElementByIdPending(id, newData) {
 function dropElementById(id) {
     PendingAndDecline = PendingAndDecline.filter(item => item._id != id);
     myRequestRender(PendingAndDecline)
+}
+function dropElementByIdApprove(id) {
+    Approves = Approves.filter(item => item._id != id);
+    Approved(Approves);
 }
 function restore(){
     $("#startDate").val("");
@@ -669,5 +676,19 @@ function checkduplicata(leave, st, ed) {
     }
     else {
         return false
+    }
+ }
+ function notValid(){
+    if (leaveDuration < 0){
+        $("#sendRequest").prop("disabled",true)
+        $("#notification").attr("class","notice-denied");
+        $("#notification").text("Erreur d'entrée sur la date");
+        $("#notification").show();
+        setTimeout(() => {
+            $("#notification").hide();
+        }, 5000);
+    }
+    else {
+        $("#sendRequest").prop("disabled",false)
     }
  }

@@ -188,12 +188,15 @@
         grid-template-columns: repeat(1, 1fr);
     }
 }
+.warning{
+    color: rgb(175, 21, 21);
+    font-weight: bold;
+}
 
 .allProject {
     border: 1px solid #2EB4E7;
     border-radius: 7px;
-    padding: 1em 5em;
-    gap: 2em;
+    padding: 1em 2em;
 }
 
 .project {
@@ -219,6 +222,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
+    overflow: scroll;
 
 }
 
@@ -358,7 +362,7 @@ label[for="type_leave"] {
     margin: 0;
 }
 /* Reset default styles */
-select#type_leave {
+select.type_leave {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -367,11 +371,11 @@ select#type_leave {
 }
 
 /* Style the dropdown arrow (if supported) */
-select#type_leave::-ms-expand {
+select.type_leave::-ms-expand {
     display: none;
 }
 
-select#type_leave::after {
+select.type_leave::after {
     content: 'BONJOUR';
     /* Unicode character for a down arrow ▼ */
     position: absolute;
@@ -383,7 +387,7 @@ select#type_leave::after {
 }
 
 /* Style the select#type_leave box */
-select#typeLeave {
+select.typeLeave {
     padding: .3rem;
     font-size: 16px;
     border: 1px solid #ccc;
@@ -395,7 +399,7 @@ select#typeLeave {
 }
 
 /* Style for when the dropdown is open */
-select#typeLeave:focus {
+select.typeLeave:focus {
     outline: none;
     border-color: #5AC4EC;
     /* Change the border color on focus */
