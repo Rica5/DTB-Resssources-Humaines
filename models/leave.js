@@ -7,6 +7,7 @@ const Leave = mongoose.Schema({
     date_end:String,
     duration:Number,
     type:String,
+    exceptType:String,
     status:String,
     rest:Number,
     acc:Number,

@@ -7,6 +7,9 @@ var normalRequest = [];
 var order = false;
 var seeFile = true;
 var idForFile = "";
+var permissionType = false;
+var changeMotif = true;
+var userActive;
 function UpdateRequest(){
     $.ajax({
         url:"/allRequest",
@@ -29,7 +32,8 @@ function renderAllRequest(Leave){
                         <div class="code-person">
                         <div>
                         <p id="codeUser" class="code-text">${leave.m_code}</p>
-                        <p class='text-duration'>${leave.duration == 0.25 ? calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)" }</p>
+                        <p class='text-duration'>${leave.duration == 0.25 ? calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : 
+                          isFloat(leave.duration) ? leave.duration.toString().split(".")[0] + " jr(s) " + calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)"}</p>
                         </div>
                             
                         </div>
@@ -77,16 +81,20 @@ function renderAllRequest(Leave){
     
 }
 UpdateRequest();
+function isFloat(num) {
+    // Check if the number has a fractional part
+    return num % 1 !== 0;
+}
 function renderButton(role,leave){
     var button = ""
     switch(role){
-        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin" : button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -168,7 +176,7 @@ function dateDiffers(created, now) {
         }
   }
 
-function According(id,code,type){
+function According(id,code,type,duration){
     if (role == 'Gerant' ){
         $("#typeLeave").val(type);
         $("#typeLeave").prop("disabled",true);
@@ -179,9 +187,15 @@ function According(id,code,type){
         $('#typeLeave').val("")
     }
     idActive = id;
-    var userActive = users.find(user => user.m_code == code);
+    userActive = users.find(user => user.m_code == code);
     $("#codeAccept").text(`Voulez vous vraiment accepter l'absence de ${code}`)
-    $("#project").html(renderProject(userActive.project))
+    $("#project").html(renderProject(userActive.project));
+    duration = parseFloat(duration)
+    if (role == "Admin"){
+        reset()
+        renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at);
+        setNumberPermission(code)
+    }
     $("#ModalAccord").show();
 }
 function Declined(id,code){
@@ -196,6 +210,9 @@ function closeModal(){
 function renderProject(given){
     var string  = "";
     given = given.split("/")
+    given.sort(function(a, b) {
+        return a.localeCompare(b);
+    });
     if (given.length <= 1 ){
         string += `<div class="project mb-1">
         ${given}
@@ -203,9 +220,9 @@ function renderProject(given){
     }
     else {
         given.forEach(element => {
-            string += `<div class="project mb-1">
+            string += `<div class="col-md-6"><div class="project mb-1">
         ${element}
-      </div>`
+      </div></div>`
         });
     }
     return string
@@ -233,16 +250,28 @@ function ApproveLast(){
     if (role == "Admin"){
         if ($('#typeLeave').val() != ""){
             $("#waitingApprove").css('opacity','1')
+            var data = {id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val(),order:order,
+            exceptType: permissionType ? $("#exceptType").val(): "",motif:$("#rmType").val()}
+            changeMotif ? "" : delete data.motif;
                 $.ajax({
                     url:"/requestAnswer",
                     method:"POST",
-                    data:{id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val(),order:order},
+                    data:data,
                     success: function(data) {
+                        if (data.type.includes("Congé Payé")){
+                            let indexUser = users.findIndex(element => element.m_code == data.m_code);
+                        if (indexUser !== -1) {
+                            users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
+                            users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
+                        }
+                        }
+                        
+                        data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
                         if (order){
                             $.ajax({
                                 url:"/takeleave",
                                 method:"POST",
-                                data:{code:data.m_code,type:data.type,leavestart:data.date_start,leaveend:data.date_end,
+                                data:{code:data.m_code,type:data.type,exceptType:data.exceptType,leavestart:data.date_start,leaveend:data.date_end,
                                       begin:data.hour_begin,end:data.hour_end,court:data.duration,motif:data.motif,idRequest:data._id},
                                 success: function(res) {
                                     UpdateRequest();
@@ -268,7 +297,9 @@ function ApproveLast(){
                                 $('#notification').hide();
                             }, 5000);
                         }
+                        reset();
                     }   
+                    
             })
            }
            else {
@@ -311,9 +342,6 @@ function approvingList(all){
     });
     return `<div class="d-flex approving-list">${lists}</div>`
 }
-$("#typeLeave").change(() => {
-    $("#typeLeave").css('borderColor','#5AC4EC')
-})
 function registerLeave(){
     $("#waitingApprove").css('opacity','1')
     $.ajax({
@@ -369,6 +397,29 @@ function addPiece(id){
     idForFile = id;
     $("#join").click();
 }
+$('#typeLeave').on('change', function () {
+    $("#typeLeave").css('borderColor','#5AC4EC')
+    if ($('#typeLeave').val() == "Permission exceptionelle"){
+        activatePermission(true)
+        activateCp(false);
+        activateRm(false)
+    }
+    else if ($('#typeLeave').val() == "Congé Payé"){
+        activatePermission(false)
+        activateCp(true);
+        activateRm(false)
+    }
+    else if ($('#typeLeave').val() == "Repos Maladie"){
+        activatePermission(false)
+        activateCp(false);
+        activateRm(true)
+    }
+    else {
+        activatePermission(false)
+        activateCp(false);
+        activateRm(false)
+    }
+})
 $('#join').on('change', function (event) {
     var selectedFile = event.target.files[0];
     if (selectedFile){
@@ -410,4 +461,97 @@ $('#join').on('change', function (event) {
  })
  function replacePiece(){
     addPiece(idForFile);
+ }
+ //Permission exceptionelle
+ function activatePermission(choice){
+    if (choice){
+        permissionType = true;
+        $("#typeGranted").attr("class","d-flex justify-content-between")
+    }
+    else {
+        permissionType = false;
+        $("#typeGranted").attr("class","d-none")
+    }
+ }
+ // Répos maladie
+ function activateRm(choice){
+    if (choice){
+        changeMotif = true;
+        $("#typeRm").attr("class","d-flex justify-content-between")
+    }
+    else {
+        changeMotif = false;
+        $("#typeRm").attr("class","d-none")
+    }
+ }
+ // Congé payé
+ function activateCp(choice){
+    if (choice){
+        $("#typeCp").attr("class","d-flex justify-content-between")
+    }
+    else {
+        $("#typeCp").attr("class","d-none")
+    }
+ }
+ function renderSolde(code,acc,rest,duration,auth,save){
+    var html = `
+    <div>
+                          <label class="text-center">Status / solde de ${code}</label>
+                      </div>
+                      <div class="d-flex justify-content-between gap-5">
+                        <div class="d-flex flex-row text-center gap-2">
+                          <label>${moment().add(-1,"years").format("YYYY")}: ${rest}</label><label>${moment().format("YYYY")}: ${(acc - rest)}</label>
+                        </div>
+                        <div class="d-flex flex-row text-center">
+                          <label>Reste après autorisation: ${(acc - duration)}</label>  
+                        </div>
+                      </div>
+                      ${auth == "n" ? `<div class="d-flex text-center">
+                      <label class="warning">Non autorisée qu'a partir de ${moment(save).add(1,"years").locale("Fr").format("MMMM YYYY")} </label>  
+                    </div>` : ""}
+    `
+    $("#leaveLeft").html(html)
+ }
+ $("#exceptType").on('change' ,function (){
+    if ($("#exceptType").val() != "Férié"){
+        permissionExist($("#exceptType").val(),userActive.m_code)
+    }
+    else {
+        $("#alertPermission").attr("class","d-none")
+    }
+ })
+ function permissionExist(choice,code){
+    const found = allPermission.find(perm => perm.exceptType == choice && perm.m_code == code);
+    if (found){
+        $("#alertPermission").attr("class","alert alert-danger mt-2")
+    }
+    else {
+        $("#alertPermission").attr("class","d-none")
+    }
+ }
+ function setNumberPermission(code){
+    $('#thisYearPerm').text(moment().format("YYYY"));
+    var myPermission = allPermission.filter(permission => permission.m_code == code);
+    var cumulPermission = 0;
+    console.log(myPermission)
+    for (let index = 0; index < myPermission.length; index++) {
+        const element = myPermission[index];
+        if (element.exceptType != "Férié"){
+            cumulPermission = cumulPermission + element.duration;
+        }
+    }
+    $("#numberPermission").text(cumulPermission)
+ }
+ function reset(){
+    order = false;
+    seeFile = true;
+    idForFile = "";
+    $('#sayYes').prop('checked', false);
+    $('#sayNo').prop('checked', true);
+    $("#typeLeave").val("");
+    $("#exceptType").val("Férié");
+    $("#rmType").val("");
+    activatePermission(false)
+    activateCp(false);
+    activateRm(false)
  }

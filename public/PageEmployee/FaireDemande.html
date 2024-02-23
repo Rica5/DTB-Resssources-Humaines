@@ -347,17 +347,40 @@
             })
         })
         socket.on("isTreated", function (response){
+            console.log(response)
             if (response[1].status == "approved"){
                 dropElementById(response[0])
                 Approves.push(response[1]);
-                Approved(Approves)
-                $("#accumulate").html((Approves[Approves.length - 1].acc - Approves[Approves.length - 1].rest))
-                $("#openLeave").html(Approves[Approves.length - 1].rest)
+                Approved(Approves);
+                accumulate = Approves[Approves.length - 1].acc;
+                openLeave = Approves[Approves.length - 1].rest
+                setSolde(accumulate,openLeave)
+            }
+            else if (response[1].status == "aborted"){
+                dropElementByIdApprove(response[0])
+                if (response[1].type.includes("Congé Payé")){
+                    accumulate = accumulate + response[1].duration;
+                    openLeave = openLeave + response[1].duration;
+                    setSolde(accumulate,openLeave)
+                }
+               
             }
             else {
                 replaceElementByIdPending(response[0],response[1])
             }
         })
+        function findAndDeleteObject(arr, property, value) {
+    
+    var index = arr.findIndex(obj => obj[property] === value);
+
+    
+    if (index !== -1) {
+        arr.splice(index, 1);
+        console.log(`Object with ${property} ${value} found and deleted from the array.`);
+    } else {
+        console.log(`Object with ${property} ${value} not found in the array.`);
+    }
+}
         function pushNotification(theNotif){
             // Add a notification according to socket
             var notifElement = `

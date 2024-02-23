@@ -66,7 +66,7 @@ function setnotification(all_notifications) {
       var idNotif = "";
       role == "Gerant" ? idNotif = theNotif.idNotif : idNotif = theNotif.idNotif
       var newNotif = `
-      <div id="${idNotif}" class="notification-item ${theNotif.isSeen ? 'seen' : ''}" onClick="markAsRead('${theNotif._id}')">
+      <div id="${idNotif}" class="notification-item ${theNotif.isSeen ? 'seen' : ''}" onClick="markAsRead('${idNotif}')">
           <div  class="d-flex items-center gap-3">
             <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
               <i class="mdi mdi-bell text-white"></i>
@@ -79,7 +79,7 @@ function setnotification(all_notifications) {
               </div>
             </div>
           </div>
-          <button type="button" class="remove-notif-btn" onClick="removeNotification('${theNotif._id}')"><i class="fa-solid fa-times"></i></button>
+          <button type="button" class="remove-notif-btn" onClick="removeNotification('${theNotif.idNotif}')"><i class="fa-solid fa-times"></i></button>
         </div>
       `
       document.getElementById("notifContent").innerHTML = newNotif + theContent;
@@ -172,10 +172,11 @@ function markAllAsRead() {
         method: "PUT",
         success: function (data) {
             if (data.ok) {
-                $('#nbr-notif').text(0);
-                $('.notification-options > button.mark').attr('disabled', '');
-            } else {
-                console.log(data.message)
+                $('#notifContent > div').each((index, element) => {
+                    $(element).addClass('seen');
+                    $("#nbr-notif").text(0)
+                    $('.notification-options > button.mark').attr('disabled', '');
+                });
             }
         },
         error: function(err) {
