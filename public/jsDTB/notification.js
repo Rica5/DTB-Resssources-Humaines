@@ -86,7 +86,7 @@ function setnotification(all_notifications) {
       document.getElementById("nbr-notif").innerHTML = parseInt(document.getElementById("nbr-notif").innerHTML) + 1;
   }
   
-  function removeNotification(id) {
+function removeNotification(id) {
     // supprimer une notification
     // send request here
     $.ajax({
@@ -100,8 +100,8 @@ function setnotification(all_notifications) {
                     $(`#${id}`).remove();
                 }, 200);
                 let notifCount = +$("#nbr-notif").text();
-                if (notifCount > 0)
-                  $("#nbr-notif").text(notifCount - 1);
+                if (!$(`#${id}`).hasClass('seen') && notifCount > 0)
+                    $("#nbr-notif").text(notifCount - 1);
                 // disable effacer les notifications
                 if ($('.notification-item').length === 0)
                     $('.notification-options > button.delete').attr('disabled', '');

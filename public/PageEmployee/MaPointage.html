@@ -897,8 +897,8 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = +$("#numberNotification").text();
-                        $("span#numberNotification").each((i, element) => {
-                            if (parseInt($(element).text()) > 0)
+                        $("span#numberNotification").each((i, element) => { 
+                          if (!$(`#${id}`).hasClass('seen') && parseInt($(element).text()) > 0)
                             $(element).text(notifCount - 1)
                         });
                     }
