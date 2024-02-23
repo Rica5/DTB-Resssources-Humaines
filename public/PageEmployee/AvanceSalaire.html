@@ -208,7 +208,8 @@
                         let notifCount = +$("#numberNotification").text();
                         if (notifCount > 0)
                             $("span#numberNotification").each((i, element) => {
-                                $(element).text(notifCount - 1)
+                                if (!$(`#${id}`).hasClass('seen')) 
+                                    $(element).text(notifCount - 1)
                             });
                         // disable effacer les notifications
                         if ($('.notification-item').length === 0)
