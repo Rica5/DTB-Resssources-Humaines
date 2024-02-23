@@ -61,6 +61,7 @@
     <script>
       var initData = JSON.parse('<%-JSON.stringify(users)%>');
       var leave_in_progress = JSON.parse('<%-JSON.stringify(leave_in_progress)%>');
+      var allPermission = JSON.parse(`<%-JSON.stringify(allPermission)%>`)
       var role =  '<%= role %>';
     </script>
   </head>
@@ -507,27 +508,61 @@
                     <select class="sheet-choice2 mb-3" id="type_leave">
                       <option value="">Type de congé</option>
                       <option value="Congé Payé">
-                        Congé Payé ( rien a deduire )
+                        Congé Payé ( rien à déduire )
                       </option>
                       <option value="Congé sans solde">
-                        Congé Sans Solde ( a deduire sur salaire )
+                        Congé Sans Solde ( à déduire sur salaire )
                       </option>
                       <option value="Permission exceptionelle">
-                        Permission exceptionelle ( rien a deduire )
+                        Permission exceptionnelle ( rien à déduire )
                       </option>
                       <option value="Repos Maladie">
-                        Repos Maladie ( rien a deduire )
+                        Repos Maladie ( rien à déduire )
                       </option>
                       <option value="Absent">
-                        Absent ( a deduire sur salaire )
+                        Absent ( à déduire sur salaire )
                       </option>
                       <option value="Congé de maternité">
-                        Congé de maternité ( rien a deduire )
+                        Congé de maternité ( rien à déduire )
                       </option>
                       <option value="Mise a Pied">
-                        Mise a pied ( a deduire sur salaire )
+                        Mise a pied ( à déduire sur salaire )
                       </option>
                     </select>
+                    <div id="alertConge" class="d-none">
+                      
+                    </div>
+                    <div id="typeGranted" class="d-none">
+                      <div class="col-md-12 ">
+                          <label id="title" class="col-md-12" style="font-size: 14px; font-weight: 500" for="type_leave"><p style="font-size: 14px; font-weight: 500">Choisissez le cas du permission || <b>Pris en <span id="thisYearPerm">2024</span>: <span id="numberPermission">10</span></b></p></label>
+                        <select class="sheet-choice3 mb-2" id="exceptType">
+                          <option value="Férié">Jour férié</option>
+                          <option value="Décès">Décès (conjointe, sns)</option>
+                          <option value="Décès (frères, soeurs)">Décès (frères,soeurs)</option>
+                          <option value="Naissance">Naissance (enfant légitime)</option>
+                          <option value="Mariage">Mariage (employé)</option>
+                          <option value="Mariage (enfant légitime)">Mariage (enfant légitime)</option>
+                          <option value="Exhumation">Exhumation (conjointe, sns)</option>
+                          <option value="Exhumation (parents,beaux parents)">Exhumation (parents,beaux parents)</option>
+                          <option value="Déménagement">Déménagement</option>
+                          <option value="Circoncision">Circoncision</option>
+                        </select>
+                        <div id="alertPermission" class="d-none">
+                          Cette type de permission a été déja prise cette année
+                        </div>
+                      </div>
+                  </div>
+                  <div id="typeRm" class="d-none">
+                    <div class="col-md-10">
+                      <label id="title" class="col-md-12"  for="type_leave"><p style="font-size: 14px; font-weight: 500">Changer le motif du répos maladie en: </p></label>
+                      <select class="sheet-choice3 mb-3" id="rmType">
+                        <option value="">Par défaut</option>
+                        <option value="Consultation médicale">Consultation médicale</option>
+                        <option value="Assistance maternelle">Assistance maternelle</option>
+                        <option value="Visite médicale">Visite médicale</option>
+                      </select>
+                    </div>
+                    </div>
                     <input
                       id="motif"
                       class="input-choice2 mb-3"

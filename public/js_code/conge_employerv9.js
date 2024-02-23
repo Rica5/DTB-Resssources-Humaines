@@ -25,6 +25,7 @@ var oneDay = false;
 waiting.style.opacity = 0;
 var code_selected = ""
 var users;
+var chooseCas = document.getElementById("typeGranted");
 //Number of those in period of vacation for each SHIFT
 var shift1_number = 0; var shift2_number = 0; var shift3_number = 0; var shiftw_number = 0; var dev_number = 0; var tl_number = 0; var admin_number = 0;
 var sh1_num = 0; var sh2_num = 0; var sh3_num = 0; var shv_num = 0; var dev_num = 0; var tl_num = 0; var adm_num = 0;
@@ -122,18 +123,11 @@ function counting(){
     }
   }
   render_element(employees["list1"], "list1")
-  console.log("list1");
   render_element(employees["list2"], "list2")
-  console.log("list2");
   render_element(employees["list3"], "list3")
-  console.log("list3");
   render_element(employees["list4"], "list4")
-  console.log("list4");
   render_element(employees["list5"], "list5")
-  console.log("list5");
   render_element(employees["list6"], "list6")
-  console.log("list6");
-  console.log(employees["list7"])
   render_element(employees["list7"],"list7")
 }
 counting();
@@ -221,7 +215,14 @@ function getdata(code) {
       initData = data[0];
       for (d = 0; d < initData.length; d++) {
         if (initData[d].m_code == code) {
+          $("#type_leave").val("")
           code_selected = code;
+          showAlertConge = false;
+          activateCp(false);
+          activatePermission(false);
+          activateRm(false);
+          setNumberPermission(code)
+          congeAuth(initData[d].leave_stat,initData[d].save_at)
           profil.setAttribute("src", `Profil/${initData[d].profil}`)
           full_name.innerHTML = `${initData[d].first_name} ${initData[d].last_name}`;
           post.innerHTML = "POSTE => " + initData[d].project;
@@ -281,7 +282,7 @@ function define_leave() {
       else {
         oneDay = oj.value;
         dateend.value = datestart.value;
-        take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, oj.value, motif.value, "", "");
+        take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, oj.value, motif.value, "", "",permissionValue,"");
       }
     }
     else if (dj.checked) {
@@ -294,7 +295,7 @@ function define_leave() {
       else {
         oneDay = dj.value;
         dateend.value = datestart.value;
-        take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, dj.value, motif.value, "", "");
+        take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, dj.value, motif.value, "", "",permissionValue,"");
       }
     }
     else {
@@ -307,7 +308,7 @@ function define_leave() {
       else {
         oneDay = qj.value;
         dateend.value = datestart.value;
-        take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, qj.value, motif.value, begin.value, end.value);
+        take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, qj.value, motif.value, begin.value, end.value,permissionValue,"");
       }
     }
   }
@@ -326,7 +327,7 @@ function define_leave() {
     }
     else {
       oneDay = false;
-      take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, "n", motif.value, "", "");
+      take_leave("/takeleave", type_leave.value, datestart.value, dateend.value, "n", motif.value, "", "",permissionValue,"");
     }
 
   }
@@ -378,7 +379,7 @@ function dissapearo() {
     pde.style.display = "block";
   }
 }
-function take_leave(url, type, startings, endings, val, mt, begin, end) {
+function take_leave(url, type, startings, endings, val, mt, begin, end,exceptType,idRequest) {
   var http = new XMLHttpRequest();
   http.open("POST", url, true);
   http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -426,7 +427,8 @@ function take_leave(url, type, startings, endings, val, mt, begin, end) {
       waiting.style.opacity = 0;
     }
   };
-  http.send("code=" + code_selected + "&type=" + type + "&leavestart=" + startings + "&leaveend=" + endings + "&court=" + val + "&motif=" + mt + "&begin=" + begin + "&end=" + end);
+  http.send("code=" + code_selected + "&type=" + type + "&leavestart=" + startings + "&leaveend=" + endings + "&court=" + val + "&motif=" + mt +
+   "&begin=" + begin + "&end=" + end + "&exceptType=" + exceptType + "&idRequest=" + idRequest);
 }
 function rest_all() {
   datestart.value = "";
@@ -517,7 +519,6 @@ function render_element(array,list){
   rendu = '<div onclick="closeList('+"'"+list+"'"+')" class=""><h3 class="close-tag">X</h3></div><div class="row d-flex align-items-center justify-content-center">';
   for (let index = 0; index < array.length; index++) {
     const element = array[index];
-    console.log(element)
     rendu += `
     <div class="col-sm-4">
                             <h6 class="text-code2 mt-1 text-center">${element.m_code}<br>${Abreviation(element.type)} de ${element.duration} jour(s)</h6>
@@ -536,5 +537,102 @@ function Abreviation(given){
       return abreviations[index]
     }
     
+  }
+}
+$('#type_leave').on('change', function () {
+  if ($('#type_leave').val() == "Permission exceptionelle"){
+    permissionValue = $("#exceptType").val();
+      activatePermission(true)
+      activateCp(false)
+      activateRm(false)
+  }
+  else if ($('#type_leave').val() == "Repos Maladie"){
+    permissionValue = "";
+      activatePermission(false)
+      activateCp(false)
+      activateRm(true)
+  } else if ($('#type_leave').val() == "Congé Payé"){
+    permissionValue = "";
+      activatePermission(false)
+      activateCp(true)
+      activateRm(false)
+  }
+  else {
+    permissionValue = "";
+      activateCp(false)
+      activatePermission(false)
+      activateRm(false)
+  }
+})
+var permissionValue = "";
+$("#exceptType").on('change' ,function (){
+  permissionValue = $("#exceptType").val();
+  if ($("#exceptType").val() != "Férié"){
+      permissionExist($("#exceptType").val(),code_selected)
+  }
+  else {
+      $("#alertPermission").attr("class","d-none")
+  }
+})
+$("#rmType").on('change' ,function (){
+    motif.value = $("#rmType").val()
+})
+function permissionExist(choice,code){
+  const found = allPermission.find(perm => perm.exceptType == choice && perm.m_code == code);
+  if (found){
+      $("#alertPermission").attr("class","alert alert-danger mt-2")
+  }
+  else {
+      $("#alertPermission").attr("class","d-none")
+  }
+}
+function setNumberPermission(code){
+  $('#thisYearPerm').text(moment().format("YYYY"));
+  var myPermission = allPermission.filter(permission => permission.m_code == code);
+  var cumulPermission = 0;
+  for (let index = 0; index < myPermission.length; index++) {
+      const element = myPermission[index];
+      if (element.exceptType != "Férié"){
+          cumulPermission = cumulPermission + element.duration;
+      }
+  }
+  $("#numberPermission").text(cumulPermission)
+}
+function activatePermission(choice){
+  if (choice){
+      permissionType = true;
+      $("#typeGranted").attr("class","d-flex justify-content-between")
+  }
+  else {
+      permissionType = false;
+      $("#typeGranted").attr("class","d-none")
+  }
+}
+// Répos maladie
+function activateRm(choice){
+  if (choice){
+      $("#typeRm").attr("class","d-flex justify-content-between")
+  }
+  else {
+      $("#typeRm").attr("class","d-none")
+  }
+}
+// congé late
+var showAlertConge = false;
+function congeAuth(auth,save){
+  if (auth == "n"){
+    showAlertConge = true;
+    $("#alertConge").text(`${code_selected} n'est autorisée a prendre ce type de congé qu'en ${moment(save).add(1,"years").locale("Fr").format("MMMM YYYY")}`)
+  }
+  else {
+    showAlertConge = false;
+  }
+}
+function activateCp(choice){
+  if (choice && showAlertConge){
+    $('#alertConge').attr("class","alert alert-danger mt-2")
+  }
+  else {
+    $('#alertConge').attr("class","d-none")
   }
 }

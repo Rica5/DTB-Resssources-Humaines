@@ -18,6 +18,7 @@ const Leave = mongoose.Schema({
     hour_end:String,
     request: {
         type:mongoose.Types.ObjectId,
+        auto: true,
         ref:"LeaveRequestTest"
     }
 })
