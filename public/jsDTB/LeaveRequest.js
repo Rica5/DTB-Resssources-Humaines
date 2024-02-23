@@ -491,7 +491,7 @@ function hourDiff(startTime, endTime) {
         }
         hours += hours_fictif;
         minutes += minutes_fictif;
-        if (hours < 6) {
+        if (hours <= 4) {
             hours <= 2 ? leaveDurationTwo = 0.25 : leaveDurationTwo = 0.5;
             if (leaveDurationTwo == 0.25){
                 $("#dayNumber").text(leaveDuration ? `${leaveDuration} jr ${calcul_timediff_absencetl(startTime, endTime)}` : `${calcul_timediff_absencetl(startTime, endTime)}`)
@@ -501,7 +501,7 @@ function hourDiff(startTime, endTime) {
             }
            
         }
-        else if (hours >= 6) {
+        else if (hours >= 4) {
             leaveDurationTwo = 1;
             $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
         }

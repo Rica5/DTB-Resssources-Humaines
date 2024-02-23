@@ -24,8 +24,8 @@
   <link rel="stylesheet" type="text/css" href="/assets/css1/checkbox.css" />
   <link rel="stylesheet" href="cssDTB/notification.css">
   <script>
-  var users = JSON.parse('<%-JSON.stringify(users)%>')
-  var allPermission = JSON.parse('<%-JSON.stringify(allPermission)%>')
+  var users = JSON.parse(`<%-JSON.stringify(users)%>`)
+  var allPermission = JSON.parse(`<%-JSON.stringify(allPermission)%>`)
   var role =  '<%= role %>';
   </script>
 </head>
@@ -430,7 +430,7 @@
                       <option value="Circoncision">Circoncision</option>
                     </select>
                     <div id="alertPermission" class="d-none">
-                      Cette type de permission a été déja pris cette année
+                      Cette type de permission a été déja prise cette année
                     </div>
                   </div>
               </div>

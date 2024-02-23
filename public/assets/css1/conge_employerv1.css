@@ -39,6 +39,20 @@
     border-radius: 12px;
     cursor: pointer;
   }
+  .sheet-choice3 {
+    width: 50%;
+    height: 40px;
+    font-family: Poppins-Medium;
+    font-weight: lighter;
+    padding: 5px 20px;
+    border: solid 2px;
+    border-color: #dae7ec;
+    background-color: #dae7ec;
+    color:rgb(22, 22, 22);
+    font-weight: 500;
+    border-radius: 12px;
+    cursor: pointer;
+  }
   .input-choice2 {
     width: 75%;
     height: 40px;
@@ -156,7 +170,7 @@
       height: 720px;
     }
     .scrollbar-container{
-      height: 720px !important;
+      height: 100%;
     }
   }
   @media screen and (max-width:1280px) {
@@ -166,7 +180,7 @@
       overflow: scroll;
     }
     .scrollbar-container{
-      height: 568px;
+      height: 100%;
     }
     .content-container{
       overflow: scroll;
@@ -192,7 +206,7 @@
     border-bottom-left-radius: 16px;
     border-top-left-radius: 16px;
     overflow-y: scroll;
-    height: 768px;
+    height: 100%;
     background-color: #27A9E3;
   }
   .title-text_conge{

@@ -533,7 +533,6 @@ $('#join').on('change', function (event) {
     $('#thisYearPerm').text(moment().format("YYYY"));
     var myPermission = allPermission.filter(permission => permission.m_code == code);
     var cumulPermission = 0;
-    console.log(myPermission)
     for (let index = 0; index < myPermission.length; index++) {
         const element = myPermission[index];
         if (element.exceptType != "Férié"){
