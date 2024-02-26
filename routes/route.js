@@ -874,7 +874,7 @@ routeExp.route("/employee").get(async function (req, res) {
             codeUser:session.m_code
           });
         } else {
-          res.render("PageEmployee/Mapointage.html", {
+          res.render("PageEmployee/MaPointage.html", {
             user: user,
             forget: session.forget,
             latelist: late_confirm,
