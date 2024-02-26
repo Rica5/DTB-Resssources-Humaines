@@ -782,3 +782,28 @@ function calcul_timediff_absencereport(startTime, endTime) {
     return hours_fictif + "h " + minutes_fictif + "mn ";
   }
 }
+$('#join').on('change', function (event) {
+  var selectedFile = event.target.files[0];
+  if (selectedFile){
+      var joinPiece = new FormData();
+      joinPiece.append("join",selectedFile);
+      joinPiece.append("idLeave",idForFile)
+      $.ajax({
+          url: "/joinFileLeave",
+          method: "POST",
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: joinPiece,
+          success: function (res) {
+              if (res.status == "Success"){
+                 
+              }
+              else {
+                 
+              }
+             
+          }
+      })
+  }
+})

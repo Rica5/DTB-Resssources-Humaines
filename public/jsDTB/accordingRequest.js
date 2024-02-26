@@ -390,7 +390,7 @@ function closePiece(){
     $("#PieceContent").html("")
 }
 function renderPiece(piece){
-    $("#PieceContent").html(`<object class="d-flex justify-content-center align-align-items-baseline mt-3 w-100 overflow-auto" height="600px" data="../PieceJointe/${piece}">
+    $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data="../PieceJointe/${piece}">
   </object>`)
 }
 function addPiece(id){

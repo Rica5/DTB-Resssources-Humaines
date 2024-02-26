@@ -429,3 +429,8 @@ select.typeLeave:focus {
     transition: all 1s ease;
     cursor: pointer;
 }
+.object-content{
+    width: auto;
+    max-height: 600px;
+    object-fit: contain;
+}
