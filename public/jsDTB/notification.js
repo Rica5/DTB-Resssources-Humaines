@@ -16,7 +16,6 @@ function openNotif(button) {
             notif_div.classList.replace('hide', 'show');
         } else {
             notif_div.classList.add('show');
-            console.log('add show')
         }
         
         // click away 
