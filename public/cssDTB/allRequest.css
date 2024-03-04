@@ -58,9 +58,22 @@
     left: .2rem;
     transform: translateY(-50%);
 }
+.ask{
+    display: flex;
+    justify-content: space-between;
+}
 
 .date-heure .d,
 .date-heure>.h {
+    border: 1px dashed #e0e0e0;
+    position: relative;
+    padding-top: 1rem;
+    border-radius: .6rem;
+    padding: 1rem .5rem;
+    margin-top: .7rem;
+    flex-grow: 1;
+}
+.ask-content{
     border: 1px dashed #e0e0e0;
     position: relative;
     padding-top: 1rem;

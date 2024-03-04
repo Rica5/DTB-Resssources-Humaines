@@ -1,17 +1,8 @@
-const mongoose = require("mongoose");
-const UserSchema = require("../models/User");
-const StatusSchema = require("../models/status");
-const AbsentSchema = require("../models/absent");
-const OptSchema = require("../models/option");
-const LeaveSchema = require("../models/leave");
-const LeaveRequestTest = require("../models/LeaveRequest");
-const Log = require("../models/login_histo");
-const nodemailer = require("nodemailer");
-const extra_fs = require("fs-extra");
-const crypto = require("crypto");
+const UserSchema = require("../models/ModelMember");
+const LeaveSchema = require("../models/ModelLeave");
+const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-const Notif = require("../models/notification");
 
 //Home page
 const getHomePage = async (req,res) => {
@@ -199,11 +190,11 @@ const answerRequest = async (req,res) => {
          user:session.idUser,
          approbation :true
         }
-        var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true});
+        var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true}).populate({path:"validation.user",select:"usuel"});
         var extension = thisLeave.piece.split(".")
         thisLeave.piece != "" ? renameFile(id,`${thisLeave.piece}`,`${thisLeave._id}.${extension[extension.length - 1]}`) : "";
         var title = `Traitement congé`
-        var forRop = `Le TL est mis au courant du congé de ${thisLeave.m_code} du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+        var forRop = `${thisLeave.validation[0].user.usuel} est mis au courant du congé de ${thisLeave.m_code} du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
         var notification = {
             title:"Traitement congé",
             content:forRop,
@@ -226,13 +217,13 @@ const answerRequest = async (req,res) => {
          user:session.idUser,
          approbation :response
         }
-        var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true})
+        var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status},{new:true}).populate({path:"validation.user",select:"usuel"});
         var title = `Absence pour ${thisLeave.motif}`
         var content = "";
         if (status == "declined"){
            content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
            setEachUserNotification(thisLeave.m_code,title,content,req);
-           forRH = `Le ROP a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+           forRH = `${thisLeave.validation[1].user.usuel} a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
            var notification = {
             title:"Refus de congé",
             content:forRH,
@@ -242,7 +233,7 @@ const answerRequest = async (req,res) => {
          await setGlobalAdminNotifications(notification,concerned,true,req);
         }
         else{
-            forRH = `Le ROP a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
+            forRH = `${thisLeave.validation[1].user.usuel} a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
             var notification = {
                 title:"Traitement congé",
                 content:forRH,
@@ -297,14 +288,14 @@ const answerRequest = async (req,res) => {
                 approbation :response
                 }
                 var thisLeave;
-                req.body.motif ? thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type,order:req.body.order,exceptType:req.body.exceptType,motif:req.body.motif},{new:true}) 
-                : thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type,order:req.body.order,exceptType:req.body.exceptType},{new:true});
+                req.body.motif ? thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type,order:req.body.order,exceptType:req.body.exceptType,motif:req.body.motif},{new:true}).populate({path:"validation.user",select:"usuel"}) 
+                : thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:id},{$push : {validation:approbator},comment:comment,status:status,type:type,order:req.body.order,exceptType:req.body.exceptType},{new:true}).populate({path:"validation.user",select:"usuel"});
                 var title = `Absence pour ${thisLeave.motif}`
                 var content = "";
                 if (status == "declined"){
                    content =  content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refuser car : <br> ${thisLeave.comment}`;
                    setEachUserNotification(thisLeave.m_code,title,content,req);
-                   forGerant = `Le RH a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+                   forGerant = `${thisLeave.validation[1].user.usuel} a refuser la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
                     var notification = {
                         title:"Refus de congé",
                         content:forGerant,
@@ -315,7 +306,7 @@ const answerRequest = async (req,res) => {
                 }
                 else {
                     if (order == "false" ){
-                        forGerant = `Le RH a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+                        forGerant = `${thisLeave.validation[2].user.usuel} a traitée la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
                     var notification = {
                         title:"Traitement congé",
                         content:forGerant,

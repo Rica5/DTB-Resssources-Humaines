@@ -511,7 +511,7 @@ function getdata(url, id) {
       document.getElementById("my_profil").setAttribute("src", "Profil/" + data[data.length - 3]);
       document.getElementById("project_user").innerHTML = data[data.length - 2];
       document.getElementById("time_passed").innerHTML = anciennity(data[9], data[data.length - 4]);
-      document.getElementById("phone").value = data[data.length - 1]
+      document.getElementById("phone").value = data[data.length - 1] == "" ? "N/A" : data[data.length - 1]
       ids = id;
     }
   };
