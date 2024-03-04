@@ -76,7 +76,7 @@ function rendu_header(active) {
   switch (active) {
     case "en cours": classes[0] = "header-active"; reset(); break;
     case "en attente": classes[1] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center book"); break;
-    case "solde": classes[2] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center book"); break;
+    case "solde": classes[2] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center disabled"); break;
   }
   return `
     <div class="text-center d-flex justify-content-center align-items-center mb-3" >
@@ -135,7 +135,7 @@ function reset() {
 function rendu_solde(user) {
   return `<div class="col-md-6 leavelist  mb-3">
   <div class="row hovered">
-    <div class="col-sm-6 text-center" >
+    <div class="col-sm-6 text-center person" >
       <img class="img_contain"
   src="Profil/${retrieve_profil(user.m_code)}" id="my_profil"  alt="IMG">
   <p class="title-text mt-3"><i class="fa-solid fa-star"></i>${user.m_code}</p>
@@ -143,8 +143,8 @@ function rendu_solde(user) {
     <div class="col-sm-6">
         <p class="title-text">Solde et autorisation congé payé</p>
         <div class="info-text">
-        <p class="info-text text-center"><i class="fa-solid fa-person-walking-luggage"></i> Ouvert: ${user.remaining_leave}</p>
-        <p class="info-text text-center"><i class="fa-solid fa-box-open"></i> Accumulée : ${user.leave_taked}</p>
+        <p class="info-text text-center"><i class="fa-solid fa-person-walking-luggage"></i> ${moment().add(-1,"years").format("YYYY")}: ${user.remaining_leave}</p>
+        <p class="info-text text-center"><i class="fa-solid fa-box-open"></i> ${moment().format("YYYY")} : ${(user.leave_taked - user.remaining_leave)}</p>
         <p class="info-text text-center"><i class="fa-solid fa-universal-access"></i> Autorisation : ${autorisation(user.leave_stat)}</p>
         <p class="info-text text-center">${user.project}</p>
         </div>
@@ -152,8 +152,8 @@ function rendu_solde(user) {
   </div>
 </div>`
 }
-function autorisation(aut) {
-  if (aut == "y") {
+function autorisation(auth) {
+  if (auth == "y") {
     return "OUI"
   }
   else {
@@ -163,7 +163,7 @@ function autorisation(aut) {
 function rendu_conge(temp_conge) {
   return `<div class="col-md-6 leavelist  mb-3">
                                 <div class="row hovered">
-                                  <div class="col-sm-6 text-center" >
+                                  <div class="col-sm-6 text-center person" >
                                     <img class="img_contain"
                                 src="Profil/${retrieve_profil(temp_conge.m_code)}" id="my_profil"  alt="IMG">
                                 <p class="title-text mt-3"><i class="fa-solid fa-star"></i>${temp_conge.m_code}</p>
@@ -174,7 +174,7 @@ function rendu_conge(temp_conge) {
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Début: ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_start) + " à " + temp_conge.hour_begin : date_conversion(temp_conge.date_start)}</p>
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Fin : ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_end) + " à " + temp_conge.hour_end : date_conversion(temp_conge.date_end)}</p>
                                       ${give_motif(temp_conge.motif)}
-                                      <p class="info-text text-center">Durée : ${temp_conge.duration == 0.25 ? calcul_timediff_absencetl(temp_conge.hour_begin, temp_conge.hour_end) : temp_conge.duration + " jour(s)"}  || Reste : ${temp_conge.rest}</p>
+                                      <p class="info-text text-center">Durée : ${temp_conge.duration == 0.25 ? calcul_timediff_absencetl(temp_conge.hour_begin, temp_conge.hour_end) : temp_conge.duration + " jour(s)"}  || Reste ${moment().format("YYYY")} : ${temp_conge.rest}</p>
                                       </div>
                                   </div>
                                 </div>

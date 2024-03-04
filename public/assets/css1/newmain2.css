@@ -214,10 +214,10 @@ iframe {
   background: -o-linear-gradient(-135deg, #50c886, #29c0e6);
   background: -moz-linear-gradient(-135deg, #50c8ae, #1587b4);
   background: linear-gradient(-135deg, #25682e, #034b7a);
-  background-image: url("../images1/back.avif");
-    background-attachment: fixed;
-    background-repeat: no-repeat;
-    background-size: cover;
+  background-image: url("../images1/clock.webp");
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   border-radius: 25px;
 }
 .wrap-login100 {

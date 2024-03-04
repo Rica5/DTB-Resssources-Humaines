@@ -66,10 +66,13 @@
         };
         http.send("ip=" + ipa + "&device=" + dvc);
       }
-      fetch("https://api.ipify.org?format=json")
+      function getIp(){
+        fetch("https://api.ipify.org?format=json")
         .then((response) => response.json())
         .then((data) => sendip("/getip", data.ip, extractDeviceName(userAgent)))
-        .catch((error) => console.error(error));
+        .catch((error) => getIp());
+      }
+      getIp()
     </script>
   </head>
 

@@ -2,12 +2,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const route = require("./routes/route.js");
 const routeDTB = require("./routes/routeDTB.js");
 const PORT = process.env.PORT || 8080;
 const methodOverride = require("method-override");
 const expsession = require("cookie-session");
-const moment = require("moment");
 const fileUpload = require("express-fileupload");
 const mongoose = require('mongoose');
 require('dotenv').config();
@@ -68,7 +66,7 @@ io.on("connection", (socket) => {
   });
 });
 app.set("io", io);
-app.use("/", route);
+//app.use("/", route);
 app.use("/", routeDTB);
 
 server.listen(PORT, () => {

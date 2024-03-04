@@ -31,7 +31,7 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="/assets/css1/modal_workingv1.css"
+      href="/assets/css1/clockingModal.css"
     />
 </head>
 
@@ -58,7 +58,7 @@
                         Accueil
                     </a>
                     <a href="/employee" class="text-menu active-menu mx-2">
-                        Mon pointage
+                        Pointage
                     </a>
                     <a href="RequestLeave" class="text-menu mx-2">
                         Demande d'absence
@@ -257,9 +257,13 @@
                       >
                         <option value="">Choisissez l'heure de travaille</option>
                         <option value="2">2 heures</option>
+                        <option value="3">3 heures</option>
                         <option value="4">4 heures</option>
+                        <option value="5">5 heures</option>
                         <option value="6">6 heures</option>
+                        <option value="7">7 heures</option>
                         <option value="8">8 heures</option>
+                        <option value="9">9 heures</option>
                         <option value="10">10 heures</option>
                       </select>
                       <div
@@ -284,9 +288,13 @@
                     >
                       <option value="">Changer l'heure de travaille</option>
                       <option value="2">2 heures</option>
+                      <option value="3">3 heures</option>
                       <option value="4">4 heures</option>
+                      <option value="5">5 heures</option>
                       <option value="6">6 heures</option>
+                      <option value="7">7 heures</option>
                       <option value="8">8 heures</option>
+                      <option value="9">9 heures</option>
                       <option value="10">10 heures</option>
                     </select>
                     <br />
@@ -563,7 +571,6 @@
                 senddata1(code_user);
               } else {
                 senddata1(code_user);
-                take_break();
               }
               awaystat = false;
             }
@@ -609,20 +616,6 @@
                 err.innerHTML = "Le champ ne peut pas être vide";
                 err.style.display = "block";
               }
-            }
-            function take_break() {
-              var http = new XMLHttpRequest();
-              http.open("POST", "/takebreak", true);
-              http.setRequestHeader(
-                "Content-type",
-                "application/x-www-form-urlencoded"
-              );
-              http.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-      
-                }
-              };
-              http.send();
             }
             function sendreason(url, reasons) {
               var http = new XMLHttpRequest();

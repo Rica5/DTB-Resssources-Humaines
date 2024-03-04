@@ -41,6 +41,19 @@ function renderAllRequest(Leave){
                             <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
                             <p id="motif" class="text-center">${leave.motif}</p>
                             <div class="date-heure">
+                                <div class="ask-content">
+                                    <h1>
+                                        <i class="fa-solid fa-calendar"></i>
+                                        Demandeur
+                                    </h1>
+                                    <div class="ask">
+                                        <span>Nom: ${leave.nom}</span>
+                                        <span>M-code: ${leave.m_code}</span>
+                                        <span>Matricule: ${leave.matr}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="date-heure">
                                 <div class="d">
                                     <h1>
                                         <i class="fa-solid fa-calendar"></i>
