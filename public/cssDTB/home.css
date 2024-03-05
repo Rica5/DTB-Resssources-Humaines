@@ -58,6 +58,7 @@
     height: 100%;
     outline: none !important;
     border: 0px solid transparent !important;
+    border-radius: 50%;
     text-transform: uppercase;
     cursor: pointer;
     opacity:0;
@@ -66,7 +67,7 @@
   
   .transparent-button:hover {
     opacity:1;
-    background-color: rgba(255, 255, 255, 0.2); /* Add a semi-transparent white background on hover */
+    background-color: rgba(37, 36, 36, 0.24); /* Add a semi-transparent white background on hover */
   }
 
 .img-container img {
