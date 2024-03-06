@@ -7,7 +7,7 @@
     <meta name="keywords" content="solumada-clocking" />
     <meta name="description" content="solumada-clocking" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>Conges des employer</title>
+    <title>Conges des employés</title>
     <link
       rel="icon"
       type="image/png"
@@ -299,7 +299,7 @@
                 />
               </b>
               <span class="logo-text ms-3">
-                <b>CONGES DES EMPLOYER</b>
+                <b>CONGES DES EMPLOYES</b>
               </span>
               <div class="ms-auto text-end">
                 <nav aria-label="breadcrumb">
@@ -307,7 +307,7 @@
                     <li class="breadcrumb-item">
                       <a href="#"
                         ><i class="mdi mdi-calendar-clock"></i> Congé
-                        employer</a
+                        employé</a
                       >
                     </li>
                     <li class="breadcrumb-item active" aria-current="page">
@@ -329,7 +329,7 @@
                       class="btn btn-md btn-primary mx-5"
                       onclick="openModal()"
                     >
-                      CREER CONGES <i class="fa-solid fa-plus"></i>
+                      AJOUTER CONGE <i class="fa-solid fa-plus"></i>
                     </button>
                   </div>
                   <hr />
@@ -462,7 +462,10 @@
                     <br />
                   </div>
                 </div>
-                <div class="col-lg-8" style="padding: 20px 15px">
+                <div class="col-lg-8" style="padding: 10px 5px">
+                  <div class="text-end mb-3">
+                    <i onclick="closeModal()" class="fa-solid close-modal fa-circle-xmark"></i>
+                  </div>
                   <div class="d-flex justify-items-center align-items-center">
                     <img
                       src="Profil/avatar.png"
@@ -687,18 +690,20 @@
                       <div
                         class="col-md-6 d-flex align-items-end justify-content-end"
                       >
+                      
                         <button
                           type="button"
                           id="save_leave"
-                          class="btn btn-danger mx-3"
-                          onclick="closeModal()"
+                          class="btn btn-secondary"
+                          onclick="addPiece()"
                         >
-                          FERMER PAGE <i class="fa-solid fa-xmark"></i>
+                        <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1"></i>
+                          Pièce justificative <i class="fa-solid fa-file"></i>
                         </button>
                         <button
                           type="button"
                           id="save_leave"
-                          class="btn btn-primary"
+                          class="btn btn-primary mx-2"
                           onclick="define_leave()"
                         >
                           <i
@@ -714,6 +719,28 @@
                 </div>
               </div>
             </div>
+          </div>
+          <input type="file" class="d-none" id="join">
+          <div id="ModalPiece" class="modal_conge">
+            <div class="modal_piece">
+              <div class="row">
+                <div class="text-center modal-dismiss mb-3">
+                  <i onclick="closePiece()" class="fa-solid close-modal fa-circle-xmark"></i>
+                </div>
+                <div class="col-md-6">
+                  <span class="logo-text mt-3">
+                    <!-- dark Logo text -->
+                    <b>PIECE JOINTE</b>
+                    <p id="who"></p>
+                  </span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-center h-100">
+                <object id="PieceContent" class="object-content mt-3 overflow-auto" data=""></object>
+              </div>
+             
+            
+            </div> 
           </div>
           
           <!-- notification modal -->

@@ -1,5 +1,6 @@
 var leaves;
 var users;
+var userActive;
 var content = ""
 var classes = ["header-standby", "header-standby", "header-standby"];
 var row_activated = "en cours";
@@ -522,6 +523,12 @@ function openModal() {
 function edit(id, code) {
   update_id = id;
   code_selected = code;
+  userActive = users.filter(us => us.m_code == code);
+  activateCp(false);
+  activatePermission(false);
+  activateRm(false);
+  setNumberPermission(code)
+  congeAuth(userActive.leave_stat,userActive.save_at)
   waiting_edit.style.opacity = 0;
   openModal();
   leaves.forEach(act_leave => {
@@ -782,28 +789,130 @@ function calcul_timediff_absencereport(startTime, endTime) {
     return hours_fictif + "h " + minutes_fictif + "mn ";
   }
 }
+$('#type_leave').on('change', function () {
+  if ($('#type_leave').val() == "Permission exceptionelle"){
+    permissionValue = $("#exceptType").val();
+      activatePermission(true)
+      activateCp(false)
+      activateRm(false)
+  }
+  else if ($('#type_leave').val() == "Repos Maladie"){
+    permissionValue = "";
+      activatePermission(false)
+      activateCp(false)
+      activateRm(true)
+  } else if ($('#type_leave').val() == "Congé Payé"){
+    permissionValue = "";
+      activatePermission(false)
+      activateCp(true)
+      activateRm(false)
+  }
+  else {
+    permissionValue = "";
+      activateCp(false)
+      activatePermission(false)
+      activateRm(false)
+  }
+})
+var permissionValue = "";
+$("#exceptType").on('change' ,function (){
+  permissionValue = $("#exceptType").val();
+  if ($("#exceptType").val() != "Férié"){
+      permissionExist($("#exceptType").val(),code_selected)
+  }
+  else {
+      $("#alertPermission").attr("class","d-none")
+  }
+})
+$("#rmType").on('change' ,function (){
+    motif.value = $("#rmType").val()
+})
+function permissionExist(choice,code){
+  const found = allPermission.find(perm => perm.exceptType == choice && perm.m_code == code);
+  if (found){
+      $("#alertPermission").attr("class","alert alert-danger mt-2")
+  }
+  else {
+      $("#alertPermission").attr("class","d-none")
+  }
+}
+function setNumberPermission(code){
+  $('#thisYearPerm').text(moment().format("YYYY"));
+  var myPermission = allPermission.filter(permission => permission.m_code == code);
+  var cumulPermission = 0;
+  for (let index = 0; index < myPermission.length; index++) {
+      const element = myPermission[index];
+      if (element.exceptType != "Férié"){
+          cumulPermission = cumulPermission + element.duration;
+      }
+  }
+  $("#numberPermission").text(cumulPermission)
+}
+function activatePermission(choice){
+  if (choice){
+      permissionType = true;
+      $("#typeGranted").attr("class","d-flex justify-content-between")
+  }
+  else {
+      permissionType = false;
+      $("#typeGranted").attr("class","d-none")
+  }
+}
+// Répos maladie
+function activateRm(choice){
+  if (choice){
+      $("#typeRm").attr("class","d-flex justify-content-between")
+  }
+  else {
+      $("#typeRm").attr("class","d-none")
+  }
+}
+// congé late
+var showAlertConge = false;
+function congeAuth(auth,save){
+  if (auth == "n"){
+    showAlertConge = true;
+    $("#alertConge").text(`${code_selected} n'est autorisée a prendre ce type de congé qu'en ${moment(save).add(1,"years").locale("Fr").format("MMMM YYYY")}`)
+  }
+  else {
+    showAlertConge = false;
+  }
+}
+function activateCp(choice){
+  if (choice && showAlertConge){
+    $('#alertConge').attr("class","alert alert-danger mt-2")
+  }
+  else {
+    $('#alertConge').attr("class","d-none")
+  }
+}
+function seePiece(file){
+  $("#ModalPiece").show();
+  $('#who').text(`Piece jointe selectioner`)
+    const imageUrl = URL.createObjectURL(file);
+    renderPiece(imageUrl);
+    $("#fileOk").css("opacity","1")
+ 
+}
+function closePiece(){
+  $("#ModalPiece").hide();
+  $("#PieceContent").html("")
+}
+function renderPiece(url){
+  console.log("url",url)
+  $("#PieceContent").attr("data",url)
+}
+function addPiece(){
+  $("#join").click();
+}
 $('#join').on('change', function (event) {
   var selectedFile = event.target.files[0];
   if (selectedFile){
-      var joinPiece = new FormData();
-      joinPiece.append("join",selectedFile);
-      joinPiece.append("idLeave",idForFile)
-      $.ajax({
-          url: "/joinFileLeave",
-          method: "POST",
-          cache: false,
-          contentType: false,
-          processData: false,
-          data: joinPiece,
-          success: function (res) {
-              if (res.status == "Success"){
-                 
-              }
-              else {
-                 
-              }
-             
-          }
-      })
+      piece = selectedFile;
+      seePiece(selectedFile);
+  }
+  else {
+    piece = "";
+    $("#fileOk").css("opacity","1")
   }
 })

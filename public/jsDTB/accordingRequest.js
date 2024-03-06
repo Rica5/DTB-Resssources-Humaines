@@ -25,6 +25,13 @@ function UpdateRequest(){
         }   
    })
 }
+function getShift(code){
+    var shift = ["SHIFT 1","SHIFT 2","SHIFT 3"];
+    var value = ""
+    var theUser = users.filter(employe => employe.m_code == code);
+    shift.includes(theUser.shift) ? value = theUser.shift : value = "08 heures";
+    return value
+}
 function renderAllRequest(Leave){
     Leave.forEach(leave => {
         myRequestContent +=`
@@ -48,7 +55,7 @@ function renderAllRequest(Leave){
                                     </h1>
                                     <div class="ask">
                                         <span>Nom: ${leave.nom}</span>
-                                        <span>M-code: ${leave.m_code}</span>
+                                        <span>Shift: ${getShift(leave.m_code)}</span>
                                         <span>Matricule: ${leave.matr}</span>
                                     </div>
                                 </div>

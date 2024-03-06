@@ -170,7 +170,7 @@
       height: 720px;
     }
     .scrollbar-container{
-      height: 600px;
+      height: 75vh;
     }
   }
   @media screen and (max-width:1280px) {
@@ -180,7 +180,7 @@
       overflow: scroll;
     }
     .scrollbar-container{
-      height: 600px;
+      height: 75vh;
     }
     .content-container{
       overflow: scroll;
@@ -206,7 +206,7 @@
     border-bottom-left-radius: 16px;
     border-top-left-radius: 16px;
     overflow-y: scroll;
-    height: 600px;
+    height: 75vh;
     background-color: #27A9E3;
   }
   .title-text_conge{
@@ -228,4 +228,39 @@
       padding: 0.45em 0.45em 0.45em 0.65em !important;
       width: 150px !important;
   }
-  
+  .close-modal{
+    font-size: 35px;
+    cursor: pointer;
+    padding: 0.15em;
+    transition: all 0.3s ease;
+  }
+  .close-modal:hover{
+    background-color: #d42828c5;
+    border-radius: 50%;
+    color: #EEEEEE;
+  }
+  .modal_piece {
+    background-color: #fff;
+    border-radius: 16px;
+    position: absolute;
+    top: 50%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    width: 950px;
+    height: 90vh;
+    padding: 25px 25px;
+    animation: flating 1s ease-in;
+}
+.object-content{
+  width: 100%;
+  max-height: 600px;
+  object-fit: contain;
+}
+.file-ok{
+  color: limegreen;
+  opacity: 0;
+  transition: all 1s ease;
+  cursor: pointer;
+  margin-top: -15%;
+}

@@ -26,6 +26,7 @@ waiting.style.opacity = 0;
 var code_selected = ""
 var users;
 var chooseCas = document.getElementById("typeGranted");
+var piece = "";
 //Number of those in period of vacation for each SHIFT
 var shift1_number = 0; var shift2_number = 0; var shift3_number = 0; var shiftw_number = 0; var dev_number = 0; var tl_number = 0; var admin_number = 0;
 var sh1_num = 0; var sh2_num = 0; var sh3_num = 0; var shv_num = 0; var dev_num = 0; var tl_num = 0; var adm_num = 0;
@@ -385,30 +386,89 @@ function take_leave(url, type, startings, endings, val, mt, begin, end,exceptTyp
   http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      if (this.responseText == "Ok") {
-        var duree = "";
-        if (begin == ""){
-          duree = " de durée de " + date_diff(startings,endings) + " jour(s)"
+      var response = JSON.parse(this.response)
+      if (response.status == "Ok") {
+        if (piece == ""){
+          var duree = "";
+                    if (begin == ""){
+                      duree = " de durée de " + date_diff(startings,endings) + " jour(s)"
+                    }
+                    else {
+                      duree =" de durée de " + calcul_timediff_absencereport(begin,end)
+                    }
+                    if (mt == "") {
+                      info.innerHTML = type +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+                    }
+                    else {
+                      info.innerHTML = mt +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+                    }
+                  
+                    info.style.display = "block";
+                    getdata(code_selected);
+                    rest_begin_end();
         }
         else {
-          duree =" de durée de " + calcul_timediff_absencereport(begin,end)
-        }
-        if (mt == "") {
-           info.innerHTML = type +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
-        }
-        else {
-           info.innerHTML = mt +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+          var joinPiece = new FormData();
+          joinPiece.append("join",piece);
+          joinPiece.append("idLeave",response._id);
+          $.ajax({
+              url: "/joinFileLeaveAnother",
+              method: "POST",
+              cache: false,
+              contentType: false,
+              processData: false,
+              data: joinPiece,
+              success: function (res) {
+                
+                  if (res.status == "Success"){
+                      var duree = "";
+                      if (begin == ""){
+                        duree = " de durée de " + date_diff(startings,endings) + " jour(s)"
+                      }
+                      else {
+                        duree =" de durée de " + calcul_timediff_absencereport(begin,end)
+                      }
+                      if (mt == "") {
+                        info.innerHTML = type +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+                      }
+                      else {
+                        info.innerHTML = mt +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+                      }
+                      info.innerHTML += " Avec une pièce jointe."
+                      info.style.display = "block";
+                      getdata(code_selected);
+                      rest_begin_end();
+                  }
+                  else {
+                    var duree = "";
+                      if (begin == ""){
+                        duree = " de durée de " + date_diff(startings,endings) + " jour(s)"
+                      }
+                      else {
+                        duree =" de durée de " + calcul_timediff_absencereport(begin,end)
+                      }
+                      if (mt == "") {
+                        info.innerHTML = type +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+                      }
+                      else {
+                        info.innerHTML = mt +" le " + moment(startings).format("DD/MM/YYYY") + null_val(endings, startings) + duree + " pour " + code_selected + " enregistrés";
+                      }
+                      info.innerHTML += " La pièce jointe n'a pas été attaché veuillez le modifier"
+                      info.style.display = "block";
+                      getdata(code_selected);
+                      rest_begin_end();
+                  }
+              }
+          })
         }
        
-        info.style.display = "block";
-        getdata(code_selected);
-        rest_begin_end();
+       
       }
-      else if (this.responseText == "not authorized") {
+      else if (response.status== "not authorized") {
         info.innerHTML = code_selected + " n'est pas autorisée a prendre ce type de congé";
         info.style.display = "block";
       }
-      else if (this.responseText == "duplicata") {
+      else if (response.status == "duplicata") {
         info.innerHTML = "Un congé incluant la date choisi existe déja pour " + code_selected;
         info.style.display = "block";
       }
@@ -600,11 +660,9 @@ function setNumberPermission(code){
 }
 function activatePermission(choice){
   if (choice){
-      permissionType = true;
       $("#typeGranted").attr("class","d-flex justify-content-between")
   }
   else {
-      permissionType = false;
       $("#typeGranted").attr("class","d-none")
   }
 }
@@ -636,3 +694,33 @@ function activateCp(choice){
     $('#alertConge').attr("class","d-none")
   }
 }
+function seePiece(file){
+  $("#ModalPiece").show();
+  $('#who').text(`Piece jointe selectioner`)
+    const imageUrl = URL.createObjectURL(file);
+    renderPiece(imageUrl);
+    $("#fileOk").css("opacity","1")
+ 
+}
+function closePiece(){
+  $("#ModalPiece").hide();
+  $("#PieceContent").html("")
+}
+function renderPiece(url){
+  console.log("url",url)
+  $("#PieceContent").attr("data",url)
+}
+function addPiece(){
+  $("#join").click();
+}
+$('#join').on('change', function (event) {
+  var selectedFile = event.target.files[0];
+  if (selectedFile){
+      piece = selectedFile;
+      seePiece(selectedFile);
+  }
+  else {
+    piece = "";
+    $("#fileOk").css("opacity","1")
+  }
+})

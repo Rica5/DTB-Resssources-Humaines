@@ -113,6 +113,37 @@ const attachedFile = async (req,res) => {
         res.redirect("/");
     }
 }
+const attachedFileAnother = async (req,res) => {
+    var session = req.session;
+    if ( session.occupation_a == "Admin"){
+        try{
+                var files = req.files['join'];
+                var idLeave = req.body.idLeave;
+                var extension = files.name.split(".");
+                var name = `${idLeave}.${extension[extension.length - 1]}`
+                var thisLeave = await LeaveSchema.findOneAndUpdate({_id:idLeave},{piece:name});
+               files.mv("public/PieceJointe/" + name);
+             res.json({
+                status:"Success",
+                idLeave:thisLeave._id,
+                fileName:name,
+                code:thisLeave.m_code,
+                start:thisLeave.date_start,
+                end:thisLeave.date_end
+             })
+        }
+        catch(err){
+            console.log(err)
+            res.json({
+                status:"Error",
+                err:err
+            })
+        }
+    }
+    else {
+        res.redirect("/");
+    }
+}
 //get My request
 const getMyRequest = async (req,res) => {
     var session = req.session;
@@ -474,5 +505,5 @@ async function renameFile(id,actualPath,newPaths){
 
 module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest,seePending, getPending, answerRequest, getNotifications,
-    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile
+    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile, attachedFileAnother
 }

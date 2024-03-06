@@ -16,6 +16,7 @@ const Leave = mongoose.Schema({
     validation:Boolean,
     hour_begin:String,
     hour_end:String,
+    piece:String,
     request: {
         type:mongoose.Types.ObjectId,
         auto: true,
