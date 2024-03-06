@@ -14,11 +14,13 @@ const getPageLeavelist = async(req,res) => {
   if (session.occupation_a == "Admin") {
     var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
+        var allPermission = await LeaveSchema.find({exceptType:{$ne:""},date_start:{$regex:moment().format("YYYY")}}).select("m_code exceptType duration")
         res.render("PageAdministration/ListeConges.html", {
           notif: dataUser.myNotifications,
           username: session.mailing,
           role:role,
-          dataUser:dataUser
+          dataUser:dataUser,
+          allPermission:allPermission
         });
   } else {
     res.redirect("/");
@@ -62,7 +64,7 @@ const retrieveLeaveList = async(req,res) => {
           status: "Actif",
         })
           .select(
-            "profil m_code remaining_leave leave_stat leave_taked project"
+            "profil m_code remaining_leave leave_stat leave_taked project shift"
           )
           .sort({
             m_code: 1,
@@ -426,7 +428,7 @@ const createLeave = async(req,res) => {
           checkduplicata(leave_specific, leavestart, leaveend) &&
           (val == "n" || val == "1")
         ) {
-          res.send("duplicata");
+          res.json({status:"duplicata"});
         } else {
           if (val == "n") {
             taked = Methods.date_diff(leavestart, leaveend) + 1;
@@ -490,6 +492,7 @@ const createLeave = async(req,res) => {
               status: day_control,
               rest: rest,
               motif: motif,
+              piece:"",
               validation: false,
               acc: last_acc,
               request:idRequest,
@@ -537,7 +540,7 @@ const createLeave = async(req,res) => {
               new_leave.duration = first[2];
               new_leave.rest = new_leave.rest + second[2];
               new_leave.acc = new_leave.acc + second[2];
-              await LeaveSchema(new_leave).save();
+              var theLeave = await LeaveSchema(new_leave).save();
               new_leave.date_start = second[0];
               new_leave.date_end = second[1];
               new_leave.duration = second[2];
@@ -549,13 +552,13 @@ const createLeave = async(req,res) => {
                 const io = req.app.get("io");
                 io.sockets.emit("isTreated", [idRequest,thisLeave]);
               }
-             
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave(req);
-              res.send("Ok");
+              theLeave.status = "Ok";
+              res.send(theLeave);
             } else {
-              await LeaveSchema(new_leave).save();
+              var theLeave = await LeaveSchema(new_leave).save();
               if (idRequest != ""){
                 var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
                 const io = req.app.get("io");
@@ -564,7 +567,8 @@ const createLeave = async(req,res) => {
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave(req);
-              res.send("Ok");
+              theLeave.status = "Ok";
+              res.send(theLeave);
             }
           } else if (
             type == "Mise a Pied" ||
@@ -617,6 +621,7 @@ const createLeave = async(req,res) => {
               hour_begin: hour_begin,
               hour_end: hour_end,
               type: type + deduction,
+              piece:"",
               status: day_control,
               rest: rest,
               motif: motif,
@@ -634,7 +639,7 @@ const createLeave = async(req,res) => {
               new_leave.date_start = first[0];
               new_leave.date_end = first[1];
               new_leave.duration = first[2];
-              await LeaveSchema(new_leave).save();
+              var theLeave = await LeaveSchema(new_leave).save();
               new_leave.date_start = second[0];
               new_leave.date_end = second[1];
               new_leave.duration = second[2];
@@ -647,10 +652,10 @@ const createLeave = async(req,res) => {
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave(req);
-
-              res.send("Ok");
+              theLeave.status = "Ok";
+              res.send(theLeave);
             } else {
-              await LeaveSchema(new_leave).save();
+              var theLeave = await LeaveSchema(new_leave).save();
               if (idRequest != ""){
                 var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
                 const io = req.app.get("io");
@@ -659,10 +664,11 @@ const createLeave = async(req,res) => {
               //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave(req);
-              res.send("Ok");
+              theLeave.status = "Ok";
+              res.send(theLeave);
             }
           } else {
-            res.send("not authorized");
+            res.send({status:"not authorized"});
           }
         }
   } else {
