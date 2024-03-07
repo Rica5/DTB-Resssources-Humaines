@@ -73,6 +73,7 @@ routeExpDTB.route("/RequestLeave").get(Controller.getLeaveRequest);
 routeExpDTB.route("/makeRequest").post(Controller.makeLeaveRequest);
 //Attached file
 routeExpDTB.route("/joinFileLeave").post(Controller.attachedFile);
+routeExpDTB.route("/joinFileLeaveAnother").post(Controller.attachedFileAnother);
 //Get all request
 routeExpDTB.route("/MyRequest").post(Controller.getMyRequest);
 //See pending request
@@ -185,7 +186,7 @@ routeExpDTB.route("/delete_leave").post(ControllerLeaveCRUD.abortLeave);//pass
 routeExpDTB.route("/getuser_leave").post(ControllerLeaveCRUD.leaveInfo);//pass
 
 //Opération
-routeExpDTB.route("/conge").post(ControllerLeaveCRUD.getLeaveOperation);//pass
+routeExpDTB.route("/conge").get(ControllerLeaveCRUD.getLeaveOperation);//pass
 
 //TL Page
 //Get status TL
