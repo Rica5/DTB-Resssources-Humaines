@@ -293,7 +293,8 @@ const answerRequest = async (req, res) => {
         var status = "progress";
         var approbator = {
             user: session.idUser,
-            approbation: true
+            approbation: true,
+            date:moment().format("YYYY-MM-DD")
         }
         var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true }).populate({ path: "validation.user", select: "usuel" });
         var extension = thisLeave.piece.split(".")
@@ -320,7 +321,8 @@ const answerRequest = async (req, res) => {
         var forRH = ""
         var approbator = {
             user: session.idUser,
-            approbation: response
+            approbation: response,
+            date:moment().format("YYYY-MM-DD")
         }
         var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true }).populate({ path: "validation.user", select: "usuel" });
         var title = `Absence pour ${thisLeave.motif}`
@@ -361,7 +363,8 @@ const answerRequest = async (req, res) => {
             status = response == "true" ? "approved" : "declined";
             var approbator = {
                 user: session.idUser,
-                approbation: response
+                approbation: response,
+                date:moment().format("YYYY-MM-DD")
             }
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true })
             var title = `Absence pour ${thisLeave.motif}`
@@ -390,7 +393,8 @@ const answerRequest = async (req, res) => {
             var forGerant = "";
             var approbator = {
                 user: session.idUser,
-                approbation: response
+                approbation: response,
+                date:moment().format("YYYY-MM-DD")
             }
             var thisLeave;
             req.body.motif ? thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status, type: type, order: req.body.order, exceptType: req.body.exceptType, motif: req.body.motif }, { new: true }).populate({ path: "validation.user", select: "usuel" })

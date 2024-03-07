@@ -1,5 +1,5 @@
 const express = require("express");
-const routeExpDTB = express.Router();
+const routeExpDTB = express.Router({strict:true});
 const Controller = require("../ControllerDTB/DTBControllerLeaveRequest")
 const ControllerSalaryAdvance = require("../ControllerUser/DTBControllerSalaryAdvance")
 const ControllerNews = require("../ControllerUser/DTBControllerNews")
@@ -175,7 +175,7 @@ routeExpDTB.route("/leave_report").post(ControllerLeaveCRUD.LeaveReport);//pass
 routeExpDTB.route("/download").get(ControllerLeaveCRUD.downloadFile);//pass
 //Admin create leave
 // Get page create leave
-routeExpDTB.route("/leave").get(ControllerLeaveCRUD.getPageDefine);//pass
+routeExpDTB.route("/leaves").get(ControllerLeaveCRUD.getPageDefine);//pass
 // Create leave
 routeExpDTB.route("/takeleave").post(ControllerLeaveCRUD.createLeave);//pass
 // edit leave

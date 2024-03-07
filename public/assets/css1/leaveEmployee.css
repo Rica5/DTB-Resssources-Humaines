@@ -259,7 +259,7 @@
 }
 .file-ok{
   color: limegreen;
-  opacity: 0;
+  display: none;
   transition: all 1s ease;
   cursor: pointer;
   margin-top: -15%;
