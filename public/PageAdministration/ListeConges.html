@@ -494,7 +494,7 @@
                                   </div>
                                   <div class="col-md-6 d-flex align-items-end justify-content-end">
                                     <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1"></i>
-                                    <button onclick="" class="btn btn-sm btn-secondary">Pièce justificative <i class="fa-solid fa-file-pen"></i></button>
+                                    <button onclick="addPiece()" class="btn btn-sm btn-secondary">Pièce justificative <i class="fa-solid fa-file-pen"></i></button>
                                     <button type="button" id="save_leave" class="btn btn-sm btn-primary mx-2" 
                                       onclick="Editing()">
                                       <i id="waiting_edit" class="fa-solid fa-spinner fa-spin"></i>
@@ -509,6 +509,7 @@
                
             </div>
           </div>
+          <input type="file" class="d-none" id="join">
           <div id="ModalPiece" class="modal_conge">
             <div class="modal_piece">
               <div class="row">
@@ -522,9 +523,12 @@
                     <p id="who"></p>
                   </span>
                 </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-end">
+                  <button onclick="replacePiece()" class="btn btn-sm btn-success"><i class="fas fa-file"></i> Remplacer la pièce</button>
+                </div>
               </div>
-              <div class="d-flex justify-content-center h-100">
-                <object id="PieceContent" class="object-content mt-3 overflow-auto" data=""></object>
+              <div class="d-flex justify-content-center" id="PieceContent">
+                    
               </div>
             </div> 
           </div>

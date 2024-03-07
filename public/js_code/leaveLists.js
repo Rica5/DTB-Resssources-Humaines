@@ -22,6 +22,7 @@ var waiting = document.getElementById("waiting");
 var waiting_edit = document.getElementById("waiting_edit");
 var waiting_delete = document.getElementById("waiting_delete");
 download.disabled = true;
+var onFile = "";
 var year_month = document.getElementById("year_month");
 var container_conge = document.getElementById("container_conge");
 var active_month = ["TOUT", "JANVIER", "FEVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOUT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DECEMBRE"];
@@ -208,14 +209,15 @@ function render_button(temp_c) {
   var btn = "";
   btn += `<button onclick="printLeave('${temp_c._id}')" class="btn btn-sm btn-outline-secondary mx-3 mb-3 print-btn">Imprimer <i class="fa-solid fa-print"></i></button>`;
   switch (row_activated) {
-    case "en cours": btn += `
-    <button onclick="edit('${temp_c._id}','${temp_c.m_code}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+    case "en cours": btn = `
+    <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
-    case "en attente": btn += `
-    <button onclick="edit('${temp_c._id}','${temp_c.m_code}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+    case "en attente": btn = `
+    <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
-    case "Terminée": btn += `
-    <button onclick="edit('${temp_c._id}','${temp_c.m_code}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+    case "Terminée": btn = `
+    <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> SUPPRIMER <i class="fa-solid fa-ban"></i></button>`; break;
   }
   return btn
@@ -531,7 +533,7 @@ function dissapearo() {
 function openModal() {
   document.getElementById("ModalConge").style.display = "block"
 }
-function edit(id, code) {
+function edit(id, code,pieceJointe) {
   update_id = id;
   code_selected = code;
   userActive = users.filter(us => us.m_code == code);
@@ -577,6 +579,9 @@ function edit(id, code) {
       update_datestart.value = act_leave.date_start;
       update_profil.setAttribute("src", `Profil/${retrieve_profil(act_leave.m_code)}`);
       update_code.innerHTML = `<i class="fa-solid fa-star"></i>${act_leave.m_code}`
+      changinType()
+      pieceJointe == "" || pieceJointe.toString() == "undefined" ? onFile = "" : onFile = pieceJointe
+      onFile != "" ? $('#fileOk').css("display","block")  :  $('#fileOk').css("display","none")
     }
   });
 }
@@ -601,7 +606,7 @@ function Editing() {
       }
       else {
         btnsave.disabled = true;
-        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, begin.value, end.value);
+        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, begin.value, end.value,permissionValue);
       }
     }
     else {
@@ -613,7 +618,7 @@ function Editing() {
       }
       else {
         btnsave.disabled = true;
-        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, "", "");
+        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, "", "",permissionValue);
       }
     }
 
@@ -633,12 +638,12 @@ function Editing() {
     }
     else {
       btnsave.disabled = true;
-      edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_dateend.value, "n", update_motif.value, update_id, "", "");
+      edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_dateend.value, "n", update_motif.value, update_id, "", "",permissionValue);
     }
   }
 
 }
-function edit_leave(url, type, startings, endings, val, mt, id, begin, end) {
+function edit_leave(url, type, startings, endings, val, mt, id, begin, end,exceptType) {
   waiting_edit.style.opacity = 1;
   var http = new XMLHttpRequest();
   http.open("POST", url, true);
@@ -691,7 +696,8 @@ function edit_leave(url, type, startings, endings, val, mt, id, begin, end) {
       btnsave.disabled = false;
     }
   };
-  http.send("id=" + id + "&code=" + code_selected + "&type=" + type + "&leavestart=" + startings + "&leaveend=" + endings + "&court=" + val + "&motif=" + mt + "&begin=" + begin + "&end=" + end);
+  http.send("id=" + id + "&code=" + code_selected + "&type=" + type + "&leavestart=" + startings + "&leaveend=" + endings + "&court=" + val + "&motif=" + mt 
+  + "&begin=" + begin + "&end=" + end + "&exceptType=" + exceptType);
 }
 function null_val(gived, start) {
   if (gived == "" || start == gived) {
@@ -801,6 +807,9 @@ function calcul_timediff_absencereport(startTime, endTime) {
   }
 }
 $('#type_leave').on('change', function () {
+  changinType();
+})
+function changinType(){
   if ($('#type_leave').val() == "Permission exceptionelle"){
     permissionValue = $("#exceptType").val();
       activatePermission(true)
@@ -824,7 +833,7 @@ $('#type_leave').on('change', function () {
       activatePermission(false)
       activateRm(false)
   }
-})
+}
 var permissionValue = "";
 $("#exceptType").on('change' ,function (){
   permissionValue = $("#exceptType").val();
@@ -900,8 +909,7 @@ function activateCp(choice){
 function seePiece(file){
   $("#ModalPiece").show();
   $('#who').text(`Piece jointe selectioner`)
-    const imageUrl = URL.createObjectURL(file);
-    renderPiece(imageUrl);
+    renderPiece(file);
     $("#fileOk").css("opacity","1")
  
 }
@@ -909,21 +917,52 @@ function closePiece(){
   $("#ModalPiece").hide();
   $("#PieceContent").html("")
 }
-function renderPiece(url){
-  console.log("url",url)
-  $("#PieceContent").attr("data",url)
+function renderPiece(file){
+  $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data="../PieceJointe/${file}">
+  </object>`)
 }
 function addPiece(){
-  $("#join").click();
+  if (onFile){
+    seePiece(onFile)
+  }
+  else {
+    $("#join").click();
+  }
+  
 }
 $('#join').on('change', function (event) {
   var selectedFile = event.target.files[0];
   if (selectedFile){
       piece = selectedFile;
-      seePiece(selectedFile);
+      var joinPiece = new FormData();
+          joinPiece.append("join",piece);
+          joinPiece.append("idLeave",update_id);
+          $.ajax({
+              url: "/joinFileLeaveAnother",
+              method: "POST",
+              cache: false,
+              contentType: false,
+              processData: false,
+              data: joinPiece,
+              success: function (res) {
+                  if (res.status == "Success"){
+                     $("#fileOk").css("display",'block')
+                     info.innerHTML = "La pièce jointe a été attaché";
+                     info.style.display = "block";
+                     seePiece(res.fileName)
+                  }
+                  else {
+                    info.innerHTML = "La pièce jointe n'a pas été attaché";
+                    info.style.display = "block";
+                  }
+              }
+          })
   }
   else {
     piece = "";
     $("#fileOk").css("opacity","1")
   }
 })
+function replacePiece(){
+  $("#join").click();
+}

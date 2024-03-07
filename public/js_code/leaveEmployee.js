@@ -243,7 +243,7 @@ function getdata(code) {
           else {
             upcoming.innerHTML = `Congé en cours ou a venir le : Aucune congé pour l'instant`;
           }
-
+          changingType()
         }
       }
       counting();
@@ -512,6 +512,10 @@ function reloading() {
   sum.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
   last.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
   upcoming.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+  piece = "";
+  closePiece();
+  $("#fileOk").css("opacity","0")
+  $("#join").val("")
 }
 function date_diff(starting, ending) {
   if (oneDay == false){
@@ -600,6 +604,9 @@ function Abreviation(given){
   }
 }
 $('#type_leave').on('change', function () {
+  changingType()
+})
+function changingType(){
   if ($('#type_leave').val() == "Permission exceptionelle"){
     permissionValue = $("#exceptType").val();
       activatePermission(true)
@@ -623,7 +630,7 @@ $('#type_leave').on('change', function () {
       activatePermission(false)
       activateRm(false)
   }
-})
+}
 var permissionValue = "";
 $("#exceptType").on('change' ,function (){
   permissionValue = $("#exceptType").val();

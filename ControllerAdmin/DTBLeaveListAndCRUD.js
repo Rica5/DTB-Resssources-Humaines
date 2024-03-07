@@ -692,6 +692,7 @@ const editLeave = async(req,res) => {
     var hour_begin = req.body.begin;
     var hour_end = req.body.end;
     var motif = req.body.motif;
+    var exceptType = req.body.exceptType;
     var id = req.body.id;
     var deduction = " ( rien à deduire )";
         var user = await UserSchema.findOne({ m_code: code });
@@ -858,6 +859,7 @@ const editLeave = async(req,res) => {
               hour_end: hour_end,
               type: type + deduction,
               status: day_control,
+              exceptType:exceptType,
               rest: rest,
               motif: motif,
               validation: false,
@@ -1025,6 +1027,7 @@ const editLeave = async(req,res) => {
               hour_end: hour_end,
               type: type + deduction,
               status: day_control,
+              exceptType:exceptType,
               rest: rest,
               motif: motif,
               validation: false,
