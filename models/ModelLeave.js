@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment  = require('moment');
 const Leave = mongoose.Schema({
     m_code:String,
     num_agent:String,
@@ -17,6 +18,10 @@ const Leave = mongoose.Schema({
     hour_begin:String,
     hour_end:String,
     piece:String,
+    date: {
+        type: String,
+        default: moment().format('YYYY-MM-DD')
+    },
     request: {
         type:mongoose.Types.ObjectId,
         auto: true,

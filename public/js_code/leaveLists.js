@@ -207,6 +207,7 @@ function calcul_timediff_absencetl(startTime, endTime) {
 }
 function render_button(temp_c) {
   var btn = "";
+  btn += `<button onclick="printLeave('${temp_c._id}')" class="btn btn-sm btn-outline-secondary mx-3 mb-3 print-btn">Imprimer <i class="fa-solid fa-print"></i></button>`;
   switch (row_activated) {
     case "en cours": btn = `
     <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
@@ -216,9 +217,20 @@ function render_button(temp_c) {
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
     case "Terminée": btn = `
     <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> SUPPRIMER <i class="fa-solid fa-ban"></i></button>`; break;
   }
   return btn
+}
+
+function printLeave(id) {
+  $.ajax({
+    url: '/print_leave/' + id,
+    method: 'POST',
+    sucess: () => {
+      console.log('OK')
+    },
+  })
 }
 function give_motif(motif) {
   if (motif == "") {

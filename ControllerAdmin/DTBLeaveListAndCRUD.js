@@ -6,6 +6,7 @@ const ExcelFile = require("sheetjs-style");
 const fs = require("fs");
 const Methods = require("../ControllerDTB/GlobalMethods")
 const globaleVariable = require("../ControllerDTB/GlobaleVariable")
+const { PDFNet } = require("@pdftron/pdfnet-node");
 
 
 // Page Leavelist
@@ -55,7 +56,11 @@ const getLeaveOperation = async(req,res) => {
 const retrieveLeaveList = async(req,res) => {
   var session = req.session;
   if (session.occupation_a == "Admin" || session.occupation_op == "Opération") {
-        var all_leave = await LeaveSchema.find({ validation: false}).sort({
+        var all_leave = await LeaveSchema.find({ validation: false})
+        .populate({
+          path: 'LeaveRequestTest',
+          options: { strictPopulate: false }
+        }).sort({
           m_code: 1,
           date_start: 1
         });
@@ -1678,7 +1683,82 @@ async function addin_leave() {
 //   }
 // }
 
+function getting_null(val) {
+  if (val) {
+    return val + "";
+  } else {
+    return "";
+  }
+}
+// to print leave
+async function printLeave(req, res) {
+  let leaveId = req.params.id;
+  try {
+    const replaceText = async () => {
+      var leave = await LeaveSchema.findById(leaveId);
+      const employee = await UserSchema.findOne({ m_code: leave.m_code});
+      const pdfdoc = await PDFNet.PDFDoc.createFromFilePath("LeaveTemplate.pdf");
+      await pdfdoc.initSecurityHandler();
+      const replacer = await PDFNet.ContentReplacer.create();
+      const page = await pdfdoc.getPage(1);
+      
+      const leaveTest = await LeaveRequestTest.findOne({ _id: leave.request}).populate({
+        path: 'validation.user',
+        select: 'usuel'
+      })
+      if (leaveTest) {
+        leave = leaveTest;
+        await replacer.addString("teamLeader", getting_null(leave.validation[0].user.usuel));
+        await replacer.addString("ROP", getting_null(leave.validation[1].user.usuel));
+        await replacer.addString("RH", getting_null(leave.validation[2].user.usuel));
+        if (leave.validation[3])
+          await replacer.addString("GERANT", getting_null(leave.validation[3].user.usuel));
+        else 
+          await replacer.addString("GERANT", getting_null("Navalona"));
+      } else {
+        await replacer.addString("teamLeader", getting_null("n/a"));
+        await replacer.addString("ROP", getting_null("n/a"));
+        await replacer.addString("RH", getting_null("n/a"));
+        await replacer.addString("GERANT", getting_null("n/a"));
+        
+        await replacer.addString("dateAsker", getting_null(leave.date));
+      }
+      // replace text
+      await replacer.addString("nameEmployee", getting_null(leave.nom));
+      await replacer.addString("usuel", getting_null(employee.usuel));
+      await replacer.addString("matricule", getting_null(employee.matr));
+      await replacer.addString("nameEmployee", getting_null(employee.first_name));
+      await replacer.addString("code", getting_null(employee.m_code));
+      await replacer.addString("shift", getting_null(employee.shift));
+      await replacer.addString("beginDate", getting_null(moment().format("DD/MM/YYYY")));
+      await replacer.addString("endDate", getting_null(moment().format("DD/MM/YYYY")));
+      await replacer.addString("beginHour", getting_null(leave.hour_begin));
+      await replacer.addString("endHour", getting_null(leave.hour_end));
+      await replacer.addString("asker", getting_null(employee.usuel));
+      
+      
+      await replacer.process(page);
+      var output_path = "./public/Leave/" + leave.m_code + ".pdf";
+  
+      pdfdoc.save(output_path, PDFNet.SDFDoc.SaveOptions.e_linearized);
+
+    }
+    
+    PDFNet.runWithCleanup(
+      replaceText,
+      "demo:ricardoramandimbisoa@gmail.com:7afedebe02000000000e72b195b776c08a802c3245de93b77462bc8ad6"
+    ).then(() => {
+        PDFNet.shutdown();
+        res.send("OK");
+    });
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
 module.exports = {
     checkleave,leave_permission,conge_define,addin_leave,getPageLeavelist,retrieveLeaveList,LeaveReport,downloadFile,
-    getPageDefine,createLeave,editLeave,abortLeave,leaveInfo,getLeaveOperation
+    getPageDefine,createLeave,editLeave,abortLeave,leaveInfo,getLeaveOperation, printLeave
 }

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment  = require('moment');
 const Leave = mongoose.Schema({
     m_code:String,
     num_agent:String,
@@ -21,6 +22,7 @@ const Leave = mongoose.Schema({
     comment:String,
     order:Boolean,
     piece:String,
+    date: String,
     validation:[{
         user:{
             type:mongoose.Types.ObjectId,
@@ -30,6 +32,10 @@ const Leave = mongoose.Schema({
             type:Boolean,
             default:false
         },
+        date: {
+            type: String,
+            default: moment().format('YYYY-MM-DD')
+        }
     }],
    
 })

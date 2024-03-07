@@ -184,6 +184,9 @@ routeExpDTB.route("/editleave").post(ControllerLeaveCRUD.editLeave);//pass
 routeExpDTB.route("/delete_leave").post(ControllerLeaveCRUD.abortLeave);//pass
 //Leave info
 routeExpDTB.route("/getuser_leave").post(ControllerLeaveCRUD.leaveInfo);//pass
+// print leave
+routeExpDTB.route("/print_leave/:id").post(ControllerLeaveCRUD.printLeave);//pass
+
 
 //Opération
 routeExpDTB.route("/conge").get(ControllerLeaveCRUD.getLeaveOperation);//pass
