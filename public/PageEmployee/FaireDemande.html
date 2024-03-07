@@ -293,13 +293,137 @@
                     
                 </div>
             </div>
+            <!-- Edit leave modal -->
+            <div class="edit-leave-modal">
+                <div class="content">
+                    <div class="container-make mt-2">
+                        <button class="close-btn" type="button" onclick="toggleEditModal()">&times;</button>
+                        <h5 class="">
+                            <span class="point-text">AUTORISATION D'ABSENCE / REGULARISATION D'ABSENCE</span>
+                        </h5>
+                        <label for="" class="request-warning">
+                            Toutes demandes de : - congés > à 3 jours doivent être déposées au moins 10 jours ou une (1) semaine ouvrable,
+                            - congés et permissions < à 3 jours à déposer dans les 48 heures ouvrables avant leurs dates effectives, sauf pour les congés
+                            maladies ou Décès.
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6 d-flex">
+                                <p class="point-text">Nom et prénoms :</p>
+                                <p class="text-infos mx-2"><%= user.first_name %> <%= user.last_name %></p>
+                            </div>
+                            <div class=" col-md-6 d-flex">
+                                <p class="point-text">Prenom usuel :</p>
+                                <p class="text-infos mx-2"><%= user.usuel %></p>
+                            </div>
+                        </div>
+                        <div class="row col-md-9 p-0">
+                            <div class="col-md-4 d-flex w-100">
+                                <p class="point-text">Matricule :</p>
+                                <p class="text-infos mx-2"><%= user.matr %></p>
+                            </div>
+                            <div class="col-md-4 d-flex w-100">
+                                <p class="point-text">M-code :</p>
+                                <p class="text-infos mx-2" id="code"><%= user.m_code %></p>
+                            </div>
+                            <div class="col-md-4 d-flex w-100">
+                                <p class="point-text">Shift :</p>
+                                <p class="text-infos mx-2" id="shift"><%= user.shift %></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-9">
+                                <div class="row col-md-12 p-0">
+                                    <div class="col-md-4 d-flex w-100">
+                                        <p class="point-text">Periode solicitée :</p>
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Date début :</p>
+                                        <input class="mx-1 date value" id="edit-startDate" type="date" />
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Heure :</p>
+                                        <input class="mx-1 date value" id="edit-startTime" type="time" />
+                                    </div>
+                                </div>
+                                <div class="row col-md-12 p-0">
+                                    <div class="col-md-4 d-flex w-100">
+                                    
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Date fin :</p>
+                                        <input class="mx-1 date value" id="edit-endDate" type="date" />
+                                    </div>
+                                    <div class="col-md-4 d-flex justify-content-between w-100">
+                                        <p class="point-text ">Heure :</p>
+                                        <input class="mx-1 date value" id="edit-endTime" type="time" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 align-items-center justify-content-center">
+                                <div class="day-number">
+                                    <p class="point-text">Nb de jour :</p>
+                                    <p id="edit-dayNumber">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="point-text mb-2">Motifs ou congé souhaiter :</p>
+                                <textarea  class="value" id="edit-motif"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="point-text mb-2">Récupération :</p>
+                                <textarea id="edit-recovery"></textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between flex-wrap mt-3">
+                            <div class="d-flex justify-content-center align-items-center">
+                                <div>
+                                    <p class="text-infos">Priorité haute </p>
+                                </div>
+                                <div>
+                                    <input type="checkbox" id="edit-toggle" class="hidden-checkbox">
+                                    <label for="toggle" class="toggle-label ml-3"></label>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <input type="hidden" id="hidden-id">
+                                <input type="file" class="d-none" id="edit-join">
+                                <div class="d-flex"><i id="edit-fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1 mt-4"></i><button id="joinFile" onclick="editTriggerButton()" class="btn btn-md btn-secondary">Joindre fichier <i class="fa-solid fa-paperclip"></i></button></div>
+                                <button id="editRequest" class="btn btn-md btn-success mx-4">Mettre à jour la demande <i class="fa-solid fa-paper-plane-o"></i></button>
+                                <div class="snippet p-3" id="edit-loading" data-title="dot-pulse">
+                                    <div class="stage">
+                                        <div class="dot-pulse"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Delete modal -->
+        <div class="delete-modal">
+            <div class="content">
+                <div class="head">
+                    <img width="48" height="48" src="https://img.icons8.com/emoji/48/warning-emoji.png" alt="warning-emoji"/>
+                    <h4>Voulez-vous annuler ce demande?</h4>
+                </div>
+                <div class="foot">
+                    <input type="hidden" id="delete-id">
+                    <button type="button" onclick="cancelLeaveRequest()">Oui, annuler</button>
+                    <button type="button" onclick="toggleDeleteModal()">Non</button>
+                </div>
+            </div>
         </div>
     </div>
     <script>
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
             let buttons = [...document.querySelectorAll('.notif button.notif-btn')];
-            console.log(buttons)
+            
             // close modal
             if (button.classList.contains('selected')) {
                 buttons.forEach(btn => 
@@ -363,7 +487,6 @@
                     openLeave = openLeave + response[1].duration;
                     setSolde(accumulate,openLeave)
                 }
-               
             }
             else {
                 replaceElementByIdPending(response[0],response[1])
@@ -560,6 +683,7 @@
 
     </script>
     <script src="../jsDTB/LeaveRequest.js"></script>
+    <script src="../jsDTB/LeaveRequestEdit.js"></script>
 
 
 </body>
