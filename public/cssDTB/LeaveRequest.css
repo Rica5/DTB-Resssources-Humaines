@@ -661,7 +661,128 @@ input:focus {
 .motif.pending > i{
     color: var(---pending);
 }
+.edit-leave-modal {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 200;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(8px);
+}
+.edit-leave-modal .content {
+    padding: 2rem;
+    max-width: 1170px;
+}
 
+
+.edit-leave-modal .container-make {
+    background-color: #e6e6e6;
+    border-radius: 15px;
+    padding-top: 2rem;
+    position: relative;
+    overflow-x: hidden;
+    opacity: 0;
+    scale: 0.9;
+    transform: translateY(200px);
+    transition: transform 0.3s cubic-bezier(0.075, 0.82, 0.165, 1),
+    opacity 3s ease;
+}
+.edit-leave-modal.open {
+    display: flex;
+}
+.edit-leave-modal.open .container-make {
+    animation: container-edit-animation  0.5s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+
+
+.edit-leave-modal .container-make button.close-btn {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    border: none;
+    background: none;
+    font-size: 25px;
+    transition: all 0.2s ease;
+    color: #999999;
+    outline: none;
+}
+.edit-leave-modal .container-make button.close-btn:active {
+    scale: 0.9;
+}
+.edit-leave-modal .container-make button.close-btn:hover {
+    color: crimson;
+    cursor: pointer;
+}
+
+.delete-modal {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    inset: 0;
+    z-index: 100;
+    display: none;
+}
+
+.delete-modal.open {
+    display: block;
+}
+.delete-modal .content {
+    background: white;
+    border-radius: 10px;
+    padding: 6px 4px;
+    width: 100%;
+    max-width: 500px;
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    scale: 1;
+    opacity: 1;
+    transform: translateX(-50%);
+    transition:  0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.delete-modal.open .content {
+    animation: container-delete-animation 0.6s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+
+.delete-modal .head {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.delete-modal .head h4 {
+    margin: 1rem auto;
+    font-size: 14px;
+}
+
+.delete-modal .foot {
+    display: flex;
+    padding: 1rem;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-modal .foot button {
+    font-size: 14px;
+}
+@keyframes container-delete-animation {
+    to {
+        scale: 1;
+        opacity: 1;
+        top: 80px;
+    }
+}
+
+@keyframes container-edit-animation {
+    to {
+        scale: 1;
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 @media screen and (max-width: 770px) {
     
     .day-number {

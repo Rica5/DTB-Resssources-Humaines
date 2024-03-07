@@ -92,6 +92,12 @@ routeExpDTB.route("/removeall-notification").delete(Controller.removeAllNotifica
 routeExpDTB.route("/markAsRead-notification/:id").put(Controller.markAsReadNotification);
 // Mark as read all notifications
 routeExpDTB.route("/markAsReadAll-notification").put(Controller.markAsReadAllNotification);
+// Get leave by id
+routeExpDTB.route("/RequestLeave/:id").get(Controller.getLeaveRequestById);
+// Update Leave
+routeExpDTB.route("/UpdateRequestLeave/:id").put(Controller.updateLeaveRequest);
+// Cancel Leave
+routeExpDTB.route("/CancelRequestLeave/:id").post(Controller.cancelLeaveRequest);
 
 
 

@@ -46,7 +46,7 @@ $("#myUpcoming").click(() => {
 })
 
 $("#sendRequest").on('click', () => {
-    $("#sendRequest").prop("disabled",true);
+    $("#sendRequest").prop("disabled", true);
     var code = $("#code").text();
     var startDate = $("#startDate").val();
     var endDate = $("#endDate").val();
@@ -62,31 +62,33 @@ $("#sendRequest").on('click', () => {
     (!endTime) ? $("#endTime").css({ "border-color": "red" }) : $("#endTime").css({ "border-color": "" });
     (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
     const formData = new FormData();
-    
-    var dateRequest = {join:joinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime, 
-        endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked') }
-    formData.append("join",joinedFile)
-    formData.append("code",code)
-    formData.append("startDate",startDate)
-    formData.append("endDate",endDate)
-    formData.append("startTime",startTime)
-    formData.append("endTime",endTime)
-    formData.append("motif",motif)
-    formData.append("recovery",recovery)
-    formData.append("duration",(leaveDuration + leaveDurationTwo))
-    formData.append("priority",$("#toggle").is(':checked'))
-    formData.append("fileIn",fileIn)
+
+    var dateRequest = {
+        join: joinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime,
+        endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked')
+    }
+    formData.append("join", joinedFile)
+    formData.append("code", code)
+    formData.append("startDate", startDate)
+    formData.append("endDate", endDate)
+    formData.append("startTime", startTime)
+    formData.append("endTime", endTime)
+    formData.append("motif", motif)
+    formData.append("recovery", recovery)
+    formData.append("duration", (leaveDuration + leaveDurationTwo))
+    formData.append("priority", $("#toggle").is(':checked'))
+    formData.append("fileIn", fileIn)
     if (startDate && endDate && startTime && endTime && motif) {
-        if (checkduplicata(allLeave,startDate,endDate)){
-            $("#notification").attr("class","notice-denied");
+        if (checkduplicata(allLeave, startDate, endDate)) {
+            $("#notification").attr("class", "notice-denied");
             $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
             $("#notification").show();
-            $("#sendRequest").prop("disabled",false);
+            $("#sendRequest").prop("disabled", false);
             setTimeout(() => {
                 $("#notification").hide();
             }, 5000);
         }
-        else{
+        else {
             $('#loading').show();
             $.ajax({
                 url: "/makeRequest",
@@ -96,10 +98,10 @@ $("#sendRequest").on('click', () => {
                 processData: false,
                 data: formData,
                 success: function (res) {
-                    if (res == "Success"){
-                        $("#sendRequest").prop("disabled",false);
+                    if (res == "Success") {
+                        $("#sendRequest").prop("disabled", false);
                         $('#loading').hide();
-                        $("#notification").attr("class","notice-success");
+                        $("#notification").attr("class", "notice-success");
                         $("#notification").text("Requête envoyé avec succes");
                         $("#notification").show();
                         UpdateRequest()
@@ -109,29 +111,29 @@ $("#sendRequest").on('click', () => {
                         }, 5000);
                     }
                     else {
-                        $("#sendRequest").prop("disabled",false);
+                        $("#sendRequest").prop("disabled", false);
                         $('#loading').hide();
-                        $("#notification").attr("class","notice-denied");
+                        $("#notification").attr("class", "notice-denied");
                         $("#notification").text("Une erreur est survenue");
                         $("#notification").show();
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
                     }
-                   
+
                 }
             })
         }
-        
+
     }
     else {
-        $("#sendRequest").prop("disabled",false);
-        $("#notification").attr("class","notice-denied");
-            $("#notification").text("Veuillez remplir correctement les champs nécessaire");
-            $("#notification").show();
-            setTimeout(() => {
-                $("#notification").hide();
-            }, 5000);
+        $("#sendRequest").prop("disabled", false);
+        $("#notification").attr("class", "notice-denied");
+        $("#notification").text("Veuillez remplir correctement les champs nécessaire");
+        $("#notification").show();
+        setTimeout(() => {
+            $("#notification").hide();
+        }, 5000);
     }
 
 });
@@ -181,10 +183,10 @@ function myRequestRender(data) {
 }
 function Approved(data) {
     data.sort((a, b) => b.date_start - a.date_start);
-        myUpcomingContent = '<div class="row p-3">'
-        var approvedNumber = 0;
-        data.forEach(element => {
-            myUpcomingContent += `
+    myUpcomingContent = '<div class="row p-3">'
+    var approvedNumber = 0;
+    data.forEach(element => {
+        myUpcomingContent += `
             <div class="col-md-6 p-1">
             <div class="card-item">
                 <div class="card-header">
@@ -227,14 +229,14 @@ function Approved(data) {
                     <div class="duration">
                         <div>
                         <span>Durée:</span>
-                        <span>${element.duration == 0.25 ? calcul_timediff_absencetl(element.hour_begin,element.hour_end) : element.duration + " jour(s)" } </span>
+                        <span>${element.duration == 0.25 ? calcul_timediff_absencetl(element.hour_begin, element.hour_end) : element.duration + " jour(s)"} </span>
                         </div>
                         <div><span>Décision : ${decided(element.type)}</span></div>
                     </div>
                     <div class="duration">
-                        ${itCount(element.type) == true ? `<div><span> 2024 | ${(element.acc + element.duration) - (element.rest + element.duration)  } | 2023 | ${element.rest + element.duration} |</span> </div>
-                        <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>`:
-                        `<div><span>| 2024: ${element.acc - element.rest } | 2023: ${element.rest} |</span></div>
+                        ${itCount(element.type) == true ? `<div><span> 2024 | ${(element.acc + element.duration) - (element.rest + element.duration)} | 2023 | ${element.rest + element.duration} |</span> </div>
+                        <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>` :
+                `<div><span>| 2024: ${element.acc - element.rest} | 2023: ${element.rest} |</span></div>
                         <div><span>Reste après autorisation | </span>${element.acc} |</span></div>`}
                     </div>
                     </div>
@@ -245,24 +247,24 @@ function Approved(data) {
             </div>
         </div>
             `
-            approvedNumber++
-        });
-        myUpcomingContent += '</div>';
-        $('#container-upcoming').html(myUpcomingContent);
-        $("#approved").text(approvedNumber)
+        approvedNumber++
+    });
+    myUpcomingContent += '</div>';
+    $('#container-upcoming').html(myUpcomingContent);
+    $("#approved").text(approvedNumber)
 }
-function decided(decision){
+function decided(decision) {
     var response = "";
-    if (decision.includes("Congé Payé")){
+    if (decision.includes("Congé Payé")) {
         response = "A déduire s/ congé payés"
     }
-    else if (decision.includes("Permission exceptionelle")){
+    else if (decision.includes("Permission exceptionelle")) {
         response = "Permission exceptionnelle"
     }
-    else if (decision.includes("Repos Maladie")){
+    else if (decision.includes("Repos Maladie")) {
         response = "Rien à déduire"
     }
-    else if (decision.includes("Congé de maternité")){
+    else if (decision.includes("Congé de maternité")) {
         response = "Congé de maternité/paternité"
     }
     else {
@@ -287,8 +289,8 @@ function renderMyRequest(Leave, stat) {
                 <div class="buttons">
                     ${stat == "pending" ? `
                     <div class="action-field">
-                        <button class="btn btn-sm action"><i class="fa-solid fa-file-pen"></i></button> 
-                        <button class="btn btn-sm action ml-2"> <i class="fa-solid fa-square-xmark"></i></button>
+                        <button class="btn btn-sm action" onclick="openEditModal('${Leave._id}')"><i class="fa-solid fa-file-pen"></i></button> 
+                        <button class="btn btn-sm action ml-2"  onclick="openDeleteModal('${Leave._id}')"> <i class="fa-solid fa-square-xmark"></i></button>
                     </div>` : ''} 
                 </div>
                 <div class="date-heure">
@@ -438,16 +440,16 @@ $("#motif").on('change', () => {
 })
 $('#join').on('change', function (event) {
     var selectedFile = event.target.files[0];
-    if (selectedFile){
+    if (selectedFile) {
         fileIn = true;
         joinedFile = selectedFile;
-        $('#fileOk').css({"opacity":"1"});
+        $('#fileOk').css({ "opacity": "1" });
     }
     else {
         fileIn = false
-        $('#fileOk').css({"opacity":"0"});
+        $('#fileOk').css({ "opacity": "0" });
     }
- })
+})
 function dateDiff(starting, ending) {
     if (ending != "") {
         var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
@@ -493,13 +495,13 @@ function hourDiff(startTime, endTime) {
         minutes += minutes_fictif;
         if (hours <= 4) {
             hours <= 2 ? leaveDurationTwo = 0.25 : leaveDurationTwo = 0.5;
-            if (leaveDurationTwo == 0.25){
+            if (leaveDurationTwo == 0.25) {
                 $("#dayNumber").text(leaveDuration ? `${leaveDuration} jr ${calcul_timediff_absencetl(startTime, endTime)}` : `${calcul_timediff_absencetl(startTime, endTime)}`)
             }
             else {
                 $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
             }
-           
+
         }
         else if (hours >= 4) {
             leaveDurationTwo = 1;
@@ -510,46 +512,46 @@ function hourDiff(startTime, endTime) {
             $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
         }
         notValid()
-        
+
     }
 }
 function calcul_timediff_absencetl(startTime, endTime) {
     if (startTime != "") {
-      startTime = moment(startTime, "HH:mm:ss a");
-      endTime = moment(endTime, "HH:mm:ss a");
-      var duration = moment.duration(endTime.diff(startTime));
-      //duration in hours
-      var hours_fictif = 0;
-      var minutes_fictif = 0;
-      hours_fictif += parseInt(duration.asHours());
-  
-      // duration in minutes
-      minutes_fictif += parseInt(duration.asMinutes()) % 60;
-      if (minutes_fictif < 0) {
-        hours_fictif = hours_fictif - 1;
-        minutes_fictif = 60 + minutes_fictif;
-      }
-      while (minutes_fictif > 60) {
-        hours_fictif += 1;
-        minutes_fictif = minutes_fictif - 60;
-      }
-      if (hours_fictif < 0) {
-        hours_fictif = hours_fictif + 24;
-      }
-      if (hours_fictif == 0) {
-        return minutes_fictif + " minutes";
-      }
-      else if (minutes_fictif == 0) {
-        return hours_fictif + " heures";
-      }
-      else {
-        return hours_fictif + " heures " + minutes_fictif + " minutes";
-      }
+        startTime = moment(startTime, "HH:mm:ss a");
+        endTime = moment(endTime, "HH:mm:ss a");
+        var duration = moment.duration(endTime.diff(startTime));
+        //duration in hours
+        var hours_fictif = 0;
+        var minutes_fictif = 0;
+        hours_fictif += parseInt(duration.asHours());
+
+        // duration in minutes
+        minutes_fictif += parseInt(duration.asMinutes()) % 60;
+        if (minutes_fictif < 0) {
+            hours_fictif = hours_fictif - 1;
+            minutes_fictif = 60 + minutes_fictif;
+        }
+        while (minutes_fictif > 60) {
+            hours_fictif += 1;
+            minutes_fictif = minutes_fictif - 60;
+        }
+        if (hours_fictif < 0) {
+            hours_fictif = hours_fictif + 24;
+        }
+        if (hours_fictif == 0) {
+            return minutes_fictif + " minutes";
+        }
+        else if (minutes_fictif == 0) {
+            return hours_fictif + " heures";
+        }
+        else {
+            return hours_fictif + " heures " + minutes_fictif + " minutes";
+        }
     }
     else {
-      return "heure non défini"
+        return "heure non défini"
     }
-  }
+}
 function dateWrite(startTime, endTime) {
     dateDiff(startTime, endTime);
     hourDiff(startTime, endTime)
@@ -571,7 +573,7 @@ function dropElementByIdApprove(id) {
     Approves = Approves.filter(item => item._id != id);
     Approved(Approves);
 }
-function restore(){
+function restore() {
     $("#startDate").val("");
     $("#endDate").val("");
     $("#startTime").val("");
@@ -582,106 +584,106 @@ function restore(){
     $("#dayNumber").text("0");
     $('#join').val('');
     fileIn = false
-    $('#fileOk').css({"opacity":"0"});
+    $('#fileOk').css({ "opacity": "0" });
 }
 
 function checkduplicata(leave, st, ed) {
     var value = false;
     for (l = 0; l < leave.length; l++) {
-      var all_date = date_concerning(
-        moment(leave[l].date_start).format("YYYY-MM-DD"),
-        moment(leave[l].date_end).format("YYYY-MM-DD")
-      );
-      if (
-        all_date.includes(moment(st).format("YYYY-MM-DD")) ||
-        all_date.includes(moment(ed).format("YYYY-MM-DD"))
-      ) {
-        value = true;
-      }
+        var all_date = date_concerning(
+            moment(leave[l].date_start).format("YYYY-MM-DD"),
+            moment(leave[l].date_end).format("YYYY-MM-DD")
+        );
+        if (
+            all_date.includes(moment(st).format("YYYY-MM-DD")) ||
+            all_date.includes(moment(ed).format("YYYY-MM-DD"))
+        ) {
+            value = true;
+        }
     }
     return value;
-  }
-  function date_concerning(date1, date2) {
+}
+function date_concerning(date1, date2) {
     var all_date = [];
     if (date2 == date1) {
-      date1 = moment(date1).format("YYYY-MM-DD");
-      all_date.push(date1);
-      return all_date;
-    } else {
-      date1 = moment(date1).format("YYYY-MM-DD");
-      date2 = moment(date2).format("YYYY-MM-DD");
-      while (date1 != date2) {
+        date1 = moment(date1).format("YYYY-MM-DD");
         all_date.push(date1);
-        date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
-      }
-      all_date.push(date2);
-      return all_date;
+        return all_date;
+    } else {
+        date1 = moment(date1).format("YYYY-MM-DD");
+        date2 = moment(date2).format("YYYY-MM-DD");
+        while (date1 != date2) {
+            all_date.push(date1);
+            date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+        }
+        all_date.push(date2);
+        return all_date;
     }
-  }
-  function checkduplicata2(leave, st, ed, st1, ed1) {
+}
+function checkduplicata2(leave, st, ed, st1, ed1) {
     var value = false;
     var all_date = date_concerning2(
-      moment(st).format("YYYY-MM-DD"),
-      moment(ed).format("YYYY-MM-DD"),
-      moment(st1).format("YYYY-MM-DD"),
-      moment(ed1).format("YYYY-MM-DD")
+        moment(st).format("YYYY-MM-DD"),
+        moment(ed).format("YYYY-MM-DD"),
+        moment(st1).format("YYYY-MM-DD"),
+        moment(ed1).format("YYYY-MM-DD")
     );
     for (l = 0; l < leave.length; l++) {
-      if (
-        all_date.includes(moment(leave[l].date_start).format("YYYY-MM-DD")) ||
-        all_date.includes(moment(leave[l].date_end).format("YYYY-MM-DD"))
-      ) {
-        value = true;
-      }
+        if (
+            all_date.includes(moment(leave[l].date_start).format("YYYY-MM-DD")) ||
+            all_date.includes(moment(leave[l].date_end).format("YYYY-MM-DD"))
+        ) {
+            value = true;
+        }
     }
     return value;
-  }
-  function date_concerning2(date1, date2, date3, date4) {
+}
+function date_concerning2(date1, date2, date3, date4) {
     var all_date = [];
     var not_in = date_concerning(date3, date4);
     if (date2 == date1) {
-      date1 = moment(date1).format("YYYY-MM-DD");
-      if (not_in.includes(date1)) {
-      } else {
-        all_date.push(date1);
-      }
-  
-      return all_date;
-    } else {
-      date1 = moment(date1).format("YYYY-MM-DD");
-      date2 = moment(date2).format("YYYY-MM-DD");
-  
-      while (date1 != date2) {
+        date1 = moment(date1).format("YYYY-MM-DD");
         if (not_in.includes(date1)) {
-          date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
         } else {
-          all_date.push(date1);
-          date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+            all_date.push(date1);
         }
-      }
-      if (not_in.includes(date2)) {
-      } else {
-        all_date.push(date2);
-      }
-  
-      return all_date;
+
+        return all_date;
+    } else {
+        date1 = moment(date1).format("YYYY-MM-DD");
+        date2 = moment(date2).format("YYYY-MM-DD");
+
+        while (date1 != date2) {
+            if (not_in.includes(date1)) {
+                date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+            } else {
+                all_date.push(date1);
+                date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+            }
+        }
+        if (not_in.includes(date2)) {
+        } else {
+            all_date.push(date2);
+        }
+
+        return all_date;
     }
-  }
-  function triggerButton(){
+}
+function triggerButton() {
     $("#join").click();
- }
- function itCount(theType){
-    if (theType.includes("Congé Payé")){
+}
+function itCount(theType) {
+    if (theType.includes("Congé Payé")) {
         return true
     }
     else {
         return false
     }
- }
- function notValid(){
-    if (leaveDuration < 0){
-        $("#sendRequest").prop("disabled",true)
-        $("#notification").attr("class","notice-denied");
+}
+function notValid() {
+    if (leaveDuration < 0) {
+        $("#sendRequest").prop("disabled", true)
+        $("#notification").attr("class", "notice-denied");
         $("#notification").text("Erreur d'entrée sur la date");
         $("#notification").show();
         setTimeout(() => {
@@ -689,6 +691,36 @@ function checkduplicata(leave, st, ed) {
         }, 5000);
     }
     else {
-        $("#sendRequest").prop("disabled",false)
+        $("#sendRequest").prop("disabled", false)
     }
- }
+}
+// Delete modal
+function openDeleteModal(id) {
+    $('#delete-id').val(id);
+    toggleDeleteModal();
+}
+
+function toggleDeleteModal() {
+    $('.delete-modal').toggleClass('open');
+}
+
+function cancelLeaveRequest() {
+    const id = $('#delete-id').val()
+    // send request to the server
+    $.ajax({
+        url: `/CancelRequestLeave/${id}`, // Replace this with your API endpoint
+        type: "POST",
+        dataType: "json",
+        success: function (data) {
+            // This function will be called if the request is successful
+            if (data.ok) {
+                toggleDeleteModal();
+                UpdateRequest();
+            }
+        },
+        error: function (xhr, status, error) {
+            // This function will be called if there is an error with the request
+            console.error(error); // Log the error to the console
+        }
+    });
+}
