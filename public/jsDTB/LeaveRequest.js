@@ -716,6 +716,14 @@ function cancelLeaveRequest() {
             if (data.ok) {
                 toggleDeleteModal();
                 UpdateRequest();
+                $("#notification").attr("class", "notice-success");
+                $("#notification").text("Requête annulée avec succes");
+                $("#notification").show();
+                setTimeout(() => {
+                    $("#notification").hide();
+                }, 5000);
+            } else {
+                console.log(data.message)
             }
         },
         error: function (xhr, status, error) {
