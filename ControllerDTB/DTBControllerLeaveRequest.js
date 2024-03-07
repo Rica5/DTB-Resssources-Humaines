@@ -589,6 +589,6 @@ async function cancelLeaveRequest(req, res) {
 
 module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seePending, getPending, answerRequest, getNotifications,
-    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,
+    removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,attachedFileAnother,
     getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest
 }
