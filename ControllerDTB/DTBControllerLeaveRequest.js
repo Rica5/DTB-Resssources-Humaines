@@ -81,7 +81,7 @@ const makeLeaveRequest = async (req, res) => {
             await LeaveRequestTest(new_request).save();
             var notification = {
                 title: "Demande d'absence",
-                content: `${new_request.m_code} à envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
+                content: `${new_request.m_code} a envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
                 datetime: moment().format("DD/MM/YYYY hh:mm:ss")
             }
             var concerned = ["Admin", "Surveillant", "Opération"]
@@ -139,7 +139,7 @@ const updateLeaveRequest = async (req, res) => {
             await LeaveRequestTest.findByIdAndUpdate(leaveId, new_request);
             var notification = {
                 title: "Modification d'une demande d'absence",
-                content: `${new_request.m_code} à modifier une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
+                content: `${new_request.m_code} a modifié une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
                 datetime: moment().format("DD/MM/YYYY hh:mm:ss")
             }
             var concerned = ["Admin", "Surveillant", "Opération"]
@@ -580,9 +580,19 @@ async function renameFile(id, actualPath, newPaths) {
 async function cancelLeaveRequest(req, res) {
     let leaveId = req.params.id;
     try {
-        await LeaveRequestTest.findByIdAndDelete(leaveId);
+        const deleted = await LeaveRequestTest.findByIdAndDelete(leaveId);
+        
+        var notification = {
+            title: "Modification d'une demande d'absence",
+            content: `${deleted.m_code} a modifié une demande d'absence le ${moment(deleted.date_start).format("DD/MM/YYYY")} au ${moment(deleted.date_end).format("DD/MM/YYYY")} (${deleted.duration} jour(s))`,
+            datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+        }
+        var concerned = ["Admin", "Surveillant", "Opération"]
+        await setGlobalAdminNotifications(notification, concerned, true, req);
+
         res.json({ ok: true })
     } catch (error) {
+        console.log(error)
         res.json({ ok: false })
     }
 }
@@ -590,5 +600,5 @@ async function cancelLeaveRequest(req, res) {
 module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seePending, getPending, answerRequest, getNotifications,
     removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,
-    getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest
+    getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother
 }
