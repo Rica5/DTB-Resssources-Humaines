@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="solumada-clocking" />
+  <meta http-equiv="pragma" content="no-cache">
   <meta name="description" content="solumada-clocking" />
   <meta name="robots" content="noindex,nofollow" />
   <title>Liste des congés</title>
@@ -230,7 +231,7 @@
                       class="hide-menu">List des conges (global)</span></a>
                 </li>
                 <li class="sidebar-item">
-                  <a href="/leave" class="sidebar-link"><i class="mdi mdi-account-off"></i><span class="hide-menu">
+                  <a href="/leaves" class="sidebar-link"><i class="mdi mdi-account-off"></i><span class="hide-menu">
                       Definir un congé</span></a>
                 </li>
                 <li class="sidebar-item">
@@ -493,9 +494,11 @@
                                     </div>
                                   </div>
                                   <div class="col-md-6 d-flex align-items-end justify-content-end">
-                                    <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1"></i>
-                                    <button onclick="addPiece()" class="btn btn-sm btn-secondary">Pièce justificative <i class="fa-solid fa-file-pen"></i></button>
-                                    <button type="button" id="save_leave" class="btn btn-sm btn-primary mx-2" 
+                                    <div class="d-flex">
+                                      <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mt-3"></i>
+                                      <button onclick="addPiece()" class="btn btn-sm btn-secondary mx-1">Pièce justificative <i class="fa-solid fa-file-pen"></i></button>
+                                    </div>
+                                    <button type="button" id="save_leave" class="btn btn-sm btn-primary mx-1" 
                                       onclick="Editing()">
                                       <i id="waiting_edit" class="fa-solid fa-spinner fa-spin"></i>
                                       ENREGISTRER <i class="fa-solid fa-floppy-disk"></i>
@@ -527,7 +530,7 @@
                   <button onclick="replacePiece()" class="btn btn-sm btn-success"><i class="fas fa-file"></i> Remplacer la pièce</button>
                 </div>
               </div>
-              <div class="d-flex justify-content-center" id="PieceContent">
+              <div class="d-flex justify-content-center h-100" id="PieceContent">
                     
               </div>
             </div> 

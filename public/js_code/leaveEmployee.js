@@ -472,9 +472,6 @@ function take_leave(url, type, startings, endings, val, mt, begin, end,exceptTyp
         info.innerHTML = "Un congé incluant la date choisi existe déja pour " + code_selected;
         info.style.display = "block";
       }
-      else {
-        window.location = "/session_end";
-      }
       btnsave.disabled = false;
       waiting.style.opacity = 0;
 
@@ -514,7 +511,7 @@ function reloading() {
   upcoming.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
   piece = "";
   closePiece();
-  $("#fileOk").css("opacity","0")
+  $("#fileOk").css("display","none")
   $("#join").val("")
 }
 function date_diff(starting, ending) {
@@ -706,7 +703,7 @@ function seePiece(file){
   $('#who').text(`Piece jointe selectioner`)
     const imageUrl = URL.createObjectURL(file);
     renderPiece(imageUrl);
-    $("#fileOk").css("opacity","1")
+    $("#fileOk").css("display","block")
  
 }
 function closePiece(){
@@ -714,7 +711,6 @@ function closePiece(){
   $("#PieceContent").html("")
 }
 function renderPiece(url){
-  console.log("url",url)
   $("#PieceContent").attr("data",url)
 }
 function addPiece(){
@@ -728,6 +724,6 @@ $('#join').on('change', function (event) {
   }
   else {
     piece = "";
-    $("#fileOk").css("opacity","1")
+    $("#fileOk").css("display","block")
   }
 })

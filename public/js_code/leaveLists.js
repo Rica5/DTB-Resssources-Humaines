@@ -209,13 +209,13 @@ function render_button(temp_c) {
   var btn = "";
   btn += `<button onclick="printLeave('${temp_c._id}')" class="btn btn-sm btn-outline-secondary mx-3 mb-3 print-btn">Imprimer <i class="fa-solid fa-print"></i></button>`;
   switch (row_activated) {
-    case "en cours": btn = `
+    case "en cours": btn += `
     <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
-    case "en attente": btn = `
+    case "en attente": btn += `
     <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
-    case "Terminée": btn = `
+    case "Terminée": btn += `
     <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
 
     <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> SUPPRIMER <i class="fa-solid fa-ban"></i></button>`; break;
@@ -910,7 +910,7 @@ function seePiece(file){
   $("#ModalPiece").show();
   $('#who').text(`Piece jointe selectioner`)
     renderPiece(file);
-    $("#fileOk").css("opacity","1")
+    $("#fileOk").css("display","block")
  
 }
 function closePiece(){
@@ -918,8 +918,21 @@ function closePiece(){
   $("#PieceContent").html("")
 }
 function renderPiece(file){
-  $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data="../PieceJointe/${file}">
-  </object>`)
+  const imagePath = `../PieceJointe/${file}`;
+fetch(imagePath)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to fetch image');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+         $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data=${ URL.createObjectURL(blob)}>
+         </object>`)
+    })
+    .catch(error => {
+        console.error('Error fetching image:', error);
+    });
 }
 function addPiece(){
   if (onFile){
@@ -949,6 +962,7 @@ $('#join').on('change', function (event) {
                      $("#fileOk").css("display",'block')
                      info.innerHTML = "La pièce jointe a été attaché";
                      info.style.display = "block";
+                     closePiece();
                      seePiece(res.fileName)
                   }
                   else {
@@ -960,7 +974,7 @@ $('#join').on('change', function (event) {
   }
   else {
     piece = "";
-    $("#fileOk").css("opacity","1")
+    $("#fileOk").css("display","block")
   }
 })
 function replacePiece(){

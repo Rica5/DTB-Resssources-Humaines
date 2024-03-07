@@ -782,7 +782,7 @@ const editLeave = async(req,res) => {
                       //console.log("Azo " + rest + " " + leave_specific[c-1].date_start)
                     } else {
                       rest = leave_specific[c - 1].rest - taked;
-                      last_acc = leave_specific[c - 1].last_acc - taked;
+                      last_acc = leave_specific[c - 1].acc - taked;
                       //console.log("Azo " + rest + " " + leave_specific[c-1].date_start)
                     }
                   }
@@ -970,10 +970,10 @@ const editLeave = async(req,res) => {
                       rest =
                         leave_specific[c].rest + leave_specific[c].duration;
                         last_acc =
-                        leave_specific[c].last_acc + leave_specific[c].duration;
+                        leave_specific[c].acc + leave_specific[c].duration;
                     } else {
                       rest = leave_specific[c].rest;
-                      last_acc = leave_specific[c].last_acc;
+                      last_acc = leave_specific[c].acc;
                     }
                   }
                 }

@@ -31,11 +31,11 @@
     />
     <link
       rel="stylesheet"
-      href="assets/libs/bootstrap/dist/css/bootstrap.css"
+      href="/assets/libs/bootstrap/dist/css/bootstrap.css"
     />
     <link href="../dist/css/style.min.css" rel="stylesheet" />
 
-    <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css" />
+    <link rel="stylesheet" href="/assets/magnific-popup/magnific-popup.css" />
     <link
       rel="stylesheet"
       type="text/css"
@@ -56,7 +56,7 @@
       type="text/css"
       href="/assets/css1/showLeaveEmployee.css"
     />
-    <link rel="stylesheet" href="cssDTB/notification.css">
+    <link rel="stylesheet" href="/cssDTB/notification.css">
     
     <script>
       var initData = JSON.parse('<%-JSON.stringify(users)%>');
@@ -264,7 +264,7 @@
                     >
                   </li>
                   <li class="sidebar-item">
-                    <a href="/leave" class="sidebar-link"
+                    <a href="/leaves" class="sidebar-link"
                       ><i class="mdi mdi-account-off"></i
                       ><span class="hide-menu"> Definir un congé</span></a
                     >
@@ -690,20 +690,22 @@
                       <div
                         class="col-md-6 d-flex align-items-end justify-content-end"
                       >
+                      <div class="d-flex">
+                        <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mt-3"></i>
+                        <button
+                          type="button"
+                          id="save_leave"
+                          class="btn btn-secondary mx-1"
+                          onclick="addPiece()"
+                        >
+                          Pièce justificative <i class="fa-solid fa-file"></i>
+                        </button>
+                      </div>
                       
                         <button
                           type="button"
                           id="save_leave"
-                          class="btn btn-secondary"
-                          onclick="addPiece()"
-                        >
-                        <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1"></i>
-                          Pièce justificative <i class="fa-solid fa-file"></i>
-                        </button>
-                        <button
-                          type="button"
-                          id="save_leave"
-                          class="btn btn-primary mx-2"
+                          class="btn btn-primary mx-1"
                           onclick="define_leave()"
                         >
                           <i
@@ -771,8 +773,8 @@
     <script src="../assets/extra-libs/multicheck/datatable-checkbox-init.js"></script>
     <script src="../assets/extra-libs/multicheck/jquery.multicheck.js"></script>
     <script src="../assets/extra-libs/DataTables/datatables.min.js"></script>
-    <script src="assets/magnific-popup/magnific-popup.js"></script>
-    <script src="assets/js1/examples.modals.js"></script>
+    <script src="/assets/magnific-popup/magnific-popup.js"></script>
+    <script src="/assets/js1/examples.modals.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="/js_code/momentz.js"></script>
     <script src="/js_code/leaveEmployee.js"></script>
