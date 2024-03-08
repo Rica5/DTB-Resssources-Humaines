@@ -12,7 +12,7 @@ var maternity = [];
 var filtrage = {};
 var pointage_journalier = [];
 var maj_done = false;
-var deduire = ["Mise a Pied", "Absent", "Congé sans solde"];
+var deduire = ["Mise a Pied", "Absent", "Congé sans solde","Absence Injustifiée"];
 var ws_leave;
 var ws_left;
 var ws_individual;

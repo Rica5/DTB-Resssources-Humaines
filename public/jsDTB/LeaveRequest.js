@@ -62,11 +62,6 @@ $("#sendRequest").on('click', () => {
     (!endTime) ? $("#endTime").css({ "border-color": "red" }) : $("#endTime").css({ "border-color": "" });
     (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
     const formData = new FormData();
-
-    var dateRequest = {
-        join: joinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime,
-        endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#toggle").is(':checked')
-    }
     formData.append("join", joinedFile)
     formData.append("code", code)
     formData.append("startDate", startDate)

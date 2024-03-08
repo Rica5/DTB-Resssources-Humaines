@@ -409,7 +409,7 @@ function set_month(val, ind) {
   month_value = val;
   behavior = "left";
   indice_row = 0;
-  if (ind == 0 || row_activated == "en attente") {
+  if (ind == 0 || row_activated == "en cours") {
     download.innerHTML = `<i class="fa-solid fa-download"></i> INDISPONIBLE`
     download.disabled = true;
   }
