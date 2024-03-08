@@ -194,6 +194,8 @@ routeExpDTB.route("/conge").get(ControllerLeaveCRUD.getLeaveOperation);//pass
 //TL Page
 //Get status TL
 routeExpDTB.route("/managementtl").get(ControllerStaticAdmin.getPageTl);//pass
+//Get page Recap
+routeExpDTB.route("/leaverecap").get(ControllerLeaveCRUD.getPageRecap);//pass
 // Get page clocking TL
 routeExpDTB.route("/pointagetl").get(ControllerClockingTL.getPageClockingTL);//pass
 // Get page generate TL

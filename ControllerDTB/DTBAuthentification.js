@@ -539,6 +539,10 @@ async function change_admin_profil(){
     }
     console.log("Done")
 }
+async function resetAll(){
+  await UserSchema.updateMany({},{act_loc:"Not defined",act_stat:"LEFTING",myNotifications:[]})
+  console.log("Rese all done")
+}
 //change_admin_profil()
 
   //Method that is used on this controller and in other controller

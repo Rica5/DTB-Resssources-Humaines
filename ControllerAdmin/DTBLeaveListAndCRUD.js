@@ -52,6 +52,35 @@ const getLeaveOperation = async(req,res) => {
     res.redirect("/");
   }
 }
+//Get recap leaves
+const getPageRecap = async(req,res) => {
+  var session = req.session;
+  if (session.occupation_a == "Admin") {
+        var alluser = await UserSchema.find(
+          { occupation: "User", status: "Actif" },
+          { adresse: 0, password: 0, username:0,phone:0 }
+        ).sort({
+          m_code: 1,
+        });
+        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
+         for (let index = 0; index < alluser.length; index++) {
+          const element = alluser[index];
+          element.leave_stat = moment(element.save_at).add(1,"years").locale("Fr").format("MMMM YYYY")
+          element.save_at = moment(element.save_at).format("DD/MM/YYYY")
+          alluser[index] = element
+         }
+        res.render("PageAdministration/RecapConges.html", {
+          users: alluser,
+          username: session.mailing,
+          notif: dataUser.myNotifications,
+          dataUser:dataUser,
+          role:role
+        });
+  } else {
+    res.redirect("/");
+  }
+}
 //All leavelist
 const retrieveLeaveList = async(req,res) => {
   var session = req.session;
@@ -198,7 +227,8 @@ const LeaveReport = async(req,res) => {
                   }
                   else if ( globaleVariable.monthly_leave[i].type.includes("Absent") ||
                   globaleVariable.monthly_leave[i].type.includes("Mise a Pied") ||
-                  globaleVariable.monthly_leave[i].type.includes("Congé sans solde")){
+                  globaleVariable.monthly_leave[i].type.includes("Congé sans solde") || 
+                  globaleVariable.monthly_leave[i].type.includes("Absence Injustifiée")){
                     if (globaleVariable.monthly_leave[i].duration == 0.25){
                       globaleVariable.monthly_leave[i].duration = 0;
                       var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
@@ -297,7 +327,7 @@ const LeaveReport = async(req,res) => {
           
           if (populateAll.populateSansSolde[0] != "N/A"){
             count++;
-            populateAll.populateSansSolde[5] =  renderResult(populateAll.populateSansSolde[2],populateAll.populateSansSolde[7],populateAll.populateSansSolde[8]);
+            populateAll.populateSansSolde[5] =  renderResult(populateAll.populateSansSolde[5],populateAll.populateSansSolde[7],populateAll.populateSansSolde[8]);
             populateAll.populateSansSolde[6] = populateAll.populateSansSolde[6].replace(/\d+\.\d+/g, function(match) {
               return match.replace('.', ',');
             });
@@ -538,6 +568,12 @@ const createLeave = async(req,res) => {
             var d1 = moment(leavestart).format("YYYY-MM-DD");
             var d2 = moment(leaveend).format("YYYY-MM-DD");
             if (split_date(d1, d2) && type != "Congé de maternité") {
+              if (idRequest != ""){
+                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+                new_leave.piece = thisLeave.piece;
+                const io = req.app.get("io");
+                io.sockets.emit("isTreated", [idRequest,thisLeave]);
+              }
               var first = first_part(d1);
               var second = second_part(d1, d2);
               new_leave.date_start = first[0];
@@ -552,24 +588,18 @@ const createLeave = async(req,res) => {
               new_leave.rest = new_leave.rest - second[2];
               new_leave.acc = new_leave.acc - second[2];
               await LeaveSchema(new_leave).save();
-              if (idRequest != ""){
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
-                const io = req.app.get("io");
-                io.sockets.emit("isTreated", [idRequest,thisLeave]);
-              }
-              //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave(req);
               theLeave.status = "Ok";
               res.send(theLeave);
             } else {
-              var theLeave = await LeaveSchema(new_leave).save();
               if (idRequest != ""){
                 var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+                new_leave.piece = thisLeave.piece;
                 const io = req.app.get("io");
                 io.sockets.emit("isTreated", [idRequest,thisLeave]);
               }
-              //await arrangeAccumulate(code, leavestart);
+              var theLeave = await LeaveSchema(new_leave).save();
               await conge_define(req);
               await checkleave(req);
               theLeave.status = "Ok";
@@ -581,7 +611,8 @@ const createLeave = async(req,res) => {
             type == "Repos Maladie" ||
             type == "Congé de maternité" ||
             type == "Absent" ||
-            type == "Congé sans solde"
+            type == "Congé sans solde" ||
+            type == "Absence Injustifiée"
           ) {
             if (globaleVariable.deduire.includes(type)) {
               deduction = " ( a déduire sur salaire )";
@@ -639,6 +670,12 @@ const createLeave = async(req,res) => {
             var d1 = moment(leavestart).format("YYYY-MM-DD");
             var d2 = moment(leaveend).format("YYYY-MM-DD");
             if (split_date(d1, d2) && type != "Congé de maternité") {
+              if (idRequest != ""){
+                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+                new_leave.piece = thisLeave.piece;
+                const io = req.app.get("io");
+                io.sockets.emit("isTreated", [idRequest,thisLeave]);
+              }
               var first = first_part(d1);
               var second = second_part(d1, d2);
               new_leave.date_start = first[0];
@@ -649,24 +686,18 @@ const createLeave = async(req,res) => {
               new_leave.date_end = second[1];
               new_leave.duration = second[2];
               await LeaveSchema(new_leave).save();
-              if (idRequest != ""){
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
-                const io = req.app.get("io");
-                io.sockets.emit("isTreated", [idRequest,thisLeave]);
-              }
-              //await arrangeAccumulate(code, leavestart);
               await conge_define(req);
               await checkleave(req);
               theLeave.status = "Ok";
               res.send(theLeave);
             } else {
-              var theLeave = await LeaveSchema(new_leave).save();
               if (idRequest != ""){
                 var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
+                new_leave.piece = thisLeave.piece;
                 const io = req.app.get("io");
                 io.sockets.emit("isTreated", [idRequest,thisLeave]);
               }
-              //await arrangeAccumulate(code, leavestart);
+              var theLeave = await LeaveSchema(new_leave).save();
               await conge_define(req);
               await checkleave(req);
               theLeave.status = "Ok";
@@ -928,7 +959,8 @@ const editLeave = async(req,res) => {
             type == "Repos Maladie" ||
             type == "Congé de maternité" ||
             type == "Absent" ||
-            type == "Congé sans solde"
+            type == "Congé sans solde" || 
+            type == "Absence Injustifiée"
           ) {
             await LeaveSchema.findOneAndDelete({ _id: id });
             leave_specific = await LeaveSchema.find({
@@ -1760,5 +1792,5 @@ async function printLeave(req, res) {
 
 module.exports = {
     checkleave,leave_permission,conge_define,addin_leave,getPageLeavelist,retrieveLeaveList,LeaveReport,downloadFile,
-    getPageDefine,createLeave,editLeave,abortLeave,leaveInfo,getLeaveOperation, printLeave
+    getPageDefine,createLeave,editLeave,abortLeave,leaveInfo,getLeaveOperation, printLeave,getPageRecap
 }

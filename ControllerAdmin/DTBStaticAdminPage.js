@@ -32,11 +32,13 @@ const getDashboardPage = async(req,res) => {
           var cdi_contract = await UserSchema.find({
             act_stat: { $ne: "VACATION" },
             m_code: { $ne: "N/A" },
+            occupation:"User",
             status: "Actif",
             contrat:"CDI"
           });
           var cdd_contract = await UserSchema.find({
             m_code: { $ne: "N/A" },
+            occupation:"User",
             status: "Actif",
             contrat:"CDD"
           });
