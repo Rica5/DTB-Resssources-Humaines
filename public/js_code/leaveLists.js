@@ -227,11 +227,23 @@ function printLeave(id) {
   $.ajax({
     url: '/print_leave/' + id,
     method: 'POST',
-    sucess: () => {
-      console.log('OK')
+    success: (res) => {
+      if (res.ok) {
+        $('#to-print').attr('src', "")
+        $('#to-print').attr('src', res.filename.replace('/public/', '/'))
+        togglePrint();
+      }
     },
+    error: (err) => {
+      console.log(err)
+    }
   })
 }
+
+function togglePrint() {
+  $('.print-modal').toggleClass('open');
+}
+
 function give_motif(motif) {
   if (motif == "") {
     return `<p class="info-text text-center"> Aucune motif</p>`

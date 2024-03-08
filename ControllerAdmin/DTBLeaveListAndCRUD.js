@@ -1718,13 +1718,58 @@ async function addin_leave() {
 function getting_null(val) {
   if (val) {
     return val + "";
+  }
+  else if (val === 0) {
+    return '0';
   } else {
     return "";
   }
 }
+function isFloat(num) {
+    // Check if the number has a fractional part
+    return num % 1 !== 0;
+}
+function calcul_timediff_absencetl(startTime, endTime) {
+    if (startTime != "") {
+      startTime = moment(startTime, "HH:mm:ss a");
+      endTime = moment(endTime, "HH:mm:ss a");
+      var duration = moment.duration(endTime.diff(startTime));
+      //duration in hours
+      var hours_fictif = 0;
+      var minutes_fictif = 0;
+      hours_fictif += parseInt(duration.asHours());
+  
+      // duration in minutes
+      minutes_fictif += parseInt(duration.asMinutes()) % 60;
+      if (minutes_fictif < 0) {
+        hours_fictif = hours_fictif - 1;
+        minutes_fictif = 60 + minutes_fictif;
+      }
+      while (minutes_fictif > 60) {
+        hours_fictif += 1;
+        minutes_fictif = minutes_fictif - 60;
+      }
+      if (hours_fictif < 0) {
+        hours_fictif = hours_fictif + 24;
+      }
+      if (hours_fictif == 0) {
+        return minutes_fictif + " minutes";
+      }
+      else if (minutes_fictif == 0) {
+        return hours_fictif + " heures";
+      }
+      else {
+        return hours_fictif + "h " + minutes_fictif + " mn";
+      }
+    }
+    else {
+      return "heure non défini"
+    }
+}
 // to print leave
 async function printLeave(req, res) {
   let leaveId = req.params.id;
+  var output_path = "";
   try {
     const replaceText = async () => {
       var leave = await LeaveSchema.findById(leaveId);
@@ -1738,6 +1783,10 @@ async function printLeave(req, res) {
         path: 'validation.user',
         select: 'usuel'
       })
+      var injustLeave = await LeaveSchema.find({ m_code: leave.m_code, type: { $regex: 'Absence Injustifiée' } });
+      var duration = isFloat(leave.duration) ? leave.duration.toString().split(".")[0] + " jr(s) " + calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)"
+
+
       if (leaveTest) {
         leave = leaveTest;
         await replacer.addString("teamLeader", getting_null(leave.validation[0].user.usuel));
@@ -1756,6 +1805,17 @@ async function printLeave(req, res) {
           await replacer.addString("dateGERANT", getting_null("n/a"));
         }
       } else {
+        switch(employee.shift) {
+          case "SHIFT 1": leave.hour_begin = "06:15"; leave.hour_end = "12:15";
+            break;
+          case "SHIFT 2": leave.hour_begin = "12:15"; leave.hour_end = "18:15";
+            break;
+          case "SHIFT 3": leave.hour_begin = "18:15"; leave.hour_end = "00:00";
+            break;
+          default:
+            leave.hour_begin = "08:00"; leave.hour_end = "16:00";
+        }
+
         await replacer.addString("teamLeader", getting_null("n/a"));
         await replacer.addString("ROP", getting_null("n/a"));
         await replacer.addString("RH", getting_null("n/a"));
@@ -1770,40 +1830,85 @@ async function printLeave(req, res) {
       await replacer.addString("nameEmployee", getting_null(leave.nom));
       await replacer.addString("usuel", getting_null(employee.usuel));
       await replacer.addString("matricule", getting_null(employee.matr));
-      await replacer.addString("numDay", getting_null(leave.duration));
+      await replacer.addString("numDay", getting_null(duration));
       await replacer.addString("code", getting_null(employee.m_code));
       await replacer.addString("shift", getting_null(employee.shift));
-      await replacer.addString("beginDate", getting_null(moment().format("DD/MM/YYYY")));
-      await replacer.addString("endDate", getting_null(moment().format("DD/MM/YYYY")));
+      await replacer.addString("beginDate", getting_null(moment(leave.date_start).format("DD/MM/YYYY")));
+      await replacer.addString("endDate", getting_null(moment(leave.date_end).format("DD/MM/YYYY")));
       await replacer.addString("beginHour", getting_null(leave.hour_begin));
       await replacer.addString("endHour", getting_null(leave.hour_end));
       await replacer.addString("motifLeave", getting_null(leave.motif));
       await replacer.addString("timeRecup", getting_null(leave.recovery));
       await replacer.addString("asker", getting_null(employee.usuel));
 
-
-      await replacer.addString("prev_year", getting_null("2023"));
-      await replacer.addString("curr_year", getting_null("2024"));
+      let year = +moment(leave.date_start).format('YYYY');
+      await replacer.addString("prev_year", getting_null(year - 1));
+      await replacer.addString("curr_year", getting_null(year));
+      await replacer.addString("oacc", getting_null(leave.acc - leave.rest));
+      // + 1 if conge paye (rest & acc)
+      if (leave.type.includes("Congé Payé")) {
+        leave.rest += leave.duration;
+        await replacer.addString("cp", getting_null("  X"));
+        await replacer.addString("cp_nbr", getting_null(duration));
+        
+        // A à deduire salaire
+        await replacer.addString("ds", getting_null(""));
+        await replacer.addString("ds_nbr", getting_null(""));
+        // Permission exceptionnelle
+        await replacer.addString("ps", getting_null(""));
+        await replacer.addString("ps_nbr", getting_null(""));
+        // Rien à deduire
+        await replacer.addString("rd", getting_null(""));
+        
+      } else if (leave.type.includes('Permission exceptionelle')) {
+        // Permission exceptionnelle
+        await replacer.addString("ps", getting_null("  X"));
+        await replacer.addString("ps_nbr", getting_null(duration));
+        // Rien à deduire
+        await replacer.addString("cp", getting_null(""));
+        await replacer.addString("cp_nbr", getting_null(""));
+        // A à deduire salaire
+        await replacer.addString("ds", getting_null(""));
+        await replacer.addString("ds_nbr", getting_null(""));
+        // Rien à deduire
+        await replacer.addString("rd", getting_null(""));
+        
+      } else if (leave.type.includes('Repos Maladie')) {
+        // Rien à deduire
+        await replacer.addString("rd", getting_null("  X"));
+        // Rien à deduire
+        await replacer.addString("cp", getting_null(""));
+        await replacer.addString("cp_nbr", getting_null(""));
+        // A à deduire salaire
+        await replacer.addString("ds", getting_null(""));
+        await replacer.addString("ds_nbr", getting_null(""));
+        // Permission exceptionnelle
+        await replacer.addString("ps", getting_null(""));
+        await replacer.addString("ps_nbr", getting_null(""));
+      } else {
+        // A à deduire salaire
+        await replacer.addString("ds", getting_null("  X"));
+        await replacer.addString("ds_nbr", getting_null(duration));
+        // Rien à deduire
+        await replacer.addString("cp", getting_null(""));
+        await replacer.addString("cp_nbr", getting_null(""));
+        // Permission exceptionnelle
+        await replacer.addString("ps", getting_null(""));
+        await replacer.addString("ps_nbr", getting_null(""));
+        // Rien à deduire
+        await replacer.addString("rd", getting_null(""));
+      }
       await replacer.addString("rest", getting_null(leave.rest));
       await replacer.addString("acc", getting_null(leave.acc));
+
+      await replacer.addString("injust", getting_null(injustLeave.length));
       // date
       await replacer.addString("dateAsker", getting_null(moment(leave.date).format("DD/MM/YYYY")));
       // Décision de la direction
-      // Rien à deduire
-      await replacer.addString("cp", getting_null("   x"));
-      await replacer.addString("cp_nbr", getting_null(""));
-      // A à deduire salaire
-      await replacer.addString("ds", getting_null("   x"));
-      await replacer.addString("ds_nbr", getting_null(""));
-      // Permission exceptionnelle
-      await replacer.addString("ps", getting_null("   x"));
-      await replacer.addString("ps_nbr", getting_null(""));
-      // Rien à deduire
-      await replacer.addString("rd", getting_null("   x"));
       
       
       await replacer.process(page);
-      var output_path = "./public/Leave/" + leave.m_code + ".pdf";
+      output_path = "./public/Leave/" + leave.m_code + ".pdf";
   
       pdfdoc.save(output_path, PDFNet.SDFDoc.SaveOptions.e_linearized);
 
@@ -1814,11 +1919,12 @@ async function printLeave(req, res) {
       "demo:ricardoramandimbisoa@gmail.com:7afedebe02000000000e72b195b776c08a802c3245de93b77462bc8ad6"
     ).then(() => {
         PDFNet.shutdown();
-        res.send("OK");
+        res.send({ ok: true, filename: output_path});
     });
 
   } catch (error) {
     console.log(error)
+    res.send({ ok: false });
   }
 }
 

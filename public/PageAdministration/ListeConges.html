@@ -36,6 +36,38 @@
   .leavelist {
     position: relative;
   }
+  .print-modal {
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    display: none;
+  }
+  .print-modal .content {
+    margin: auto;
+    padding: 1rem;
+    padding-top: 2rem;
+    background: white;
+    position: relative;
+    border-radius: 12px;
+  }
+  .print-modal.open {
+    display: flex;
+  }
+  .print-modal button {
+    border: none;
+    background: none;
+    color: #b9b9b9;
+    position: absolute;
+    top: 1px;
+    right: 7px;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  .print-modal button:hover {
+    color: #d63d3d;
+  }
  </style>
 </head>
 
@@ -592,6 +624,13 @@
           <div id="notifContent" class="notification-list">
             
           </div>
+        </div>
+      </div>
+      <!-- print modal -->
+      <div class="print-modal">
+        <div class="content">
+          <button type="button" onclick="togglePrint()">&times;</button>
+          <iframe src="/Leave/M-BLL.pdf" id="to-print" frameborder="0" width="800px" height="800px"></iframe>
         </div>
       </div>
       <!-- ============================================================== -->
