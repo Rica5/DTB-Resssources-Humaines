@@ -1743,30 +1743,63 @@ async function printLeave(req, res) {
         await replacer.addString("teamLeader", getting_null(leave.validation[0].user.usuel));
         await replacer.addString("ROP", getting_null(leave.validation[1].user.usuel));
         await replacer.addString("RH", getting_null(leave.validation[2].user.usuel));
-        if (leave.validation[3])
+        // date
+        await replacer.addString("dateTeam", getting_null(moment(leave.validation[0].date).format("DD/MM/YYYY")));
+        await replacer.addString("dateRop", getting_null(moment(leave.validation[1].date).format("DD/MM/YYYY")));
+        await replacer.addString("dateRH", getting_null(moment(leave.validation[2].date).format("DD/MM/YYYY")));
+        if (leave.validation[3]) {
           await replacer.addString("GERANT", getting_null(leave.validation[3].user.usuel));
-        else 
+          await replacer.addString("dateGERANT", getting_null(moment(leave.validation[3].date).format("DD/MM/YYYY")));
+        }
+        else {
           await replacer.addString("GERANT", getting_null("Navalona"));
+          await replacer.addString("dateGERANT", getting_null("n/a"));
+        }
       } else {
         await replacer.addString("teamLeader", getting_null("n/a"));
         await replacer.addString("ROP", getting_null("n/a"));
         await replacer.addString("RH", getting_null("n/a"));
         await replacer.addString("GERANT", getting_null("n/a"));
-        
-        await replacer.addString("dateAsker", getting_null(leave.date));
+        // date
+        await replacer.addString("dateTeam", getting_null("n/a"));
+        await replacer.addString("dateRop", getting_null("n/a"));
+        await replacer.addString("dateRH", getting_null("n/a"));
+        await replacer.addString("dateGERANT", getting_null("n/a"));
       }
       // replace text
       await replacer.addString("nameEmployee", getting_null(leave.nom));
       await replacer.addString("usuel", getting_null(employee.usuel));
       await replacer.addString("matricule", getting_null(employee.matr));
-      await replacer.addString("nameEmployee", getting_null(employee.first_name));
+      await replacer.addString("numDay", getting_null(leave.duration));
       await replacer.addString("code", getting_null(employee.m_code));
       await replacer.addString("shift", getting_null(employee.shift));
       await replacer.addString("beginDate", getting_null(moment().format("DD/MM/YYYY")));
       await replacer.addString("endDate", getting_null(moment().format("DD/MM/YYYY")));
       await replacer.addString("beginHour", getting_null(leave.hour_begin));
       await replacer.addString("endHour", getting_null(leave.hour_end));
+      await replacer.addString("motifLeave", getting_null(leave.motif));
+      await replacer.addString("timeRecup", getting_null(leave.recovery));
       await replacer.addString("asker", getting_null(employee.usuel));
+
+
+      await replacer.addString("prev_year", getting_null("2023"));
+      await replacer.addString("curr_year", getting_null("2024"));
+      await replacer.addString("rest", getting_null(leave.rest));
+      await replacer.addString("acc", getting_null(leave.acc));
+      // date
+      await replacer.addString("dateAsker", getting_null(moment(leave.date).format("DD/MM/YYYY")));
+      // Décision de la direction
+      // Rien à deduire
+      await replacer.addString("cp", getting_null("   x"));
+      await replacer.addString("cp_nbr", getting_null(""));
+      // A à deduire salaire
+      await replacer.addString("ds", getting_null("   x"));
+      await replacer.addString("ds_nbr", getting_null(""));
+      // Permission exceptionnelle
+      await replacer.addString("ps", getting_null("   x"));
+      await replacer.addString("ps_nbr", getting_null(""));
+      // Rien à deduire
+      await replacer.addString("rd", getting_null("   x"));
       
       
       await replacer.process(page);
