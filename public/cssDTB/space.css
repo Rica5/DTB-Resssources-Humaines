@@ -340,3 +340,7 @@ span#numberNotification[textContent="0"] {
         min-width: 300px;
     }
 }
+
+a[href="News"] {
+    display: none;
+}
