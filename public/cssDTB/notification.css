@@ -131,3 +131,9 @@
     cursor: pointer;
     color: #000;
 }
+
+
+button#myRequest,
+button#myUpcoming {
+    display: none;
+}

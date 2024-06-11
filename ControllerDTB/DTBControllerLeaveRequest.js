@@ -587,8 +587,8 @@ async function cancelLeaveRequest(req, res) {
         const deleted = await LeaveRequestTest.findByIdAndDelete(leaveId);
         
         var notification = {
-            title: "Modification d'une demande d'absence",
-            content: `${deleted.m_code} a modifié une demande d'absence le ${moment(deleted.date_start).format("DD/MM/YYYY")} au ${moment(deleted.date_end).format("DD/MM/YYYY")} (${deleted.duration} jour(s))`,
+            title: "Annulation d'une demande d'absence",
+            content: `${deleted.m_code} a annulé une demande d'absence le ${moment(deleted.date_start).format("DD/MM/YYYY")} au ${moment(deleted.date_end).format("DD/MM/YYYY")} (${deleted.duration} jour(s))`,
             datetime: moment().format("DD/MM/YYYY hh:mm:ss")
         }
         var concerned = ["Admin", "Surveillant", "Opération"]
