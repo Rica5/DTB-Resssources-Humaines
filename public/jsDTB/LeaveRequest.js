@@ -71,7 +71,8 @@ $("#sendRequest").on('click', () => {
     formData.append("motif", motif)
     formData.append("recovery", recovery)
     formData.append("duration", (leaveDuration + leaveDurationTwo))
-    formData.append("priority", $("#toggle").is(':checked'))
+    formData.append("priority", $("#toggle").is(':checked'));
+    formData.append("leavePriority", +$("#priority").val());
     formData.append("fileIn", fileIn)
     if (startDate && endDate && startTime && endTime && motif) {
         if (checkduplicata(allLeave, startDate, endDate)) {
@@ -231,7 +232,7 @@ function Approved(data) {
                     <div class="duration">
                         ${itCount(element.type) == true ? `<div><span> 2024 | ${(element.acc + element.duration) - (element.rest + element.duration)} | 2023 | ${element.rest + element.duration} |</span> </div>
                         <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>` :
-                `<div><span>| 2024: ${element.acc - element.rest} | 2023: ${element.rest} |</span></div>
+                        `<div><span>| 2024: ${element.acc - element.rest} | 2023: ${element.rest} |</span></div>
                         <div><span>Reste après autorisation | </span>${element.acc} |</span></div>`}
                     </div>
                     </div>
@@ -319,8 +320,14 @@ function renderMyRequest(Leave, stat) {
                     </div>
                 </div>
                 <div class="duration">
-                    <span>Durée:</span>
-                    <span>${Leave.duration} jours</span>
+                    <div>
+                        <span>Durée:</span>
+                        <span>${Leave.duration} jours</span>
+                    </div>
+                    <div>
+                        <span>Priorité:</span>
+                        <span>${Leave.priorityValue}</span>
+                    </div>
                 </div>
             </div>
             <div id="${Leave._id}" class="card-footer ${stat}">
@@ -408,6 +415,11 @@ $("#endDate").on('change', () => {
         $("#endDate").css({ "border-color": "" }),
         (startDate) ? dateDiff(startDate, endDate) : ""
     );
+
+    // (!endDate) ? $("#endDate").css({ "border-color": "red" }) : (
+    //     $("#endDate").css({ "border-color": "" }),
+    //     (startDate) ? CalculateDaysIncludingHolidays(startDate, endDate) : ""
+    // );
 })
 $("#startTime").on('change', () => {
     var startTime = $("#startTime").val();
@@ -445,13 +457,14 @@ $('#join').on('change', function (event) {
         $('#fileOk').css({ "opacity": "0" });
     }
 })
-function dateDiff(starting, ending) {
+async function dateDiff(starting, ending) {
     if (ending != "") {
-        var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
-        var endings = moment(ending, "YYYY-MM-DD HH:mm");
-        var duration = moment.duration(endings.diff(startings));
-        var dayl = duration.asDays();
-        leaveDuration = dayl;
+        // var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
+        // var endings = moment(ending, "YYYY-MM-DD HH:mm");
+        // var duration = moment.duration(endings.diff(startings));
+        // var dayl = duration.asDays();
+        // leaveDuration = dayl;
+        leaveDuration = await CalculateDaysIncludingHolidays(starting, ending) - 1;
         $("#dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
     }
     else {
@@ -577,6 +590,7 @@ function restore() {
     $("#recovery").val("");
     $('#toggle').prop('checked', false);
     $("#dayNumber").text("0");
+    $("#priority").val("2");
     $('#join').val('');
     fileIn = false
     $('#fileOk').css({ "opacity": "0" });
@@ -727,3 +741,99 @@ function cancelLeaveRequest() {
         }
     });
 }
+
+/**
+ * Method for fetching holidays at madagascar from api
+ */
+const fetchHolidays = async (year) => {
+    const country = 'MG';
+    const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
+    const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
+    const data = await response.json();
+    return data.map(holiday => holiday.date);
+};
+
+/**
+ * Method to calculate effective days, 
+ * When the end date is friday, we add two days (saturday, sunday)
+ * Also, when date is included in the holidays, we decrement per one day (-1 day)
+ * @param {String} startDate start date 
+ * @param {String} endDate end date
+ * @param {Array of String} holidays Array of holiday from api
+ * @returns number
+ */
+
+const calculateEffectiveDays = (startDate, endDate, holidays) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in one day
+    
+    // If the end date is a Friday, push it by 2 days to Sunday
+    if (end.getDay() === 5) {
+        end.setDate(end.getDate() + 2);
+    }
+    // If it fall for Saturday, we add 1 day for Sunday
+    if (end.getDay() === 6) {
+        end.setDate(end.getDate() + 1);
+    }
+    
+    let totalDays = Math.floor((end - start) / oneDay) + 1; // Including the end date
+    let holidayCount = 0;
+    
+    for (let d = start; d <= end; d = new Date(d.getTime() + oneDay)) {
+        if (holidays.includes(d.toISOString().split('T')[0])) {
+            holidayCount++;
+        }
+    }
+    
+    return totalDays - holidayCount;
+};
+
+/**
+ * Methode to calculate day difference of two dates
+ * if any date between those are including in a holidays/non-working days, we apply discount (-1 day per date included)
+ * @param {String} startDate start date with format yyy-mm-dd
+ * @param {String} endDate end date with format yyy-mm-dd
+ * @returns number
+ */
+const CalculateDaysIncludingHolidays = async (startDate, endDate) => {
+    const year = new Date().getFullYear();
+    const holidays = await fetchHolidays(year);
+    const effectiveDays = calculateEffectiveDays(startDate, endDate, holidays);
+    
+    console.log(`Effective days between ${startDate} and ${endDate} excluding holidays: ${effectiveDays}`);
+    return effectiveDays;
+};
+
+$(function(){
+    var dtToday = new Date();
+    
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    const padS = (s) => `${s}`.padStart(2, "0");
+
+    month = padS(month);
+    day = padS(day);
+    
+    var min = year + '-' + month + '-' + day;
+    dtToday.setMonth(dtToday.getMonth() + 3);
+
+    var max = `${dtToday.getFullYear()}-${padS(dtToday.getMonth() + 1)}-${padS(dtToday.getDay())}`;
+    console.log(min, max)
+
+    // or instead:
+    // var min = dtToday.toISOString().substr(0, 10);
+
+    $('#startDate').attr('min', min);
+    $('#endDate').attr('min', min);
+    $('#edit-startDate').attr('min', min);
+    $('#edit-endDate').attr('min', min);
+    
+    $('#startDate').attr('max', max);
+    $('#endDate').attr('max', max);
+    $('#edit-startDate').attr('max', max);
+    $('#edit-endDate').attr('max', max);
+
+    nextMonth = new Date()
+});

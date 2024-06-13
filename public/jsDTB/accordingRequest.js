@@ -36,13 +36,15 @@ function renderAllRequest(Leave){
     Leave.forEach(leave => {
         myRequestContent +=`
     <div id="${leave._id}" class="content-leave">
-                        <div class="code-person">
-                        <div>
-                        <p id="codeUser" class="code-text">${leave.m_code}</p>
-                        <p class='text-duration'>${leave.duration == 0.25 ? calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : 
-                          isFloat(leave.duration) ? leave.duration.toString().split(".")[0] + " jr(s) " + calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)"}</p>
-                        </div>
-                            
+                        <div class="code-person p_${leave.leavePriority}">
+                            <div>
+                                <p id="codeUser" class="code-text">${leave.m_code}</p>
+                                <p class='text-duration'>${leave.duration == 0.25 ? calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : 
+                                isFloat(leave.duration) ? leave.duration.toString().split(".")[0] + " jr(s) " + calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)"}</p>
+                                <div> 
+                                <p class="priority">${leave.priorityValue}</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="leave-infos">
                             <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
@@ -331,7 +333,7 @@ function ApproveLast(){
     } 
  }
 function Decline(){
-    if ($("#reason").val() != ""){
+    if ($("#reason").val().trim().length > 0){
         $("#waitingDecline").css('opacity','1')
         $.ajax({
             url:"/requestAnswer",

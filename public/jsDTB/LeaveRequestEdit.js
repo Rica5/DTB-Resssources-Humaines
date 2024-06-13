@@ -14,6 +14,7 @@ $("#editRequest").on('click', () => {
     var endTime = $("#edit-endTime").val();
     var motif = $("#edit-motif").val();
     var recovery = $("#edit-recovery").val();
+    var priority = +$("#edit-priority").val();
 
 
     (!startDate) ? $("#edit-startDate").css({ "border-color": "red" }) : $("#edit-startDate").css({ "border-color": "" });
@@ -37,6 +38,7 @@ $("#editRequest").on('click', () => {
     formData.append("recovery", recovery)
     formData.append("duration", (leaveDuration + leaveDurationTwo))
     formData.append("priority", $("#edit-toggle").is(':checked'))
+    formData.append("leavePriority", priority);
     formData.append("fileIn", editFileIn)
     if (startDate && endDate && startTime && endTime && motif) {
         if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate)) {
@@ -107,11 +109,12 @@ $("#editRequest").on('click', () => {
 
 function editDateDiff(starting, ending) {
     if (ending != "") {
-        var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
-        var endings = moment(ending, "YYYY-MM-DD HH:mm");
-        var duration = moment.duration(endings.diff(startings));
-        var dayl = duration.asDays();
-        leaveDuration = dayl;
+        // var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
+        // var endings = moment(ending, "YYYY-MM-DD HH:mm");
+        // var duration = moment.duration(endings.diff(startings));
+        // var dayl = duration.asDays();
+        // leaveDuration = dayl;
+        leaveDuration = CalculateDaysIncludingHolidays(starting, ending) - 1;
         $("#edit-dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
     }
     else {
@@ -194,6 +197,7 @@ function editRestore() {
     $("#edit-recovery").val("");
     $('#edit-toggle').prop('checked', false);
     $("#edit-dayNumber").text("0");
+    $("#edit-priority").val('2')
     $('#edit-join').val('');
     editFileIn = false
     $('#edit-fileOk').css({ "opacity": "0" });

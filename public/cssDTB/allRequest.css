@@ -173,6 +173,27 @@
     height: auto;
 }
 
+.code-person.p_3 {
+    background-color: #db5252;
+}
+.code-person.p_3 .priority {
+    text-align: center;
+    color: #ffffff;
+}
+
+.code-person.p_1 {
+    background-color: #d1d347;
+}
+.code-person.p_1 .priority {
+    text-align: center;
+    color: #383838;
+}
+
+.code-person .priority {
+    text-align: center;
+    color: #dadada;
+}
+
 .code-text {
     font-size: 18px;
     text-transform: uppercase;

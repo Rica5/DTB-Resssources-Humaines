@@ -4,6 +4,7 @@ const Controller = require("../ControllerDTB/DTBControllerLeaveRequest")
 const ControllerSalaryAdvance = require("../ControllerUser/DTBControllerSalaryAdvance")
 const ControllerNews = require("../ControllerUser/DTBControllerNews")
 const ControllerAuthentification = require("../ControllerDTB/DTBAuthentification");
+const ControllerScheduled = require("../ControllerDTB/DTBScheduledTasks");
 const ControllerClockingUser = require("../ControllerUser/DTBClockingUser")
 const ControllerStaticAdmin = require("../ControllerAdmin/DTBStaticAdminPage")
 const ControllerMember = require("../ControllerAdmin/DTBMemberList")
@@ -206,6 +207,11 @@ routeExpDTB.route("/all_userstl").post(ControllerClockingTL.allUserForTL);//pass
 routeExpDTB.route("/absencetl").get(ControllerStaticAdmin.pageAbsenceTL);//pass
 // Validation TL
 routeExpDTB.route("/validelatetl").get(ControllerLateValidation.getlateValidationTL);//pass
+
+//AUTOMATIC TASKS (to notify ROP or RH if desicion has not been taken yet)
+routeExpDTB.route("/scheduled-leaves-requests-checker").get(ControllerScheduled.checkNotTakenLeavesRequests);//pass
+routeExpDTB.route("/scheduled-automatic-requests-confirmation").get(ControllerScheduled.automaticRequestConfirmation);//pass
+
 
 
 //Logout

@@ -185,7 +185,7 @@ async function login(username, pwd, session, res) {
               {
                 act_stat: "LEFTING",
                 act_loc: "Not defined",
-                late: "n",
+                late: "n",  
                 count: 0,
               }
             );

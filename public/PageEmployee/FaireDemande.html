@@ -13,6 +13,7 @@
     <link rel="stylesheet"  href="../cssDTB/LeaveRequest.css" />
     <link rel="stylesheet" type="text/css" href="../assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="../assets/fontawesome-free-6.4.0-web/css/all.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.min.css" />
     <script>
         var accumulate = parseFloat('<%= user.leave_taked %>');
         var openLeave = parseFloat('<%= user.remaining_leave %>');
@@ -68,17 +69,17 @@
         </div>
         <div class="content-home my-2">
             <div class="container mb-3">
-                <div class="header-request">
+                <div class="header-request" data-intro="Bonjour, Voici votre tableau de bord!">
                     <h6 class="text-historic">Historique</h6>
                     <div class="row px-3">
                         <div class="col-md-6">
                             <!-- aprouve, refuser, en traitement , et en attente -->
                             <div class="grid-item">
                                 <div class="text-center">
-                                    <div class="case-number">
+                                    <div class="case-number" data-intro="Le total de vos demandes de congé approuvées.">
                                         <div class="d-flex">
                                             <i class="fa-solid fa-circle-check icon-check"></i>
-                                            <p class="text-title w-100">Approuver</p>
+                                            <p class="text-title w-100">Approuvé</p>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-center">
                                             <p id="approved" class="text-number">0</p>
@@ -86,10 +87,10 @@
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="case-number">
+                                    <div class="case-number" data-intro="Total de vos demandes de congé réfusées.">
                                         <div class="d-flex items-center justify-content-center flex-column">
                                             <i class="fa-solid fa-circle-xmark icon-x"></i>
-                                            <p class="text-title w-100">Refuser</p>
+                                            <p class="text-title w-100">Refusé</p>
                                         </div>
                                         <div class="d-flex align-items-center justify-content-center">
                                             <p id="declined" class="text-number">0</p>
@@ -97,7 +98,7 @@
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="case-number">
+                                    <div class="case-number" data-intro="Nombre de vos demandes de congés qui sont en cours de traitement.">
                                         <div class="d-flex">
                                             <i class="fa-solid fa-hourglass-start icon-progress"></i>
                                             <p class="text-title w-100">En traitement</p>
@@ -108,7 +109,7 @@
                                     </div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="case-number">
+                                    <div class="case-number" data-intro="Les demandes de congés qui n'ont pas encore été traitées.">
                                         <div class="d-flex">
                                             <i class="fa-solid fa-hourglass-start icon-wait"></i>
                                             <p class="text-title w-100">En attente</p>
@@ -122,13 +123,13 @@
                         </div>
                         <div class="col-md-6">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-6" data-intro="Vos soldes ouverts pour cette année.">
                                     <p class="text-solde" id="thisYear"></p>
                                     <div id="accumulate" class="accumulate-content">
                                         
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6"  data-intro="Vos soldes ouverts pour l'année dernière.">
                                     <p class="text-solde" id="lastYear">Ouvert</p>
                                     <div id="openLeave" class="open-content">
                                         
@@ -143,13 +144,13 @@
                 <div class="d-flex justify-content-between mt-2">
                     <div class="buttons-tab">
                         <button id="makeRequest" class="switch-button active-btn">
-                           Demande congé
+                           Demander congé
                         </button>
                         <button id="myRequest" class="switch-button">
                             Mes requêtes
                         </button>
                         <button id="myUpcoming" class="switch-button">
-                            Congés a vénir
+                            Congés à vénir
                         </button>
                     </div>
                    <div>
@@ -248,13 +249,18 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-between flex-wrap mt-3">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div>
-                                    <p class="text-infos">Priorité haute </p>
+                            <div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
+                                <div class="d-flex">
+                                    <p class="text-infos my-auto">Priorité : </p>
                                 </div>
-                                <div>
-                                    <input type="checkbox" id="toggle" class="hidden-checkbox">
-                                    <label for="toggle" class="toggle-label ml-3"></label>
+                                <div class="styled-select">
+                                    <!-- <input type="checkbox" id="toggle" class="hidden-checkbox">
+                                    <label for="toggle" class="toggle-label ml-3"></label> -->
+                                    <select id="priority">
+                                        <option value="3">Urgente</option>
+                                        <option value="2" selected>Moyenne</option>
+                                        <option value="1">Basse</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center align-items-center">
@@ -378,13 +384,18 @@
                             </div>
                         </div>
                         <div class="d-flex justify-content-between flex-wrap mt-3">
-                            <div class="d-flex justify-content-center align-items-center">
-                                <div>
-                                    <p class="text-infos">Priorité haute </p>
+                            <div class="d-flex justify-content-center align-items-center" style="gap:1rem;">
+                                <div class="d-flex">
+                                    <p class="text-infos my-auto">Priorité : </p>
                                 </div>
-                                <div>
-                                    <input type="checkbox" id="edit-toggle" class="hidden-checkbox">
-                                    <label for="toggle" class="toggle-label ml-3"></label>
+                                <div class="styled-select">
+                                    <!-- <input type="checkbox" id="toggle" class="hidden-checkbox">
+                                    <label for="toggle" class="toggle-label ml-3"></label> -->
+                                    <select id="edit-priority">
+                                        <option value="3">Urgente</option>
+                                        <option value="2" selected>Moyenne</option>
+                                        <option value="1">Basse</option>
+                                    </select>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center align-items-center">
@@ -464,8 +475,9 @@
     <script>
         var socket = io();
         socket.on('<%= codeUser %>',function (theNotif){
-            pushNotification(theNotif)
-            const notification = new Notification(theNotif.title, {
+            pushNotification(theNotif);
+            const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+            const notification = new Notification(title, {
                 body: `${theNotif.content.replace("<br>","")}`,
                     icon:  '../assets/images1/logo.jpg',
             })
@@ -684,7 +696,10 @@
     </script>
     <script src="../jsDTB/LeaveRequest.js"></script>
     <script src="../jsDTB/LeaveRequestEdit.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.min.js"></script>
+    <script>
+        // introJs().start();
+    </script>
 
 </body>
 

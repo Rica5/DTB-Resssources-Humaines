@@ -152,6 +152,7 @@ span#numberNotification[textContent="0"] {
 
 .notification-modal {
     position: absolute;
+    z-index: 1000;
     height: 100%;
     right: 0;
     top: 0;
