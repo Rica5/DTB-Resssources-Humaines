@@ -227,9 +227,14 @@ function printLeave(id) {
   $.ajax({
     url: '/print_leave/' + id,
     method: 'POST',
-    sucess: () => {
-      console.log('OK')
+    success: (res) => {
+      if (res.ok) {
+        window.open(res.file, '__blank')
+      }
     },
+    error:  (err) => {
+      console.log('Not ok: ',  err)
+    }
   })
 }
 function give_motif(motif) {

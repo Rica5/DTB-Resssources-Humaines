@@ -546,6 +546,9 @@ input:focus {
     margin: .5rem 0;
     text-align: center;
     font-size: 12px;
+    display: flex;
+    justify-items: center;
+    justify-content: space-between;
 }
 
 .date-heure h1 {
@@ -788,4 +791,31 @@ input:focus {
     .day-number {
         margin-top: 2px;
     }
+}
+
+.styled-select {
+    position: relative;
+    display: inline-block;
+    width: 140px;
+}
+.styled-select select {
+    width: 100%;
+    padding: 4px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none; /* For Safari */
+    -moz-appearance: none; /* For Firefox */
+    outline: none;
+}
+.styled-select::after {
+    content: '▼';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Make sure the arrow doesn't block clicks */
+    color: #757575;
 }

@@ -128,8 +128,9 @@
     <script>
         var socket = io();
         socket.on('<%= codeUser %>',function (theNotif){
-            pushNotification(theNotif)
-            const notification = new Notification(theNotif.title, {
+            pushNotification(theNotif);
+            const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+            const notification = new Notification(title, {
                      body: `${theNotif.content.replace("<br>","")}`,
                     icon:  '../assets/images1/logo.jpg',
             })

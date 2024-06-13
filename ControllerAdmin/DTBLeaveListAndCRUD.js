@@ -10,430 +10,430 @@ const { PDFNet } = require("@pdftron/pdfnet-node");
 
 
 // Page Leavelist
-const getPageLeavelist = async(req,res) => {
+const getPageLeavelist = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin") {
     var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
-        var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
-        var allPermission = await LeaveSchema.find({exceptType:{$ne:""},date_start:{$regex:moment().format("YYYY")}}).select("m_code exceptType duration")
-        res.render("PageAdministration/ListeConges.html", {
-          notif: dataUser.myNotifications,
-          username: session.mailing,
-          role:role,
-          dataUser:dataUser,
-          allPermission:allPermission
-        });
+    var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
+    var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
+    res.render("PageAdministration/ListeConges.html", {
+      notif: dataUser.myNotifications,
+      username: session.mailing,
+      role: role,
+      dataUser: dataUser,
+      allPermission: allPermission
+    });
   } else {
     res.redirect("/");
   }
 }
 //Page leavelist opération
-const getLeaveOperation = async(req,res) => {
+const getLeaveOperation = async (req, res) => {
   var session = req.session;
   if (session.occupation_op == "Opération") {
-        var another_post = "n";
-        var occupations = await UserSchema.findOne({
-          username: session.mailing,
-          occupation: "Surveillant",
-        });
-        if (occupations) {
-          another_post = occupations.occupation;
-        }
-        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
-        var role = "Opération"
-        res.render("PageOperation/CongeOperation.html", {
-          another: another_post,
-          username: session.mailing,
-          notif:dataUser.myNotifications,
-          role:role,
-          dataUser:dataUser
-        });
+    var another_post = "n";
+    var occupations = await UserSchema.findOne({
+      username: session.mailing,
+      occupation: "Surveillant",
+    });
+    if (occupations) {
+      another_post = occupations.occupation;
+    }
+    var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+    var role = "Opération"
+    res.render("PageOperation/CongeOperation.html", {
+      another: another_post,
+      username: session.mailing,
+      notif: dataUser.myNotifications,
+      role: role,
+      dataUser: dataUser
+    });
   } else {
     res.redirect("/");
   }
 }
 //Get recap leaves
-const getPageRecap = async(req,res) => {
+const getPageRecap = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin") {
-        var alluser = await UserSchema.find(
-          { occupation: "User", status: "Actif" },
-          { adresse: 0, password: 0, username:0,phone:0 }
-        ).sort({
-          m_code: 1,
-        });
-        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
-         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
-         for (let index = 0; index < alluser.length; index++) {
-          const element = alluser[index];
-          element.leave_stat = moment(element.save_at).add(1,"years").locale("Fr").format("MMMM YYYY")
-          element.save_at = moment(element.save_at).format("DD/MM/YYYY")
-          alluser[index] = element
-         }
-        res.render("PageAdministration/RecapConges.html", {
-          users: alluser,
-          username: session.mailing,
-          notif: dataUser.myNotifications,
-          dataUser:dataUser,
-          role:role
-        });
+    var alluser = await UserSchema.find(
+      { occupation: "User", status: "Actif" },
+      { adresse: 0, password: 0, username: 0, phone: 0 }
+    ).sort({
+      m_code: 1,
+    });
+    var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+    var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
+    for (let index = 0; index < alluser.length; index++) {
+      const element = alluser[index];
+      element.leave_stat = moment(element.save_at).add(1, "years").locale("Fr").format("MMMM YYYY")
+      element.save_at = moment(element.save_at).format("DD/MM/YYYY")
+      alluser[index] = element
+    }
+    res.render("PageAdministration/RecapConges.html", {
+      users: alluser,
+      username: session.mailing,
+      notif: dataUser.myNotifications,
+      dataUser: dataUser,
+      role: role
+    });
   } else {
     res.redirect("/");
   }
 }
 //All leavelist
-const retrieveLeaveList = async(req,res) => {
+const retrieveLeaveList = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin" || session.occupation_op == "Opération") {
-        var all_leave = await LeaveSchema.find({ validation: false})
-        .populate({
-          path: 'LeaveRequestTest',
-          options: { strictPopulate: false }
-        }).sort({
-          m_code: 1,
-          date_start: 1
-        });
-        var users = await UserSchema.find({
-          m_code: { $ne: "N/A" },
-          status: "Actif",
-        })
-          .select(
-            "profil m_code remaining_leave leave_stat leave_taked project shift"
-          )
-          .sort({
-            m_code: 1,
-          });
-        res.send([all_leave, users]);
+    var all_leave = await LeaveSchema.find({ validation: false })
+      .populate({
+        path: 'LeaveRequestTest',
+        options: { strictPopulate: false }
+      }).sort({
+        m_code: 1,
+        date_start: 1
+      });
+    var users = await UserSchema.find({
+      m_code: { $ne: "N/A" },
+      status: "Actif",
+    })
+      .select(
+        "profil m_code remaining_leave leave_stat leave_taked project shift"
+      )
+      .sort({
+        m_code: 1,
+      });
+    res.send([all_leave, users]);
   } else {
     res.redirect("/");
   }
 }
 // Monthly report
-const LeaveReport = async(req,res) => {
+const LeaveReport = async (req, res) => {
   var session = req.session;
   var month = req.body.month;
   var year = req.body.year;
   var populateAll = {
-    populateConge : ["N/A","N/A",0,"","","","",0,0,0],
-    populateSansSolde : ["N/A","N/A","","","",0,"",0,0,0],
-    populatePermission: ["N/A","N/A","",0,"","","",0,0,0],
-    populateRepos: ["N/A","N/A","","",0,"","",0,0,0],
+    populateConge: ["N/A", "N/A", 0, "", "", "", "", 0, 0, 0],
+    populateSansSolde: ["N/A", "N/A", "", "", "", 0, "", 0, 0, 0],
+    populatePermission: ["N/A", "N/A", "", 0, "", "", "", 0, 0, 0],
+    populateRepos: ["N/A", "N/A", "", "", 0, "", "", 0, 0, 0],
   }
   if (session.occupation_a == "Admin") {
-        globaleVariable.monthly_leave = await LeaveSchema.find({
-          date_start: { $regex: year + "-" + month, $options: "i" },
-          date_end: { $regex: year + "-" + month, $options: "i" },
-        });
-        var getting = ["en cours"];
-        globaleVariable.maternity = await LeaveSchema.find({
-          type: "Congé de maternité ( rien à deduire )",
-          status: { $in: getting },
-        });
-        var newsheet_leave = ExcelFile.utils.book_new();
-        var m_leave = [];
-        var leave_report = [];
-        var merging = [];
-        var rowLength = [];
-        newsheet_leave.Props = {
-          Title: "Rapport de congé",
-          Subject: "Rapport de congé",
-          Author: "Solumada",
-        };
-        leave_report.push([
-          "Les absences et Congés " +
-            moment(`${year}-${month}-01`).locale("Fr").format("MMMM YYYY"),
-          "",
-          "",
-          "",
-          "",
-          "",
-          "",
-        ]);
-        var months = moment(`${year}-${month}-01`)
-          .locale("Fr")
-          .format("MMMM YYYY");
-        leave_report.push([
-          "Numbering agent",
-          "M-CODE",
-          "Nombre de jours à payer et / ou de déduction sur salaire " + months,
-          "",
-          "",
-          "",
-          "Motifs - observations ou remarques",
-        ]);
-        leave_report.push([
-          "",
-          "",
-          "CONGES PAYES à \n calculer par RH \n Mada car base de \n calcul sur les 12 \n derniers mois de \n salaire brut",
-          "PERMISIION \n EXCEPTIONELLE \n ET/OU FERIE A \n PAYER à calculer par \n RH Maurice car \n salaire minimal",
-          "REPOS MALADIE A \n PAYER à calculer par \n RH Maurice car salaire \n minimal",
-          "CONGES SANS SOLDE \n OU ABSENCE A \n DEDUIRE SUR SALAIRE \n à calculer par RH \n Maurice car salaire \n minimal",
-          "",
-        ]);
-        newsheet_leave.SheetNames.push("Conge " + months);
-        for (i = 0; i < globaleVariable.monthly_leave.length; i++) {
-          if (m_leave.includes(globaleVariable.monthly_leave[i].num_agent)) {
+    globaleVariable.monthly_leave = await LeaveSchema.find({
+      date_start: { $regex: year + "-" + month, $options: "i" },
+      date_end: { $regex: year + "-" + month, $options: "i" },
+    });
+    var getting = ["en cours"];
+    globaleVariable.maternity = await LeaveSchema.find({
+      type: "Congé de maternité ( rien à deduire )",
+      status: { $in: getting },
+    });
+    var newsheet_leave = ExcelFile.utils.book_new();
+    var m_leave = [];
+    var leave_report = [];
+    var merging = [];
+    var rowLength = [];
+    newsheet_leave.Props = {
+      Title: "Rapport de congé",
+      Subject: "Rapport de congé",
+      Author: "Solumada",
+    };
+    leave_report.push([
+      "Les absences et Congés " +
+      moment(`${year}-${month}-01`).locale("Fr").format("MMMM YYYY"),
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    ]);
+    var months = moment(`${year}-${month}-01`)
+      .locale("Fr")
+      .format("MMMM YYYY");
+    leave_report.push([
+      "Numbering agent",
+      "M-CODE",
+      "Nombre de jours à payer et / ou de déduction sur salaire " + months,
+      "",
+      "",
+      "",
+      "Motifs - observations ou remarques",
+    ]);
+    leave_report.push([
+      "",
+      "",
+      "CONGES PAYES à \n calculer par RH \n Mada car base de \n calcul sur les 12 \n derniers mois de \n salaire brut",
+      "PERMISIION \n EXCEPTIONELLE \n ET/OU FERIE A \n PAYER à calculer par \n RH Maurice car \n salaire minimal",
+      "REPOS MALADIE A \n PAYER à calculer par \n RH Maurice car salaire \n minimal",
+      "CONGES SANS SOLDE \n OU ABSENCE A \n DEDUIRE SUR SALAIRE \n à calculer par RH \n Maurice car salaire \n minimal",
+      "",
+    ]);
+    newsheet_leave.SheetNames.push("Conge " + months);
+    for (i = 0; i < globaleVariable.monthly_leave.length; i++) {
+      if (m_leave.includes(globaleVariable.monthly_leave[i].num_agent)) {
+      } else {
+        m_leave.push(globaleVariable.monthly_leave[i].num_agent);
+      }
+    }
+    m_leave = m_leave.sort();
+    for (m = 0; m < m_leave.length; m++) {
+      var count = 0;
+      populateAll.populateConge = ["N/A", "N/A", 0, "", "", "", "", 0, 0, 0]
+      populateAll.populatePermission = ["N/A", "N/A", "", 0, "", "", "", 0, 0, 0]
+      populateAll.populateRepos = ["N/A", "N/A", "", "", 0, "", "", 0, 0, 0]
+      populateAll.populateSansSolde = ["N/A", "N/A", "", "", "", 0, "", 0, 0, 0]
+      for (i = 0; i < globaleVariable.monthly_leave.length; i++) {
+        if (globaleVariable.monthly_leave[i].num_agent == m_leave[m]) {
+          if (globaleVariable.monthly_leave[i].type.includes("Congé de maternité")) {
           } else {
-            m_leave.push(globaleVariable.monthly_leave[i].num_agent);
-          }
-        }
-        m_leave = m_leave.sort();
-        for (m = 0; m < m_leave.length; m++) {
-           var count = 0;
-          populateAll.populateConge = ["N/A","N/A",0,"","","","",0,0,0]
-          populateAll.populatePermission = ["N/A","N/A","",0,"","","",0,0,0]
-          populateAll.populateRepos = ["N/A","N/A","","",0,"","",0,0,0]
-          populateAll.populateSansSolde = ["N/A","N/A","","","",0,"",0,0,0]
-          for (i = 0; i < globaleVariable.monthly_leave.length; i++) {
-            if (globaleVariable.monthly_leave[i].num_agent == m_leave[m]) {
-              if (globaleVariable.monthly_leave[i].type.includes("Congé de maternité")) {
-              } else {
-                globaleVariable.monthly_leave[i].type = globaleVariable.monthly_leave[i].type.replace("rien à deduire", "rien à déduire")
-                globaleVariable.monthly_leave[i].type = globaleVariable.monthly_leave[i].type.replace("a déduire sur salaire", "à déduire sur salaire")
-                 var motif = globaleVariable.monthly_leave[i].duration == 0.25
-                    ? calcul_timediff_absencereport(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end) +
-                    motif_rendered(globaleVariable.monthly_leave[i].motif, globaleVariable.monthly_leave[i].type) +
-                      date_rendered(
-                        globaleVariable.monthly_leave[i].date_start,
-                        globaleVariable.monthly_leave[i].date_end
-                      )
-                    : globaleVariable.monthly_leave[i].duration +
-                      " jour(s) " +
-                    motif_rendered(globaleVariable.monthly_leave[i].motif, globaleVariable.monthly_leave[i].type) +
-                      date_rendered(
-                        globaleVariable.monthly_leave[i].date_start,
-                        globaleVariable.monthly_leave[i].date_end
-                      )
-                  if (globaleVariable.monthly_leave[i].type.includes("Congé Payé")){
-                    if (globaleVariable.monthly_leave[i].duration == 0.25){
-                      globaleVariable.monthly_leave[i].duration = 0;
-                      var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
-                      populateAll.populateConge[7] = populateAll.populateConge[7] + hourCalculate[0];
-                      populateAll.populateConge[8] = populateAll.populateConge[8] + hourCalculate[1];
-                    }
-                    populateAll.populateConge[0] = globaleVariable.monthly_leave[i].num_agent;
-                    populateAll.populateConge[1] = globaleVariable.monthly_leave[i].m_code;
-                    populateAll.populateConge[2] = populateAll.populateConge[2] + globaleVariable.monthly_leave[i].duration;
-                    populateAll.populateConge[6] = populateAll.populateConge[6] == "" ? `${motif}` : populateAll.populateConge[6] + " et \n" + motif;
-                    while(populateAll.populateConge[8] >= 60){
-                      populateAll.populateConge[8] = populateAll.populateConge[8] - 60;
-                      populateAll.populateConge[7] = populateAll.populateConge[7] + 1;
-                    }
-                    while(populateAll.populateConge[7] >= 24){
-                      populateAll.populateConge[7] = populateAll.populateConge[7] - 24;
-                      populateAll.populateConge[2] = populateAll.populateConge[2] + 1;
-                    }
-                    populateAll.populateConge[9] = populateAll.populateConge[9] + 1;
-                  }
-                  else if ( globaleVariable.monthly_leave[i].type.includes("Absent") ||
-                  globaleVariable.monthly_leave[i].type.includes("Mise a Pied") ||
-                  globaleVariable.monthly_leave[i].type.includes("Congé sans solde") || 
-                  globaleVariable.monthly_leave[i].type.includes("Absence Injustifiée")){
-                    if (globaleVariable.monthly_leave[i].duration == 0.25){
-                      globaleVariable.monthly_leave[i].duration = 0;
-                      var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
-                      populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + hourCalculate[0];
-                      populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] + hourCalculate[1];
-                    }
-                    populateAll.populateSansSolde[0] = globaleVariable.monthly_leave[i].num_agent;
-                    populateAll.populateSansSolde[1] = globaleVariable.monthly_leave[i].m_code;
-                    populateAll.populateSansSolde[5] = populateAll.populateSansSolde[5] + globaleVariable.monthly_leave[i].duration;
-                    populateAll.populateSansSolde[6] = populateAll.populateSansSolde[6] == "" ? `${motif}` : populateAll.populateSansSolde[6] + " et \n" + motif;
-                    while(populateAll.populateSansSolde[8] >= 60){
-                       populateAll.populateSansSolde[8] =  populateAll.populateSansSolde[8] - 60;
-                       populateAll.populateSansSolde[7] =  populateAll.populateSansSolde[7] + 1;
-                    }
-                    while( populateAll.populateSansSolde[7] >= 24){
-                       populateAll.populateSansSolde[7] =  populateAll.populateSansSolde[7] - 24;
-                       populateAll.populateSansSolde[5] =  populateAll.populateSansSolde[5] + 1;
-                    }
-                    populateAll.populateSansSolde[9] = populateAll.populateSansSolde[9] + 1;
-                  }
-                  else if ( globaleVariable.monthly_leave[i].type.includes("Permission exceptionelle")){
-                    if (globaleVariable.monthly_leave[i].duration == 0.25){
-                      globaleVariable.monthly_leave[i].duration = 0;
-                      var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
-                      populateAll.populatePermission[7] = populateAll.populatePermission[7] + hourCalculate[0];
-                      populateAll.populatePermission[8] = populateAll.populatePermission[8] + hourCalculate[1];
-                    }
-                    populateAll.populatePermission[0] = globaleVariable.monthly_leave[i].num_agent;
-                    populateAll.populatePermission[1] = globaleVariable.monthly_leave[i].m_code;
-                    populateAll.populatePermission[3] = populateAll.populatePermission[3] + globaleVariable.monthly_leave[i].duration;
-                    populateAll.populatePermission[6] = populateAll.populatePermission[6] == "" ? `${motif}` : populateAll.populatePermission[6] + " et \n" + motif;
-                    while(populateAll.populatePermission[8] >= 60){
-                       populateAll.populatePermission[8] =  populateAll.populatePermission[8] - 60;
-                       populateAll.populatePermission[7] =  populateAll.populatePermission[7] + 1;
-                    }
-                    while( populateAll.populatePermission[7] >= 24){
-                       populateAll.populatePermission[7] =  populateAll.populatePermission[7] - 24;
-                       populateAll.populatePermission[3] =  populateAll.populatePermission[3] + 1;
-                    }
-                    populateAll.populatePermission[9] = populateAll.populatePermission[9] + 1;
-                  }
-                  else if ( globaleVariable.monthly_leave[i].type.includes("Repos Maladie")){
-                    if (globaleVariable.monthly_leave[i].duration == 0.25){
-                      globaleVariable.monthly_leave[i].duration = 0;
-                      var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
-                      populateAll.populateRepos[7] = populateAll.populateRepos[7] + hourCalculate[0];
-                      populateAll.populateRepos[8] = populateAll.populateRepos[8] + hourCalculate[1];
-                    }
-                    populateAll.populateRepos[0] = globaleVariable.monthly_leave[i].num_agent;
-                    populateAll.populateRepos[1] = globaleVariable.monthly_leave[i].m_code;
-                    populateAll.populateRepos[4] = populateAll.populateRepos[4] + globaleVariable.monthly_leave[i].duration;
-                    populateAll.populateRepos[6] = populateAll.populateRepos[6] == "" ? `${motif}` : populateAll.populateRepos[6] + " et \n" + motif;;
-                    while(populateAll.populateRepos[8] >= 60){
-                       populateAll.populateRepos[8] =  populateAll.populateRepos[8] - 60;
-                       populateAll.populateRepos[7] =  populateAll.populateRepos[7] + 1;
-                    }
-                    while( populateAll.populateRepos[7] >= 24){
-                       populateAll.populateRepos[7] =  populateAll.populateRepos[7] - 24;
-                       populateAll.populateRepos[4] =  populateAll.populateRepos[4] + 1;
-                    }
-                    populateAll.populateRepos[9] = populateAll.populateRepos[9] + 1;
-                  }
+            globaleVariable.monthly_leave[i].type = globaleVariable.monthly_leave[i].type.replace("rien à deduire", "rien à déduire")
+            globaleVariable.monthly_leave[i].type = globaleVariable.monthly_leave[i].type.replace("a déduire sur salaire", "à déduire sur salaire")
+            var motif = globaleVariable.monthly_leave[i].duration == 0.25
+              ? calcul_timediff_absencereport(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end) +
+              motif_rendered(globaleVariable.monthly_leave[i].motif, globaleVariable.monthly_leave[i].type) +
+              date_rendered(
+                globaleVariable.monthly_leave[i].date_start,
+                globaleVariable.monthly_leave[i].date_end
+              )
+              : globaleVariable.monthly_leave[i].duration +
+              " jour(s) " +
+              motif_rendered(globaleVariable.monthly_leave[i].motif, globaleVariable.monthly_leave[i].type) +
+              date_rendered(
+                globaleVariable.monthly_leave[i].date_start,
+                globaleVariable.monthly_leave[i].date_end
+              )
+            if (globaleVariable.monthly_leave[i].type.includes("Congé Payé")) {
+              if (globaleVariable.monthly_leave[i].duration == 0.25) {
+                globaleVariable.monthly_leave[i].duration = 0;
+                var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
+                populateAll.populateConge[7] = populateAll.populateConge[7] + hourCalculate[0];
+                populateAll.populateConge[8] = populateAll.populateConge[8] + hourCalculate[1];
               }
+              populateAll.populateConge[0] = globaleVariable.monthly_leave[i].num_agent;
+              populateAll.populateConge[1] = globaleVariable.monthly_leave[i].m_code;
+              populateAll.populateConge[2] = populateAll.populateConge[2] + globaleVariable.monthly_leave[i].duration;
+              populateAll.populateConge[6] = populateAll.populateConge[6] == "" ? `${motif}` : populateAll.populateConge[6] + " et \n" + motif;
+              while (populateAll.populateConge[8] >= 60) {
+                populateAll.populateConge[8] = populateAll.populateConge[8] - 60;
+                populateAll.populateConge[7] = populateAll.populateConge[7] + 1;
+              }
+              while (populateAll.populateConge[7] >= 24) {
+                populateAll.populateConge[7] = populateAll.populateConge[7] - 24;
+                populateAll.populateConge[2] = populateAll.populateConge[2] + 1;
+              }
+              populateAll.populateConge[9] = populateAll.populateConge[9] + 1;
+            }
+            else if (globaleVariable.monthly_leave[i].type.includes("Absent") ||
+              globaleVariable.monthly_leave[i].type.includes("Mise a Pied") ||
+              globaleVariable.monthly_leave[i].type.includes("Congé sans solde") ||
+              globaleVariable.monthly_leave[i].type.includes("Absence Injustifiée")) {
+              if (globaleVariable.monthly_leave[i].duration == 0.25) {
+                globaleVariable.monthly_leave[i].duration = 0;
+                var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
+                populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + hourCalculate[0];
+                populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] + hourCalculate[1];
+              }
+              populateAll.populateSansSolde[0] = globaleVariable.monthly_leave[i].num_agent;
+              populateAll.populateSansSolde[1] = globaleVariable.monthly_leave[i].m_code;
+              populateAll.populateSansSolde[5] = populateAll.populateSansSolde[5] + globaleVariable.monthly_leave[i].duration;
+              populateAll.populateSansSolde[6] = populateAll.populateSansSolde[6] == "" ? `${motif}` : populateAll.populateSansSolde[6] + " et \n" + motif;
+              while (populateAll.populateSansSolde[8] >= 60) {
+                populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] - 60;
+                populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + 1;
+              }
+              while (populateAll.populateSansSolde[7] >= 24) {
+                populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] - 24;
+                populateAll.populateSansSolde[5] = populateAll.populateSansSolde[5] + 1;
+              }
+              populateAll.populateSansSolde[9] = populateAll.populateSansSolde[9] + 1;
+            }
+            else if (globaleVariable.monthly_leave[i].type.includes("Permission exceptionelle")) {
+              if (globaleVariable.monthly_leave[i].duration == 0.25) {
+                globaleVariable.monthly_leave[i].duration = 0;
+                var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
+                populateAll.populatePermission[7] = populateAll.populatePermission[7] + hourCalculate[0];
+                populateAll.populatePermission[8] = populateAll.populatePermission[8] + hourCalculate[1];
+              }
+              populateAll.populatePermission[0] = globaleVariable.monthly_leave[i].num_agent;
+              populateAll.populatePermission[1] = globaleVariable.monthly_leave[i].m_code;
+              populateAll.populatePermission[3] = populateAll.populatePermission[3] + globaleVariable.monthly_leave[i].duration;
+              populateAll.populatePermission[6] = populateAll.populatePermission[6] == "" ? `${motif}` : populateAll.populatePermission[6] + " et \n" + motif;
+              while (populateAll.populatePermission[8] >= 60) {
+                populateAll.populatePermission[8] = populateAll.populatePermission[8] - 60;
+                populateAll.populatePermission[7] = populateAll.populatePermission[7] + 1;
+              }
+              while (populateAll.populatePermission[7] >= 24) {
+                populateAll.populatePermission[7] = populateAll.populatePermission[7] - 24;
+                populateAll.populatePermission[3] = populateAll.populatePermission[3] + 1;
+              }
+              populateAll.populatePermission[9] = populateAll.populatePermission[9] + 1;
+            }
+            else if (globaleVariable.monthly_leave[i].type.includes("Repos Maladie")) {
+              if (globaleVariable.monthly_leave[i].duration == 0.25) {
+                globaleVariable.monthly_leave[i].duration = 0;
+                var hourCalculate = calcul_timediff_absencereport_spec(globaleVariable.monthly_leave[i].hour_begin, globaleVariable.monthly_leave[i].hour_end);
+                populateAll.populateRepos[7] = populateAll.populateRepos[7] + hourCalculate[0];
+                populateAll.populateRepos[8] = populateAll.populateRepos[8] + hourCalculate[1];
+              }
+              populateAll.populateRepos[0] = globaleVariable.monthly_leave[i].num_agent;
+              populateAll.populateRepos[1] = globaleVariable.monthly_leave[i].m_code;
+              populateAll.populateRepos[4] = populateAll.populateRepos[4] + globaleVariable.monthly_leave[i].duration;
+              populateAll.populateRepos[6] = populateAll.populateRepos[6] == "" ? `${motif}` : populateAll.populateRepos[6] + " et \n" + motif;;
+              while (populateAll.populateRepos[8] >= 60) {
+                populateAll.populateRepos[8] = populateAll.populateRepos[8] - 60;
+                populateAll.populateRepos[7] = populateAll.populateRepos[7] + 1;
+              }
+              while (populateAll.populateRepos[7] >= 24) {
+                populateAll.populateRepos[7] = populateAll.populateRepos[7] - 24;
+                populateAll.populateRepos[4] = populateAll.populateRepos[4] + 1;
+              }
+              populateAll.populateRepos[9] = populateAll.populateRepos[9] + 1;
             }
           }
-          if (populateAll.populateConge[0] != "N/A"){
-            count++;
-               populateAll.populateConge[2] = renderResult(populateAll.populateConge[2],populateAll.populateConge[7],populateAll.populateConge[8]);
-               populateAll.populateConge[6] = populateAll.populateConge[6].replace(/\d+\.\d+/g, function(match) {
-                return match.replace('.', ',');
-              });
-                rowLength.push([leave_report.length,populateAll.populateConge[9]])
-                populateAll.populateConge.splice(-3);
-               leave_report.push(populateAll.populateConge);
-          }
-          if (populateAll.populatePermission[0] != "N/A"){
-            count++;
-            populateAll.populatePermission[3] = renderResult(populateAll.populatePermission[3],populateAll.populatePermission[7],populateAll.populatePermission[8]);
-            populateAll.populatePermission[6] = populateAll.populatePermission[6].replace(/\d+\.\d+/g, function(match) {
-              return match.replace('.', ',');
-            });
-             rowLength.push([leave_report.length,populateAll.populatePermission[9]])
-             populateAll.populatePermission.splice(-3);
-               leave_report.push(populateAll.populatePermission);
-          }
-          if (populateAll.populateRepos[0] != "N/A"){
-            count++;
-            populateAll.populateRepos[4] =  renderResult(populateAll.populateRepos[4],populateAll.populateRepos[7],populateAll.populateRepos[8]);
-            populateAll.populateRepos[6] = populateAll.populateRepos[6].replace(/\d+\.\d+/g, function(match) {
-              return match.replace('.', ',');
-            });
-             rowLength.push([leave_report.length,populateAll.populateRepos[9]])
-             populateAll.populateRepos.splice(-3);
-               leave_report.push(populateAll.populateRepos);
-          }
-          
-          if (populateAll.populateSansSolde[0] != "N/A"){
-            count++;
-            populateAll.populateSansSolde[5] =  renderResult(populateAll.populateSansSolde[5],populateAll.populateSansSolde[7],populateAll.populateSansSolde[8]);
-            populateAll.populateSansSolde[6] = populateAll.populateSansSolde[6].replace(/\d+\.\d+/g, function(match) {
-              return match.replace('.', ',');
-            });
-             rowLength.push([leave_report.length,populateAll.populateSansSolde[9]])
-             populateAll.populateSansSolde.splice(-3);
-               leave_report.push(populateAll.populateSansSolde);
-          }
-          merging.push([m, count]);
         }
-        leave_report.push(["", "", "", "", "", "", ""]);
-        leave_report.push(["", "", "", "", "", "", ""]);
-        for (mat = 0; mat < globaleVariable.maternity.length; mat++) {
-          leave_report.push([
-            globaleVariable.maternity[mat].num_agent,
-            globaleVariable.maternity[mat].m_code,
-            "Congé de maternité depuis " +
-              moment(globaleVariable.maternity[mat].date_start).format("DD/MM/YYYY") +
-              " jusqu'au " +
-              moment(globaleVariable.maternity[mat].date_end).format("DD/MM/YYYY"),
-          ]);
+      }
+      if (populateAll.populateConge[0] != "N/A") {
+        count++;
+        populateAll.populateConge[2] = renderResult(populateAll.populateConge[2], populateAll.populateConge[7], populateAll.populateConge[8]);
+        populateAll.populateConge[6] = populateAll.populateConge[6].replace(/\d+\.\d+/g, function (match) {
+          return match.replace('.', ',');
+        });
+        rowLength.push([leave_report.length, populateAll.populateConge[9]])
+        populateAll.populateConge.splice(-3);
+        leave_report.push(populateAll.populateConge);
+      }
+      if (populateAll.populatePermission[0] != "N/A") {
+        count++;
+        populateAll.populatePermission[3] = renderResult(populateAll.populatePermission[3], populateAll.populatePermission[7], populateAll.populatePermission[8]);
+        populateAll.populatePermission[6] = populateAll.populatePermission[6].replace(/\d+\.\d+/g, function (match) {
+          return match.replace('.', ',');
+        });
+        rowLength.push([leave_report.length, populateAll.populatePermission[9]])
+        populateAll.populatePermission.splice(-3);
+        leave_report.push(populateAll.populatePermission);
+      }
+      if (populateAll.populateRepos[0] != "N/A") {
+        count++;
+        populateAll.populateRepos[4] = renderResult(populateAll.populateRepos[4], populateAll.populateRepos[7], populateAll.populateRepos[8]);
+        populateAll.populateRepos[6] = populateAll.populateRepos[6].replace(/\d+\.\d+/g, function (match) {
+          return match.replace('.', ',');
+        });
+        rowLength.push([leave_report.length, populateAll.populateRepos[9]])
+        populateAll.populateRepos.splice(-3);
+        leave_report.push(populateAll.populateRepos);
+      }
+
+      if (populateAll.populateSansSolde[0] != "N/A") {
+        count++;
+        populateAll.populateSansSolde[5] = renderResult(populateAll.populateSansSolde[5], populateAll.populateSansSolde[7], populateAll.populateSansSolde[8]);
+        populateAll.populateSansSolde[6] = populateAll.populateSansSolde[6].replace(/\d+\.\d+/g, function (match) {
+          return match.replace('.', ',');
+        });
+        rowLength.push([leave_report.length, populateAll.populateSansSolde[9]])
+        populateAll.populateSansSolde.splice(-3);
+        leave_report.push(populateAll.populateSansSolde);
+      }
+      merging.push([m, count]);
+    }
+    leave_report.push(["", "", "", "", "", "", ""]);
+    leave_report.push(["", "", "", "", "", "", ""]);
+    for (mat = 0; mat < globaleVariable.maternity.length; mat++) {
+      leave_report.push([
+        globaleVariable.maternity[mat].num_agent,
+        globaleVariable.maternity[mat].m_code,
+        "Congé de maternité depuis " +
+        moment(globaleVariable.maternity[mat].date_start).format("DD/MM/YYYY") +
+        " jusqu'au " +
+        moment(globaleVariable.maternity[mat].date_end).format("DD/MM/YYYY"),
+      ]);
+    }
+    leave_report.push(["", "", ""]);
+    globaleVariable.ws_leave = ExcelFile.utils.aoa_to_sheet(leave_report);
+    globaleVariable.ws_leave["!cols"] = [
+      { wpx: 100 },
+      { wpx: 60 },
+      { wpx: 110 },
+      { wpx: 110 },
+      { wpx: 110 },
+      { wpx: 110 },
+      { wpx: 425 },
+    ];
+    var row_property = [];
+    for (r = 0; r < leave_report.length; r++) {
+      if (r == 2) {
+        row_property.push({ hpt: 90 });
+      } else if (r >= 3) {
+        if (rowLength[r - 3] && rowLength[r - 3][1] > 1) {
+          row_property.push({ hpt: (25 + (rowLength[r - 3][1] * 8)) });
         }
-        leave_report.push(["", "", ""]);
-        globaleVariable.ws_leave = ExcelFile.utils.aoa_to_sheet(leave_report);
-        globaleVariable.ws_leave["!cols"] = [
-          { wpx: 100 },
-          { wpx: 60 },
-          { wpx: 110 },
-          { wpx: 110 },
-          { wpx: 110 },
-          { wpx: 110 },
-          { wpx: 425 },
-        ];
-        var row_property = [];
-        for (r = 0; r < leave_report.length; r++) {
-          if (r == 2) {
-            row_property.push({ hpt: 90 });
-          } else if (r >= 3) {
-            if (rowLength[r-3] && rowLength[r-3][1] > 1 ){
-              row_property.push({ hpt: (25 + (rowLength[r-3][1] * 8)) });
-            }
-            else {
-              row_property.push({ hpt: 25 });
-            }
-          }
-          else {
-            row_property.push({ hpt: 25 });
-          }
+        else {
+          row_property.push({ hpt: 25 });
         }
-        globaleVariable.ws_leave["!rows"] = row_property;
-        var merge = [
-          { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
-          { s: { r: 1, c: 0 }, e: { r: 2, c: 0 } },
-          { s: { r: 1, c: 1 }, e: { r: 2, c: 1 } },
-          { s: { r: 1, c: 2 }, e: { r: 1, c: 5 } },
-          { s: { r: 1, c: 6 }, e: { r: 2, c: 6 } },
-        ];
-        var last = 0;
-        var field = 0;
-        for (mr = 0; mr < merging.length; mr++) {
-          if (merging[mr][1] > 1) {
-            merge.push({ s: { r: merging[mr][0] + 3 + last, c: 0 }, e: { r: merging[mr][0] + 3 + last + merging[mr][1] - 1, c: 0 } });
-            merge.push({ s: { r: merging[mr][0] + 3 + last, c: 1 }, e: { r: merging[mr][0] + 3 + last + merging[mr][1] - 1, c: 1 } });
-            last = last + merging[mr][1] - 1;
-            field++;
-          }
-        }
-        globaleVariable.ws_leave["!merges"] = merge;
-        style3(last, globaleVariable.maternity.length, field);
-        newsheet_leave.Sheets["Conge " + months] = globaleVariable.ws_leave;
-        session.filename = "Rapport congé " + months + ".xlsx";
-        ExcelFile.writeFile(newsheet_leave, session.filename);
-        res.send("Ok");
+      }
+      else {
+        row_property.push({ hpt: 25 });
+      }
+    }
+    globaleVariable.ws_leave["!rows"] = row_property;
+    var merge = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
+      { s: { r: 1, c: 0 }, e: { r: 2, c: 0 } },
+      { s: { r: 1, c: 1 }, e: { r: 2, c: 1 } },
+      { s: { r: 1, c: 2 }, e: { r: 1, c: 5 } },
+      { s: { r: 1, c: 6 }, e: { r: 2, c: 6 } },
+    ];
+    var last = 0;
+    var field = 0;
+    for (mr = 0; mr < merging.length; mr++) {
+      if (merging[mr][1] > 1) {
+        merge.push({ s: { r: merging[mr][0] + 3 + last, c: 0 }, e: { r: merging[mr][0] + 3 + last + merging[mr][1] - 1, c: 0 } });
+        merge.push({ s: { r: merging[mr][0] + 3 + last, c: 1 }, e: { r: merging[mr][0] + 3 + last + merging[mr][1] - 1, c: 1 } });
+        last = last + merging[mr][1] - 1;
+        field++;
+      }
+    }
+    globaleVariable.ws_leave["!merges"] = merge;
+    style3(last, globaleVariable.maternity.length, field);
+    newsheet_leave.Sheets["Conge " + months] = globaleVariable.ws_leave;
+    session.filename = "Rapport congé " + months + ".xlsx";
+    ExcelFile.writeFile(newsheet_leave, session.filename);
+    res.send("Ok");
   } else {
     res.send("error");
   }
 }
 
 //About creating leave 
-const getPageDefine = async(req,res) => {
+const getPageDefine = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin") {
-        var alluser = await UserSchema.find(
-          { occupation: "User", status: "Actif" },
-          { adresse: 0, password: 0, username:0,phone:0 }
-        ).sort({
-          m_code: 1,
-        });
-        var leave_in_progress = await LeaveSchema.find({status:"en cours"})
-        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
-         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
-         var allPermission = await LeaveSchema.find({exceptType:{$ne:""},date_start:{$regex:moment().format("YYYY")}}).select("m_code exceptType duration")
-        res.render("PageAdministration/CongeEmployer.html", {
-          users: alluser,
-          username: session.mailing,
-          notif: dataUser.myNotifications,
-          leave_in_progress:leave_in_progress,
-          role:role,
-          dataUser:dataUser,
-          allPermission:allPermission
-        });
+    var alluser = await UserSchema.find(
+      { occupation: "User", status: "Actif" },
+      { adresse: 0, password: 0, username: 0, phone: 0 }
+    ).sort({
+      m_code: 1,
+    });
+    var leave_in_progress = await LeaveSchema.find({ status: "en cours" })
+    var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+    var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
+    var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
+    res.render("PageAdministration/CongeEmployer.html", {
+      users: alluser,
+      username: session.mailing,
+      notif: dataUser.myNotifications,
+      leave_in_progress: leave_in_progress,
+      role: role,
+      dataUser: dataUser,
+      allPermission: allPermission
+    });
   } else {
     res.redirect("/");
   }
 }
 //Take leave
-const createLeave = async(req,res) => {
+const createLeave = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin") {
     var code = req.body.code;
@@ -443,276 +443,285 @@ const createLeave = async(req,res) => {
     var hour_begin = req.body.begin;
     var hour_end = req.body.end;
     var val = req.body.court;
+    var priority = req.body.leavePiority;
     var motif = req.body.motif;
     var idRequest = req.body.idRequest;
     var exceptType = req.body.exceptType;
     var deduction = " ( rien à deduire )";
-        var user = await UserSchema.findOne({ m_code: code });
-        var taked;
-        var leave_specific = await LeaveSchema.find({
-          m_code: user.m_code,
-          date_start: {
-            $regex: moment(leavestart).format("YYYY"),
-            $options: "i",
-          },
-          validation: false,
-        }).sort({
-          date_start: 1,
-        });
-        if (
-          checkduplicata(leave_specific, leavestart, leaveend) &&
-          (val == "n" || val == "1")
-        ) {
-          res.json({status:"duplicata"});
-        } else {
-          if (val == "n") {
-            taked = Methods.date_diff(leavestart, leaveend) + 1;
-          } else {
-            if (val <= 1) {
-              leaveend = leavestart;
-            }
-              taked = val;
-          }
-          var last_acc = 0;
-          if (according_leave(user.leave_stat,moment(user.save_at).format("YYYY-MM"),moment(leavestart).format('YYYY-MM')) && type == "Congé Payé") {
-            if (globaleVariable.deduire.includes(type)) {
-              deduction = " ( a déduire sur salaire )";
-            }
-            var day_control = "Terminée";
-            if (taked >= 1) {
-              day_control = "en attente";
-            }
-            //ARRANge
-            var rest = "";
-            var accs = -taked;
-            var indice_change = [];
-            for (c = 0; c < leave_specific.length; c++) {
-              if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
-                if (leave_specific[c - 1]) {
-                  if (rest == "") {
-                    rest = leave_specific[c - 1].rest - taked;
-                    last_acc = leave_specific[c - 1].acc - taked
-                  }
-                } else {
-                  if (rest == "") {
-                    if (leave_specific[c].type.includes("Congé Payé")) {
-                      rest =
-                        leave_specific[c].rest +
-                        leave_specific[c].duration -
-                        taked;
-                        last_acc = leave_specific[c].acc + leave_specific[c].duration - taked
-                    } else {
-                      rest = leave_specific[c].rest - taked;
-                      last_acc = leave_specific[c - 1].acc - taked
-                    }
-                  }
-                }
-                indice_change.push(c);
+    var user = await UserSchema.findOne({ m_code: code });
+    var taked;
+    var leave_specific = await LeaveSchema.find({
+      m_code: user.m_code,
+      date_start: {
+        $regex: moment(leavestart).format("YYYY"),
+        $options: "i",
+      },
+      validation: false,
+    }).sort({
+      date_start: 1,
+    });
+    if (
+      checkduplicata(leave_specific, leavestart, leaveend) &&
+      (val == "n" || val == "1")
+    ) {
+      res.json({ status: "duplicata" });
+    } else {
+      if (val == "n") {
+        taked = Methods.date_diff(leavestart, leaveend) + 1;
+      } else {
+        if (val <= 1) {
+          leaveend = leavestart;
+        }
+        taked = val;
+      }
+      var last_acc = 0;
+      if (according_leave(user.leave_stat, moment(user.save_at).format("YYYY-MM"), moment(leavestart).format('YYYY-MM')) && type == "Congé Payé") {
+        if (globaleVariable.deduire.includes(type)) {
+          deduction = " ( a déduire sur salaire )";
+        }
+        var day_control = "Terminée";
+        if (taked >= 1) {
+          day_control = "en attente";
+        }
+        //ARRANge
+        var rest = "";
+        var accs = -taked;
+        var indice_change = [];
+        for (c = 0; c < leave_specific.length; c++) {
+          if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
+            if (leave_specific[c - 1]) {
+              if (rest == "") {
+                rest = leave_specific[c - 1].rest - taked;
+                last_acc = leave_specific[c - 1].acc - taked
               }
-            }
-            if (rest == "") {
-              rest = user.remaining_leave - taked;
-              last_acc = user.leave_taked - taked
-            }
-            var new_leave = {
-              m_code: user.m_code,
-              num_agent: user.num_agent,
-              nom: user.first_name + " " + user.last_name,
-              date_start: leavestart,
-              date_end: leaveend,
-              duration: taked,
-              hour_begin: hour_begin,
-              hour_end: hour_end,
-              type: type + deduction,
-              status: day_control,
-              rest: rest,
-              motif: motif,
-              piece:"",
-              validation: false,
-              acc: last_acc,
-              request:idRequest,
-              exceptType:exceptType
-            };
-            idRequest == "" ? delete new_leave.request : ""
-            var last_rest = rest;
-            indice_change.forEach(async (change) => {
-              if (leave_specific[change].type.includes("Congé Payé")) {
-                last_rest = last_rest - leave_specific[change].duration;
-                await LeaveSchema.findOneAndUpdate(
-                  { _id: leave_specific[change]._id },
-                  { rest: last_rest,
-                  $inc:{acc : accs} },
-                );
-                await LeaveRequestTest.findOneAndUpdate(
-                  { _id: leave_specific[change].request },
-                  { rest: last_rest,
-                  $inc:{acc : accs} },
-                );
-              } else {
-                await LeaveSchema.findOneAndUpdate(
-                  { _id: leave_specific[change]._id },
-                  { rest: last_rest ,
-                    $inc:{acc : accs}}
-                );
-                await LeaveRequestTest.findOneAndUpdate(
-                  { _id: leave_specific[change].request },
-                  { rest: last_rest ,
-                    $inc:{acc : accs}}
-                );
-              }
-            });
-            await UserSchema.findOneAndUpdate(
-              { m_code: user.m_code },
-              { $inc: { remaining_leave: -taked, leave_taked: -taked } }
-            );
-            var d1 = moment(leavestart).format("YYYY-MM-DD");
-            var d2 = moment(leaveend).format("YYYY-MM-DD");
-            if (split_date(d1, d2) && type != "Congé de maternité") {
-              if (idRequest != ""){
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
-                new_leave.piece = thisLeave.piece;
-                const io = req.app.get("io");
-                io.sockets.emit("isTreated", [idRequest,thisLeave]);
-              }
-              var first = first_part(d1);
-              var second = second_part(d1, d2);
-              new_leave.date_start = first[0];
-              new_leave.date_end = first[1];
-              new_leave.duration = first[2];
-              new_leave.rest = new_leave.rest + second[2];
-              new_leave.acc = new_leave.acc + second[2];
-              var theLeave = await LeaveSchema(new_leave).save();
-              new_leave.date_start = second[0];
-              new_leave.date_end = second[1];
-              new_leave.duration = second[2];
-              new_leave.rest = new_leave.rest - second[2];
-              new_leave.acc = new_leave.acc - second[2];
-              await LeaveSchema(new_leave).save();
-              await conge_define(req);
-              await checkleave(req);
-              theLeave.status = "Ok";
-              res.send(theLeave);
             } else {
-              if (idRequest != ""){
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
-                new_leave.piece = thisLeave.piece;
-                const io = req.app.get("io");
-                io.sockets.emit("isTreated", [idRequest,thisLeave]);
-              }
-              var theLeave = await LeaveSchema(new_leave).save();
-              await conge_define(req);
-              await checkleave(req);
-              theLeave.status = "Ok";
-              res.send(theLeave);
-            }
-          } else if (
-            type == "Mise a Pied" ||
-            type == "Permission exceptionelle" ||
-            type == "Repos Maladie" ||
-            type == "Congé de maternité" ||
-            type == "Absent" ||
-            type == "Congé sans solde" ||
-            type == "Absence Injustifiée"
-          ) {
-            if (globaleVariable.deduire.includes(type)) {
-              deduction = " ( a déduire sur salaire )";
-            }
-            var day_control = "Terminée";
-            if (taked >= 1) {
-              day_control = "en attente";
-            }
-            var rest = "";
-            for (c = 0; c < leave_specific.length; c++) {
-              if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
-                if (leave_specific[c - 1]) {
-                  if (rest == "") {
-                    rest = leave_specific[c - 1].rest;
-                    last_acc = leave_specific[c - 1].acc
-                  }
+              if (rest == "") {
+                if (leave_specific[c].type.includes("Congé Payé")) {
+                  rest =
+                    leave_specific[c].rest +
+                    leave_specific[c].duration -
+                    taked;
+                  last_acc = leave_specific[c].acc + leave_specific[c].duration - taked
                 } else {
-                  if (rest == "") {
-                    if (leave_specific[c].type.includes("Congé Payé")) {
-                      rest =
-                        leave_specific[c].rest + leave_specific[c].duration;
-                        last_acc = leave_specific[c].acc + leave_specific[c].duration
-                    } else {
-                      rest = leave_specific[c].rest;
-                      last_acc = leave_specific[c].acc
-                    }
-                  }
+                  rest = leave_specific[c].rest - taked;
+                  last_acc = leave_specific[c - 1].acc - taked
                 }
               }
             }
-            if (rest == "") {
-              rest = user.remaining_leave;
-              last_acc = user.leave_taked
-            }
-            var new_leave = {
-              m_code: user.m_code,
-              num_agent: user.num_agent,
-              nom: user.first_name + " " + user.last_name,
-              date_start: leavestart,
-              date_end: leaveend,
-              duration: taked,
-              hour_begin: hour_begin,
-              hour_end: hour_end,
-              type: type + deduction,
-              piece:"",
-              status: day_control,
-              rest: rest,
-              motif: motif,
-              validation: false,
-              acc: last_acc,
-              request:idRequest,
-              exceptType:exceptType
-            };
-            idRequest == "" ? delete new_leave.request : ""
-            var d1 = moment(leavestart).format("YYYY-MM-DD");
-            var d2 = moment(leaveend).format("YYYY-MM-DD");
-            if (split_date(d1, d2) && type != "Congé de maternité") {
-              if (idRequest != ""){
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
-                new_leave.piece = thisLeave.piece;
-                const io = req.app.get("io");
-                io.sockets.emit("isTreated", [idRequest,thisLeave]);
-              }
-              var first = first_part(d1);
-              var second = second_part(d1, d2);
-              new_leave.date_start = first[0];
-              new_leave.date_end = first[1];
-              new_leave.duration = first[2];
-              var theLeave = await LeaveSchema(new_leave).save();
-              new_leave.date_start = second[0];
-              new_leave.date_end = second[1];
-              new_leave.duration = second[2];
-              await LeaveSchema(new_leave).save();
-              await conge_define(req);
-              await checkleave(req);
-              theLeave.status = "Ok";
-              res.send(theLeave);
-            } else {
-              if (idRequest != ""){
-                var thisLeave = await LeaveRequestTest.findOneAndUpdate({_id:idRequest},{acc:new_leave.acc,rest:new_leave.rest},{new:true})
-                new_leave.piece = thisLeave.piece;
-                const io = req.app.get("io");
-                io.sockets.emit("isTreated", [idRequest,thisLeave]);
-              }
-              var theLeave = await LeaveSchema(new_leave).save();
-              await conge_define(req);
-              await checkleave(req);
-              theLeave.status = "Ok";
-              res.send(theLeave);
-            }
-          } else {
-            res.send({status:"not authorized"});
+            indice_change.push(c);
           }
         }
+        if (rest == "") {
+          rest = user.remaining_leave - taked;
+          last_acc = user.leave_taked - taked
+        }
+        var new_leave = {
+          m_code: user.m_code,
+          num_agent: user.num_agent,
+          nom: user.first_name + " " + user.last_name,
+          date_start: leavestart,
+          date_end: leaveend,
+          duration: taked,
+          hour_begin: hour_begin,
+          hour_end: hour_end,
+          type: type + deduction,
+          status: day_control,
+          rest: rest,
+          motif: motif,
+          piece: "",
+          validation: false,
+          acc: last_acc,
+          request: idRequest,
+          exceptType: exceptType
+        };
+        idRequest == "" ? delete new_leave.request : ""
+        var last_rest = rest;
+        indice_change.forEach(async (change) => {
+          if (leave_specific[change].type.includes("Congé Payé")) {
+            last_rest = last_rest - leave_specific[change].duration;
+            await LeaveSchema.findOneAndUpdate(
+              { _id: leave_specific[change]._id },
+              {
+                rest: last_rest,
+                $inc: { acc: accs }
+              },
+            );
+            await LeaveRequestTest.findOneAndUpdate(
+              { _id: leave_specific[change].request },
+              {
+                rest: last_rest,
+                $inc: { acc: accs }
+              },
+            );
+          } else {
+            await LeaveSchema.findOneAndUpdate(
+              { _id: leave_specific[change]._id },
+              {
+                rest: last_rest,
+                $inc: { acc: accs }
+              }
+            );
+            await LeaveRequestTest.findOneAndUpdate(
+              { _id: leave_specific[change].request },
+              {
+                rest: last_rest,
+                $inc: { acc: accs }
+              }
+            );
+          }
+        });
+        await UserSchema.findOneAndUpdate(
+          { m_code: user.m_code },
+          { $inc: { remaining_leave: -taked, leave_taked: -taked } }
+        );
+        var d1 = moment(leavestart).format("YYYY-MM-DD");
+        var d2 = moment(leaveend).format("YYYY-MM-DD");
+        if (split_date(d1, d2) && type != "Congé de maternité") {
+          if (idRequest != "") {
+            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
+            new_leave.piece = thisLeave.piece;
+            const io = req.app.get("io");
+            io.sockets.emit("isTreated", [idRequest, thisLeave]);
+          }
+          var first = first_part(d1);
+          var second = second_part(d1, d2);
+          new_leave.date_start = first[0];
+          new_leave.date_end = first[1];
+          new_leave.duration = first[2];
+          new_leave.rest = new_leave.rest + second[2];
+          new_leave.acc = new_leave.acc + second[2];
+          var theLeave = await LeaveSchema(new_leave).save();
+          new_leave.date_start = second[0];
+          new_leave.date_end = second[1];
+          new_leave.duration = second[2];
+          new_leave.rest = new_leave.rest - second[2];
+          new_leave.acc = new_leave.acc - second[2];
+          await LeaveSchema(new_leave).save();
+          await conge_define(req);
+          await checkleave(req);
+          theLeave.status = "Ok";
+          res.send(theLeave);
+        } else {
+          if (idRequest != "") {
+            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
+            new_leave.piece = thisLeave.piece;
+            const io = req.app.get("io");
+            io.sockets.emit("isTreated", [idRequest, thisLeave]);
+          }
+          var theLeave = await LeaveSchema(new_leave).save();
+          await conge_define(req);
+          await checkleave(req);
+          theLeave.status = "Ok";
+          res.send(theLeave);
+        }
+      } else if (
+        type == "Mise a Pied" ||
+        type == "Permission exceptionelle" ||
+        type == "Repos Maladie" ||
+        type == "Congé de maternité" ||
+        type == "Absent" ||
+        type == "Congé sans solde" ||
+        type == "Absence Injustifiée"
+      ) {
+        if (globaleVariable.deduire.includes(type)) {
+          deduction = " ( a déduire sur salaire )";
+        }
+        var day_control = "Terminée";
+        if (taked >= 1) {
+          day_control = "en attente";
+        }
+        var rest = "";
+        for (c = 0; c < leave_specific.length; c++) {
+          if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
+            if (leave_specific[c - 1]) {
+              if (rest == "") {
+                rest = leave_specific[c - 1].rest;
+                last_acc = leave_specific[c - 1].acc
+              }
+            } else {
+              if (rest == "") {
+                if (leave_specific[c].type.includes("Congé Payé")) {
+                  rest =
+                    leave_specific[c].rest + leave_specific[c].duration;
+                  last_acc = leave_specific[c].acc + leave_specific[c].duration
+                } else {
+                  rest = leave_specific[c].rest;
+                  last_acc = leave_specific[c].acc
+                }
+              }
+            }
+          }
+        }
+        if (rest == "") {
+          rest = user.remaining_leave;
+          last_acc = user.leave_taked
+        }
+        var new_leave = {
+          m_code: user.m_code,
+          num_agent: user.num_agent,
+          nom: user.first_name + " " + user.last_name,
+          date_start: leavestart,
+          date_end: leaveend,
+          duration: taked,
+          hour_begin: hour_begin,
+          hour_end: hour_end,
+          type: type + deduction,
+          piece: "",
+          status: day_control,
+          rest: rest,
+          motif: motif,
+          validation: false,
+          acc: last_acc,
+          request: idRequest,
+          exceptType: exceptType
+        };
+        idRequest == "" ? delete new_leave.request : ""
+        var d1 = moment(leavestart).format("YYYY-MM-DD");
+        var d2 = moment(leaveend).format("YYYY-MM-DD");
+        if (split_date(d1, d2) && type != "Congé de maternité") {
+          if (idRequest != "") {
+            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
+            new_leave.piece = thisLeave.piece;
+            const io = req.app.get("io");
+            io.sockets.emit("isTreated", [idRequest, thisLeave]);
+          }
+          var first = first_part(d1);
+          var second = second_part(d1, d2);
+          new_leave.date_start = first[0];
+          new_leave.date_end = first[1];
+          new_leave.duration = first[2];
+          var theLeave = await LeaveSchema(new_leave).save();
+          new_leave.date_start = second[0];
+          new_leave.date_end = second[1];
+          new_leave.duration = second[2];
+          await LeaveSchema(new_leave).save();
+          await conge_define(req);
+          await checkleave(req);
+          theLeave.status = "Ok";
+          res.send(theLeave);
+        } else {
+          if (idRequest != "") {
+            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
+            new_leave.piece = thisLeave.piece;
+            const io = req.app.get("io");
+            io.sockets.emit("isTreated", [idRequest, thisLeave]);
+          }
+          var theLeave = await LeaveSchema(new_leave).save();
+          await conge_define(req);
+          await checkleave(req);
+          theLeave.status = "Ok";
+          res.send(theLeave);
+        }
+      } else {
+        res.send({ status: "not authorized" });
+      }
+    }
   } else {
     res.redirect("/");
   }
 }
 //Edit leave 
-const editLeave = async(req,res) => {
+const editLeave = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin") {
     var code = req.body.code;
@@ -726,467 +735,467 @@ const editLeave = async(req,res) => {
     var exceptType = req.body.exceptType;
     var id = req.body.id;
     var deduction = " ( rien à deduire )";
-        var user = await UserSchema.findOne({ m_code: code });
-        var taked;
-        var leave_edit = await LeaveSchema.findOne({ _id: id });
-        var leave_specific = await LeaveSchema.find({
+    var user = await UserSchema.findOne({ m_code: code });
+    var taked;
+    var leave_edit = await LeaveSchema.findOne({ _id: id });
+    var leave_specific = await LeaveSchema.find({
+      m_code: user.m_code,
+      validation: false,
+      date_start: {
+        $regex: moment(leavestart).format("YYYY"),
+        $options: "i",
+      },
+    }).sort({
+      date_start: 1,
+    });
+    if (
+      checkduplicata2(
+        leave_specific,
+        leavestart,
+        leaveend,
+        leave_edit.date_start,
+        leave_edit.date_end
+      ) &&
+      (val == "n" || val == "1")
+    ) {
+      res.send("duplicata");
+    } else {
+      if (val == "n") {
+        taked = Methods.date_diff(leavestart, leaveend) + 1;
+      } else {
+        if (val == 0.5) {
+          leaveend = leavestart;
+          taked = val;
+        } else {
+          leaveend = leavestart;
+          taked = val;
+        }
+      }
+      var last_acc = 0;
+      if (according_leave(user.leave_stat, moment(user.save_at).format("YYYY-MM"), moment(leavestart).format('YYYY-MM')) && type == "Congé Payé") {
+        await LeaveSchema.findOneAndDelete({ _id: id });
+        leave_specific = await LeaveSchema.find({
           m_code: user.m_code,
-          validation: false,
-          date_start: {
-            $regex: moment(leavestart).format("YYYY"),
-            $options: "i",
-          },
+          date_start: { $regex: moment().format("YYYY"), $options: "i" },
         }).sort({
           date_start: 1,
         });
-        if (
-          checkduplicata2(
-            leave_specific,
-            leavestart,
-            leaveend,
-            leave_edit.date_start,
-            leave_edit.date_end
-          ) &&
-          (val == "n" || val == "1")
-        ) {
-          res.send("duplicata");
-        } else {
-          if (val == "n") {
-            taked = Methods.date_diff(leavestart, leaveend) + 1;
-          } else {
-            if (val == 0.5) {
-              leaveend = leavestart;
-              taked = val;
-            } else {
-              leaveend = leavestart;
-              taked = val;
-            }
-          }
-          var last_acc = 0;
-          if (according_leave(user.leave_stat,moment(user.save_at).format("YYYY-MM"),moment(leavestart).format('YYYY-MM')) && type == "Congé Payé") {
-            await LeaveSchema.findOneAndDelete({ _id: id });
-            leave_specific = await LeaveSchema.find({
-              m_code: user.m_code,
-              date_start: { $regex: moment().format("YYYY"), $options: "i" },
-            }).sort({
-              date_start: 1,
-            });
-            if (leave_edit.type.includes("Congé Payé")) {
-              user = await UserSchema.findOneAndUpdate(
-                { m_code: user.m_code },
-                {
-                  $inc: {
-                    remaining_leave: leave_edit.duration,
-                    leave_taked: leave_edit.duration,
-                  },
-                },
-                { new: true, useFindAndModify: false }
-              );
-            }
-            if (globaleVariable.deduire.includes(type)) {
-              deduction = " ( a déduire sur salaire )";
-            }
-            var day_control = "Terminée";
-            if (taked >= 1) {
-              day_control = "en attente";
-            }
-            //ARRANge
-            var rest = "";
-            var accs = leave_edit.duration - taked;
-            var indice_change = [];
-            for (c = 0; c < leave_specific.length; c++) {
-              if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
-                if (leave_specific[c - 1]) {
-                  if (rest == "") {
-                    if (
-                      leave_edit.type.includes("Congé Payé") &&
-                      Methods.date_diff(leave_edit.date_start, leavestart) > 0
-                    ) {
-                      rest =
-                        leave_specific[c - 1].rest +
-                        leave_edit.duration -
-                        taked;
-                        last_acc =
-                        leave_specific[c - 1].acc +
-                        leave_edit.duration -
-                        taked;
-                      //console.log("Azo " + rest + " " + leave_specific[c-1].date_start)
-                    } else {
-                      rest = leave_specific[c - 1].rest - taked;
-                      last_acc = leave_specific[c - 1].acc - taked;
-                      //console.log("Azo " + rest + " " + leave_specific[c-1].date_start)
-                    }
-                  }
-                } else {
-                  if (rest == "") {
-                    if (leave_specific[c].type.includes("Congé Payé")) {
-                      rest =
-                        leave_specific[c].rest +
-                        leave_specific[c].duration +
-                        leave_edit.duration -
-                        taked;
-                        last_acc =
-                        leave_specific[c].acc +
-                        leave_specific[c].duration +
-                        leave_edit.duration -
-                        taked;
-                      //console.log("Azo " + rest + " " + leave_specific[c].date_start)
-                    } else {
-                      rest =
-                        leave_specific[c].rest - taked + leave_edit.duration;
-                        last_acc =
-                        leave_specific[c].acc - taked + leave_edit.duration;
-                      //console.log("Azo " + rest + " " + leave_specific[c].date_start)
-                    }
-                  }
-                }
-
-                indice_change.push(c);
-              } else {
-                var year_change = await LeaveSchema.find({
-                  m_code: user.m_code,
-                  date_start: {
-                    $regex: moment().add(1, "years").format("YYYY"),
-                    $options: "i",
-                  },
-                })
-                  .sort({
-                    date_start: 1,
-                  })
-                  .limit(1);
-                if (year_change) {
-                  if (rest == "") {
-                    leave_specific[leave_specific.length - 1].rest - taked;
-                  }
-                }
-              }
-              if (
-                leave_edit.type.includes("Congé Payé") &&
-                Methods.date_diff(leave_edit.date_start, leave_specific[c].date_start) >
-                  0
-              ) {
-                await LeaveSchema.findOneAndUpdate(
-                  { _id: leave_specific[c]._id },
-                  { rest: leave_specific[c].rest + leave_edit.duration, $inc:{acc:accs} }
-                );
-                await LeaveRequestTest.findOneAndUpdate(
-                  { _id: leave_specific[c].request },
-                  { rest: leave_specific[c].rest + leave_edit.duration, $inc:{acc:accs} }
-                );
-              }
-            }
-            if (rest == "") {
-              rest = user.remaining_leave - taked;
-              last_acc = user.leave_taked - taked;
-            }
-            var new_leave = {
-              m_code: user.m_code,
-              num_agent: user.num_agent,
-              nom: user.first_name + " " + user.last_name,
-              date_start: leavestart,
-              date_end: leaveend,
-              duration: taked,
-              hour_begin: hour_begin,
-              hour_end: hour_end,
-              type: type + deduction,
-              status: day_control,
-              exceptType:exceptType,
-              rest: rest,
-              motif: motif,
-              validation: false,
-              acc: last_acc,
-            };
-            var last_rest = rest;
-            indice_change.forEach(async (change) => {
-              if (leave_specific[change].type.includes("Congé Payé")) {
-                last_rest = last_rest - leave_specific[change].duration;
-                await LeaveSchema.findOneAndUpdate(
-                  { _id: leave_specific[change]._id },
-                  { rest: last_rest , $inc:{acc:accs}}
-                );
-                await LeaveRequestTest.findOneAndUpdate(
-                  { _id: leave_specific[change].request },
-                  { rest: last_rest , $inc:{acc:accs}}
-                );
-              } else {
-                await LeaveSchema.findOneAndUpdate(
-                  { _id: leave_specific[change]._id },
-                  { rest: last_rest , $inc:{acc:accs} }
-                );
-                await LeaveRequestTest.findOneAndUpdate(
-                  { _id: leave_specific[change].request },
-                  { rest: last_rest , $inc:{acc:accs} }
-                );
-              }
-            });
-            await UserSchema.findOneAndUpdate(
-              { m_code: user.m_code },
-              { $inc: { remaining_leave: -taked, leave_taked: -taked } }
-            );
-            var d1 = moment(leavestart).format("YYYY-MM-DD");
-            var d2 = moment(leaveend).format("YYYY-MM-DD");
-            if (split_date(d1, d2) && type != "Congé de maternité") {
-              var first = first_part(d1);
-              var second = second_part(d1, d2);
-              new_leave.date_start = first[0];
-              new_leave.date_end = first[1];
-              new_leave.duration = first[2];
-              new_leave.rest = new_leave.rest + second[2];
-              new_leave.acc = new_leave.acc + second[2];
-              await LeaveSchema(new_leave).save();
-              new_leave.date_start = second[0];
-              new_leave.date_end = second[1];
-              new_leave.duration = second[2];
-              new_leave.rest = new_leave.rest - second[2];
-              new_leave.acc = new_leave.acc - second[2];
-              await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
-              //await arrangeAccumulate(code, leavestart);
-              await conge_define(req);
-              await checkleave(req);
-              res.send("Ok");
-            } else {
-              await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
-              //await arrangeAccumulate(code, leavestart);
-              await conge_define(req);
-              await checkleave(req);
-              res.send("Ok");
-            }
-          } else if (
-            type == "Mise a Pied" ||
-            type == "Permission exceptionelle" ||
-            type == "Repos Maladie" ||
-            type == "Congé de maternité" ||
-            type == "Absent" ||
-            type == "Congé sans solde" || 
-            type == "Absence Injustifiée"
-          ) {
-            await LeaveSchema.findOneAndDelete({ _id: id });
-            leave_specific = await LeaveSchema.find({
-              m_code: user.m_code,
-              date_start: { $regex: moment().format("YYYY"), $options: "i" },
-            }).sort({
-              date_start: 1,
-            });
-            if (leave_edit.type.includes("Congé Payé")) {
-              user = await UserSchema.findOneAndUpdate(
-                { m_code: user.m_code },
-                {
-                  $inc: {
-                    remaining_leave: leave_edit.duration,
-                    leave_taked: leave_edit.duration,
-                  },
-                },
-                { new: true, useFindAndModify: false }
-              );
-            }
-            if (globaleVariable.deduire.includes(type)) {
-              deduction = " ( a déduire sur salaire )";
-            }
-            var day_control = "Terminée";
-            if (taked >= 1) {
-              day_control = "en attente";
-            }
-            var rest = "";
-            for (c = 0; c < leave_specific.length; c++) {
-              if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
-                if (leave_specific[c - 1]) {
-                  if (rest == "") {
-                    rest = leave_specific[c - 1].rest;
-                    last_acc = leave_specific[c - 1].acc;
-                  }
-                } else {
-                  if (rest == "") {
-                    if (leave_specific[c].type.includes("Congé Payé")) {
-                      rest =
-                        leave_specific[c].rest + leave_specific[c].duration;
-                        last_acc =
-                        leave_specific[c].acc + leave_specific[c].duration;
-                    } else {
-                      rest = leave_specific[c].rest;
-                      last_acc = leave_specific[c].acc;
-                    }
-                  }
-                }
+        if (leave_edit.type.includes("Congé Payé")) {
+          user = await UserSchema.findOneAndUpdate(
+            { m_code: user.m_code },
+            {
+              $inc: {
+                remaining_leave: leave_edit.duration,
+                leave_taked: leave_edit.duration,
+              },
+            },
+            { new: true, useFindAndModify: false }
+          );
+        }
+        if (globaleVariable.deduire.includes(type)) {
+          deduction = " ( a déduire sur salaire )";
+        }
+        var day_control = "Terminée";
+        if (taked >= 1) {
+          day_control = "en attente";
+        }
+        //ARRANge
+        var rest = "";
+        var accs = leave_edit.duration - taked;
+        var indice_change = [];
+        for (c = 0; c < leave_specific.length; c++) {
+          if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
+            if (leave_specific[c - 1]) {
+              if (rest == "") {
                 if (
                   leave_edit.type.includes("Congé Payé") &&
-                  Methods.date_diff(
-                    leave_edit.date_start,
-                    leave_specific[c].date_start
-                  ) > 0
+                  Methods.date_diff(leave_edit.date_start, leavestart) > 0
                 ) {
-                  await LeaveSchema.findOneAndUpdate(
-                    { _id: leave_specific[c]._id },
-                    { rest: leave_specific[c].rest + leave_edit.duration }
-                  );
-                  await LeaveRequestTest.findOneAndUpdate(
-                    { _id: leave_specific[c].request },
-                    { rest: leave_specific[c].rest + leave_edit.duration }
-                  );
+                  rest =
+                    leave_specific[c - 1].rest +
+                    leave_edit.duration -
+                    taked;
+                  last_acc =
+                    leave_specific[c - 1].acc +
+                    leave_edit.duration -
+                    taked;
+                  //console.log("Azo " + rest + " " + leave_specific[c-1].date_start)
+                } else {
+                  rest = leave_specific[c - 1].rest - taked;
+                  last_acc = leave_specific[c - 1].acc - taked;
+                  //console.log("Azo " + rest + " " + leave_specific[c-1].date_start)
                 }
-              } else {
-                var year_change = await LeaveSchema.find({
-                  m_code: user.m_code,
-                  date_start: {
-                    $regex: moment().add(1, "years").format("YYYY"),
-                    $options: "i",
-                  },
-                })
-                  .sort({
-                    date_start: 1,
-                  })
-                  .limit(1);
-                if (year_change) {
-                  if (rest == "") {
-                    leave_specific[leave_specific.length - 1].rest;
-                  }
+              }
+            } else {
+              if (rest == "") {
+                if (leave_specific[c].type.includes("Congé Payé")) {
+                  rest =
+                    leave_specific[c].rest +
+                    leave_specific[c].duration +
+                    leave_edit.duration -
+                    taked;
+                  last_acc =
+                    leave_specific[c].acc +
+                    leave_specific[c].duration +
+                    leave_edit.duration -
+                    taked;
+                  //console.log("Azo " + rest + " " + leave_specific[c].date_start)
+                } else {
+                  rest =
+                    leave_specific[c].rest - taked + leave_edit.duration;
+                  last_acc =
+                    leave_specific[c].acc - taked + leave_edit.duration;
+                  //console.log("Azo " + rest + " " + leave_specific[c].date_start)
                 }
               }
             }
-            if (rest == "") {
-              rest = user.remaining_leave;
-              last_acc = user.leave_taked;
-            }
-            var new_leave = {
-              m_code: user.m_code,
-              num_agent: user.num_agent,
-              nom: user.first_name + " " + user.last_name,
-              date_start: leavestart,
-              date_end: leaveend,
-              duration: taked,
-              hour_begin: hour_begin,
-              hour_end: hour_end,
-              type: type + deduction,
-              status: day_control,
-              exceptType:exceptType,
-              rest: rest,
-              motif: motif,
-              validation: false,
-              acc: last_acc,
-            };
-            var d1 = moment(leavestart).format("YYYY-MM-DD");
-            var d2 = moment(leaveend).format("YYYY-MM-DD");
-            if (split_date(d1, d2) && type != "Congé de maternité") {
-              var first = first_part(d1);
-              var second = second_part(d1, d2);
-              new_leave.date_start = first[0];
-              new_leave.date_end = first[1];
-              new_leave.duration = first[2];
-              await LeaveSchema(new_leave).save();
-              new_leave.date_start = second[0];
-              new_leave.date_end = second[1];
-              new_leave.duration = second[2];
-              await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
-              //await arrangeAccumulate(code, leavestart);
-              await conge_define(req);
-              await checkleave(req);
-              res.send("Ok");
-            } else {
-              await LeaveSchema(new_leave).save();
-              await LeaveRequestTest.findOneAndUpdate({_id:leave_edit.request},{acc:new_leave.acc,rest:new_leave.rest})
-              //await arrangeAccumulate(code, leavestart);
-              await conge_define(req);
-              await checkleave(req);
-              res.send("Ok");
-            }
+
+            indice_change.push(c);
           } else {
-            res.send("not authorized");
+            var year_change = await LeaveSchema.find({
+              m_code: user.m_code,
+              date_start: {
+                $regex: moment().add(1, "years").format("YYYY"),
+                $options: "i",
+              },
+            })
+              .sort({
+                date_start: 1,
+              })
+              .limit(1);
+            if (year_change) {
+              if (rest == "") {
+                leave_specific[leave_specific.length - 1].rest - taked;
+              }
+            }
+          }
+          if (
+            leave_edit.type.includes("Congé Payé") &&
+            Methods.date_diff(leave_edit.date_start, leave_specific[c].date_start) >
+            0
+          ) {
+            await LeaveSchema.findOneAndUpdate(
+              { _id: leave_specific[c]._id },
+              { rest: leave_specific[c].rest + leave_edit.duration, $inc: { acc: accs } }
+            );
+            await LeaveRequestTest.findOneAndUpdate(
+              { _id: leave_specific[c].request },
+              { rest: leave_specific[c].rest + leave_edit.duration, $inc: { acc: accs } }
+            );
           }
         }
+        if (rest == "") {
+          rest = user.remaining_leave - taked;
+          last_acc = user.leave_taked - taked;
+        }
+        var new_leave = {
+          m_code: user.m_code,
+          num_agent: user.num_agent,
+          nom: user.first_name + " " + user.last_name,
+          date_start: leavestart,
+          date_end: leaveend,
+          duration: taked,
+          hour_begin: hour_begin,
+          hour_end: hour_end,
+          type: type + deduction,
+          status: day_control,
+          exceptType: exceptType,
+          rest: rest,
+          motif: motif,
+          validation: false,
+          acc: last_acc,
+        };
+        var last_rest = rest;
+        indice_change.forEach(async (change) => {
+          if (leave_specific[change].type.includes("Congé Payé")) {
+            last_rest = last_rest - leave_specific[change].duration;
+            await LeaveSchema.findOneAndUpdate(
+              { _id: leave_specific[change]._id },
+              { rest: last_rest, $inc: { acc: accs } }
+            );
+            await LeaveRequestTest.findOneAndUpdate(
+              { _id: leave_specific[change].request },
+              { rest: last_rest, $inc: { acc: accs } }
+            );
+          } else {
+            await LeaveSchema.findOneAndUpdate(
+              { _id: leave_specific[change]._id },
+              { rest: last_rest, $inc: { acc: accs } }
+            );
+            await LeaveRequestTest.findOneAndUpdate(
+              { _id: leave_specific[change].request },
+              { rest: last_rest, $inc: { acc: accs } }
+            );
+          }
+        });
+        await UserSchema.findOneAndUpdate(
+          { m_code: user.m_code },
+          { $inc: { remaining_leave: -taked, leave_taked: -taked } }
+        );
+        var d1 = moment(leavestart).format("YYYY-MM-DD");
+        var d2 = moment(leaveend).format("YYYY-MM-DD");
+        if (split_date(d1, d2) && type != "Congé de maternité") {
+          var first = first_part(d1);
+          var second = second_part(d1, d2);
+          new_leave.date_start = first[0];
+          new_leave.date_end = first[1];
+          new_leave.duration = first[2];
+          new_leave.rest = new_leave.rest + second[2];
+          new_leave.acc = new_leave.acc + second[2];
+          await LeaveSchema(new_leave).save();
+          new_leave.date_start = second[0];
+          new_leave.date_end = second[1];
+          new_leave.duration = second[2];
+          new_leave.rest = new_leave.rest - second[2];
+          new_leave.acc = new_leave.acc - second[2];
+          await LeaveSchema(new_leave).save();
+          await LeaveRequestTest.findOneAndUpdate({ _id: leave_edit.request }, { acc: new_leave.acc, rest: new_leave.rest })
+          //await arrangeAccumulate(code, leavestart);
+          await conge_define(req);
+          await checkleave(req);
+          res.send("Ok");
+        } else {
+          await LeaveSchema(new_leave).save();
+          await LeaveRequestTest.findOneAndUpdate({ _id: leave_edit.request }, { acc: new_leave.acc, rest: new_leave.rest })
+          //await arrangeAccumulate(code, leavestart);
+          await conge_define(req);
+          await checkleave(req);
+          res.send("Ok");
+        }
+      } else if (
+        type == "Mise a Pied" ||
+        type == "Permission exceptionelle" ||
+        type == "Repos Maladie" ||
+        type == "Congé de maternité" ||
+        type == "Absent" ||
+        type == "Congé sans solde" ||
+        type == "Absence Injustifiée"
+      ) {
+        await LeaveSchema.findOneAndDelete({ _id: id });
+        leave_specific = await LeaveSchema.find({
+          m_code: user.m_code,
+          date_start: { $regex: moment().format("YYYY"), $options: "i" },
+        }).sort({
+          date_start: 1,
+        });
+        if (leave_edit.type.includes("Congé Payé")) {
+          user = await UserSchema.findOneAndUpdate(
+            { m_code: user.m_code },
+            {
+              $inc: {
+                remaining_leave: leave_edit.duration,
+                leave_taked: leave_edit.duration,
+              },
+            },
+            { new: true, useFindAndModify: false }
+          );
+        }
+        if (globaleVariable.deduire.includes(type)) {
+          deduction = " ( a déduire sur salaire )";
+        }
+        var day_control = "Terminée";
+        if (taked >= 1) {
+          day_control = "en attente";
+        }
+        var rest = "";
+        for (c = 0; c < leave_specific.length; c++) {
+          if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
+            if (leave_specific[c - 1]) {
+              if (rest == "") {
+                rest = leave_specific[c - 1].rest;
+                last_acc = leave_specific[c - 1].acc;
+              }
+            } else {
+              if (rest == "") {
+                if (leave_specific[c].type.includes("Congé Payé")) {
+                  rest =
+                    leave_specific[c].rest + leave_specific[c].duration;
+                  last_acc =
+                    leave_specific[c].acc + leave_specific[c].duration;
+                } else {
+                  rest = leave_specific[c].rest;
+                  last_acc = leave_specific[c].acc;
+                }
+              }
+            }
+            if (
+              leave_edit.type.includes("Congé Payé") &&
+              Methods.date_diff(
+                leave_edit.date_start,
+                leave_specific[c].date_start
+              ) > 0
+            ) {
+              await LeaveSchema.findOneAndUpdate(
+                { _id: leave_specific[c]._id },
+                { rest: leave_specific[c].rest + leave_edit.duration }
+              );
+              await LeaveRequestTest.findOneAndUpdate(
+                { _id: leave_specific[c].request },
+                { rest: leave_specific[c].rest + leave_edit.duration }
+              );
+            }
+          } else {
+            var year_change = await LeaveSchema.find({
+              m_code: user.m_code,
+              date_start: {
+                $regex: moment().add(1, "years").format("YYYY"),
+                $options: "i",
+              },
+            })
+              .sort({
+                date_start: 1,
+              })
+              .limit(1);
+            if (year_change) {
+              if (rest == "") {
+                leave_specific[leave_specific.length - 1].rest;
+              }
+            }
+          }
+        }
+        if (rest == "") {
+          rest = user.remaining_leave;
+          last_acc = user.leave_taked;
+        }
+        var new_leave = {
+          m_code: user.m_code,
+          num_agent: user.num_agent,
+          nom: user.first_name + " " + user.last_name,
+          date_start: leavestart,
+          date_end: leaveend,
+          duration: taked,
+          hour_begin: hour_begin,
+          hour_end: hour_end,
+          type: type + deduction,
+          status: day_control,
+          exceptType: exceptType,
+          rest: rest,
+          motif: motif,
+          validation: false,
+          acc: last_acc,
+        };
+        var d1 = moment(leavestart).format("YYYY-MM-DD");
+        var d2 = moment(leaveend).format("YYYY-MM-DD");
+        if (split_date(d1, d2) && type != "Congé de maternité") {
+          var first = first_part(d1);
+          var second = second_part(d1, d2);
+          new_leave.date_start = first[0];
+          new_leave.date_end = first[1];
+          new_leave.duration = first[2];
+          await LeaveSchema(new_leave).save();
+          new_leave.date_start = second[0];
+          new_leave.date_end = second[1];
+          new_leave.duration = second[2];
+          await LeaveSchema(new_leave).save();
+          await LeaveRequestTest.findOneAndUpdate({ _id: leave_edit.request }, { acc: new_leave.acc, rest: new_leave.rest })
+          //await arrangeAccumulate(code, leavestart);
+          await conge_define(req);
+          await checkleave(req);
+          res.send("Ok");
+        } else {
+          await LeaveSchema(new_leave).save();
+          await LeaveRequestTest.findOneAndUpdate({ _id: leave_edit.request }, { acc: new_leave.acc, rest: new_leave.rest })
+          //await arrangeAccumulate(code, leavestart);
+          await conge_define(req);
+          await checkleave(req);
+          res.send("Ok");
+        }
+      } else {
+        res.send("not authorized");
+      }
+    }
   } else {
     res.redirect("/");
   }
 }
 //Abort leave
-const abortLeave = async(req,res) => {
+const abortLeave = async (req, res) => {
   var session = req.session;
   if (session.occupation_a == "Admin") {
     var code = req.body.code;
     var id = req.body.id;
-        var user = await UserSchema.findOne({ m_code: code });
-        var leave_delete = await LeaveSchema.findOne({ _id: id });
-        await LeaveSchema.findOneAndDelete({ _id: id });
-        var leave_specific = await LeaveSchema.find({
-          m_code: user.m_code,
-          validation: false,
-          date_start: {
-            $regex: moment(leave_delete.date_start).format("YYYY"),
-            $options: "i",
+    var user = await UserSchema.findOne({ m_code: code });
+    var leave_delete = await LeaveSchema.findOne({ _id: id });
+    await LeaveSchema.findOneAndDelete({ _id: id });
+    var leave_specific = await LeaveSchema.find({
+      m_code: user.m_code,
+      validation: false,
+      date_start: {
+        $regex: moment(leave_delete.date_start).format("YYYY"),
+        $options: "i",
+      },
+    }).sort({
+      date_start: 1,
+    });
+    if (leave_delete.type.includes("Congé Payé")) {
+      await UserSchema.findOneAndUpdate(
+        { m_code: user.m_code },
+        {
+          $inc: {
+            remaining_leave: leave_delete.duration,
+            leave_taked: leave_delete.duration,
           },
-        }).sort({
-          date_start: 1,
-        });
-        if (leave_delete.type.includes("Congé Payé")) {
-          await UserSchema.findOneAndUpdate(
-            { m_code: user.m_code },
-            {
-              $inc: {
-                remaining_leave: leave_delete.duration,
-                leave_taked: leave_delete.duration,
-              },
-            }
-          );
         }
-        for (c = 0; c < leave_specific.length; c++) {
-          if (
-            Methods.date_diff(leave_delete.date_start, leave_specific[c].date_start) >
-              0 &&
-            leave_delete.type.includes("Congé Payé")
-          ) {
-            await LeaveSchema.findOneAndUpdate(
-              { _id: leave_specific[c]._id },
-              { $inc: { rest: leave_delete.duration } }
-            );
-          }
-        }
-        await LeaveRequestTest.findOneAndDelete({_id:leave_delete.request});
-        var notification = {
-          title:"Annulation congé",
-          content:`Congé du ${moment(leave_delete.date_start).format("DD/MM/YYYY")} au ${moment(leave_delete.date_end).format("DD/MM/YYYY")} pour ${leave_delete.m_code} a été annuler`,
-          datetime:moment().format("DD/MM/YYYY hh:mm:ss")
-       }
-       var concerned = ["Admin","Surveillant","Opération"];
-       await Methods.setGlobalAdminNotifications(notification,concerned,true,req);
-       notification.content = `Congé du ${moment(leave_delete.date_start).format("DD/MM/YYYY")} au ${moment(leave_delete.date_end).format("DD/MM/YYYY")} pour vous a été annuler`
-       await Methods.setEachUserNotification(leave_delete.m_code,notification.title,notification.content,req);
-       leave_delete.status = "aborted";
-       const io = req.app.get("io");
-       io.sockets.emit("isTreated", [leave_delete.request,leave_delete]);
-        res.send("Ok");
+      );
+    }
+    for (c = 0; c < leave_specific.length; c++) {
+      if (
+        Methods.date_diff(leave_delete.date_start, leave_specific[c].date_start) >
+        0 &&
+        leave_delete.type.includes("Congé Payé")
+      ) {
+        await LeaveSchema.findOneAndUpdate(
+          { _id: leave_specific[c]._id },
+          { $inc: { rest: leave_delete.duration } }
+        );
+      }
+    }
+    await LeaveRequestTest.findOneAndDelete({ _id: leave_delete.request });
+    var notification = {
+      title: "Annulation congé",
+      content: `Congé du ${moment(leave_delete.date_start).format("DD/MM/YYYY")} au ${moment(leave_delete.date_end).format("DD/MM/YYYY")} pour ${leave_delete.m_code} a été annulée`,
+      datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+    }
+    var concerned = ["Admin", "Surveillant", "Opération"];
+    await Methods.setGlobalAdminNotifications(notification, concerned, true, req);
+    notification.content = `Congé du ${moment(leave_delete.date_start).format("DD/MM/YYYY")} au ${moment(leave_delete.date_end).format("DD/MM/YYYY")} pour vous a été annulée`
+    await Methods.setEachUserNotification(leave_delete.m_code, notification.title, notification.content, req);
+    leave_delete.status = "aborted";
+    const io = req.app.get("io");
+    io.sockets.emit("isTreated", [leave_delete.request, leave_delete]);
+    res.send("Ok");
   } else {
     res.redirect("/");
   }
 }
 // get user leave info
-const leaveInfo = async(req,res) => {
+const leaveInfo = async (req, res) => {
   var code = req.body.code;
-      var user = await UserSchema.find(
-        { status: "Actif", occupation: "User" },
-        { adresse: 0, password: 0 }
-      ).sort({
-        m_code: 1,
-      });
-      var last = await LeaveSchema.findOne({
-        m_code: code,
-        status: "Terminée",
-      }).sort({
-        date_start: -1,
-      });
-      var upcoming = await LeaveSchema.findOne({
-        m_code: code,
-        status: { $ne: "Terminée" },
-      }).sort({
-        date_start: 1,
-      });
-      res.send([user, last, upcoming]);
+  var user = await UserSchema.find(
+    { status: "Actif", occupation: "User" },
+    { adresse: 0, password: 0 }
+  ).sort({
+    m_code: 1,
+  });
+  var last = await LeaveSchema.findOne({
+    m_code: code,
+    status: "Terminée",
+  }).sort({
+    date_start: -1,
+  });
+  var upcoming = await LeaveSchema.findOne({
+    m_code: code,
+    status: { $ne: "Terminée" },
+  }).sort({
+    date_start: 1,
+  });
+  res.send([user, last, upcoming]);
 }
 
 
 
 //Download file 
-const downloadFile = async(req,res) => {
+const downloadFile = async (req, res) => {
   var session = req.session;
   if (
     session.occupation_a == "Admin" ||
@@ -1258,27 +1267,27 @@ function calcul_timediff_absencereport_spec(startTime, endTime) {
     hours_fictif = hours_fictif + 24;
   }
   if (hours_fictif == 0) {
-    return [hours_fictif,minutes_fictif]
+    return [hours_fictif, minutes_fictif]
   } else if (minutes_fictif == 0) {
-    return [hours_fictif,minutes_fictif];
+    return [hours_fictif, minutes_fictif];
   } else {
-    return [hours_fictif,minutes_fictif]
+    return [hours_fictif, minutes_fictif]
   }
 }
 //Method to render a result string
-function renderResult(day,theHour,theMin){
+function renderResult(day, theHour, theMin) {
   var result = "";
-  result += day > 0 ? `${day}j `: "";
-  result += (day > 0 && (theHour > 0 || theMin)) > 0 ? `et `: "";
+  result += day > 0 ? `${day}j ` : "";
+  result += (day > 0 && (theHour > 0 || theMin)) > 0 ? `et ` : "";
   result += theHour > 0 ? `${theHour}h` : "";
-  result += theMin > 0 ? `${theMin}'`:"";
-  result = result.replace(/\d+\.\d+/g, function(match) {
+  result += theMin > 0 ? `${theMin}'` : "";
+  result = result.replace(/\d+\.\d+/g, function (match) {
     return match.replace('.', ',');
   });
-  return result       
+  return result
 }
 //MEthod to render the right motif
-function motif_rendered(mt,type) {
+function motif_rendered(mt, type) {
   if (type.includes("Repos Maladie")) {
     if (mt == "") {
       return precede(type) + type;
@@ -1288,7 +1297,7 @@ function motif_rendered(mt,type) {
   }
   else {
     if (mt == "") {
-      return precede(type) + type.replace("Permission exceptionelle","Permission exceptionnelle");
+      return precede(type) + type.replace("Permission exceptionelle", "Permission exceptionnelle");
     } else {
       return precede(type) + type.replace("Permission exceptionelle", "Permission exceptionnelle") + " pour " + mt;
     }
@@ -1306,7 +1315,7 @@ function motif_rendered(mt,type) {
 //Method to convert date
 function date_rendered(d1, d2) {
   if (d1 == d2) {
-    return " du " +  moment(d1).format("DD/MM/YYYY")
+    return " du " + moment(d1).format("DD/MM/YYYY")
   } else {
     return (
       " du " +
@@ -1388,7 +1397,7 @@ function style3(last, maternity, field) {
             alignment: {
               vertical: "center",
               horizontal: "left",
-              wrapText:true
+              wrapText: true
             },
           };
         } else {
@@ -1527,12 +1536,12 @@ function date_concerning2(date1, date2, date3, date4) {
     return all_date;
   }
 }
-function according_leave(stat,save,start){
-  if (stat == "y"){
+function according_leave(stat, save, start) {
+  if (stat == "y") {
     return true
   }
-  else if (stat == "n" && Methods.date_diff(save, start) >= 365 ){
-    return true 
+  else if (stat == "n" && Methods.date_diff(save, start) >= 365) {
+    return true
   }
   else {
     return false
@@ -1579,111 +1588,111 @@ function second_part(date1, date2) {
 
 //Update leave in progress status
 async function checkleave(req) {
-    try {
-      var all_leave2 = await LeaveSchema.find({ status: "en cours" });
-      for (j = 0; j < all_leave2.length; j++) {
-        if (
-          Methods.date_diff(moment().format("YYYY-MM-DD"), all_leave2[j].date_end) < 0
-        ) {
-          await UserSchema.findOneAndUpdate(
-            { m_code: all_leave2[j].m_code },
-            { act_stat: "LEFTING" }
-          );
-          await LeaveSchema.findOneAndUpdate(
-            { _id: all_leave2[j]._id },
-            { status: "Terminée" }
-          );
-          await LeaveSchema.findOneAndUpdate(
-            { _id: all_leave2[j].request },
-            { status: "done" }
-          );
-          var temp_notif = {
-            title:"Congé terminée",
-            content:  all_leave2[j].nom + " devrait revenir du congé",
-            datetime:moment().format("DD/MM/YYYY hh:mm:ss"),
-          }
-          var concerned = ["Admin","Surveillant","Opération"];
-          await Methods.setGlobalAdminNotifications(temp_notif,concerned,false,req);
+  try {
+    var all_leave2 = await LeaveSchema.find({ status: "en cours" });
+    for (j = 0; j < all_leave2.length; j++) {
+      if (
+        Methods.date_diff(moment().format("YYYY-MM-DD"), all_leave2[j].date_end) < 0
+      ) {
+        await UserSchema.findOneAndUpdate(
+          { m_code: all_leave2[j].m_code },
+          { act_stat: "LEFTING" }
+        );
+        await LeaveSchema.findOneAndUpdate(
+          { _id: all_leave2[j]._id },
+          { status: "Terminée" }
+        );
+        await LeaveSchema.findOneAndUpdate(
+          { _id: all_leave2[j].request },
+          { status: "done" }
+        );
+        var temp_notif = {
+          title: "Congé terminée",
+          content: all_leave2[j].nom + " devrait revenir du congé",
+          datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
         }
+        var concerned = ["Admin", "Surveillant", "Opération"];
+        await Methods.setGlobalAdminNotifications(temp_notif, concerned, false, req);
       }
-    } catch (error) {
-      await checkleave();
     }
+  } catch (error) {
+    await checkleave();
+  }
 }
 //
 async function leave_permission() {
-    var user_allowed = await UserSchema.find({lave_stat:"n"});
-    for (a = 0; a < user_allowed.length; a++) {
-      if (moment(user_allowed[a].save_at).add(1,"years").format("YYYY-MM") == moment().format("YYYY-MM")) {
-        await UserSchema.findOneAndUpdate(
-          { m_code: user_allowed[a].m_code },
-          { leave_stat: "y" }
-        );
-      }
+  var user_allowed = await UserSchema.find({ lave_stat: "n" });
+  for (a = 0; a < user_allowed.length; a++) {
+    if (moment(user_allowed[a].save_at).add(1, "years").format("YYYY-MM") == moment().format("YYYY-MM")) {
+      await UserSchema.findOneAndUpdate(
+        { m_code: user_allowed[a].m_code },
+        { leave_stat: "y" }
+      );
     }
+  }
 }
 async function conge_define(req) {
-    try {
-      var all_leave1 = await LeaveSchema.find({ status: "en attente" });
-      for (i = 0; i < all_leave1.length; i++) {
-        if (moment().format("YYYY-MM-DD") == all_leave1[i].date_start) {
-          if (all_leave1[i].duration >= 1) {
-            await UserSchema.findOneAndUpdate(
-              { m_code: all_leave1[i].m_code },
-              { act_stat: "VACATION", act_loc: "Not defined" }
-            );
-            await LeaveSchema.findOneAndUpdate(
-              { _id: all_leave1[i]._id },
-              { status: "en cours" }
-            );
-            const io = req.app.get("io");
-            io.sockets.emit(
-              "status",
-              "VACATION" + "," + all_leave1[i].m_code
-            );
-          } else {
-            await LeaveSchema.findOneAndUpdate(
-              { _id: all_leave1[i]._id },
-              { status: "Terminée" }
-            );
-          }
-        } else if (
-          Methods.date_diff(moment().format("YYYY-MM-DD"), all_leave1[i].date_start) <
-          0
+  try {
+    var all_leave1 = await LeaveSchema.find({ status: "en attente" });
+    for (i = 0; i < all_leave1.length; i++) {
+      if (moment().format("YYYY-MM-DD") == all_leave1[i].date_start) {
+        if (all_leave1[i].duration >= 1) {
+          await UserSchema.findOneAndUpdate(
+            { m_code: all_leave1[i].m_code },
+            { act_stat: "VACATION", act_loc: "Not defined" }
+          );
+          await LeaveSchema.findOneAndUpdate(
+            { _id: all_leave1[i]._id },
+            { status: "en cours" }
+          );
+          const io = req.app.get("io");
+          io.sockets.emit(
+            "status",
+            "VACATION" + "," + all_leave1[i].m_code
+          );
+        } else {
+          await LeaveSchema.findOneAndUpdate(
+            { _id: all_leave1[i]._id },
+            { status: "Terminée" }
+          );
+        }
+      } else if (
+        Methods.date_diff(moment().format("YYYY-MM-DD"), all_leave1[i].date_start) <
+        0
+      ) {
+        if (
+          Methods.date_diff(
+            moment().format("YYYY-MM-DD"),
+            all_leave1[i].date_start
+          ) *
+          -1 <
+          all_leave1[i].duration &&
+          all_leave1[i].duration > 1
         ) {
-          if (
-            Methods.date_diff(
-              moment().format("YYYY-MM-DD"),
-              all_leave1[i].date_start
-            ) *
-              -1 <
-              all_leave1[i].duration &&
-            all_leave1[i].duration > 1
-          ) {
-            await UserSchema.findOneAndUpdate(
-              { m_code: all_leave1[i].m_code },
-              { act_stat: "VACATION", act_loc: "Not defined" }
-            );
-            await LeaveSchema.findOneAndUpdate(
-              { _id: all_leave1[i]._id },
-              { status: "en cours" }
-            );
-            const io = req.app.get("io");
-            io.sockets.emit(
-              "status",
-              "VACATION" + "," + all_leave1[i].m_code
-            );
-          } else {
-            await LeaveSchema.findOneAndUpdate(
-              { _id: all_leave1[i]._id },
-              { status: "Terminée" }
-            );
-          }
+          await UserSchema.findOneAndUpdate(
+            { m_code: all_leave1[i].m_code },
+            { act_stat: "VACATION", act_loc: "Not defined" }
+          );
+          await LeaveSchema.findOneAndUpdate(
+            { _id: all_leave1[i]._id },
+            { status: "en cours" }
+          );
+          const io = req.app.get("io");
+          io.sockets.emit(
+            "status",
+            "VACATION" + "," + all_leave1[i].m_code
+          );
+        } else {
+          await LeaveSchema.findOneAndUpdate(
+            { _id: all_leave1[i]._id },
+            { status: "Terminée" }
+          );
         }
       }
-    } catch (error) {
-      await conge_define(req);
     }
+  } catch (error) {
+    await conge_define(req);
+  }
 }
 async function addin_leave() {
   var all_user = await UserSchema.find({ status: "Actif" });
@@ -1726,15 +1735,16 @@ function getting_null(val) {
 async function printLeave(req, res) {
   let leaveId = req.params.id;
   try {
+    var leave = {};
     const replaceText = async () => {
-      var leave = await LeaveSchema.findById(leaveId);
-      const employee = await UserSchema.findOne({ m_code: leave.m_code});
+      leave = await LeaveSchema.findById(leaveId);
+      const employee = await UserSchema.findOne({ m_code: leave.m_code });
       const pdfdoc = await PDFNet.PDFDoc.createFromFilePath("LeaveTemplate.pdf");
       await pdfdoc.initSecurityHandler();
       const replacer = await PDFNet.ContentReplacer.create();
       const page = await pdfdoc.getPage(1);
-      
-      const leaveTest = await LeaveRequestTest.findOne({ _id: leave.request}).populate({
+
+      const leaveTest = await LeaveRequestTest.findOne({ _id: leave.request }).populate({
         path: 'validation.user',
         select: 'usuel'
       })
@@ -1789,41 +1799,52 @@ async function printLeave(req, res) {
       // date
       await replacer.addString("dateAsker", getting_null(moment(leave.date).format("DD/MM/YYYY")));
       // Décision de la direction
+      const CongePaye = ["Congé Payé"];
+      const PermissionExceptionnelle = ["Permission exceptionelle"];
+      const RienADeduire = ["Repos Maladie"];
+      const ADeduire = ["Absent", "Mise a Pied", "Congé sans solde"];
       // Rien à deduire
-      await replacer.addString("cp", getting_null("   x"));
+      await replacer.addString("cp", getting_null((CongePaye.includes(leave.type)) ? "   x" : ''));
       await replacer.addString("cp_nbr", getting_null(""));
       // A à deduire salaire
-      await replacer.addString("ds", getting_null("   x"));
+      await replacer.addString("ds", getting_null((ADeduire.includes(leave.type)) ? "   x" : ''));
       await replacer.addString("ds_nbr", getting_null(""));
       // Permission exceptionnelle
-      await replacer.addString("ps", getting_null("   x"));
+      await replacer.addString("ps", getting_null((PermissionExceptionnelle.includes(leave.type)) ? "   x" : ""));
       await replacer.addString("ps_nbr", getting_null(""));
       // Rien à deduire
-      await replacer.addString("rd", getting_null("   x"));
-      
-      
+      await replacer.addString("rd", getting_null((RienADeduire.includes(leave.type)) ? "   x" : ''));
+
+
       await replacer.process(page);
       var output_path = "./public/Leave/" + leave.m_code + ".pdf";
-  
+
       pdfdoc.save(output_path, PDFNet.SDFDoc.SaveOptions.e_linearized);
 
     }
-    
+
     PDFNet.runWithCleanup(
       replaceText,
       "demo:ricardoramandimbisoa@gmail.com:7afedebe02000000000e72b195b776c08a802c3245de93b77462bc8ad6"
     ).then(() => {
-        PDFNet.shutdown();
-        res.send("OK");
+      PDFNet.shutdown();
+      console.log("Terminated")
+      res.json({
+        ok: true,
+        file: `Leave/${leave.m_code}.pdf`
+      });
     });
 
   } catch (error) {
     console.log(error)
+    res.json({
+      ok: false,
+    });
   }
 }
 
 
 module.exports = {
-    checkleave,leave_permission,conge_define,addin_leave,getPageLeavelist,retrieveLeaveList,LeaveReport,downloadFile,
-    getPageDefine,createLeave,editLeave,abortLeave,leaveInfo,getLeaveOperation, printLeave,getPageRecap
+  checkleave, leave_permission, conge_define, addin_leave, getPageLeavelist, retrieveLeaveList, LeaveReport, downloadFile,
+  getPageDefine, createLeave, editLeave, abortLeave, leaveInfo, getLeaveOperation, printLeave, getPageRecap
 }

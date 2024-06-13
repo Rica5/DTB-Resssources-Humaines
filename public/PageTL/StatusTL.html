@@ -321,7 +321,7 @@
     <script src="/jsDTB/notification.js"></script>
 <script>
   var clock = document.getElementById("clock");
-  var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
+  var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
   var socket = io();
   var id ="";
   const audio = new Audio("ring.wav");
@@ -363,7 +363,8 @@
         var theNotif = msg[1];
       var concerned = msg[0];
         if (concerned.includes(role)){
-        const notification = new Notification(theNotif.title, {
+        const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+        const notification = new Notification(title, {
                      body: `${theNotif.content}`,
                     icon:  '../assets/images1/logo.jpg',
             })

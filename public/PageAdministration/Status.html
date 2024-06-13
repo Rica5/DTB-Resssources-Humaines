@@ -372,7 +372,8 @@
         var theNotif = msg[1];
       var concerned = msg[0];
         if (concerned.includes(role)){
-        const notification = new Notification(theNotif.title, {
+        const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+        const notification = new Notification(title, {
                      body: `${theNotif.content}`,
                     icon:  '../assets/images1/logo.jpg',
             })
@@ -380,7 +381,7 @@
         audio.play();
           }
       });
- var notif = JSON.parse(`<%-JSON.stringify(notif)%>`);
+      var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
  
     setnotification(notif);
   
