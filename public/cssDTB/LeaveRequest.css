@@ -819,3 +819,42 @@ input:focus {
     pointer-events: none; /* Make sure the arrow doesn't block clicks */
     color: #757575;
 }
+
+.workingdate-options {
+    display: flex;
+    flex-direction: column;
+    margin: 3px 0;
+}
+.workingdate-options span {
+    font-weight: 500;
+    color:#000;
+    margin-bottom: 4px;
+}
+.workingdate-options * {
+    font-size: 14px;
+    margin: 0;
+}
+.workingdate-options .dates-options > div{
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.no-connection {
+    position: fixed;
+    z-index: 999999;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.61);
+    backdrop-filter: blur(5px);
+    color: rgb(68, 68, 68);
+}
+
+.no-connection p {
+    max-width: 500px;
+    text-align: center;
+    margin: 0 auto;
+}

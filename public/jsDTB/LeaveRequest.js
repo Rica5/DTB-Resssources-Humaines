@@ -5,6 +5,7 @@ var myRequestContent;
 var myUpcomingContent;
 var leaveDuration = 0;
 var leaveDurationTwo = 0;
+var deduction = 0;
 var joinedFile = [];
 var fileIn = false;
 $("#makeRequest").click(() => {
@@ -54,6 +55,7 @@ $("#sendRequest").on('click', () => {
     var endTime = $("#endTime").val();
     var motif = $("#motif").val();
     var recovery = $("#recovery").val();
+    var deductedDay = deduction;
 
 
     (!startDate) ? $("#startDate").css({ "border-color": "red" }) : $("#startDate").css({ "border-color": "" });
@@ -70,7 +72,8 @@ $("#sendRequest").on('click', () => {
     formData.append("endTime", endTime)
     formData.append("motif", motif)
     formData.append("recovery", recovery)
-    formData.append("duration", (leaveDuration + leaveDurationTwo))
+    formData.append("deductedDay", deductedDay)
+    formData.append("duration", (leaveDuration + leaveDurationTwo - deduction))
     formData.append("priority", $("#toggle").is(':checked'));
     formData.append("leavePriority", +$("#priority").val());
     formData.append("fileIn", fileIn)
@@ -465,11 +468,11 @@ async function dateDiff(starting, ending) {
         // var dayl = duration.asDays();
         // leaveDuration = dayl;
         leaveDuration = await CalculateDaysIncludingHolidays(starting, ending) - 1;
-        $("#dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
+        $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
     }
     else {
         leaveDuration = 0;
-        $("#dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
+        $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
     }
     notValid()
 }
@@ -507,17 +510,17 @@ function hourDiff(startTime, endTime) {
                 $("#dayNumber").text(leaveDuration ? `${leaveDuration} jr ${calcul_timediff_absencetl(startTime, endTime)}` : `${calcul_timediff_absencetl(startTime, endTime)}`)
             }
             else {
-                $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+                $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
             }
 
         }
         else if (hours >= 4) {
             leaveDurationTwo = 1;
-            $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+            $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
         }
         else {
             leaveDurationTwo = 0;
-            $("#dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+            $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
         }
         notValid()
 
@@ -768,14 +771,74 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
     const end = new Date(endDate);
     const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in one day
     
+    // hide weekends working dates
+    $("#weekend-workingdates").hide();
+
+    deduction = 0;
+    $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)");
+
     // If the end date is a Friday, push it by 2 days to Sunday
     if (end.getDay() === 5) {
-        end.setDate(end.getDate() + 2);
+        // to pass on saturday
+        end.setDate(end.getDate() + 1); // next day (6)
+        $("#weekend-workingdates").show();
+        let saturdayRadio = `
+        <div>
+            <input type="radio" id="saturday" value="2" name="start-working">
+            <label for="saturday">Samedi ${end.toLocaleDateString('fr')}</label>
+        </div>`;
+        // pass on sunday
+        end.setDate(end.getDate() + 1); //next day (7)
+        let sundayRadio = `
+        <div>
+            <input type="radio" id="sunday" value="1" name="start-working">
+            <label for="sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
+        </div>`;
+
+        // add monday 
+        let mondayDate = new Date(end);
+        mondayDate.setDate(mondayDate.getDate() + 1);
+        let mondayRadio = `
+        <div>
+            <input type="radio" id="monday" value="0" name="start-working">
+            <label for="monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
+        </div>`;
+
+        // generate radio button for saturaday, sunday and monday
+        $(".dates-options").html(saturdayRadio + sundayRadio + mondayRadio);
+        // default check
+        $("#monday").click();
     }
     // If it fall for Saturday, we add 1 day for Sunday
     if (end.getDay() === 6) {
-        end.setDate(end.getDate() + 1);
+        $("#weekend-workingdates").show();
+        // pass on sunday
+        end.setDate(end.getDate() + 1); //next day (7)
+        let sundayRadio = `
+        <div>
+            <input type="radio" id="sunday" value="1" name="start-working">
+            <label for="sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
+        </div>`;
+        // add monday 
+        let mondayDate = new Date(end);
+        mondayDate.setDate(mondayDate.getDate() + 1);
+        let mondayRadio = `
+        <div>
+            <input type="radio" id="monday" value="0" name="start-working">
+            <label for="monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
+        </div>`;
+        // generate radio button for sunday and monday
+        $(".dates-options").html(sundayRadio + mondayRadio);
+        // default check
+        $("#monday").click();
     }
+
+    // event handler
+    $('input[name="start-working"]').change(function() {
+        let value = +$(this).val()
+        deduction = value;
+        $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
+    });
     
     let totalDays = Math.floor((end - start) / oneDay) + 1; // Including the end date
     let holidayCount = 0;
@@ -830,10 +893,13 @@ $(function(){
     $('#edit-startDate').attr('min', min);
     $('#edit-endDate').attr('min', min);
     
-    $('#startDate').attr('max', max);
-    $('#endDate').attr('max', max);
-    $('#edit-startDate').attr('max', max);
-    $('#edit-endDate').attr('max', max);
+    // $('#startDate').attr('max', max);
+    // $('#endDate').attr('max', max);
+    // $('#edit-startDate').attr('max', max);
+    // $('#edit-endDate').attr('max', max);
+
+    
+    $("#weekend-workingdates").hide();
 
     nextMonth = new Date()
 });

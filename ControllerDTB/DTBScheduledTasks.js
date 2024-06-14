@@ -35,7 +35,7 @@ async function checkNotTakenLeavesRequests(req, res) {
                 const notification = {
                     title: `<span style="color: red;">Congé en attente<span>`,
                     content: `La demande de congé de ${request.m_code} n'a pas encore été prise en compte. Veuillez prendre votre décision avant ${dueDate}. <br>
-                        <b>Date de congé:</b> ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}`,
+                        <b>Date de congé:</b> ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}.`,
                     datetime: moment().format("DD/MM/YYYY hh:mm:ss")
                 }
 
@@ -43,6 +43,7 @@ async function checkNotTakenLeavesRequests(req, res) {
                 // when validation length is 1, it means that only the TL saw the Request
                 if (request.validation.length <= 1) {
                     // "Send notification to ROP"
+                    if (request.validation.length === 0) notification.content += '<br>Pour validation par les Team Leaders.'
                     /* push notification... */
                     var concerned = ["Opération", "Surveillant"];
                     await Methods.setGlobalAdminNotifications(notification, concerned, true, req);

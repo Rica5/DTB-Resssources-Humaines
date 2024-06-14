@@ -28,6 +28,10 @@ const Leave = mongoose.Schema({
     order: Boolean,
     piece: String,
     date: String,
+    deductedDay: {
+        type: Number,
+        default: 0
+    },
     validation: [{
         user: {
             type: mongoose.Types.ObjectId,
