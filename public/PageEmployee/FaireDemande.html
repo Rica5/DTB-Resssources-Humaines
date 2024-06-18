@@ -548,7 +548,7 @@
                             <h1>${theNotif.title}</h1>
                             <p class="message">${theNotif.content}</p>
                             <div class="date-time">
-                                <span>${theNotif.datetime}</span>
+                                <span>${theNotif.datetime}, ${typeof moment !== "undefined" ? moment(theNotif.datetime, "DD/MM/YYYY HH:mm:ss").locale('fr').fromNow() : ""}</span>
                             </div>
                             <button type="button" class="remove-notif-btn" onClick="removeNotification('${theNotif._id}')"><i class="fa-solid fa-times"></i></button>
                         </div>
@@ -573,7 +573,7 @@
                             <h1>${element.title}</h1>
                             <p class="message">${element.content}</p>
                             <div class="date-time">
-                                <span>${element.datetime}</span>
+                                <span>${element.datetime}, ${typeof moment !== "undefined" ? moment(element.datetime, "DD/MM/YYYY HH:mm:ss").locale('fr').fromNow() : ""}</span>
                             </div>
                             <button type="button" class="remove-notif-btn" onClick="removeNotification('${element._id}')"><i class="fa-solid fa-times"></i></button>
                         </div>
@@ -613,7 +613,7 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = +$("#numberNotification").text();
-                        if (notifCount > 0)np
+                        if (notifCount > 0)
                             $("span#numberNotification").each((i, element) => {
                                 if (!$(`#${id}`).hasClass('seen') && parseInt($(element).text()) > 0)
                                     $(element).text(notifCount - 1)

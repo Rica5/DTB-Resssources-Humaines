@@ -273,8 +273,8 @@ function decided(decision) {
 }
 var allStat = {
     pending: "En attente",
-    approved: "Approuver",
-    declined: "Refuser",
+    approved: "Approuvée",
+    declined: "Refusée",
     progress: "En traitement",
 }
 function renderMyRequest(Leave, stat) {
@@ -775,23 +775,28 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
     $("#weekend-workingdates").hide();
 
     deduction = 0;
-    $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)");
+
+    var weekendDays = [];
 
     // If the end date is a Friday, push it by 2 days to Sunday
     if (end.getDay() === 5) {
         // to pass on saturday
         end.setDate(end.getDate() + 1); // next day (6)
+        weekendDays.push(end.toISOString());
         $("#weekend-workingdates").show();
         let saturdayRadio = `
         <div>
-            <input type="radio" id="saturday" value="2" name="start-working">
+            <input type="radio" id="saturday" value="2" name="start-working" date="${end.toISOString()}">
             <label for="saturday">Samedi ${end.toLocaleDateString('fr')}</label>
         </div>`;
+
         // pass on sunday
         end.setDate(end.getDate() + 1); //next day (7)
+        weekendDays.push(end.toISOString());
+
         let sundayRadio = `
         <div>
-            <input type="radio" id="sunday" value="1" name="start-working">
+            <input type="radio" id="sunday" value="1" name="start-working" date="${end.toISOString()}">
             <label for="sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
         </div>`;
 
@@ -800,7 +805,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         mondayDate.setDate(mondayDate.getDate() + 1);
         let mondayRadio = `
         <div>
-            <input type="radio" id="monday" value="0" name="start-working">
+            <input type="radio" id="monday" value="0" name="start-working" date="${mondayDate.toISOString()}">
             <label for="monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
         </div>`;
 
@@ -814,17 +819,19 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         $("#weekend-workingdates").show();
         // pass on sunday
         end.setDate(end.getDate() + 1); //next day (7)
+        weekendDays.push(end.toISOString());
         let sundayRadio = `
         <div>
-            <input type="radio" id="sunday" value="1" name="start-working">
+            <input type="radio" id="sunday" value="1" name="start-working" date="${end.toISOString()}">
             <label for="sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
         </div>`;
+
         // add monday 
         let mondayDate = new Date(end);
         mondayDate.setDate(mondayDate.getDate() + 1);
         let mondayRadio = `
         <div>
-            <input type="radio" id="monday" value="0" name="start-working">
+            <input type="radio" id="monday" value="0" name="start-working" date="${mondayDate.toISOString()}">
             <label for="monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
         </div>`;
         // generate radio button for sunday and monday
@@ -835,19 +842,41 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
 
     // event handler
     $('input[name="start-working"]').change(function() {
-        let value = +$(this).val()
+        let value = +$(this).val();
+        let returnDate = $(this).attr('date'); // date de retour au travail
         deduction = value;
+        /**
+         * Si congé demandé par l’employé se termine juste avant un jour férié, le férié ne sera pas déduit.
+         * Par contre si le jour férié est inclus ( se trouvant entre les jours normaux) dans les congés payés pris par l’employé, il sera décompté.
+         */
+        for (let date of weekendDays) {
+            if (returnDate > date) {
+                // check next date
+                if (holidays.includes(date.split('T')[0]) && date !== new Date(endDate).toISOString()) {
+                    deduction += 1;
+                    console.log(deduction)
+                }
+            }
+        }
+
         $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
     });
     
     let totalDays = Math.floor((end - start) / oneDay) + 1; // Including the end date
     let holidayCount = 0;
-    
-    for (let d = start; d <= end; d = new Date(d.getTime() + oneDay)) {
-        if (holidays.includes(d.toISOString().split('T')[0])) {
-            holidayCount++;
+
+    // holidays.push('2024-06-22');
+    for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+        // Check if the day is Saturday (6) or Sunday (0)
+        if (date.getDay() === 6 || date.getDay() === 0) {
+            // check next date
+            if (holidays.includes(date.toISOString().split('T')[0]) && date.toISOString() !== new Date(endDate).toISOString()) {
+                deduction += 1;
+            }
         }
     }
+
+    $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)");
     
     return totalDays - holidayCount;
 };
@@ -888,10 +917,10 @@ $(function(){
     // or instead:
     // var min = dtToday.toISOString().substr(0, 10);
 
-    $('#startDate').attr('min', min);
-    $('#endDate').attr('min', min);
-    $('#edit-startDate').attr('min', min);
-    $('#edit-endDate').attr('min', min);
+    // $('#startDate').attr('min', min);
+    // $('#endDate').attr('min', min);
+    // $('#edit-startDate').attr('min', min);
+    // $('#edit-endDate').attr('min', min);
     
     // $('#startDate').attr('max', max);
     // $('#endDate').attr('max', max);

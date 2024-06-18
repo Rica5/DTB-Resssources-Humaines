@@ -1,8 +1,6 @@
 
 // NOTIFICATION POUR HORS CONNEXION
 if (typeof socket !== "undefined") {
-
-    console.log('houraa')
     let html = `
     <div class="no-connection">
         <h2>Impossible de se connecter à Internet.</h2>

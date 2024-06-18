@@ -2,6 +2,7 @@ const ModelLeaveRequest = require("../models/ModelLeaveRequest");
 const ModelMember = require("../models/ModelMember");
 const Methods = require("../ControllerDTB/GlobalMethods")
 const moment = require('moment');
+const axios = require('axios');
 
 const Expiration = 48; // hours
 
@@ -96,7 +97,7 @@ async function automaticRequestConfirmation(req, res) {
             leavesRequests.map(async (request) => {
 
                 // leave request creation date
-                const creationDate = moment(request.datetime, "DD/MM/YYYY HH:mm:ss")
+                const creationDate = moment(request.datetime, "DD/MM/YYYY HH:mm:ss");
         
                 // Get the current date and time
                 const now = moment();
@@ -112,24 +113,33 @@ async function automaticRequestConfirmation(req, res) {
                     // push request to be send in the resposnse
                     ConfirmedRequests.push(request);
                     // accept the request... (to croscheck with Ricardo)
+                    
+                    try {
+                        const res = await axios.get('https://jsonplaceholder.typicode.com/todos/1');
+                        
+                        console.log(res.data);
+
+                        // send notification for all...
+                        const notification = {
+                            title: `<span style="color:green;">Confirmation automatique de la demande de congé</span>`,
+                            content: `Le congé de ${request.m_code} a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`,
+                            datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                        }
+
+                        // send notification to Admin, ROP, TL
+                        var concerned = ["Admin", "Surveillant", "Opération"];
+                        // await Methods.setGlobalAdminNotifications(notification, concerned, true, req);
 
 
-                    // send notification for all...
-                    const notification = {
-                        title: `<span style="color:green;">Confirmation automatique de la demande de congé</span>`,
-                        content: `Le congé de ${request.m_code} a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`,
-                        datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                        // send notification to the requester
+                        let content = `Votre congé, dont les datee sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`;
+                        let title = `<span style="color: green;">Congé accepté</span>`;
+                        // Methods.setEachUserNotification(request.m_code, title, content, req);
+
+                    } catch (error) {
+                        console.log(error);
                     }
 
-                    // send notification to Admin, ROP, TL
-                    var concerned = ["Admin", "Surveillant", "Opération"];
-                    await Methods.setGlobalAdminNotifications(notification, concerned, true, req);
-
-
-                    // send notification to the requester
-                    let content = `Votre congé, dont les datee sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`;
-                    let title = `<span style="color: green;">Congé accepté</span>`;
-                    Methods.setEachUserNotification(request.m_code, title, content, req);
 
                 } else {
                     console.log('The given date is within the last 48 hours.');
