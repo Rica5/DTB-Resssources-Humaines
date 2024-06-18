@@ -237,6 +237,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Section to ask user if they work on saturday or sunday if the ending date falls on friday or saturday -->
+                        <div class="row" id="weekend-workingdates">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-9 workingdate-options">
+                                <span>Quand retournerez-vous au travail?</span>
+                                <div class="dates-options">
+                                </div>
+                            </div>
+                        </div>
                         
                         <div class="row">
                             <div class="col-md-6">
@@ -369,6 +381,19 @@
                                 <div class="day-number">
                                     <p class="point-text">Nb de jour :</p>
                                     <p id="edit-dayNumber">0</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Section to ask user if they work on saturday or sunday if the ending date falls on friday or saturday -->
+                        <div class="row" id="edit-weekend-workingdates">
+                            <div class="col-md-3">
+
+                            </div>
+                            <div class="col-md-9 workingdate-options">
+                                <span>Quand retournerez-vous au travail?</span>
+                                <div class="edit-dates-options">
+                                    
                                 </div>
                             </div>
                         </div>
@@ -523,7 +548,7 @@
                             <h1>${theNotif.title}</h1>
                             <p class="message">${theNotif.content}</p>
                             <div class="date-time">
-                                <span>${theNotif.datetime}</span>
+                                <span>${theNotif.datetime}, ${typeof moment !== "undefined" ? moment(theNotif.datetime, "DD/MM/YYYY HH:mm:ss").locale('fr').fromNow() : ""}</span>
                             </div>
                             <button type="button" class="remove-notif-btn" onClick="removeNotification('${theNotif._id}')"><i class="fa-solid fa-times"></i></button>
                         </div>
@@ -548,7 +573,7 @@
                             <h1>${element.title}</h1>
                             <p class="message">${element.content}</p>
                             <div class="date-time">
-                                <span>${element.datetime}</span>
+                                <span>${element.datetime}, ${typeof moment !== "undefined" ? moment(element.datetime, "DD/MM/YYYY HH:mm:ss").locale('fr').fromNow() : ""}</span>
                             </div>
                             <button type="button" class="remove-notif-btn" onClick="removeNotification('${element._id}')"><i class="fa-solid fa-times"></i></button>
                         </div>
@@ -588,7 +613,7 @@
                             $(`#${id}`).remove();
                         }, 200);
                         let notifCount = +$("#numberNotification").text();
-                        if (notifCount > 0)np
+                        if (notifCount > 0)
                             $("span#numberNotification").each((i, element) => {
                                 if (!$(`#${id}`).hasClass('seen') && parseInt($(element).text()) > 0)
                                     $(element).text(notifCount - 1)
@@ -697,6 +722,8 @@
     <script src="../jsDTB/LeaveRequest.js"></script>
     <script src="../jsDTB/LeaveRequestEdit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/intro.min.js"></script>
+    <script src="../jsDTB/no-connection.js"></script>
+
     <script>
         // introJs().start();
     </script>

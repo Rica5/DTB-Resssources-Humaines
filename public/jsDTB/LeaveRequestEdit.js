@@ -1,5 +1,6 @@
-var leaveDuration = 0;
-var leaveDurationTwo = 0;
+var edit_leaveDuration = 0;
+var edit_leaveDurationTwo = 0;
+var edit_deduction = 0;
 var editJoinedFile = [];
 var editFileIn = false;
 var oldStartDate = '';
@@ -15,6 +16,7 @@ $("#editRequest").on('click', () => {
     var motif = $("#edit-motif").val();
     var recovery = $("#edit-recovery").val();
     var priority = +$("#edit-priority").val();
+    var deductedDay = edit_deduction;
 
 
     (!startDate) ? $("#edit-startDate").css({ "border-color": "red" }) : $("#edit-startDate").css({ "border-color": "" });
@@ -26,7 +28,7 @@ $("#editRequest").on('click', () => {
 
     var dateRequest = {
         join: editJoinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime,
-        endTime: endTime, motif: motif, recovery: recovery, duration: (leaveDuration + leaveDurationTwo), priority: $("#edit-toggle").is(':checked')
+        endTime: endTime, motif: motif, recovery: recovery, duration: (edit_leaveDuration + edit_leaveDurationTwo), priority: $("#edit-toggle").is(':checked')
     }
     formData.append("join", editJoinedFile)
     formData.append("code", code)
@@ -36,9 +38,10 @@ $("#editRequest").on('click', () => {
     formData.append("endTime", endTime)
     formData.append("motif", motif)
     formData.append("recovery", recovery)
-    formData.append("duration", (leaveDuration + leaveDurationTwo))
+    formData.append("duration", (edit_leaveDuration + edit_leaveDurationTwo - edit_deduction))
     formData.append("priority", $("#edit-toggle").is(':checked'))
     formData.append("leavePriority", priority);
+    formData.append("deductedDay", deductedDay);
     formData.append("fileIn", editFileIn)
     if (startDate && endDate && startTime && endTime && motif) {
         if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate)) {
@@ -107,19 +110,20 @@ $("#editRequest").on('click', () => {
 
 });
 
-function editDateDiff(starting, ending) {
+async function editDateDiff(starting, ending) {
     if (ending != "") {
         // var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
         // var endings = moment(ending, "YYYY-MM-DD HH:mm");
         // var duration = moment.duration(endings.diff(startings));
         // var dayl = duration.asDays();
         // leaveDuration = dayl;
-        leaveDuration = CalculateDaysIncludingHolidays(starting, ending) - 1;
-        $("#edit-dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
+        edit_leaveDuration = await EditCalculateDaysIncludingHolidays(starting, ending) - 1;
+        console.log(edit_leaveDuration, edit_leaveDurationTwo, edit_deduction)
+        $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
     }
     else {
-        leaveDuration = 0;
-        $("#edit-dayNumber").text((leaveDuration + leaveDurationTwo) + " jour(s)")
+        edit_leaveDuration = 0;
+        $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
     }
     editNotValid()
 }
@@ -152,29 +156,29 @@ function editHourDiff(startTime, endTime) {
         hours += hours_fictif;
         minutes += minutes_fictif;
         if (hours <= 4) {
-            hours <= 2 ? leaveDurationTwo = 0.25 : leaveDurationTwo = 0.5;
-            if (leaveDurationTwo == 0.25) {
-                $("#edit-dayNumber").text(leaveDuration ? `${leaveDuration} jr ${calcul_timediff_absencetl(startTime, endTime)}` : `${calcul_timediff_absencetl(startTime, endTime)}`)
+            hours <= 2 ? edit_leaveDurationTwo = 0.25 : edit_leaveDurationTwo = 0.5;
+            if (edit_leaveDurationTwo == 0.25) {
+                $("#edit-dayNumber").text(edit_leaveDuration ? `${edit_leaveDuration} jr ${calcul_timediff_absencetl(startTime, endTime)}` : `${calcul_timediff_absencetl(startTime, endTime)}`)
             }
             else {
-                $("#edit-dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+                $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
             }
 
         }
         else if (hours >= 4) {
-            leaveDurationTwo = 1;
-            $("#edit-dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+            edit_leaveDurationTwo = 1;
+            $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
         }
         else {
-            leaveDurationTwo = 0;
-            $("#edit-dayNumber").text((leaveDurationTwo + leaveDuration) + " jour(s)")
+            edit_leaveDurationTwo = 0;
+            $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
         }
         editNotValid()
 
     }
 }
 function editNotValid() {
-    if (leaveDuration < 0) {
+    if (edit_leaveDuration < 0) {
         $("#editRequest").prop("disabled", true)
         $("#notification").attr("class", "notice-denied");
         $("#notification").text("Erreur d'entrée sur la date");
@@ -208,7 +212,7 @@ function editTriggerButton() {
 }
 
 function editNotValid() {
-    if (leaveDuration < 0) {
+    if (edit_leaveDuration < 0) {
         $("#editRequest").prop("disabled", true)
         $("#notification").attr("class", "notice-denied");
         $("#notification").text("Erreur d'entrée sur la date");
@@ -292,7 +296,7 @@ function openEditModal(id) {
         url: `/RequestLeave/${id}`, // Replace this with your API endpoint
         type: "GET",
         dataType: "json",
-        success: function (data) {
+        success: async function (data) {
             // This function will be called if the request is successful
             if (data.ok) {
                 // Display the retrieved data to the console
@@ -315,12 +319,23 @@ function openEditModal(id) {
                 $('#edit-endTime').val(leave.hour_end)
 
                 $('#edit-dayNumber').text(`${leave.duration} ${leave.duration > 1 ? "jours" : "jour"}`)
-                leaveDuration = leave.duration;
+                // edit_leaveDuration = leave.duration;
 
                 $('#edit-motif').val(leave.motif)
                 $('#edit-recovery').val(leave.recovery)
+                
+                $('#edit-priority').val(leave.leavePriority)
 
-                $('#edit-toggle').attr('checked', leave.priority)
+                $("#edit-weekend-workingdates").hide();
+
+                await editDateDiff(leave.date_start, leave.date_end);
+                await editHourDiff(leave.hour_begin, leave.hour_end);
+                
+                // edit_deduction = leave.deductedDay;
+                // $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
+
+                // when agent work on sunday or saturday
+                $(`input[name="edit-start-working"][value="${leave.deductedDay}"]`).prop('checked', true);
                 // Process the data as needed
                 toggleEditModal();
             }
@@ -335,3 +350,156 @@ function openEditModal(id) {
 function toggleEditModal() {
     $('.edit-leave-modal').toggleClass("open")
 }
+
+/**
+ * Method for fetching holidays at madagascar from api
+ */
+const editFetchHolidays = async (year) => {
+    const country = 'MG';
+    const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
+    const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
+    const data = await response.json();
+    return data.map(holiday => holiday.date);
+};
+
+/**
+ * Method to calculate effective days, 
+ * When the end date is friday, we add two days (saturday, sunday)
+ * Also, when date is included in the holidays, we decrement per one day (-1 day)
+ * @param {String} startDate start date 
+ * @param {String} endDate end date
+ * @param {Array of String} holidays Array of holiday from api
+ * @returns number
+ */
+
+const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const oneDay = 24 * 60 * 60 * 1000; // Milliseconds in one day
+    
+    // hide weekends working dates
+    $("#edit-weekend-workingdates").hide();
+
+    edit_deduction = 0;
+    var weekendDays = [];
+
+    // If the end date is a Friday, push it by 2 days to Sunday
+    if (end.getDay() === 5) {
+        // to pass on saturday
+        end.setDate(end.getDate() + 1); // next day (6)
+        weekendDays.push(end.toISOString());
+        $("#edit-weekend-workingdates").show();
+        let saturdayRadio = `
+        <div>
+            <input type="radio" id="edit-saturday" value="2" name="edit-start-working" date="${end.toISOString()}">
+            <label for="edit-saturday">Samedi ${end.toLocaleDateString('fr')}</label>
+        </div>`;
+        
+        // pass on sunday
+        end.setDate(end.getDate() + 1); //next day (7)
+        weekendDays.push(end.toISOString());
+        let sundayRadio = `
+        <div>
+            <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
+            <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
+        </div>`;
+
+        // add monday 
+        let mondayDate = new Date(end);
+        mondayDate.setDate(mondayDate.getDate() + 1);
+        let mondayRadio = `
+        <div>
+            <input type="radio" id="edit-monday" value="0" name="edit-start-working" date="${mondayDate.toISOString()}">
+            <label for="edit-monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
+        </div>`;
+
+        // generate radio button for saturaday, sunday and monday
+        $(".edit-dates-options").html(saturdayRadio + sundayRadio + mondayRadio);
+        // default check
+        $("#edit-monday").click();
+    }
+    // If it fall for Saturday, we add 1 day for Sunday
+    if (end.getDay() === 6) {
+        $("#weekend-workingdates").show();
+        // pass on sunday
+        end.setDate(end.getDate() + 1); //next day (7)
+        weekendDays.push(end.toISOString());
+        let sundayRadio = `
+        <div>
+            <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
+            <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
+        </div>`;
+
+        // add monday 
+        let mondayDate = new Date(end);
+        mondayDate.setDate(mondayDate.getDate() + 1);
+        let mondayRadio = `
+        <div>
+            <input type="radio" id="edit-monday" value="0" name="edit-start-working" date="${mondayDate.toISOString()}">
+            <label for="edit-monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
+        </div>`;
+        // generate radio button for sunday and monday
+        $(".edit-dates-options").html(sundayRadio + mondayRadio);
+        // default check
+        $("#edit-monday").click();
+    }
+
+    // event handler
+    $('input[name="edit-start-working"]').change(function() {
+        let value = +$(this).val()
+        let returnDate = $(this).attr('date'); // date de retour au travail
+        edit_deduction = value;
+        /**
+         * Si congé demandé par l’employé se termine juste avant un jour férié, le férié ne sera pas déduit.
+         * Par contre si le jour férié est inclus ( se trouvant entre les jours normaux) dans les congés payés pris par l’employé, il sera décompté.
+         */
+        for (let date of weekendDays) {
+            if (returnDate > date) {
+                // check next date
+                if (holidays.includes(date.split('T')[0]) && date !== new Date(endDate).toISOString()) {
+                    edit_deduction += 1;
+                }
+            }
+        }
+        $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
+    });
+    let totalDays = Math.floor((end - start) / oneDay) + 1; // Including the end date
+    let holidayCount = 0;
+    
+    //holidays.push('2024-06-22');
+    for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+        // Check if the day is Saturday (6) or Sunday (0)
+        if (date.getDay() === 6 || date.getDay() === 0) {
+            // check next date
+            if (holidays.includes(date.toISOString().split('T')[0]) && date.toISOString() !== new Date(endDate).toISOString()) {
+                edit_deduction += 1;
+            }
+        }
+    }
+
+    $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
+    
+    return totalDays - holidayCount;
+};
+
+/**
+ * Methode to calculate day difference of two dates
+ * if any date between those are including in a holidays/non-working days, we apply discount (-1 day per date included)
+ * @param {String} startDate start date with format yyy-mm-dd
+ * @param {String} endDate end date with format yyy-mm-dd
+ * @returns number
+ */
+const EditCalculateDaysIncludingHolidays = async (startDate, endDate) => {
+    const year = new Date().getFullYear();
+    const holidays = await editFetchHolidays(year);
+    const effectiveDays = editCalculateEffectiveDays(startDate, endDate, holidays);
+    
+    console.log(`Effective days between ${startDate} and ${endDate} excluding holidays: ${effectiveDays}`);
+    return effectiveDays;
+};
+
+$(function(){
+    
+    $("#edit-weekend-workingdates").hide();
+    nextMonth = new Date()
+});

@@ -345,3 +345,23 @@ span#numberNotification[textContent="0"] {
 a[href="News"] {
     display: none;
 }
+
+
+.no-connection {
+    position: fixed;
+    z-index: 999999;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.61);
+    backdrop-filter: blur(10px);
+    color: rgb(68, 68, 68);
+}
+
+.no-connection p {
+    max-width: 500px;
+    text-align: center;
+    margin: 0 auto;
+}

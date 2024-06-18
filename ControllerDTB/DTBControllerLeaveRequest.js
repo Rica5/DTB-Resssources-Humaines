@@ -65,6 +65,7 @@ const makeLeaveRequest = async (req, res) => {
                 motif: req.body.motif,
                 recovery: req.body.recovery,
                 duration: req.body.duration,
+                deductedDay: req.body.deductedDay,
                 type: "",
                 exceptType: "",
                 status: "pending",
@@ -123,6 +124,7 @@ const updateLeaveRequest = async (req, res) => {
                 motif: req.body.motif,
                 recovery: req.body.recovery,
                 duration: req.body.duration,
+                deductedDay: req.body.deductedDay,
                 type: "",
                 exceptType: "",
                 status: "pending",
@@ -260,20 +262,20 @@ const seePending = async (req, res) => {
 const getPending = async (req, res) => {
     var session = req.session;
     if (session.occupation_tl == "Surveillant") {
-        var allRequest = await LeaveRequestTest.find({ status: { $ne: "done" }, validation: [] });
+        var allRequest = await LeaveRequestTest.find({ status: { $ne: "done" }, validation: [] }).sort({ leavePriority: 'desc' });
         res.json(allRequest);
     }
     else if (session.occupation_op == "Opération") {
-        var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' });
+        var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
         if (session.idUser == "645a417e9d34ed8965caea9e") {
-            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 3] } }).populate({ path: "validation.user", select: 'usuel' });
+            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 3] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
         else {
-            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' });
+            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
     }
@@ -591,7 +593,7 @@ async function cancelLeaveRequest(req, res) {
         var notification = {
             title: "Annulation d'une demande d'absence",
             content: `${deleted.m_code} a annulé une demande d'absence le ${moment(deleted.date_start).format("DD/MM/YYYY")} au ${moment(deleted.date_end).format("DD/MM/YYYY")} (${deleted.duration} jour(s))`,
-            datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+            datetime: moment().format("DD/MM/YYYY hh:mm:ss")   
         }
         var concerned = ["Admin", "Surveillant", "Opération"]
         await setGlobalAdminNotifications(notification, concerned, true, req);
