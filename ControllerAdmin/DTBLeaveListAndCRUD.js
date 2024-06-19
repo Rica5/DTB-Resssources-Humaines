@@ -435,7 +435,7 @@ const getPageDefine = async (req, res) => {
 //Take leave
 const createLeave = async (req, res) => {
   var session = req.session;
-  if (session.occupation_a == "Admin") {
+  if (session.occupation_a == "Admin" || req.body.automatic) {
     var code = req.body.code;
     var type = req.body.type;
     var leavestart = req.body.leavestart;

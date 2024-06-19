@@ -1,5 +1,4 @@
 const ModelLeaveRequest = require("../models/ModelLeaveRequest");
-const ModelMember = require("../models/ModelMember");
 const Methods = require("../ControllerDTB/GlobalMethods")
 const moment = require('moment');
 const axios = require('axios');
@@ -113,28 +112,55 @@ async function automaticRequestConfirmation(req, res) {
                     // push request to be send in the resposnse
                     ConfirmedRequests.push(request);
                     // accept the request... (to croscheck with Ricardo)
-                    
                     try {
-                        const res = await axios.get('https://jsonplaceholder.typicode.com/todos/1');
-                        
-                        console.log(res.data);
+                        // get url
+                        const locationURL = `${req.protocol}://${req.get('host')}/takeleave`;
 
-                        // send notification for all...
-                        const notification = {
-                            title: `<span style="color:green;">Confirmation automatique de la demande de congé</span>`,
-                            content: `Le congé de ${request.m_code} a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`,
-                            datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                        const res = await axios.post(locationURL, JSON.stringify({
+                            code:request.m_code,type:request.type,exceptType:request.exceptType,leavestart:request.date_start,leaveend:request.date_end,
+                            begin:request.hour_begin,end:request.hour_end,court:request.duration,motif:request.motif,idRequest:request._id,
+                            type: "Congé Payé",
+                            automatic: true // automatic confirmation
+                        }), {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if ("m_code" in res.data) { // success
+                            // update request
+                            let approuvedLeave = await ModelLeaveRequest.findOneAndUpdate({ _id: request._id }, {
+                                status: 'approved'
+                            }, { new: true }).populate({ path: "validation.user", select: "usuel" });
+                            if (approuvedLeave) {
+                                const io = req.app.get("io");
+                                // send to the employé
+                                await io.sockets.emit("isTreated", [request._id, approuvedLeave]);
+                                
+                                // send notification for all...
+                                const notification = {
+                                    title: `<span style="color:green;">Confirmation automatique de la demande de congé</span>`,
+                                    content: `Le congé de ${request.m_code} a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.<br>
+                                    <b>Dates de congés:</b> le ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}`,
+                                    datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                                }
+
+                                // send notification to Admin, ROP, TL
+                                var concerned = ["Admin", "Surveillant", "Opération"];
+                                await Methods.setGlobalAdminNotifications(notification, concerned, true, req);
+
+
+                                // send notification to the requester
+                                let content = `Votre congé, dont les dates sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`;
+                                let title = `<span style="color: green;">Congé accepté</span>`;
+                                await Methods.setEachUserNotification(request.m_code, title, content, req);
+                            } else {
+                                console.log('Leave is not approuved')
+                            }
+                        } else {
+                            console.log(res)
                         }
 
-                        // send notification to Admin, ROP, TL
-                        var concerned = ["Admin", "Surveillant", "Opération"];
-                        // await Methods.setGlobalAdminNotifications(notification, concerned, true, req);
-
-
-                        // send notification to the requester
-                        let content = `Votre congé, dont les datee sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`;
-                        let title = `<span style="color: green;">Congé accepté</span>`;
-                        // Methods.setEachUserNotification(request.m_code, title, content, req);
 
                     } catch (error) {
                         console.log(error);

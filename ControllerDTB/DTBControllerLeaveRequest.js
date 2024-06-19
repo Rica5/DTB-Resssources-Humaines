@@ -200,15 +200,15 @@ const attachedFileAnother = async (req,res) => {
                 var extension = files.name.split(".");
                 var name = `${idLeave}.${extension[extension.length - 1]}`
                 var thisLeave = await LeaveSchema.findOneAndUpdate({_id:idLeave},{piece:name});
-               files.mv("public/PieceJointe/" + name);
-             res.json({
-                status:"Success",
-                idLeave:thisLeave._id,
-                fileName:name,
-                code:thisLeave.m_code,
-                start:thisLeave.date_start,
-                end:thisLeave.date_end
-             })
+                files.mv("public/PieceJointe/" + name);
+                res.json({
+                    status:"Success",
+                    idLeave:thisLeave._id,
+                    fileName:name,
+                    code:thisLeave.m_code,
+                    start:thisLeave.date_start,
+                    end:thisLeave.date_end
+                })
         }
         catch(err){
             console.log(err)
@@ -456,7 +456,8 @@ const answerRequest = async (req, res) => {
 //Get Notifications 
 const getNotifications = async (req, res) => {
     var notifications = await UserSchema.findOne({ m_code: req.body.code });
-    res.json(notifications.myNotifications);
+    let sorted = notifications.myNotifications.sort((a, b) => `${b._id}`.localeCompare(`${a._id}`));
+    res.json(sorted);
 }
 async function setGlobalAdminNotifications(notification, concerned, spec, req) {
     await UserSchema.updateMany({ occupation: { $in: concerned }, _id: { $ne: "645a417e9d34ed8965caea9e" } }, { $push: { myNotifications: notification } });
