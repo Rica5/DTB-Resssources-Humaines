@@ -75,7 +75,7 @@ function pushNotification(theNotif, role) {
             <h1>${theNotif.title}</h1>
             <p class="message">${theNotif.content}</p>
             <div class="date-time">
-            <span>${notification.datetime}, ${typeof moment !== "undefined" ? moment(notification.datetime, "DD/MM/YYYY HH:mm:ss").locale('fr').fromNow() : ""}</span>
+            <span>${theNotif.datetime}, ${typeof moment !== "undefined" ? moment(theNotif.datetime, "DD/MM/YYYY HH:mm:ss").locale('fr').fromNow() : ""}</span>
             </div>
         </div>
         </div>
