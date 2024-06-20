@@ -912,7 +912,6 @@ $(function(){
     dtToday.setMonth(dtToday.getMonth() + 3);
 
     var max = `${dtToday.getFullYear()}-${padS(dtToday.getMonth() + 1)}-${padS(dtToday.getDay())}`;
-    console.log(min, max)
 
     // or instead:
     // var min = dtToday.toISOString().substr(0, 10);
