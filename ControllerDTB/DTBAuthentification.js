@@ -63,7 +63,7 @@ const checkEmail = async (req, res) => {
     session.mailconfirm = email;
     session.m_code_confirm = user.m_code;
     session.code = randomCode();
-    sendEmail(
+    Methods.sendEmail(
       session.mailconfirm,
       "Code de verification",
       htmlVerification(session.code)
@@ -265,7 +265,7 @@ async function switch_interface(session, mail, opt, res) {
       session.occupation_tl = "Surveillant";
       session.occupation_op = null;
       session.occupation_u = null;
-      data_desired[session.m_code] = {};
+      globalVariable.data_desired[session.m_code] = {};
       res.redirect("/managementtl");
     }
   } else if (
@@ -535,6 +535,7 @@ async function resetAll() {
   await UserSchema.updateMany({}, { act_loc: "Not defined", act_stat: "LEFTING", myNotifications: [] })
   console.log("Rese all done")
 }
+
 //change_admin_profil()
 
 //Method that is used on this controller and in other controller
