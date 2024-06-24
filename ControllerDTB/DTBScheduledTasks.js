@@ -3,7 +3,7 @@ const Methods = require("../ControllerDTB/GlobalMethods")
 const moment = require('moment');
 const axios = require('axios');
 
-const Expiration = 48; // hours
+const Expiration = 48; // hours 48
 
 
 // Method to notify RH and ROP when some requests had not been processed yet.
