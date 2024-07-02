@@ -108,6 +108,7 @@ $("#sendRequest").on('click', () => {
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
+                        $("#weekend-workingdates").show();
                     }
                     else {
                         $("#sendRequest").prop("disabled", false);
@@ -749,11 +750,15 @@ function cancelLeaveRequest() {
  * Method for fetching holidays at madagascar from api
  */
 const fetchHolidays = async (year) => {
-    const country = 'MG';
-    const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
-    const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
-    const data = await response.json();
-    return data.map(holiday => holiday.date);
+    try {
+        const country = 'MG';
+        const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
+        const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
+        const data = await response.json();
+        return data.map(holiday => holiday.date);
+    } catch (error) {
+        return [];
+    }
 };
 
 
@@ -910,12 +915,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
  */
 const CalculateDaysIncludingHolidays = async (startDate, endDate) => {
     const year = new Date().getFullYear();
-    var holidays = [];
-    try {
-        holidays = await fetchHolidays(year);
-    } catch (error) {
-        console.log(error)
-    }
+    const holidays = await fetchHolidays(year);
     const effectiveDays = calculateEffectiveDays(startDate, endDate, holidays);
     
     console.log(`Effective days between ${startDate} and ${endDate} excluding holidays: ${effectiveDays}`);

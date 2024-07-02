@@ -81,6 +81,7 @@ $("#editRequest").on('click', () => {
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
+                        $("#edit-weekend-workingdates").show()
                     }
                     else {
                         $("#editRequest").prop("disabled", false);
@@ -427,7 +428,7 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
     }
     // If it fall for Saturday, we add 1 day for Sunday
     if (end.getDay() === 6) {
-        $("#weekend-workingdates").show();
+        $("#edit-weekend-workingdates").show();
         // pass on sunday
         end.setDate(end.getDate() + 1); //next day (7)
         weekendDays.push(end.toISOString());
