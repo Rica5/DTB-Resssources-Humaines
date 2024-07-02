@@ -108,6 +108,7 @@ $("#sendRequest").on('click', () => {
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
+                        $("#weekend-workingdates").show();
                     }
                     else {
                         $("#sendRequest").prop("disabled", false);
@@ -749,12 +750,26 @@ function cancelLeaveRequest() {
  * Method for fetching holidays at madagascar from api
  */
 const fetchHolidays = async (year) => {
-    const country = 'MG';
-    const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
-    const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
-    const data = await response.json();
-    return data.map(holiday => holiday.date);
+    try {
+        const country = 'MG';
+        const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
+        const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
+        const data = await response.json();
+        return data.map(holiday => holiday.date);
+    } catch (error) {
+        return [];
+    }
 };
+
+
+// function to convert date to yyyy-mm-dd
+function formatDateToYyyDdMm(date) {
+    const year = date.getFullYear();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JavaScript
+
+    return `${year}-${month}-${day}`;
+}
 
 /**
  * Method to calculate effective days, 
@@ -799,6 +814,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
             <input type="radio" id="sunday" value="1" name="start-working" date="${end.toISOString()}">
             <label for="sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
         </div>`;
+        let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
 
         // add monday 
         let mondayDate = new Date(end);
@@ -813,6 +829,8 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         $(".dates-options").html(saturdayRadio + sundayRadio + mondayRadio);
         // default check
         $("#monday").click();
+        // change end date value
+        $('#endDate').val(defaultEndDateString);
     }
     // If it fall for Saturday, we add 1 day for Sunday
     if (end.getDay() === 6) {
@@ -825,6 +843,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
             <input type="radio" id="sunday" value="1" name="start-working" date="${end.toISOString()}">
             <label for="sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
         </div>`;
+        let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
 
         // add monday 
         let mondayDate = new Date(end);
@@ -838,6 +857,8 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         $(".dates-options").html(sundayRadio + mondayRadio);
         // default check
         $("#monday").click();
+        // change end date value
+        $('#endDate').val(defaultEndDateString);
     }
 
     // event handler
@@ -854,10 +875,14 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
                 // check next date
                 if (holidays.includes(date.split('T')[0]) && date !== new Date(endDate).toISOString()) {
                     deduction += 1;
-                    console.log(deduction)
                 }
             }
         }
+        // changer automatiquement la valeur du champ date de fin.
+        let defaultEndDateAsDate = new Date(returnDate);
+        defaultEndDateAsDate.setDate(defaultEndDateAsDate.getDate() - 1);
+        $("#endDate").val(formatDateToYyyDdMm(defaultEndDateAsDate));
+
 
         $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
     });

@@ -81,6 +81,7 @@ $("#editRequest").on('click', () => {
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
+                        $("#edit-weekend-workingdates").show()
                     }
                     else {
                         $("#editRequest").prop("disabled", false);
@@ -355,11 +356,15 @@ function toggleEditModal() {
  * Method for fetching holidays at madagascar from api
  */
 const editFetchHolidays = async (year) => {
-    const country = 'MG';
-    const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
-    const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
-    const data = await response.json();
-    return data.map(holiday => holiday.date);
+    try {
+        const country = 'MG';
+        const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
+        const response = await fetch(url, { headers: { 'X-Api-Key' : 'E1em8oPufQabcXhLRNSpuw==1ViChCD8i2kk34Cv' }});
+        const data = await response.json();
+        return data.map(holiday => holiday.date);
+    } catch (error) {
+        return [];
+    }
 };
 
 /**
@@ -403,6 +408,7 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
             <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
             <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
         </div>`;
+        let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
 
         // add monday 
         let mondayDate = new Date(end);
@@ -417,10 +423,12 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
         $(".edit-dates-options").html(saturdayRadio + sundayRadio + mondayRadio);
         // default check
         $("#edit-monday").click();
+        // change end date value
+        $('#edit-endDate').val(defaultEndDateString);
     }
     // If it fall for Saturday, we add 1 day for Sunday
     if (end.getDay() === 6) {
-        $("#weekend-workingdates").show();
+        $("#edit-weekend-workingdates").show();
         // pass on sunday
         end.setDate(end.getDate() + 1); //next day (7)
         weekendDays.push(end.toISOString());
@@ -429,6 +437,7 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
             <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
             <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
         </div>`;
+        let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
 
         // add monday 
         let mondayDate = new Date(end);
@@ -442,6 +451,8 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
         $(".edit-dates-options").html(sundayRadio + mondayRadio);
         // default check
         $("#edit-monday").click();
+        // change end date value
+        $('#edit-endDate').val(defaultEndDateString);
     }
 
     // event handler
@@ -461,7 +472,11 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
                 }
             }
         }
-        $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
+        $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)");
+        // changer automatiquement la valeur du champ date de fin.
+        let defaultEndDateAsDate = new Date(returnDate);
+        defaultEndDateAsDate.setDate(defaultEndDateAsDate.getDate() - 1);
+        $("#edit-endDate").val(formatDateToYyyDdMm(defaultEndDateAsDate));
     });
     let totalDays = Math.floor((end - start) / oneDay) + 1; // Including the end date
     let holidayCount = 0;

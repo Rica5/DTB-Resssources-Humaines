@@ -12,7 +12,7 @@ function sendEmail(receiver, subject, text) {
     html: text,
   };
 
-  globalVariable.transporter.sendMail(mailOptions, function (error, info) {
+  globaleVariable.transporter.sendMail(mailOptions, function (error, info) {
     if (error) {
       console.log(error);
     } else {
