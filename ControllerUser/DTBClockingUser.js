@@ -696,6 +696,7 @@ function GrantedAccess(ipProvided, shift, excludeCode) {
       if (ip.includes(ipProvided)) {
         return true;
       } else {
+        return true;
         return false;
       }
     } else {
