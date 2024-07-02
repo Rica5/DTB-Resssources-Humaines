@@ -8,6 +8,8 @@ const methodOverride = require("method-override");
 const expsession = require("cookie-session");
 const fileUpload = require("express-fileupload");
 const mongoose = require('mongoose');
+const cron = require('node-cron');
+const axios = require('axios');
 require('dotenv').config();
 // Connect to MongoDB using Mongoose
 mongoose.connect(process.env.DB_URI, {});
@@ -69,7 +71,40 @@ app.set("io", io);
 //app.use("/", route);
 app.use("/", routeDTB);
 
+
+// méthode pour ne pas autoriser les appareils mobiles
+const mobileAccessMiddleware = (req, res, next) => {
+  const userAgent = req.headers['user-agent'] || '';
+  const isMobile = /mobile|android|iphone|ipad|phone/i.test(userAgent);
+  if (isMobile) {
+    return res.status(403).send('<br><h1>Oupss! Les appareils mobiles ne sont pas autorisés.</h1>');
+  }
+  next();
+};
+
+// Use the mobile access middleware
+app.use(mobileAccessMiddleware);
 server.listen(PORT, () => {
   const port = server.address().port;
   console.log(`Express is working on port ${port}`);
+
+  // scheduled requests
+  var task = cron.schedule('*/15 * * * *', () =>  {
+    try {
+      // send request for auto confirmation
+      axios(`${process.env.APP_URL}:${PORT}/scheduled-automatic-requests-confirmation`)
+      .then(() => {
+        console.log("Auto sent!")
+      });
+      // send request for leave pending
+      axios(`${process.env.APP_URL}:${PORT}/scheduled-leaves-requests-checker`)
+      .then(() => {
+        console.log("Checker sent!")
+      });
+      
+    } catch (error) {
+      console.log(error)
+    }
+  });
+  task.start()
 });
