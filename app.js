@@ -89,22 +89,22 @@ server.listen(PORT, () => {
   console.log(`Express is working on port ${port}`);
 
   // scheduled requests
-  var task = cron.schedule('*/15 * * * *', () =>  {
-    try {
-      // send request for auto confirmation
-      axios(`${process.env.APP_URL}:${PORT}/scheduled-automatic-requests-confirmation`)
-      .then(() => {
-        console.log("Auto sent!")
-      });
-      // send request for leave pending
-      axios(`${process.env.APP_URL}:${PORT}/scheduled-leaves-requests-checker`)
-      .then(() => {
-        console.log("Checker sent!")
-      });
-      
-    } catch (error) {
-      console.log(error)
-    }
-  });
-  task.start()
+  // var task = cron.schedule('*/15 * * * *', () =>  {
+  //   try {
+  //     // send request for auto confirmation
+  //     axios(`${process.env.APP_URL}:${PORT}/scheduled-automatic-requests-confirmation`)
+  //     .then(() => {
+  //       console.log("Auto sent!")
+  //     });
+  //     // send request for leave pending
+  //     axios(`${process.env.APP_URL}:${PORT}/scheduled-leaves-requests-checker`)
+  //     .then(() => {
+  //       console.log("Checker sent!")
+  //     });
+
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+  // });
+  // task.start()
 });

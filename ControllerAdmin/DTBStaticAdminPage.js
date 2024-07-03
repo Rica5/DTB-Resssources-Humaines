@@ -87,7 +87,7 @@ const getPageAbsenceList = async(req,res) => {
     var session = req.session;
   if (session.occupation_a == "Admin") {
     var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
-         var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
+        var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin"
         res.render("PageAdministration/ListeAbsence.html", {
           notif: dataUser.myNotifications,
           username: session.mailing,
