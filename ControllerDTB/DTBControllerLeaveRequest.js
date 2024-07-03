@@ -3,7 +3,8 @@ const LeaveSchema = require("../models/ModelLeave");
 const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-const gerantId = "645a417e9d34ed8965caea9e";
+const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
+// const id_gerant = "6673ecbf0f644c29f7a997f7"
 //Home page
 const getHomePage = async (req, res) => {
     var session = req.session;
@@ -250,7 +251,7 @@ const seePending = async (req, res) => {
         var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
         var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
         var role = "Admin";
-        role = session.idUser == gerantId ? "Gerant" : "Admin";
+        role = session.idUser == id_gerant ? "Gerant" : "Admin";
         var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
         res.render("PageAdministration/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser, allPermission: allPermission });
     }
@@ -270,7 +271,7 @@ const getPending = async (req, res) => {
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
-        if (session.idUser == gerantId) {
+        if (session.idUser == id_gerant) {
             var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 3] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
@@ -363,7 +364,8 @@ const answerRequest = async (req, res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
-        if (session.idUser == gerantId) {
+        // if (session.idUser == "645a417e9d34ed8965caea9e") {
+        if (session.idUser == id_gerant) {
             status = response == "true" ? "approved" : "declined";
             var approbator = {
                 user: session.idUser,
@@ -460,11 +462,11 @@ const getNotifications = async (req, res) => {
     res.json(sorted);
 }
 async function setGlobalAdminNotifications(notification, concerned, spec, req) {
-    await UserSchema.updateMany({ occupation: { $in: concerned }, _id: { $ne: gerantId } }, { $push: { myNotifications: notification } });
+    await UserSchema.updateMany({ occupation: { $in: concerned }, _id: { $ne: id_gerant } }, { $push: { myNotifications: notification } });
     var idNotif = await UserSchema.findOne({ occupation: { $in: concerned } });
     if (spec) {
         concerned.push("Gerant")
-        var otherId = await UserSchema.findOneAndUpdate({ _id: gerantId }, { $push: { myNotifications: notification } }, { new: true });
+        var otherId = await UserSchema.findOneAndUpdate({ _id: id_gerant }, { $push: { myNotifications: notification } }, { new: true });
         notification.otherId = otherId.myNotifications[otherId.myNotifications.length - 1]._id
     }
     var idNotif = await UserSchema.findOne({ occupation: { $in: concerned } });
