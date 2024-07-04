@@ -3,7 +3,7 @@ const Methods = require("../ControllerDTB/GlobalMethods")
 const moment = require('moment');
 const axios = require('axios');
 
-const Expiration = 48; // hours
+const Expiration = 48; // hours 48
 
 
 // Method to notify RH and ROP when some requests had not been processed yet.
@@ -131,7 +131,7 @@ async function automaticRequestConfirmation(req, res) {
                             // update request
                             let approuvedLeave = await ModelLeaveRequest.findOneAndUpdate({ _id: request._id }, {
                                 status: 'approved',
-                                type: "Congé Payé"
+                                type: 'Congé Payé',
                             }, { new: true }).populate({ path: "validation.user", select: "usuel" });
                             if (approuvedLeave) {
                                 const io = req.app.get("io");
