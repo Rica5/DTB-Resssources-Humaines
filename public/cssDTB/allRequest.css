@@ -121,7 +121,7 @@
 }
 
 .active-btn::before {
-    content: '';
+    /* content: ''; */
     position: absolute;
     height: 90%;
     width: 30%;

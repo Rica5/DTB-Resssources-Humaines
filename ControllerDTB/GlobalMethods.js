@@ -306,6 +306,8 @@ function calcul_timediff_absence(startTime, endTime) {
   if (hours_fictif < 0) {
     hours_fictif = hours_fictif + 24;
   }
+  globaleVariable.hours += hours_fictif;
+  globaleVariable.minutes += minutes_fictif;
   return hours_fictif + " H " + minutes_fictif + " MN";
 }
 function style() {

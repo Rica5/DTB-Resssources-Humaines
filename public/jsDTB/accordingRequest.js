@@ -36,6 +36,21 @@ function UpdateRequest(){
         }   
    })
 }
+
+
+// sort requests by date
+const sortedAsc = data => data.slice().sort((a, b) => {
+    // Parse datetime strings in dd/mm/yyyy format
+    const datePartsA = a.datetime.split('/');
+    const dateA = new Date(`${datePartsA[2]}-${datePartsA[1]}-${datePartsA[0]}`);
+    
+    const datePartsB = b.datetime.split('/');
+    const dateB = new Date(`${datePartsB[2]}-${datePartsB[1]}-${datePartsB[0]}`);
+    
+    // Compare dates
+    return dateA - dateB;
+});
+
 function getShift(code){
     var shift = ["SHIFT 1","SHIFT 2","SHIFT 3"];
     var value = ""
@@ -140,6 +155,8 @@ function renderAllRequest(Leave){
                       </div>
     `
     });
+
+    return mappedLeave.join('');
     
     return mappedLeave.join('');
 }
@@ -310,6 +327,7 @@ function Approve(){
    })
 }
 function ApproveLast(){
+    order = $('#sayYes').is(":checked");
     if (role == "Admin"){
         if ($('#typeLeave').val() != ""){
             $("#waitingApprove").css('opacity','1')
@@ -432,7 +450,7 @@ function registerLeave(){
         }   
    })
 }
-function checkboxControl(check){
+function checkboxControl(cb, check){
     if (check =="yes"){
         $('#sayNo').prop('checked', false);
         order = true;
@@ -617,3 +635,16 @@ $('#join').on('change', function (event) {
     activateCp(false);
     activateRm(false)
  }
+
+
+$('.switch-button').each((i, btn) => {
+    $(btn).click(() => {
+        // hide all container
+        $('#content-allRequest > div').each((_, div) => $(div).attr('hidden', ''));
+        // activate button
+        $('.switch-button').each((_, b) => $(b).removeClass('active-btn'));
+        $(btn).addClass('active-btn');
+        let targetId = $(btn).attr('data-target');
+        $(targetId).removeAttr('hidden')
+    })
+})

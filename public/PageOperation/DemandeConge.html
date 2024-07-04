@@ -256,14 +256,17 @@
                 <div class="col-12">
                   <div class="header-request">
                     <div class="buttons-tab">
-                      <button id="makeRequest" class="switch-button active-btn">
+                      <!-- <button id="makeRequest" class="switch-button active-btn">
                           Tout les requêtes
+                      </button> -->
+                      <button data-target="#highRequest" class="switch-button active-btn">
+                        Urgentes (<span>0</span>)
                       </button>
-                      <button id="myRequest" class="switch-button">
-                          Requêtes urgentes
+                      <button data-target="#mediumRequest" class="switch-button">
+                          Moyennes (<span>0</span>)
                       </button>
-                      <button id="myUpcoming" class="switch-button">
-                          Requête a evaluer
+                      <button data-target="#lowRequest" class="switch-button">
+                          Basses (<span>0</span>)
                       </button>
                   </div>
                   <div id="notification" class="notice-success">
@@ -272,9 +275,12 @@
                 </div>
                  
                 <div class="col-12 allRequest mt-2" id="content-allRequest">
-                    <div class="card-item" id="allRequest">
-                      
-                    </div>
+                  <div class="card-item" id="allRequest" hidden>
+                    
+                  </div>
+                  <div class="card-item" id="highRequest"></div>
+                  <div class="card-item" id="mediumRequest" hidden></div>
+                  <div class="card-item" id="lowRequest" hidden></div>
                 </div>
                 </div>
           <div id="ModalAccord" class="modal_conge">
