@@ -33,6 +33,8 @@ function UpdateRequest(){
             $('#lowRequest').html(renderAllRequest(lowRequests));
             $('button[data-target="#lowRequest"] > span').text(lowRequests.length);
             $('#allRequest').html(renderAllRequest(allRequest));
+
+            console.log(sortedAsc(mediumRequests))
         }   
    })
 }
@@ -40,15 +42,8 @@ function UpdateRequest(){
 
 // sort requests by date
 const sortedAsc = data => data.slice().sort((a, b) => {
-    // Parse datetime strings in dd/mm/yyyy format
-    const datePartsA = a.datetime.split('/');
-    const dateA = new Date(`${datePartsA[2]}-${datePartsA[1]}-${datePartsA[0]}`);
-    
-    const datePartsB = b.datetime.split('/');
-    const dateB = new Date(`${datePartsB[2]}-${datePartsB[1]}-${datePartsB[0]}`);
-    
     // Compare dates
-    return dateA - dateB;
+    return b._id - a._id;
 });
 
 function getShift(code){
