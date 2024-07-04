@@ -339,11 +339,14 @@
                       <button id="makeRequest" class="switch-button active-btn">
                           Tout les requêtes
                       </button>
-                      <button id="myRequest" class="switch-button">
+                      <button data-target="#highRequest" class="switch-button">
                           Requêtes urgentes
                       </button>
-                      <button id="myUpcoming" class="switch-button">
-                          Requête a evaluer
+                      <button data-target="#mediumRequest" class="switch-button">
+                          Requêtes moyennes
+                      </button>
+                      <button data-target="#lowRequest" class="switch-button">
+                          Requêtes basse
                       </button>
                   </div>
                   <div id="notification" class="notice-success">
@@ -355,6 +358,9 @@
                     <div class="card-item" id="allRequest">
                       
                     </div>
+                    <div class="card-item" id="highRequest"></div>
+                    <div class="card-item" id="mediumRequest"></div>
+                    <div class="card-item" id="lowRequest"></div>
                 </div>
                 </div>
           <div id="ModalAccord" class="modal_conge">
