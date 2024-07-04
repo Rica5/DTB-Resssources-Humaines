@@ -265,20 +265,39 @@ const seePending = async (req, res) => {
 const getPending = async (req, res) => {
     var session = req.session;
     if (session.occupation_tl == "Surveillant") {
-        var allRequest = await LeaveRequestTest.find({ status: { $ne: "done" }, validation: [] }).sort({ leavePriority: 'desc' });
+        // get all tl
+        const TLs = await UserSchema.find({ occupation: "Surveillant"}); 
+        const emails = TLs.map(tl => tl.username);
+        const usersTL = await UserSchema.find({ username: { $in: emails } });
+        const TLIds = usersTL.map(tl => tl._id);
+        // var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, validation: [] }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
+        var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, "validation.user": { $nin: TLIds } }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
         res.json(allRequest);
     }
     else if (session.occupation_op == "Opération") {
-        var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+        // get all ROP
+        const ROPs = await UserSchema.find({ occupation: "Opération"});
+        const emails = ROPs.map(rop => rop.username);
+        const usersROP = await UserSchema.find({ username: { $in: emails } });
+        const ROPIds = usersROP.map(rop => rop._id);
+        // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+        var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: ROPIds } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
+
         if (session.idUser == id_gerant) {
             var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 3] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
         else {
-            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+            const RHs = await UserSchema.find({ occupation: "Admin"});
+            const emails = RHs.map(rh => rh.username);
+            const usersRH = await UserSchema.find({ username: { $in: emails } });
+            const RHIds = usersRH.map(rh => rh._id);
+
+            // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+            var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: RHIds} }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
     }
@@ -318,6 +337,7 @@ const answerRequest = async (req, res) => {
         const io = req.app.get("io");
         io.sockets.emit("isTreated", [id, thisLeave]);
         io.sockets.emit("tlDone", forRop);
+        io.sockets.emit("ropDone", forRop); // send to RH too
         res.json("Ok");
     }
     else if (session.occupation_op == "Opération") {

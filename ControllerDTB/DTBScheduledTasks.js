@@ -114,34 +114,39 @@ async function automaticRequestConfirmation(req, res) {
                     // accept the request... (to croscheck with Ricardo)
                     try {
                         // get url
-                        const locationURL = `${req.protocol}://${req.get('host')}/takeleave`;
-
-                        const res = await axios.post(locationURL, JSON.stringify({
-                            code:request.m_code,type:request.type,exceptType:request.exceptType,leavestart:request.date_start,leaveend:request.date_end,
-                            begin:request.hour_begin,end:request.hour_end,court:request.duration,motif:request.motif,idRequest:request._id,
-                            type: "Congé Payé",
-                            automatic: true // automatic confirmation
-                        }), {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        });
+                        // const locationURL = `${req.protocol}://${req.get('host')}/takeleave`;
+                        // const res = await axios.post(locationURL, JSON.stringify({
+                        //     code:request.m_code,type:request.type,exceptType:request.exceptType,leavestart:request.date_start,leaveend:request.date_end,
+                        //     begin:request.hour_begin,end:request.hour_end,court:request.duration,motif:request.motif,idRequest:request._id,
+                        //     type: "Congé Payé",
+                        //     automatic: true // automatic confirmation
+                        // }), {
+                        //     headers: {
+                        //         'Content-Type': 'application/json'
+                        //     }
+                        // });
                         
-                        if ("m_code" in res.data) { // success
+                        if ( true /*"m_code" in res.data */) { // success
                             // update request
-                            let approuvedLeave = await ModelLeaveRequest.findOneAndUpdate({ _id: request._id }, {
-                                status: 'approved',
-                                type: 'Congé Payé',
-                            }, { new: true }).populate({ path: "validation.user", select: "usuel" });
-                            if (approuvedLeave) {
+                            // let approuvedLeave = await ModelLeaveRequest.findOneAndUpdate({ _id: request._id }, {
+                            //     status: 'approved',
+                            //     type: 'Congé Payé',
+                            // }, { new: true }).populate({ path: "validation.user", select: "usuel" });
+                            if (true) {
                                 const io = req.app.get("io");
                                 // send to the employé
                                 await io.sockets.emit("isTreated", [request._id, approuvedLeave]);
                                 
                                 // send notification for all...
+                                // const notification = {
+                                //     title: `<span style="color:green;">Confirmation automatique de la demande de congé</span>`,
+                                //     content: `Le congé de ${request.m_code} a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.<br>
+                                //     <b>Dates de congés:</b> le ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}`,
+                                //     datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                                // }
                                 const notification = {
-                                    title: `<span style="color:green;">Confirmation automatique de la demande de congé</span>`,
-                                    content: `Le congé de ${request.m_code} a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.<br>
+                                    title: `<span style="color:green;">Congé pas encore traité</span>`,
+                                    content: `Le congé de ${request.m_code} n'a pas encore été traité dans les ${Expiration} heures imparties. Veuillez prendre votre décision maintenant!<br>
                                     <b>Dates de congés:</b> le ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}`,
                                     datetime: moment().format("DD/MM/YYYY hh:mm:ss")
                                 }
@@ -152,7 +157,8 @@ async function automaticRequestConfirmation(req, res) {
 
 
                                 // send notification to the requester
-                                let content = `Votre congé, dont les dates sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`;
+                                // let content = `Votre congé, dont les dates sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, a été automatiquement confirmé car il n'a pas été traité dans les ${Expiration} heures imparties.`;
+                                let content = `Votre congé, dont les dates sont du ${moment(request.date_start).format("DD/MM/YYYY")} au ${moment(request.date_end).format("DD/MM/YYYY")}, n'a pas encore été traité dans les ${Expiration} heures imparties. Veuillez contacter les responsables.`;
                                 let title = `<span style="color: green;">Congé accepté</span>`;
                                 await Methods.setEachUserNotification(request.m_code, title, content, req);
                             } else {
