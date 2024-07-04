@@ -196,6 +196,19 @@ function Approved(data) {
                     <div class="buttons">
                     </div>
                     <div class="date-heure">
+                        <div class="ask-content">
+                            <h1>
+                                <i class="fa-solid fa-calendar"></i>
+                                Demandeur
+                            </h1>
+                            <div class="ask">
+                                <span>Nom: ${element.nom}</span>
+                                <span>Shift: ${getShift(element.m_code)}</span>
+                                <span>Matricule: ${element.matr}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="date-heure">
                         <div class="d">
                             <h1>
                                 <i class="fa-solid fa-calendar"></i>
@@ -294,6 +307,19 @@ function renderMyRequest(Leave, stat) {
                     </div>` : ''} 
                 </div>
                 <div class="date-heure">
+                    <div class="ask-content">
+                        <h1>
+                            <i class="fa-solid fa-calendar"></i>
+                            Demandeur
+                        </h1>
+                        <div class="ask">
+                            <span>Nom: ${Leave.nom}</span>
+                            <span>Shift: ${getShift(Leave.m_code)}</span>
+                            <span>Matricule: ${Leave.matr}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="date-heure">
                     <div class="d">
                         <h1>
                             <i class="fa-solid fa-calendar"></i>
@@ -335,7 +361,7 @@ function renderMyRequest(Leave, stat) {
                 </div>
             </div>
             <div id="${Leave._id}" class="card-footer ${stat}">
-                ${allStat[Leave.status]}
+                ${allStat[Leave.status]} ${Leave.status == "declined"?  ":"+Leave.comment : ""} 
             </div>
         </div>
     </div>
@@ -956,3 +982,13 @@ $(function(){
 
     nextMonth = new Date()
 });
+
+//Update 04/07/24
+
+function getShift(code){
+    var shift = ["SHIFT 1","SHIFT 2","SHIFT 3"];
+    var value = ""
+    var theUser = users.filter(employe => employe.m_code == code);
+    shift.includes(theUser.shift) ? value = theUser.shift : value = "08 heures";
+    return value
+}

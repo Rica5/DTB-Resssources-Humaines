@@ -21,8 +21,10 @@ const getHomePage = async (req, res) => {
 const getLeaveRequest = async (req, res) => {
     var session = req.session;
     if (session.occupation_u == "User") {
-        var user = await UserSchema.findOne({ m_code: session.m_code });
-        res.render("PageEmployee/FaireDemande.html", { user: user, codeUser: session.m_code });
+        var user = await UserSchema.findOne({ m_code: session.m_code });        
+        var users = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
+
+        res.render("PageEmployee/FaireDemande.html", {users: users, user: user, codeUser: session.m_code });
     }
     else {
         res.redirect("/");

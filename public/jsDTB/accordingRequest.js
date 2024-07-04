@@ -20,8 +20,19 @@ function UpdateRequest(){
             allRequest = res;
             emergencyRequest = res.filter(leave => leave.priority  === true);
             normalRequest = res.filter(leave => leave.priority === false);
-            renderAllRequest(allRequest);
-            $('#allRequest').html(myRequestContent);
+            // render high priority requests
+            const hightRequests = allRequest.filter((lr) => lr.leavePriority === 3);
+            $('#highRequest').html(renderAllRequest(hightRequests));
+            $('button[data-target="#highRequest"] > span').text(hightRequests.length);
+            // render medium priority requests
+            const mediumRequests = allRequest.filter((lr) => lr.leavePriority === 2);
+            $('#mediumRequest').html(renderAllRequest(sortedAsc(mediumRequests)));
+            $('button[data-target="#mediumRequest"] > span').text(mediumRequests.length)
+            // render low priority requests
+            const lowRequests = allRequest.filter((lr) => lr.leavePriority === 1)
+            $('#lowRequest').html(renderAllRequest(lowRequests));
+            $('button[data-target="#lowRequest"] > span').text(lowRequests.length);
+            $('#allRequest').html(renderAllRequest(allRequest));
         }   
    })
 }
@@ -33,8 +44,17 @@ function getShift(code){
     return value
 }
 function renderAllRequest(Leave){
-    Leave.forEach(leave => {
-        myRequestContent +=`
+    let mappedLeave = Leave.map(leave => {
+        userActive = users.find(user => user.m_code == leave.m_code)
+
+        
+      let code = leave.m_code;
+      let acc = userActive.leave_taked;
+      let rest = userActive.remaining_leave
+      let duration = leave.duration
+      let auth = userActive.leave_stat
+      let save = userActive.save_at
+    return `
     <div id="${leave._id}" class="content-leave">
                         <div class="code-person p_${leave.leavePriority}">
                             <div>
@@ -92,6 +112,26 @@ function renderAllRequest(Leave){
                                     </div>
                                 </div>
                             </div>
+                            ${                                
+                             
+                                (role == "Gerant") ?
+                                `
+                                
+                        <div class="date-heure">
+                                <div class="ask-content">
+                                    <h1>
+                                        <i class="fa-solid fa-calendar"></i>
+                                        Status / solde de ${code}
+                                    </h1>
+                                    <div class="ask">
+                                        <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
+                                        <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
+                                        <span>Reste après autorisation: ${(acc - duration)}</span>
+                                    </div>
+                                </div>
+                        </div> `
+                                 : ""
+                            }
                         ${approvingList(leave.validation)}
                             <div class="d-flex justify-content-end">
                                 ${renderButton(role,leave)}
@@ -101,6 +141,7 @@ function renderAllRequest(Leave){
     `
     });
     
+    return mappedLeave.join('');
 }
 UpdateRequest();
 function isFloat(num) {
