@@ -130,7 +130,8 @@ async function automaticRequestConfirmation(req, res) {
                         if ("m_code" in res.data) { // success
                             // update request
                             let approuvedLeave = await ModelLeaveRequest.findOneAndUpdate({ _id: request._id }, {
-                                status: 'approved'
+                                status: 'approved',
+                                type: 'Congé Payé',
                             }, { new: true }).populate({ path: "validation.user", select: "usuel" });
                             if (approuvedLeave) {
                                 const io = req.app.get("io");
