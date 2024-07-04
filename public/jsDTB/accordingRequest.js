@@ -60,7 +60,16 @@ function getShift(code){
 }
 function renderAllRequest(Leave){
     let mappedLeave = Leave.map(leave => {
-        return `
+        userActive = users.find(user => user.m_code == leave.m_code)
+
+        
+      let code = leave.m_code;
+      let acc = userActive.leave_taked;
+      let rest = userActive.remaining_leave
+      let duration = leave.duration
+      let auth = userActive.leave_stat
+      let save = userActive.save_at
+    return `
     <div id="${leave._id}" class="content-leave">
                         <div class="code-person p_${leave.leavePriority}">
                             <div>
@@ -118,6 +127,26 @@ function renderAllRequest(Leave){
                                     </div>
                                 </div>
                             </div>
+                            ${                                
+                             
+                                (role == "Gerant") ?
+                                `
+                                
+                        <div class="date-heure">
+                                <div class="ask-content">
+                                    <h1>
+                                        <i class="fa-solid fa-calendar"></i>
+                                        Status / solde de ${code}
+                                    </h1>
+                                    <div class="ask">
+                                        <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
+                                        <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
+                                        <span>Reste après autorisation: ${(acc - duration)}</span>
+                                    </div>
+                                </div>
+                        </div> `
+                                 : ""
+                            }
                         ${approvingList(leave.validation)}
                             <div class="d-flex justify-content-end">
                                 ${renderButton(role,leave)}
@@ -129,6 +158,7 @@ function renderAllRequest(Leave){
 
     return mappedLeave.join('');
     
+    return mappedLeave.join('');
 }
 UpdateRequest();
 function isFloat(num) {

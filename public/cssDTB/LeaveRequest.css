@@ -514,10 +514,18 @@ input:focus {
 }
 
 .date-heure {
-    display: grid;
+    /* display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+    width: 100%; */
+    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     width: 100%;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: .8rem;
 }
 
 .card-item .buttons {
@@ -569,6 +577,14 @@ input:focus {
     transform: translateY(-50%);
 }
 
+.ask{
+    display: flex;
+    justify-content: space-between;
+}
+
+.ask span{
+    margin: 0 1%;
+}
 .date-heure .d,
 .date-heure>.h {
     border: 1px dashed #e0e0e0;
@@ -577,6 +593,17 @@ input:focus {
     border-radius: .6rem;
     padding: 1rem .5rem;
     margin-top: .7rem;
+    flex-grow: 1;
+}
+
+.ask-content{
+    border: 1px dashed #e0e0e0;
+    position: relative;
+    padding-top: 1rem;
+    border-radius: .6rem;
+    padding: 1rem .5rem;
+    margin-top: .7rem;
+    flex-grow: 1;
 }
 
 .date-heure .d>div,
@@ -839,3 +866,5 @@ input:focus {
     gap: 4px;
     align-items: center;
 }
+
+/* update 04/07/24 */
