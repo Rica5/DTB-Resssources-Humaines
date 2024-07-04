@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../assets/fontawesome-free-6.4.0-web/css/all.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.min.css" />
     <script>
+        var users = JSON.parse(`<%-JSON.stringify(users)%>`)
         var accumulate = parseFloat('<%= user.leave_taked %>');
         var openLeave = parseFloat('<%= user.remaining_leave %>');
     </script>
