@@ -712,6 +712,41 @@ const createLeave = async (req, res) => {
           theLeave.status = "Ok";
           res.send(theLeave);
         }
+      } else if (type === 'Récupération') {
+        // insert récupération
+        var day_control = "Terminée";
+        if (taked >= 1) {
+          day_control = "en attente";
+        }
+        var new_leave = {
+          m_code: user.m_code,
+          num_agent: user.num_agent,
+          nom: user.first_name + " " + user.last_name,
+          date_start: leavestart,
+          date_end: leaveend,
+          duration: taked,
+          hour_begin: hour_begin,
+          hour_end: hour_end,
+          type: type + deduction,
+          piece: "",
+          status: day_control,
+          rest: user.remaining_leave,
+          motif: motif,
+          validation: false,
+          acc: user.leave_taked,
+          request: idRequest,
+          exceptType: exceptType
+        };
+        
+        var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, {
+          acc: new_leave.acc,
+          rest: new_leave.rest
+        }, { new: true });
+        
+        var theLeave = await LeaveSchema(new_leave).save();
+        theLeave.status = "Ok";
+        res.send(theLeave);
+
       } else {
         res.send({ status: "not authorized" });
       }
