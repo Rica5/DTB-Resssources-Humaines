@@ -3,8 +3,8 @@ const LeaveSchema = require("../models/ModelLeave");
 const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-// const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
-const id_gerant = "6673ecbf0f644c29f7a997f7"
+const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
+// const id_gerant = "6673ecbf0f644c29f7a997f7"
 //Home page
 const getHomePage = async (req, res) => {
     var session = req.session;
@@ -21,10 +21,8 @@ const getHomePage = async (req, res) => {
 const getLeaveRequest = async (req, res) => {
     var session = req.session;
     if (session.occupation_u == "User") {
-        var user = await UserSchema.findOne({ m_code: session.m_code });        
-        var users = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
-
-        res.render("PageEmployee/FaireDemande.html", {users: users, user: user, codeUser: session.m_code });
+        var user = await UserSchema.findOne({ m_code: session.m_code });
+        res.render("PageEmployee/FaireDemande.html", { user: user, codeUser: session.m_code });
     }
     else {
         res.redirect("/");
@@ -265,39 +263,20 @@ const seePending = async (req, res) => {
 const getPending = async (req, res) => {
     var session = req.session;
     if (session.occupation_tl == "Surveillant") {
-        // get all tl
-        const TLs = await UserSchema.find({ occupation: "Surveillant"}); 
-        const emails = TLs.map(tl => tl.username);
-        const usersTL = await UserSchema.find({ username: { $in: emails } });
-        const TLIds = usersTL.map(tl => tl._id);
-        // var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, validation: [] }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
-        var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, "validation.user": { $nin: TLIds } }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
+        var allRequest = await LeaveRequestTest.find({ status: { $ne: "done" }, validation: [] }).sort({ leavePriority: 'desc' });
         res.json(allRequest);
     }
     else if (session.occupation_op == "Opération") {
-        // get all ROP
-        const ROPs = await UserSchema.find({ occupation: "Opération"});
-        const emails = ROPs.map(rop => rop.username);
-        const usersROP = await UserSchema.find({ username: { $in: emails } });
-        const ROPIds = usersROP.map(rop => rop._id);
-        // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
-        var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: ROPIds } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+        var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
-
         if (session.idUser == id_gerant) {
             var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 3] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
         else {
-            const RHs = await UserSchema.find({ occupation: "Admin"});
-            const emails = RHs.map(rh => rh.username);
-            const usersRH = await UserSchema.find({ username: { $in: emails } });
-            const RHIds = usersRH.map(rh => rh._id);
-
-            // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
-            var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: RHIds} }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
     }
@@ -337,7 +316,6 @@ const answerRequest = async (req, res) => {
         const io = req.app.get("io");
         io.sockets.emit("isTreated", [id, thisLeave]);
         io.sockets.emit("tlDone", forRop);
-        io.sockets.emit("ropDone", forRop); // send to RH too
         res.json("Ok");
     }
     else if (session.occupation_op == "Opération") {
@@ -386,10 +364,6 @@ const answerRequest = async (req, res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
-        var checking = req.body.checking;
-        var newStartTime = req.body.newStartTime;
-        var newEndTime = req.body.newEndTime;
-        
         // if (session.idUser == "645a417e9d34ed8965caea9e") {
         if (session.idUser == id_gerant) {
             status = response == "true" ? "approved" : "declined";
@@ -399,7 +373,7 @@ const answerRequest = async (req, res) => {
                 date:moment().format("YYYY-MM-DD")
             }
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true })
-            var title = `Absence pour ${thisLeave.motif}`;
+            var title = `Absence pour ${thisLeave.motif}`
             var content = "";
             if (status == "declined") {
                 content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`
@@ -428,34 +402,9 @@ const answerRequest = async (req, res) => {
                 approbation: response,
                 date:moment().format("YYYY-MM-DD")
             }
-
-            const Data = {
-                $push: { validation: approbator },
-                comment: comment,
-                status: status,
-                type: type,
-                order: req.body.order,
-                exceptType: req.body.exceptType,
-            }
-            // s'il y a un motif
-            if (req.body.motif) {
-                Data.motif = req.body.motif;
-            }
-            // modification d'heure si quart
-            if (+checking === 0.25) {
-                Data.hour_begin = newStartTime;
-                Data.hour_end = newEndTime;
-                Data.duration = +checking;
-            } else if (checking >= 0.5) {
-                Data.duration = +checking;
-            }
-
-            // update the leave request
-            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
-                ...Data
-            }, { new: true })
-            .populate({ path: "validation.user", select: "usuel" });
-
+            var thisLeave;
+            req.body.motif ? thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status, type: type, order: req.body.order, exceptType: req.body.exceptType, motif: req.body.motif }, { new: true }).populate({ path: "validation.user", select: "usuel" })
+                : thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status, type: type, order: req.body.order, exceptType: req.body.exceptType }, { new: true }).populate({ path: "validation.user", select: "usuel" });
             var title = `Absence pour ${thisLeave.motif}`
             var content = "";
             if (status == "declined") {
