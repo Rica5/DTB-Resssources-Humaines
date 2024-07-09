@@ -601,7 +601,7 @@ function date_diff(starting, ending) {
   return parseInt(dayl.toFixed(0));
 }
 function Editing() {
-  if (checking != "n") {
+  if (checking != "n") { 
     if (checking == 0.25) {
       if (update_type_leave.value == "" || update_datestart.value == "" || update_dateend.value == "" || begin.value == "" || end.value == "") {
         info.innerHTML = "Veuillez remplir correctement tout les informations necessaires";
