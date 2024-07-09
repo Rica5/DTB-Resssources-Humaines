@@ -267,23 +267,23 @@ function Approved(data) {
     $("#approved").text(approvedNumber)
 }
 function decided(decision) {
-    var response = "";
+    
     if (decision.includes("Congé Payé")) {
-        response = "A déduire s/ congé payés"
+        return "A déduire s/ congé payés"
     }
     else if (decision.includes("Permission exceptionelle")) {
-        response = "Permission exceptionnelle"
+        return "Permission exceptionnelle"
     }
     else if (decision.includes("Repos Maladie")) {
-        response = "Rien à déduire"
+        return "Rien à déduire"
     }
     else if (decision.includes("Congé de maternité")) {
-        response = "Congé de maternité/paternité"
+        return "Congé de maternité/paternité"
+    } else if (decision.includes("Récupération")) {   
+        return "Récupération" 
+    } else {
+        return "A déduire sur salaire"
     }
-    else {
-        response = "A déduire sur salaire"
-    }
-    return response
 }
 var allStat = {
     pending: "En attente",

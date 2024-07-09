@@ -87,7 +87,7 @@ const makeLeaveRequest = async (req, res) => {
             var notification = {
                 title: "Demande d'absence",
                 content: `${new_request.m_code} a envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
-                datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                datetime: moment().format("DD/MM/YYYY HH:mm:ss")
             }
             var concerned = ["Admin", "Surveillant", "Opération"]
             await setGlobalAdminNotifications(notification, concerned, true, req);
@@ -147,7 +147,7 @@ const updateLeaveRequest = async (req, res) => {
             var notification = {
                 title: "Modification d'une demande d'absence",
                 content: `${new_request.m_code} a modifié une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
-                datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                datetime: moment().format("DD/MM/YYYY HH:mm:ss")
             }
             var concerned = ["Admin", "Surveillant", "Opération"]
             await setGlobalAdminNotifications(notification, concerned, true, req);
@@ -287,7 +287,7 @@ const getPending = async (req, res) => {
     else if (session.occupation_a == "Admin") {
 
         if (session.idUser == id_gerant) {
-            var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 3] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+            var allRequest = await LeaveRequestTest.find({ status: "progress", type: { $ne: 'approved' } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
         }
         else {
@@ -295,7 +295,6 @@ const getPending = async (req, res) => {
             const emails = RHs.map(rh => rh.username);
             const usersRH = await UserSchema.find({ username: { $in: emails } });
             const RHIds = usersRH.map(rh => rh._id);
-
             // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: RHIds} }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
             res.json(allRequest);
@@ -312,6 +311,9 @@ async function empty_notification() {
 //empty_notification();
 const answerRequest = async (req, res) => {
     var session = req.session;
+    // utilisateur qui va faire l'action
+    const actor = await UserSchema.findById(session.idUser);
+
     if (session.occupation_tl == "Surveillant") {
         var id = req.body.id;
         var response = req.body.response;
@@ -326,11 +328,11 @@ const answerRequest = async (req, res) => {
         var extension = thisLeave.piece.split(".")
         thisLeave.piece != "" ? renameFile(id, `${thisLeave.piece}`, `${thisLeave._id}.${extension[extension.length - 1]}`) : "";
         var title = `Traitement de congé`
-        var forRop = `${thisLeave.validation[0].user.usuel} est mis au courant du congé de ${thisLeave.m_code} du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+        var forRop = `${actor.usuel} est mis au courant du congé de ${thisLeave.m_code} du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
         var notification = {
             title: "Traitement de congé",
             content: forRop,
-            datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
+            datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
         }
         var concerned = ["Opération"]
         await setGlobalAdminNotifications(notification, concerned, false, req);
@@ -357,21 +359,21 @@ const answerRequest = async (req, res) => {
         if (status == "declined") {
             content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
             setEachUserNotification(thisLeave.m_code, title, content, req);
-            forRH = `${thisLeave.validation[1].user.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
+            forRH = `${actor.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
             var notification = {
                 title: "Refus de congé",
                 content: forRH,
-                datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
+                datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
             }
             var concerned = ["Admin", "Surveillant"]
             await setGlobalAdminNotifications(notification, concerned, true, req);
         }
         else {
-            forRH = `${thisLeave.validation[1].user.usuel} a traité la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
+            forRH = `${actor.usuel} a traité la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
             var notification = {
                 title: "Traitement de congé",
                 content: forRH,
-                datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
+                datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
             }
             var concerned = ["Admin"]
             await setGlobalAdminNotifications(notification, concerned, false, req);
@@ -389,7 +391,7 @@ const answerRequest = async (req, res) => {
         var checking = req.body.checking;
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
-        
+
         // if (session.idUser == "645a417e9d34ed8965caea9e") {
         if (session.idUser == id_gerant) {
             status = response == "true" ? "approved" : "declined";
@@ -410,7 +412,7 @@ const answerRequest = async (req, res) => {
             var notification = {
                 title: "Congé approuvé",
                 content: `Le demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuvée`,
-                datetime: moment().format("DD/MM/YYYY hh:mm:ss")
+                datetime: moment().format("DD/MM/YYYY HH:mm:ss")
             }
             var concerned = ["Admin", "Surveillant", "Opération"]
             await setGlobalAdminNotifications(notification, concerned, true, req);
@@ -461,22 +463,22 @@ const answerRequest = async (req, res) => {
             if (status == "declined") {
                 content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
                 setEachUserNotification(thisLeave.m_code, title, content, req);
-                forGerant = `${thisLeave.validation[1].user.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
+                forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
                 var notification = {
                     title: "Refus de congé",
                     content: forGerant,
-                    datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
+                    datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                 }
                 var concerned = ["Surveillant", "Opération"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
             }
             else {
                 if (order == "false") {
-                    forGerant = `${thisLeave.validation[2].user.usuel} a traité la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
+                    forGerant = `${actor?.usuel} a traité la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`;
                     var notification = {
                         title: "Traitement de congé",
                         content: forGerant,
-                        datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
+                        datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                     }
                     var concerned = []
                     await setGlobalAdminNotifications(notification, concerned, true, req);
@@ -486,7 +488,7 @@ const answerRequest = async (req, res) => {
                     var notification = {
                         title: "Congé approuvé",
                         content: forGerant,
-                        datetime: moment().format("DD/MM/YYYY hh:mm:ss"),
+                        datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                     }
                     var concerned = ["Admin", "Opération", "Surveillant"]
                     await setGlobalAdminNotifications(notification, concerned, true, req);
@@ -529,7 +531,7 @@ async function setEachUserNotification(code, title, content, req) {
     var myNotif = {
         title: title,
         content: content,
-        datetime: moment().format("DD/MM/YYYY hh:mm"),
+        datetime: moment().format("DD/MM/YYYY HH:mm"),
         isSeen: false
     }
     await UserSchema.findOneAndUpdate({ m_code: code }, { $push: { myNotifications: myNotif } }, { new: true })
@@ -647,7 +649,7 @@ async function cancelLeaveRequest(req, res) {
         var notification = {
             title: "Annulation d'une demande d'absence",
             content: `${deleted.m_code} a annulé une demande d'absence le ${moment(deleted.date_start).format("DD/MM/YYYY")} au ${moment(deleted.date_end).format("DD/MM/YYYY")} (${deleted.duration} jour(s))`,
-            datetime: moment().format("DD/MM/YYYY hh:mm:ss")   
+            datetime: moment().format("DD/MM/YYYY HH:mm:ss")   
         }
         var concerned = ["Admin", "Surveillant", "Opération"]
         await setGlobalAdminNotifications(notification, concerned, true, req);

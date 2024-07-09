@@ -94,15 +94,16 @@ function rendu_header(active) {
     </div>
     <div>
     <select class="sheet-choice2 mx-2" id="type" onchange="set_type()">
-    <option value="">Tout type</option>
-    <option value="Congé Payé">Congé Payé</option>
-    <option value="Congé sans solde">Congé Sans Solde</option>
-    <option value="Permission exceptionelle">Permission exceptionelle</option>
-    <option value="Repos Maladie">Repos Maladie</option>
-    <option value="Absent">Absent</option>
-    <option value="Congé de maternité">Congé de maternité</option>
-    <option value="Mise a Pied">Mise a pied</option>
-                    </select>
+      <option value="">Tout type</option>
+      <option value="Congé Payé">Congé Payé</option>
+      <option value="Congé sans solde">Congé sans solde</option>
+      <option value="Permission exceptionelle">Permission exceptionelle</option>
+      <option value="Repos Maladie">Repos Maladie</option>
+      <option value="Absent">Absent</option>
+      <option value="Congé de maternité">Congé de maternité</option>
+      <option value="Mise a Pied">Mise à pied</option>
+      <option value="Récupération">Récupération</option>
+    </select>
     </div>
     <div id="search_div">
       <input id="searching" class="input-choice2 mx-2" onkeyup="set_text()" type="text" placeholder="M-CODE ici..." >
