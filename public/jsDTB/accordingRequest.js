@@ -78,7 +78,10 @@ function renderAllRequest(Leave){
                         </div>
                         <div class="leave-infos">
                             <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
-                            <p id="motif" class="text-center">${leave.motif}</p>
+                            <p id="motif" class="text-center">Motif: ${leave.motif}</p>
+                            ${
+                                leave.recovery.trim().length > 0 ? `<p id="motif" class="text-center">Récupération: ${leave.recovery}</p>` : ''
+                            }
                             <div class="date-heure">
                                 <div class="ask-content">
                                     <h1>
@@ -123,7 +126,6 @@ function renderAllRequest(Leave){
                                 </div>
                             </div>
                             ${                                
-                             
                                 (role == "Gerant") ?
                                 `
                                 
@@ -163,13 +165,13 @@ function isFloat(num) {
 function renderButton(role,leave){
     var button = ""
     switch(role){
-        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin" : button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -251,15 +253,37 @@ function dateDiffers(created, now) {
         }
   }
 
-function According(id,code,type,duration){
+function According(id,code,type,duration, motif, datestart, dateend, hourBegin, hourEnd){
+    // method to disable field in array
+    const disable = arr => arr.map(id => $(`#${id}`).prop('disabled', true));
+
     if (role == 'Gerant' ){
         $("#typeLeave").val(type);
-        $("#typeLeave").prop("disabled",true);
         $("#orderCheck").hide();
-        $("#title").text("Le type de congé décidé par la ressource humaine est:")
+        $("#title").text("Le type de congé décidé par la ressource humaine est:");
+
+        if(+duration === 0.25) {
+            $('#quart').prop('checked', true);
+            $('#begin').val(hourBegin);
+            $('#end').val(hourEnd);
+            $('#hour_absence').attr('class', 'd-flex top_down');
+        } else if (+duration === 0.5) {
+            $('#demi').prop('checked', true);
+        } else if (+duration === 1) {
+            $('#one').prop('checked', true);
+        }
+        $('#datestart').val(datestart);
+        $('#dateend').val(dateend);
+        $("#motif-input").val(motif);
+        // disable fields
+        disable(['one', 'demi', 'quart', 'datestart', 'dateend', 'motif-input', 'typeLeave', 'end', 'begin']);
+        
     }
     else {
-        $('#typeLeave').val("")
+        $('#typeLeave').val("");
+        $("#motif-input").val(motif);
+        $("#datestart").val(datestart);
+        $("#dateend").val(dateend);
     }
     idActive = id;
     userActive = users.find(user => user.m_code == code);
@@ -272,6 +296,7 @@ function According(id,code,type,duration){
         setNumberPermission(code)
     }
     $("#ModalAccord").show();
+    $('#modal-duration').val(duration);
 }
 function Declined(id,code){
     idActive = id;
@@ -291,7 +316,7 @@ function renderProject(given){
     if (given.length <= 1 ){
         string += `<div class="project mb-1">
         ${given}
-      </div>`
+    </div>`
     }
     else {
         given.forEach(element => {
@@ -319,16 +344,91 @@ function Approve(){
                 $('#notification').hide();
             }, 5000);
         }   
-   })
+    })
 }
+
+
+function date_diff(starting, ending) {
+    var startings = moment(moment(starting)).format("YYYY-MM-DD");
+    var endings = moment(ending, "YYYY-MM-DD");
+    var duration = moment.duration(endings.diff(startings));
+    var dayl = duration.asDays();
+    return parseInt(dayl.toFixed(0));
+}
+
 function ApproveLast(){
     order = $('#sayYes').is(":checked");
+    var checking = 'n';
+    let rmType = $('#rmType').val();
+    // quart
+    checking = $('#quart').is(':checked') ? 0.25 : checking;
+    let begin = $('#begin').val();
+    let end = $('#end').val();
+    //demi
+    checking = $('#demi').is(':checked') ? 0.5 : checking;
+    checking = $('#one').is(':checked') ? 1 : checking;
+
+    let newMotif = $('#motif-input').val();
+
+    let startDate = $('#datestart').val();
+    let endDate = $('#dateend').val();
+    let leaveType = $('#typeLeave').val();
+
+    // leave duration
+    let lDuration = +$('#modal-duration').val();
+
+    // condition
+    if (checking !== 'n') {
+        if (checking === 0.25) {
+            // required infos
+            if (leaveType === '' || startDate === '' || endDate === '' ||
+                begin === '' || end === ''
+            ) {
+                return alert("Veuillez remplir correctement toutes les informations nécessaires!");
+            } else {
+                // do the update
+            }
+        } else {
+            // required infos
+            if (leaveType === '' || startDate === '' || endDate === '') {
+                return alert("Veuillez remplir correctement toutes les informations nécessaires!");
+            } else {
+                // do the update
+            }
+        }
+        // calcul duration
+        lDuration -= checking;
+
+    } else { // checking value eq "n"
+        if (leaveType === '' && startDate === '') {
+            return alert("Veuillez remplir correctement toutes les informations nécessaires!");
+        } else if (date_diff(startDate, endDate) < 0) {
+            return alert("Erreur de différence entre la date de début et celle de fin!");
+        } else {
+            // do the update
+            
+        }
+    }
+
+
     if (role == "Admin"){
         if ($('#typeLeave').val() != ""){
             $("#waitingApprove").css('opacity','1')
-            var data = {id:idActive,response:true,reason:"",typeleave:$('#typeLeave').val(),order:order,
-            exceptType: permissionType ? $("#exceptType").val(): "",motif:$("#rmType").val()}
-            changeMotif ? "" : delete data.motif;
+            var data = {
+                id:idActive,
+                response:true,
+                checking: checking,
+                newduration: lDuration,
+                newStartTime: begin,
+                newEndTime: end,
+                reason:"",
+                typeleave: $('#typeLeave').val(),
+                order:order,
+                exceptType: permissionType ? $("#exceptType").val(): "",
+                motif: changeMotif && rmType !== '' ?  rmType :  newMotif
+            };
+
+            // changeMotif ? "" : delete data.motif;
                 $.ajax({
                     url:"/requestAnswer",
                     method:"POST",
@@ -336,10 +436,10 @@ function ApproveLast(){
                     success: function(data) {
                         if (data.type.includes("Congé Payé")){
                             let indexUser = users.findIndex(element => element.m_code == data.m_code);
-                        if (indexUser !== -1) {
-                            users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
-                            users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
-                        }
+                            if (indexUser !== -1) {
+                                users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
+                                users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
+                            }
                         }
                         
                         data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
@@ -347,8 +447,18 @@ function ApproveLast(){
                             $.ajax({
                                 url:"/takeleave",
                                 method:"POST",
-                                data:{code:data.m_code,type:data.type,exceptType:data.exceptType,leavestart:data.date_start,leaveend:data.date_end,
-                                      begin:data.hour_begin,end:data.hour_end,court:data.duration,motif:data.motif,idRequest:data._id},
+                                data:{
+                                    code:data.m_code,
+                                    type:data.type,
+                                    exceptType:data.exceptType,
+                                    leavestart:data.date_start,
+                                    leaveend:data.date_end,
+                                    begin:data.hour_begin,
+                                    end:data.hour_end,
+                                    court:data.duration,
+                                    motif:data.motif,
+                                    idRequest:data._id
+                                },
                                 success: function(res) {
                                     UpdateRequest();
                                     $("#waitingApprove").css('opacity','0')
@@ -360,7 +470,7 @@ function ApproveLast(){
                                         $('#notification').hide();
                                     }, 5000);
                                 }   
-                           })
+                            })
                         }
                         else {
                             UpdateRequest();
@@ -376,7 +486,7 @@ function ApproveLast(){
                         reset();
                     }   
                     
-            })
+                })
            }
            else {
             $('#typeLeave').css('borderColor','red')
@@ -643,3 +753,47 @@ $('.switch-button').each((i, btn) => {
         $(targetId).removeAttr('hidden')
     })
 })
+
+// var checking;
+function dissapearq(input) {
+    if (input.checked) {
+        $('#hour_absence').attr('class', "d-flex top_down");
+        $('#dateend').attr('hidden', '');
+        $('#demi').prop('checked', false);
+        $('#one').prop('checked', false);
+        checking = 0.25;
+    }
+    else {
+        $('#hour_absence').attr('class', "d-flex hiding-hour");
+        $('#hour_absence').attr('class', "hide top_down");
+        $('#dateend').removeAttr('hidden', '');
+        checking = "n";
+    }
+}
+
+function dissapeard(input) {
+    if (input.checked) {
+        $('#dateend').attr('hidden', '');
+        $('#quart').prop('checked', false);
+        $('#one').prop('checked', false);
+        $('#hour_absence').attr('class', "hide top_down");
+        checking = 0.5;
+    }
+    else {
+        $('#dateend').removeAttr('hidden', '');
+        checking = "n";
+    }
+}
+
+function dissapearo(input) {
+    if (input.checked) {
+        $('#quart').prop('checked', false);
+        $('#demi').prop('checked', false);
+        $('#dateend').attr('hidden', '');
+        $('#hour_absence').attr('class', "hide top_down");
+        checking = 1;
+    } else {
+        $('#dateend').removeAttr('hidden', '');
+        checking = "n";
+    }
+}

@@ -386,6 +386,10 @@ const answerRequest = async (req, res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
+        var checking = req.body.checking;
+        var newStartTime = req.body.newStartTime;
+        var newEndTime = req.body.newEndTime;
+        
         // if (session.idUser == "645a417e9d34ed8965caea9e") {
         if (session.idUser == id_gerant) {
             status = response == "true" ? "approved" : "declined";
@@ -395,7 +399,7 @@ const answerRequest = async (req, res) => {
                 date:moment().format("YYYY-MM-DD")
             }
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true })
-            var title = `Absence pour ${thisLeave.motif}`
+            var title = `Absence pour ${thisLeave.motif}`;
             var content = "";
             if (status == "declined") {
                 content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`
@@ -424,9 +428,34 @@ const answerRequest = async (req, res) => {
                 approbation: response,
                 date:moment().format("YYYY-MM-DD")
             }
-            var thisLeave;
-            req.body.motif ? thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status, type: type, order: req.body.order, exceptType: req.body.exceptType, motif: req.body.motif }, { new: true }).populate({ path: "validation.user", select: "usuel" })
-                : thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status, type: type, order: req.body.order, exceptType: req.body.exceptType }, { new: true }).populate({ path: "validation.user", select: "usuel" });
+
+            const Data = {
+                $push: { validation: approbator },
+                comment: comment,
+                status: status,
+                type: type,
+                order: req.body.order,
+                exceptType: req.body.exceptType,
+            }
+            // s'il y a un motif
+            if (req.body.motif) {
+                Data.motif = req.body.motif;
+            }
+            // modification d'heure si quart
+            if (+checking === 0.25) {
+                Data.hour_begin = newStartTime;
+                Data.hour_end = newEndTime;
+                Data.duration = +checking;
+            } else if (checking >= 0.5) {
+                Data.duration = +checking;
+            }
+
+            // update the leave request
+            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
+                ...Data
+            }, { new: true })
+            .populate({ path: "validation.user", select: "usuel" });
+
             var title = `Absence pour ${thisLeave.motif}`
             var content = "";
             if (status == "declined") {

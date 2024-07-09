@@ -468,3 +468,24 @@ select.typeLeave:focus {
     max-height: 600px;
     object-fit: contain;
 }
+
+.input-choice2, .input-choice2date {
+    padding: .3rem;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    color: #333;
+    width: 100%;
+    cursor: pointer;
+}
+.input-choice2:focus, .input-choice2date:focus {
+    border: 1px solid #27A9E3 !important;
+}
+
+.form-check-input::before {
+    visibility: hidden;
+}
+p {
+    margin-bottom: 0.2rem !important;
+}

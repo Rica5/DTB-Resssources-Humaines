@@ -299,6 +299,10 @@ function renderMyRequest(Leave, stat) {
                 <div class="motif ${Leave.status}">
                     <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${Leave.motif}
                 </div>
+                ${Leave.recovery.trim().length > 0 ? `
+                <div class="motif ${Leave.status}">
+                    <i class="fa-solid fa-person-walking-luggage mx-2"></i> Récupération: ${Leave.recovery}
+                </div>` : ''}
                 <div class="buttons">
                     ${stat == "pending" ? `
                     <div class="action-field">
