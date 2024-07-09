@@ -444,6 +444,8 @@ function ApproveLast(){
                         
                         data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
                         if (order){
+                            
+                            if (data.type !== '') return;
                             $.ajax({
                                 url:"/takeleave",
                                 method:"POST",
