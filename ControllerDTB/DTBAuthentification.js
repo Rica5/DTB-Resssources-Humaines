@@ -240,16 +240,24 @@ async function switch_interface(session, mail, opt, res) {
     username: mail,
     occupation: "User",
   })
+
+  let userCheck = (await UserSchema.findOne({
+    username: mail,
+    occupation: { $in: ["Opération", "Surveillant"]},
+  }));
+
   if (
-    (await UserSchema.findOne({
-      username: mail,
-      occupation: "Opération",
-    })) ||
-    (await UserSchema.findOne({
-      username: mail,
-      occupation: "Surveillant",
-    }))
+    userCheck
+    // (await UserSchema.findOne({
+    //   username: mail,
+    //   occupation: "Opération",
+    // })) ||
+    // (await UserSchema.findOne({
+    //   username: mail,
+    //   occupation: "Surveillant",
+    // }))
   ) {
+    session.idUser = userCheck._id;
     if (opt == "c") {
       session.occupation_u = null;
       session.occupation_tl = null;
@@ -268,21 +276,23 @@ async function switch_interface(session, mail, opt, res) {
       globalVariable.data_desired[session.m_code] = {};
       res.redirect("/managementtl");
     }
-  } else if (
-    await UserSchema.findOne({ username: mail, occupation: "Admin" })
-  ) {
-    if (opt == "a") {
-      session.occupation_u = null;
-      session.occupation_a = "Admin";
-      res.redirect("/home");
+  } else {
+    let userAdmin = await UserSchema.findOne({ username: mail, occupation: "Admin" });
+    if (userAdmin) {
+      session.idUser = userAdmin._id;
+      if (opt == "a") {
+        session.occupation_u = null;
+        session.occupation_a = "Admin";
+        res.redirect("/home");
+      } else {
+        session.occupation_u = "User";
+        session.occupation_a = null;
+        session.m_code = theUser.m_code;
+        res.redirect("/employee");
+      }
     } else {
-      session.occupation_u = "User";
-      session.occupation_a = null;
-      session.m_code = theUser.m_code;
       res.redirect("/employee");
     }
-  } else {
-    res.redirect("/employee");
   }
 }
 

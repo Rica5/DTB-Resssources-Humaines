@@ -1,4 +1,5 @@
-
+// const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
+const GerantId = "6673ecbf0f644c29f7a997f7";
 var myRequestContent = "";
 var idActive = "";
 var allRequest = [];
@@ -144,7 +145,7 @@ function renderAllRequest(Leave){
                         </div> `
                                  : ""
                             }
-                        ${approvingList(leave.validation)}
+                        ${approvingList(leave.validation, leave._id)}
                             <div class="d-flex justify-content-end">
                                 ${renderButton(role,leave)}
                             </div>
@@ -168,7 +169,7 @@ function renderButton(role,leave){
         case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Admin" : button = `${renderPiece(leave)}
+        case "Admin": case "Gerant": button = `${renderPiece(leave)}
                                  <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
         case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
@@ -256,6 +257,8 @@ function dateDiffers(created, now) {
 function According(id,code,type,duration, motif, datestart, dateend, hourBegin, hourEnd){
     // method to disable field in array
     const disable = arr => arr.map(id => $(`#${id}`).prop('disabled', true));
+    const appr = $(`#val-${id}`).val();
+    const misyGerant = appr.split('|').includes(GerantId);
 
     if (role == 'Gerant' ){
         $("#typeLeave").val(type);
@@ -297,6 +300,16 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
     }
     $("#ModalAccord").show();
     $('#modal-duration').val(duration);
+
+    
+    if (misyGerant) {
+        $("#orderCheck").attr('hidden', '');
+        $("#sayYes").prop('checked', true);
+    } else {
+        $("#orderCheck").removeAttr('hidden', '');
+        $("#sayYes").prop('checked', false);
+    }
+
 }
 function Declined(id,code){
     idActive = id;
@@ -377,11 +390,12 @@ function ApproveLast(){
     // leave duration
     let lDuration = +$('#modal-duration').val();
 
+    console.log(checking)
     // condition
     if (checking !== 'n') {
         if (checking === 0.25) {
             // required infos
-            if (leaveType === '' || startDate === '' || endDate === '' ||
+            if (startDate === '' || endDate === '' ||
                 begin === '' || end === ''
             ) {
                 return alert("Veuillez remplir correctement toutes les informations nécessaires!");
@@ -390,7 +404,7 @@ function ApproveLast(){
             }
         } else {
             // required infos
-            if (leaveType === '' || startDate === '' || endDate === '') {
+            if (startDate === '' || endDate === '') {
                 return alert("Veuillez remplir correctement toutes les informations nécessaires!");
             } else {
                 // do the update
@@ -400,7 +414,7 @@ function ApproveLast(){
         lDuration -= checking;
 
     } else { // checking value eq "n"
-        if (leaveType === '' && startDate === '') {
+        if (startDate === '') {
             return alert("Veuillez remplir correctement toutes les informations nécessaires!");
         } else if (date_diff(startDate, endDate) < 0) {
             return alert("Erreur de différence entre la date de début et celle de fin!");
@@ -444,8 +458,7 @@ function ApproveLast(){
                         
                         data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
                         if (order){
-                            
-                            if (data.type !== '') return;
+                            if (data.type === '') return;
                             $.ajax({
                                 url:"/takeleave",
                                 method:"POST",
@@ -523,12 +536,17 @@ function Decline(){
     }  
    
 }
-function approvingList(all){
+function approvingList(all, id){
     var lists = "";
     all.forEach(element => {
-        lists += `<span><i class="fa-solid fa-circle-check"></i> ${element.user.usuel}</span>`
+        if (element.approbation) {
+            lists += `<span><i class="fa-solid fa-circle-check""></i> ${element.user.usuel}</span>`
+        } else {
+            lists += `<span><i  style="color: red;" class="fa-solid fa-times-circle"></i> ${element.user.usuel}</span>`
+        }
     });
-    return `<div class="d-flex approving-list">${lists}</div>`
+    console.log(all)
+    return `<div class="d-flex approving-list">${lists}</div> <input type="hidden" id="val-${id}" value="${all.map(u => u.user._id).join('|')}"  />`
 }
 function registerLeave(){
     $("#waitingApprove").css('opacity','1')

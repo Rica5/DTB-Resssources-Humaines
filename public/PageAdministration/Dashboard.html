@@ -585,26 +585,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="/jsDTB/notification.js"></script>
     <script>
-     var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
+      var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
+      setnotification(notif);
       var socket = io();
       const audio = new Audio("ring.wav");
       socket.on("notif", function (msg) {
-        var theNotif = msg[1];
-      var concerned = msg[0];
-        if (concerned.includes(role)){
-        const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
-        const notification = new Notification(title, {
-                     body: `${theNotif.content}`,
-                    icon:  '../assets/images1/logo.jpg',
-            })
-        pushNotification(theNotif,role)
-        audio.play();
+          var theNotif = msg[1];
+          var concerned = msg[0];
+            if (concerned.includes(role)){
+            const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+            const notification = new Notification(title, {
+                body: `${theNotif.content}`,
+                icon:  '../assets/images1/logo.jpg',
+            });
+            pushNotification(theNotif,role)
+            audio.play();
           }
       });
-    setnotification(notif);
-      var all_employees = JSON.parse('<%-JSON.stringify(nbr_emp)%>');
-      var all_leave = JSON.parse('<%-JSON.stringify(nbr_leave)%>');
-      var all_late = JSON.parse('<%-JSON.stringify(nbr_retard)%>');
+      var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
+      setnotification(notif);
+
+      var all_employees = JSON.parse(String.raw`<%-JSON.stringify(nbr_emp)%>`);
+      var all_leave = JSON.parse(String.raw`<%-JSON.stringify(nbr_leave)%>`);
+      var all_late = JSON.parse(String.raw`<%-JSON.stringify(nbr_retard)%>`);
       function closeHovering(id){
         document.getElementById(id).style.display = "none";
       }

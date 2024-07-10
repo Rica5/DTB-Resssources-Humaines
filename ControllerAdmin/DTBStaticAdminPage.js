@@ -8,6 +8,7 @@ const moment = require("moment");
 
 const getDashboardPage = async(req,res) => {
     var session = req.session;
+    console.log(session)
     if (session.occupation_a == "Admin") {
           var nbr_employe = await UserSchema.find({
             m_code: { $ne: "N/A" },
