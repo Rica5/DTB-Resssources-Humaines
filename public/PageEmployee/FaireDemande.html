@@ -509,6 +509,7 @@
             })
         })
         socket.on("isTreated", function (response){
+            if ("<%= user.m_code %>" !== response[1].m_code) return;
             console.log(response)
             if (response[1].status == "approved"){
                 dropElementById(response[0])

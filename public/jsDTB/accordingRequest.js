@@ -314,6 +314,7 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
 function Declined(id,code){
     idActive = id;
     $("#codeDecline").text(`Veuilez ecrire en dessous la raison du refus d'absence de ${code}`);
+    $("#reason").val('');
     $("#ModalDecline").show();
 }
 function closeModal(){
