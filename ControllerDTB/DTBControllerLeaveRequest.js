@@ -3,8 +3,8 @@ const LeaveSchema = require("../models/ModelLeave");
 const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-// const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
-const id_gerant = "6673ecbf0f644c29f7a997f7"
+const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
+// const id_gerant = "6673ecbf0f644c29f7a997f7"
 //Home page
 const getHomePage = async (req, res) => {
     var session = req.session;
