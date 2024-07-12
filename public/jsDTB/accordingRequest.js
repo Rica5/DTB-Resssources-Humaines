@@ -1,5 +1,5 @@
-// const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
-const GerantId = "6673ecbf0f644c29f7a997f7";
+const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
+// const GerantId = "6673ecbf0f644c29f7a997f7";
 var myRequestContent = "";
 var idActive = "";
 var allRequest = [];
@@ -314,6 +314,7 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
 function Declined(id,code){
     idActive = id;
     $("#codeDecline").text(`Veuilez ecrire en dessous la raison du refus d'absence de ${code}`);
+    $("#reason").val('');
     $("#ModalDecline").show();
 }
 function closeModal(){

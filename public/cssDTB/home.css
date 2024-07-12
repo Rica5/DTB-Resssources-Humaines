@@ -259,7 +259,9 @@
 }
 .message-bulbe h2 {
     color: var(--color-brown) !important;
-    font-family: "Baloo 2", cursive !important;
+    /* font-family: "Baloo 2", cursive !important; */
+    font-weight: 500;
+    text-transform: none;
 }
 
 @keyframes float {
