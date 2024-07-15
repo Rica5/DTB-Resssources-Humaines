@@ -309,6 +309,10 @@ function renderMyRequest(Leave, stat) {
                         <button class="btn btn-sm action" onclick="openEditModal('${Leave._id}')"><i class="fa-solid fa-file-pen"></i></button> 
                         <button class="btn btn-sm action ml-2"  onclick="openDeleteModal('${Leave._id}')"> <i class="fa-solid fa-square-xmark"></i></button>
                     </div>` : ''} 
+                    ${stat == "declined" ? `
+                    <div class="action-field">
+                        <button class="btn btn-sm action ml-2"  onclick="openDeleteModal('${Leave._id}')"> <i class="fa-solid fa-square-xmark"></i></button>
+                    </div>` : ''} 
                 </div>
                 <div class="date-heure">
                     <div class="ask-content">

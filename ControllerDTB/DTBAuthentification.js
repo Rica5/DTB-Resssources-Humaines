@@ -285,6 +285,7 @@ async function switch_interface(session, mail, opt, res) {
         session.occupation_a = "Admin";
         res.redirect("/home");
       } else {
+        session.idUser = theUser._id;
         session.occupation_u = "User";
         session.occupation_a = null;
         session.m_code = theUser.m_code;

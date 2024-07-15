@@ -361,16 +361,20 @@ const answerRequest = async (req, res) => {
         var title = `Absence pour ${thisLeave.motif}`
         var content = "";
         if (status == "declined") {
-            content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
-            // setEachUserNotification(thisLeave.m_code, title, content, req);
+            content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
             forRH = `${actor.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
             var notification = {
-                title: "Refus de congé",
+                title: "Réfus de congé",
                 content: forRH,
                 datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
             }
             var concerned = ["Admin", "Surveillant"]
             await setGlobalAdminNotifications(notification, concerned, true, req);
+            // si 2 responsables ont réfusé la demande
+            if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
+                setEachUserNotification(thisLeave.m_code, title, content, req);
+
+            }
         }
         else {
             forRH = `${actor.usuel} a traité la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
@@ -395,6 +399,8 @@ const answerRequest = async (req, res) => {
         var checking = req.body.checking;
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
+        
+        const io = req.app.get("io");
 
         // if (session.idUser == "645a417e9d34ed8965caea9e") {
         if (session.idUser == id_gerant) {
@@ -424,12 +430,13 @@ const answerRequest = async (req, res) => {
                     await setGlobalAdminNotifications(notification, concerned, true, req);
                     content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuvée`
                     setEachUserNotification(thisLeave.m_code, title, content, req);
+                    // update employee interface
+                    // io.sockets.emit("isTreated", [id, thisLeave]);
                 } 
             } else {
-                console.log('makatooo')
+                let title = `<span style="color: red;">Refus de congé</span>`;
                 // send notification if gerant refused
                 content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
-                setEachUserNotification(thisLeave.m_code, title, content, req);
                 forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
                 var notification = {
                     title: `<span style="color: red;">Refus de congé</span>`,
@@ -438,6 +445,12 @@ const answerRequest = async (req, res) => {
                 }
                 var concerned = ["Surveillant", "Opération", "Admin"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
+                // si 2 responsables ont réfusé la demande, envoyé une notification au demandeur
+                if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
+                    setEachUserNotification(thisLeave.m_code, title, content, req);
+                    // update status of leaves on employee page
+                    io.sockets.emit("isTreated", [id, thisLeave]);
+                }
             }
 
             res.json(thisLeave);
@@ -484,8 +497,8 @@ const answerRequest = async (req, res) => {
             var title = `Absence pour ${thisLeave.motif}`
             var content = "";
             if (status == "declined") {
-                content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
-                setEachUserNotification(thisLeave.m_code, title, content, req);
+                let title = `<span style="color: red;">Refus de congé</span>`;
+                content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
                 forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
                 var notification = {
                     title: `<span style="color: red;">Refus de congé</span>`,
@@ -494,9 +507,16 @@ const answerRequest = async (req, res) => {
                 }
                 var concerned = ["Surveillant", "Opération"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
+                // si 2 responsables ont réfusé la demande, envoie une notification au demandeur
+                if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
+                    setEachUserNotification(thisLeave.m_code, title, content, req);
+                    // update status of leaves on employee page
+                    io.sockets.emit("isTreated", [id, thisLeave]);
+                }
             }
             else {
 
+                var title = `Absence pour ${thisLeave.motif}`;
                 let leaveT = await LeaveRequestTest.findOne({_id: id, "validation.user": { $nin: [id_gerant]}});
 
                 // efa ao nu gerant raha null
@@ -512,6 +532,8 @@ const answerRequest = async (req, res) => {
                     await setGlobalAdminNotifications(notification, concerned, true, req);
                     content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuvée`
                     setEachUserNotification(thisLeave.m_code, title, content, req);
+                    
+                    io.sockets.emit("isTreated", [id, thisLeave]);
                 } else {
 
                     if (order == "false") {
@@ -534,12 +556,13 @@ const answerRequest = async (req, res) => {
                         var concerned = ["Admin", "Opération", "Surveillant"]
                         await setGlobalAdminNotifications(notification, concerned, true, req);
                         content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuvée`
-                        setEachUserNotification(thisLeave.m_code, title, content, req);
+                        setEachUserNotification(thisLeave.m_code, notification.title, content, req);
                     }
                 }
 
             }
-            const io = req.app.get("io");
+            
+            // io.sockets.emit("isTreated", [id, thisLeave]);
             io.sockets.emit("rhDone", forGerant);
             res.json(thisLeave);
         }
@@ -583,6 +606,7 @@ async function setEachUserNotification(code, title, content, req) {
 
 async function removeNotification(req, res) {
     let userId = req.session.idUser;
+    console.log(userId, req.params.id)
     try {
         const removed = await UserSchema.findOneAndUpdate(
             { _id: userId },
