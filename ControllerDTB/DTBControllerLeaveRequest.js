@@ -237,25 +237,26 @@ const getMyRequest = async (req, res) => {
 //See pending request
 const seePending = async (req, res) => {
     var session = req.session;
+    // ids RH
+    var RH_Ids = await UserSchema.find({ occupation: "Admin", _id: { $ne: id_gerant } });
+    RH_Ids = RH_Ids.map(e => e._id);
+
     if (session.occupation_tl == "Surveillant") {
         var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
         var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
         var role = "Surveillant";
-        res.render("PageTL/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser });
+        res.render("PageTL/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser, RH_Ids });
     }
     else if (session.occupation_op == "Opération") {
         var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
         var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
         var role = "Opération";
-        res.render("PageOperation/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser });
+        res.render("PageOperation/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser, RH_Ids });
     }
     else if (session.occupation_a == "Admin") {
         var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
         var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
         var role = "Admin";
-        // ids RH
-        var RH_Ids = await UserSchema.find({ occupation: "Admin", _id: { $ne: id_gerant } });
-        RH_Ids = RH_Ids.map(e => e._id);
         role = session.idUser == id_gerant ? "Gerant" : "Admin";
         var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
         res.render("PageAdministration/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser, allPermission: allPermission, RH_Ids });
