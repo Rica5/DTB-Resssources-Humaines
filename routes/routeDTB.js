@@ -79,6 +79,10 @@ routeExpDTB.route("/joinFileLeaveAnother").post(Controller.attachedFileAnother);
 routeExpDTB.route("/MyRequest").post(Controller.getMyRequest);
 //See pending request
 routeExpDTB.route("/leavePending").get(Controller.seePending);
+//See procedeed requests
+routeExpDTB.route("/leaveTreated").get(Controller.seeTreatedLeave);
+//filter leave requests by date and month
+routeExpDTB.route("/filterLeaveRequest").get(Controller.getLeaveRequestFiltered);
 //Get all request
 routeExpDTB.route("/allRequest").post(Controller.getPending);
 //Response Request

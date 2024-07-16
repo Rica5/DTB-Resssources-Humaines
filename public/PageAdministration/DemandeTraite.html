@@ -25,7 +25,6 @@
   <link rel="stylesheet" href="cssDTB/notification.css">
   <script>
   var users = JSON.parse(`<%-JSON.stringify(users)%>`)
-  var allPermission = JSON.parse(`<%-JSON.stringify(allPermission)%>`)
   var role =  '<%= role %>';
   </script>
 </head>
@@ -345,189 +344,36 @@
                 <div class="col-12">
                   <div class="header-request">
                     <div class="buttons-tab">
-                      <!-- <button data-target="#allRequest" class="switch-button active-btn">
-                          Tout les requêtes (<span>0</span>)
-                      </button> -->
-                      <button data-target="#highRequest" class="switch-button active-btn">
-                          Urgentes (<span>0</span>)
-                      </button>
-                      <button data-target="#mediumRequest" class="switch-button">
-                          Moyennes (<span>0</span>)
-                      </button>
-                      <button data-target="#lowRequest" class="switch-button">
-                          Basses (<span>0</span>)
-                      </button>
-                  </div>
-                  <div id="notification" class="notice-success">
-                    Requête acceptée
-                 </div>
-                  </div>
-                 
-                <div class="col-12 allRequest mt-2" id="content-allRequest">
-                    <div class="card-item" id="allRequest" hidden>
-                      
                     </div>
-                    <div class="card-item" id="highRequest"></div>
-                    <div class="card-item" id="mediumRequest" hidden></div>
-                    <div class="card-item" id="lowRequest" hidden></div>
-                </div>
-                </div>
-          <div id="ModalAccord" class="modal_conge">
-            <div class="modal_delete">
-              <div class="row">
-                <div class="col-md-6">
-                  <span class="logo-text mt-3">
-                    <!-- dark Logo text -->
-                    <b>ACCORD DE CONGE</b>
-                  </span>
-                </div>
-              </div>
-              <p id="codeAccept" class="warn-text mt-4">
-                Voulez vous vraiment accepter l'absence de M-FAM
-              </p>
-              <div class="d-flex justify-content-between">
-                <div class="col-md-8">
-                  <label id="title" for="type_leave">Veuillez séléctionner le type de congé:</label>
-                  <select class="mt-3 typeLeave" id="typeLeave">
-                    <option value="">Type de congé</option>
-                    <option value="Congé Payé">
-                      Congé Payé ( rien à déduire )
-                    </option>
-                    <option value="Congé sans solde">
-                      Congé Sans Solde ( à déduire sur salaire )
-                    </option>
-                    <option value="Permission exceptionelle">
-                      Permission exceptionelle ( rien à déduire )
-                    </option>
-                    <option value="Repos Maladie">
-                      Repos Maladie ( rien à déduire )
-                    </option>
-                    <option value="Absent">
-                      Absent ( à déduire sur salaire )
-                    </option>
-                    <option value="Congé de maternité">
-                      Congé de maternité ( rien à déduire )
-                    </option>
-                    <option value="Mise a Pied">
-                      Mise a pied ( à déduire sur salaire )
-                    </option>
-                    <option value="Absence Injustifiée">
-                      Absence Injustifiée ( à déduire sur salaire )
-                    </option>
-                    <option value="Récupération">
-                      Récupération
-                    </option>
-                  </select>
-                </div>
-                <div id="orderCheck" class="col-md-4 container-order"> 
-                  <div>
-                      <label class="text-center">Par ordre</label>
+                    <div id="notification" class="notice-success">
+                      Requête acceptée
                   </div>
-                  <div class="d-flex justify-content-between gap-5">
-                    <div class="d-flex flex-column text-center">
-                      <input id="sayYes" type="checkbox" class="checking" value="yes" onchange="checkboxControl(this, 'yes')">
-                      <label>Oui</label>
+                </div>
+                <div class="col-12 mt-2 p-1" id="content-allRequest">
+                  <div class="row">
+                    <div class="col-2">
+                      <select class="form-select" aria-label="Default select example" id="year">
+                        <!-- <option selected>Open this select menu</option> -->
+                        <% years.forEach((year, i) => { %>
+                          <option value="<%= year %>" <%=  i === years.length - 2 ? 'selected' : "" %>><%= year %></option>
+                        <% }) %>
+                      </select>
+                      <br>
+                      <ul class="list-group">
+                        <li class="list-group-item text-capitalize active" id="li-" onclick="fetchList('')">Toutes les demandes</li>
+                        <% months.forEach((month, index) => { %>
+                          <li class="list-group-item text-capitalize" id="li-<%= index + 1  %>" onclick="fetchList('<%= index + 1 %>')"><%= month %></li>
+                      <% }) %>
+                      </ul>
                     </div>
-                    <!-- <div class="d-flex flex-column text-center">
-                      <input id="sayNo" type="checkbox" class="checking" value="no" onchange="checkboxControl('no')" checked>
-                      <label>NON</label>
-                    </div> -->
-                  </div>
-              </div>
-              </div>
-              <div id="typeGranted" class="d-none">
-                  <div class="col-md-10">
-                      <label id="title" for="type_leave">Choisissez le cas du permission || <b>Pris en <span id="thisYearPerm">2024</span>: <span id="numberPermission">10</span></b></label>
-                    <select class="mt-1 typeLeave" id="exceptType">
-                      <option value="Férié">Jour férié</option>
-                      <option value="Décès">Décès (conjointe, sns)</option>
-                      <option value="Décès (frères, soeurs)">Décès (frères,soeurs)</option>
-                      <option value="Naissance">Naissance (enfant légitime)</option>
-                      <option value="Mariage">Mariage (employé)</option>
-                      <option value="Mariage (enfant légitime)">Mariage (enfant légitime)</option>
-                      <option value="Exhumation">Exhumation (conjointe, sns)</option>
-                      <option value="Exhumation (parents,beaux parents)">Exhumation (parents,beaux parents)</option>
-                      <option value="Déménagement">Déménagement</option>
-                      <option value="Circoncision">Circoncision</option>
-                    </select>
-                    <div id="alertPermission" class="d-none">
-                      Cette type de permission a été déja prise cette année
+                    <div class="col-10">
+                      <div class="card-item" id="allRequests">
+                        
+                      </div>
                     </div>
                   </div>
-              </div>
-              <div id="typeRm" class="d-none">
-                <div class="col-md-10">
-                    <label id="title" for="type_leave">Changer le motif en: </label>
-                  <select class="mt-1 typeLeave" id="rmType">
-                    <option value="">Par défaut</option>
-                    <option value="Consultation médicale">Consultation médicale</option>
-                    <option value="Assistance maternelle">Assistance maternelle</option>
-                    <option value="Visite médicale">Visite médicale</option>
-                  </select>
-                </div>
-              </div>
-              <!-- Motif -->
-              <div class="">
-                <input type="hidden" id="modal-duration">
-                <input id="motif-input" class="input-choice2 my-3" type="text" placeholder="Motif du congé (optionelle)" >
-              </div>
-              <!-- Q -->
-              <div class="form-group row">
-                <label class="col-md-3" ><p style="font-size:14px;font-weight: 500;">Quart / Démi / Une journée</p></label>
-                <div class="col-md-9">
-                  <div class="form-check mr-sm-2">
-                    <input type="checkbox" class="form-check-input" value="0.25" onclick="dissapearq(this)"
-                      id="quart">
-                    <label class="form-check-label mb-0" for="customControlAutosizing3"><p style="font-size:12px;font-weight: 500;">Quart de journée</p></label>
-                    <div class="hide top_down" id="hour_absence">
-                      <input type="time" class="time-leave" id="begin">
-                      <p class="mx-5" style="font-size:12px;font-weight: 500;padding-top:15px;"> jusqu'à </p>
-                    <input type="time" class="time-leave" id="end">
-                    </div>
-                  </div>
-                  <div class="form-check mr-sm-2">
-                    <input type="checkbox" onclick="dissapeard(this)" class="form-check-input" value="0.5" id="demi">
-                    <label class="form-check-label mb-0" for="customControlAutosizing1"><p style="font-size:12px;font-weight: 500;">Démi journée</p></label>
-                  </div>
-                  <div class="form-check mr-sm-2">
-                    <input type="checkbox" class="form-check-input" value="1" onclick="dissapearo(this)" id="one">
-                    <label class="form-check-label mb-0" for="customControlAutosizing3"><p style="font-size:12px;font-weight: 500;">Une journée</p></label>
-                  </div>
-
-                </div>
-              </div>
-              <div class="row">
-                  <div class="col-sm-6">
-                      <div class="form-group">
-                          <label><p style="font-size:14px;font-weight: 500;">Date de début</p></label>
-                          <input type="date" class="input-choice2date" id="datestart" placeholder="Enter Date">
-                        </div>
-                  </div>
-                  <div class="col-sm-6">
-                      <div id="pde" class="form-group">
-                          <label><p style="font-size:14px;font-weight: 500;">Date de fin</p></label>
-                          <input type="date" class="input-choice2date" id="dateend" placeholder="Enter Date">
-                        </div>
-                  </div>
-              </div>
-
-              <div id="typeCp" class="d-none">
-                  <div class="col-md-8 mt-1">
-                    <div id="leaveLeft" class="container-order"> 
-                      
-                    </div>
                 </div>
             </div>
-              <p class="mt-3" id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
-              <div class="allProject row" id="project">
-                  
-              </div>
-              <div class="mt-3">
-                <button id="accept" onclick="ApproveLast()"  class="btn btn-sm btn-primary mx-1"><i style="opacity: 0;" id="waitingApprove" class="fa-solid fa-spinner fa-spin"></i> Confirmer <i class="fa-solid fa-check"></i></button>
-                <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">Annuler <i class="fa-solid fa-ban"></i></button>
-              </div>
-            </div> 
-          </div>
           </div>
           <input type="file" class="d-none" id="join">
           <div id="ModalPiece" class="modal_conge">
@@ -643,11 +489,8 @@
   <script src="assets/js1/examples.modals.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="/js_code/socket.js"></script>
-  <script>
-    const USERID = "<%= dataUser._id %>";
-    const RH_IDs = "<%= RH_Ids %>".split(',');
-  </script>
-  <script src="/jsDTB/accordingRequest.js"></script>
+  <!-- <script src="/jsDTB/accordingRequest.js"></script> -->
+  <script src="/jsDTB/listdemande.js"></script>
   <script src="/jsDTB/notification.js"></script>
   <script>
      var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
@@ -662,28 +505,12 @@
                      body: `${theNotif.content}`,
                     icon:  '../assets/images1/logo.jpg',
             })
-        UpdateRequest();
+        // UpdateRequest();
         pushNotification(theNotif,role)
         audio.play();
           }
       });
-      socket.on("isTreated", function (response){
-      $(`#${response[0]}`).addClass("disabled")
-    })
-    if (role =="Admin"){
-        socket.on("ropDone", function (msg){
-        UpdateRequest();
-      })
-      socket.on("rhDone", function (msg){
-        UpdateRequest();
-      })
-    }
-    else {
-      socket.on("rhDone", function (msg){
-        UpdateRequest();
-      })
-    }
-    setnotification(notif);
+    
   </script>
 </body>
 

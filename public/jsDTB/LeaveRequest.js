@@ -242,7 +242,7 @@ function Approved(data) {
                     <div class="duration">
                         <div>
                         <span>Durée:</span>
-                        <span>${element.duration == 0.25 ? calcul_timediff_absencetl(element.hour_begin, element.hour_end) : element.duration + " jour(s)"} </span>
+                        <span>${element.duration} ${element.duration > 1 ? "jours" : "jour"}</span>
                         </div>
                         <div><span>Décision : ${decided(element.type)}</span></div>
                     </div>
@@ -433,26 +433,47 @@ var update = `
 </div>
 `
 
+const isValidDate = (date) => {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    return datePattern.test(date);
+}
 
 $("#startDate").on('change', () => {
 
     var startDate = $("#startDate").val()
     var endDate = $("#endDate").val();
 
-    (!startDate) ? $("#startDate").css({ "border-color": "red" }) : (
-        $("#startDate").css({ "border-color": "" }),
-        (endDate) ? dateDiff(startDate, endDate) : ""
-    );
+    // check if valid date
+    if (isValidDate(startDate) && isValidDate(endDate)) {
+        let eDate = new Date(endDate);
+        let sDate = new Date(startDate);
+        
+        if (eDate.getFullYear() >= sDate.getFullYear()) {
+            (!startDate) ? $("#startDate").css({ "border-color": "red" }) : (
+                $("#startDate").css({ "border-color": "" }),
+                (endDate) ? dateDiff(startDate, endDate) : ""
+            );
+        }
+    }
 })
 $("#endDate").on('change', () => {
 
     var startDate = $("#startDate").val()
     var endDate = $("#endDate").val();
 
-    (!endDate) ? $("#endDate").css({ "border-color": "red" }) : (
-        $("#endDate").css({ "border-color": "" }),
-        (startDate) ? dateDiff(startDate, endDate) : ""
-    );
+    // check if valid dates
+    if (isValidDate(startDate) && isValidDate(endDate)) {
+        
+        let eDate = new Date(endDate);
+        let sDate = new Date(startDate);
+        
+        if (eDate.getFullYear() >= sDate.getFullYear()) {
+            (!endDate) ? $("#endDate").css({ "border-color": "red" }) : (
+                $("#endDate").css({ "border-color": "" }),
+                (startDate) ? dateDiff(startDate, endDate) : ""
+            );
+        }
+    }
 
     // (!endDate) ? $("#endDate").css({ "border-color": "red" }) : (
     //     $("#endDate").css({ "border-color": "" }),
@@ -496,7 +517,9 @@ $('#join').on('change', function (event) {
     }
 })
 async function dateDiff(starting, ending) {
-    if (ending != "") {
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (datePattern.test(ending)) {
         // var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
         // var endings = moment(ending, "YYYY-MM-DD HH:mm");
         // var duration = moment.duration(endings.diff(startings));
@@ -864,7 +887,8 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         // default check
         $("#monday").click();
         // change end date value
-        $('#endDate').val(defaultEndDateString);
+        if (isValidDate(defaultEndDateString))
+            $('#endDate').val(defaultEndDateString);
     }
     // If it fall for Saturday, we add 1 day for Sunday
     if (end.getDay() === 6) {
@@ -892,7 +916,8 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         // default check
         $("#monday").click();
         // change end date value
-        $('#endDate').val(defaultEndDateString);
+        if (isValidDate(defaultEndDateString))
+            $('#endDate').val(defaultEndDateString);
     }
 
     // event handler
@@ -915,7 +940,9 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         // changer automatiquement la valeur du champ date de fin.
         let defaultEndDateAsDate = new Date(returnDate);
         defaultEndDateAsDate.setDate(defaultEndDateAsDate.getDate() - 1);
-        $("#endDate").val(formatDateToYyyDdMm(defaultEndDateAsDate));
+        
+        if (isValidDate(defaultEndDateAsDate))
+            $("#endDate").val(formatDateToYyyDdMm(defaultEndDateAsDate));
 
 
         $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
@@ -948,12 +975,16 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
  * @returns number
  */
 const CalculateDaysIncludingHolidays = async (startDate, endDate) => {
-    const year = new Date().getFullYear();
-    const holidays = await fetchHolidays(year);
-    const effectiveDays = calculateEffectiveDays(startDate, endDate, holidays);
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (datePattern.test(startDate) && datePattern.test(endDate)) {
+        const year = new Date().getFullYear();
+        const holidays = await fetchHolidays(year);
+        const effectiveDays = calculateEffectiveDays(startDate, endDate, holidays);
     
-    console.log(`Effective days between ${startDate} and ${endDate} excluding holidays: ${effectiveDays}`);
-    return effectiveDays;
+        console.log(`Effective days between ${startDate} and ${endDate} excluding holidays: ${effectiveDays}`);
+        return effectiveDays < 0 ? 0 : effectiveDays;
+    }
+    return 0;
 };
 
 $(function(){

@@ -1,5 +1,5 @@
-const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
-// const GerantId = "6673ecbf0f644c29f7a997f7";
+// const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
+const GerantId = "6673ecbf0f644c29f7a997f7";
 var myRequestContent = "";
 var idActive = "";
 var allRequest = [];
@@ -67,95 +67,132 @@ function renderAllRequest(Leave){
       let save = userActive.save_at
     return `
     <div id="${leave._id}" class="content-leave">
-                        <div class="code-person p_${leave.leavePriority}">
-                            <div>
-                                <p id="codeUser" class="code-text">${leave.m_code}</p>
-                                <p class='text-duration'>${leave.duration == 0.25 ? calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : 
-                                isFloat(leave.duration) ? leave.duration.toString().split(".")[0] + " jr(s) " + calcul_timediff_absencetl(leave.hour_begin,leave.hour_end) : leave.duration + " jour(s)"}</p>
-                                <div> 
-                                <p class="priority">${leave.priorityValue}</p>
-                                </div>
-                            </div>
+            <div class="code-person p_${leave.leavePriority}">
+                <div>
+                    <p id="codeUser" class="code-text">${leave.m_code}</p>
+                    <p class='text-duration'>${leave.duration} ${leave.duration > 1 ? "jours" : "jour"}</p>
+                    <div> 
+                    <p class="priority">${leave.priorityValue}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="leave-infos">
+                <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
+                <p id="motif" class="text-center">Motif: ${leave.motif}</p>
+                ${
+                    leave.recovery.trim().length > 0 ? `<p id="motif" class="text-center">Récupération: ${leave.recovery}</p>` : ''
+                }
+                <div class="date-heure">
+                    <div class="ask-content">
+                        <h1>
+                            <i class="fa-solid fa-calendar"></i>
+                            Demandeur
+                        </h1>
+                        <div class="ask">
+                            <span>Nom: ${leave.nom}</span>
+                            <span>Shift: ${getShift(leave.m_code)}</span>
+                            <span>Matricule: ${leave.matr}</span>
                         </div>
-                        <div class="leave-infos">
-                            <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
-                            <p id="motif" class="text-center">Motif: ${leave.motif}</p>
-                            ${
-                                leave.recovery.trim().length > 0 ? `<p id="motif" class="text-center">Récupération: ${leave.recovery}</p>` : ''
-                            }
-                            <div class="date-heure">
-                                <div class="ask-content">
-                                    <h1>
-                                        <i class="fa-solid fa-calendar"></i>
-                                        Demandeur
-                                    </h1>
-                                    <div class="ask">
-                                        <span>Nom: ${leave.nom}</span>
-                                        <span>Shift: ${getShift(leave.m_code)}</span>
-                                        <span>Matricule: ${leave.matr}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="date-heure">
-                                <div class="d">
-                                    <h1>
-                                        <i class="fa-solid fa-calendar"></i>
-                                        Date
-                                    </h1>
-                                    <div>
-                                        <span>Début:</span>
-                                        <span>${convertDate(leave.date_start)}</span>
-                                    </div>
-                                    <div>
-                                        <span>Fin:</span>
-                                        <span>${convertDate(leave.date_end)}</span>
-                                    </div>
-                                </div>
-                                <div class="h">
-                                    <h1>
-                                        <i class="fa-solid fa-clock"></i>
-                                        Heure
-                                    </h1>
-                                    <div>
-                                        <span>Début:</span>
-                                        <span> ${leave.hour_begin}</span>
-                                    </div>
-                                    <div>
-                                        <span>Fin:</span>
-                                        <span> ${leave.hour_end}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            ${                                
-                                (role == "Gerant") ?
-                                `
-                                
-                        <div class="date-heure">
-                                <div class="ask-content">
-                                    <h1>
-                                        <i class="fa-solid fa-calendar"></i>
-                                        Status / solde de ${code}
-                                    </h1>
-                                    <div class="ask">
-                                        <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
-                                        <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
-                                        <span>Reste après autorisation: ${(acc - duration)}</span>
-                                    </div>
-                                </div>
-                        </div> `
-                                 : ""
-                            }
-                        ${approvingList(leave.validation, leave._id)}
-                            <div class="d-flex justify-content-end">
-                                ${renderButton(role,leave)}
-                            </div>
+                    </div>
+                </div>
+                <div class="date-heure">
+                    <div class="d">
+                        <h1>
+                            <i class="fa-solid fa-calendar"></i>
+                            Date
+                        </h1>
+                        <div>
+                            <span>Début:</span>
+                            <span>${convertDate(leave.date_start)}</span>
                         </div>
-                      </div>
+                        <div>
+                            <span>Fin:</span>
+                            <span>${convertDate(leave.date_end)}</span>
+                        </div>
+                    </div>
+                    <div class="h">
+                        <h1>
+                            <i class="fa-solid fa-clock"></i>
+                            Heure
+                        </h1>
+                        <div>
+                            <span>Début:</span>
+                            <span> ${leave.hour_begin}</span>
+                        </div>
+                        <div>
+                            <span>Fin:</span>
+                            <span> ${leave.hour_end}</span>
+                        </div>
+                    </div>
+                </div>
+                ${                                
+                    (role == "Gerant") ?
+                    `
+                    
+                    <div class="date-heure">
+                            <div class="ask-content">
+                                <h1>
+                                    <i class="fa-solid fa-calendar"></i>
+                                    Status / solde de ${code}
+                                </h1>
+                                <div class="ask">
+                                    <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
+                                    <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
+                                    <span>Reste après autorisation: ${(acc - duration)}</span>
+                                </div>
+                            </div>
+                    </div> `
+                        : ""
+                }
+                ${approvingList(leave.validation, leave._id)}
+                ${
+                    leave.validation.filter(v => !v.approbation).length > 0 ?
+                    `<div>
+                        <p style="text-decoration:underline;">Commentaires:</p>
+                        <ul>
+                        ${leave.validation.map(v => (
+                            !v.approbation ?
+                                `<li>${v.user.usuel}: <span class="text-danger">${v.comment}</span></li>`
+                            : ""
+                        )).join('')}
+                        </ul>
+                    </div>`
+                    :
+                    ""
+                }
+                <div class="d-flex justify-content-end">
+                    ${
+                        // code mila commentena
+                        (
+                            // jerena raha efa misy Id an'ny RH ao sady non validé
+                            leave.validation.find(v => RH_IDs.includes(v.user._id) && !v.approbation)
+                            &&
+                            // ==!jerena raha misy Id gérant ao sady validé (approbation = true)
+                            !leave.validation.find(v => v.user._id === GerantId && v.approbation)
+                            &&
+                            // de tsy pagen'ny gérant
+                            USERID !== GerantId
+                        ) ?
+                        "<div>En attende de la validation du gérant...</div>"
+                        : // else
+
+                        (
+                            leave.validation.find(v => v.user._id === GerantId && v.approbation)
+                            &&
+                            USERID !== GerantId
+                        )
+                        ?
+                        renderButtonNoDenied(role,leave)
+                        :
+                        renderButton(role,leave)
+                        
+                    }
+                </div>
+            </div>
+        </div>
     `
     });
 
-    return mappedLeave.join('');
-    
     return mappedLeave.join('');
 }
 UpdateRequest();
@@ -172,6 +209,31 @@ function renderButton(role,leave){
         case "Admin": case "Gerant": button = `${renderPiece(leave)}
                                  <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        default : "" 
+    }
+    return button
+
+    function renderPiece(leave){
+        if (leave.piece == ""){
+            return `<button onclick="addPiece('${leave._id}')" class="btn btn-sm btn-secondary btn-response">Pièce Justificative <i class="fa-solid fa-paperclip"></i></button>`
+        }
+        else {
+            
+            return `<i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mx-1 mt-3"></i><button onclick="seePiece('${leave._id}','${leave.piece}','${leave.m_code}','${leave.date_start}','${leave.date_end}')" class="btn btn-sm btn-secondary btn-response">Pièce Justificative <i class="fa-solid fa-paperclip"></i></button>`;
+        }
+    }
+}
+
+function renderButtonNoDenied(role,leave){
+    var button = ""
+    switch(role){
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
+                                     <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
+        case "Admin": case "Gerant": button = `${renderPiece(leave)}
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button disabled onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
         case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
@@ -459,7 +521,10 @@ function ApproveLast(){
                         
                         data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
                         if (order){
-                            if (data.type === '') return;
+                            // vérifier si le congé a été traité par rh (type !== "")
+                            // ou status de la demande n'est pas réfusé (status !== "declined")
+                            if (data.type === '' && data.status !== 'declined') return;
+
                             $.ajax({
                                 url:"/takeleave",
                                 method:"POST",
@@ -546,7 +611,7 @@ function approvingList(all, id){
             lists += `<span><i  style="color: red;" class="fa-solid fa-times-circle"></i> ${element.user.usuel}</span>`
         }
     });
-    console.log(all)
+    
     return `<div class="d-flex approving-list">${lists}</div> <input type="hidden" id="val-${id}" value="${all.map(u => u.user._id).join('|')}"  />`
 }
 function registerLeave(){
