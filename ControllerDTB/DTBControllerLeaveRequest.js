@@ -3,8 +3,8 @@ const LeaveSchema = require("../models/ModelLeave");
 const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
-// const id_gerant = "6673ecbf0f644c29f7a997f7"
+// const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
+const id_gerant = "6673ecbf0f644c29f7a997f7"
 //Home page
 const getHomePage = async (req, res) => {
     var session = req.session;
@@ -253,9 +253,12 @@ const seePending = async (req, res) => {
         var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
         var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
         var role = "Admin";
+        // ids RH
+        var RH_Ids = await UserSchema.find({ occupation: "Admin", _id: { $ne: id_gerant } });
+        RH_Ids = RH_Ids.map(e => e._id);
         role = session.idUser == id_gerant ? "Gerant" : "Admin";
         var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
-        res.render("PageAdministration/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser, allPermission: allPermission });
+        res.render("PageAdministration/DemandeConge.html", { users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser, allPermission: allPermission, RH_Ids });
     }
     else {
         res.redirect("/");
@@ -268,11 +271,29 @@ const getPending = async (req, res) => {
         // get all tl
         const TLs = await UserSchema.find({ occupation: "Surveillant"}); 
         const emails = TLs.map(tl => tl.username);
+        // get TL ids
         const usersTL = await UserSchema.find({ username: { $in: emails } });
         const TLIds = usersTL.map(tl => tl._id);
+        
+
+        // si (TL, ROP, ADMIN), n'affiche pas (tsy affichena ny raha ireto no nandefa ilay demande)
+        const staffs = await UserSchema.find({ occupation: { $in: ["Opération", "Admin", "Surveillant"] } });
+        const staffsUsername = staffs.map(f => f.username);
+        
+        // staffs alaina @ alalan'ny email na username
+        const staffsFiltered = await UserSchema.find({ username: { $in: staffsUsername }, m_code: { $ne: "N/A" } });
+        const filtersMcode = staffsFiltered.map(f => f.m_code);
+
         // var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, validation: [] }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
-        var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, "validation.user": { $nin: TLIds } }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
-        allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
+        var allRequest = await LeaveRequestTest.find({
+            m_code: { $nin: [...filtersMcode] }, // n'afficher pas si la demande venant d'un ROP et TL
+            status: { $nin: ["approved", "declined"] },
+            "validation.user": { $nin: TLIds }
+        })
+        .sort({ leavePriority: 'desc' })
+        .populate({ path: "validation.user", select: 'usuel' });
+
+        // allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
         res.json(allRequest);
     }
     else if (session.occupation_op == "Opération") {
@@ -281,15 +302,37 @@ const getPending = async (req, res) => {
         const emails = ROPs.map(rop => rop.username);
         const usersROP = await UserSchema.find({ username: { $in: emails } });
         const ROPIds = usersROP.map(rop => rop._id);
+        
+        // si (ROP, ADMIN), n'affiche pas (tsy affichena ny raha ireto no nandefa ilay demande)
+        const staffs = await UserSchema.find({ occupation: { $in: ["Admin", "Surveillant"] } });
+        const staffsUsername = staffs.map(f => f.username);
+        
+        // staffs alaina @ alalan'ny email na username
+        const staffsFiltered = await UserSchema.find({ username: { $in: staffsUsername }, m_code: { $ne: "N/A" } });
+        const filtersMcode = staffsFiltered.map(f => f.m_code);
+
         // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
-        var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: ROPIds } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
+        var allRequest = await LeaveRequestTest.find({
+            m_code: { $nin: filtersMcode }, // n'afficher pas si la demande venant d'un ROP
+            status: { $nin: ["approved", "declined"] },
+            "validation.user": { $nin: ROPIds }
+        })
+        .populate({ path: "validation.user", select: 'usuel' })
+        .sort({ leavePriority: 'desc' });
+
         res.json(allRequest);
     }
     else if (session.occupation_a == "Admin") {
 
         if (session.idUser == id_gerant) {
-            var allRequest = await LeaveRequestTest.find({ status: { $ne: 'approved' }  ,"validation.user": { $nin: [id_gerant]}  }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
-            allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
+            var allRequest = await LeaveRequestTest.find({
+                status: { $nin: ["approved", "declined"] },
+                "validation.user": { $nin: [id_gerant]}
+            })
+            .populate({ path: "validation.user", select: 'usuel' })
+            .sort({ leavePriority: 'desc' });
+
+            // allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
             res.json(allRequest);
         }
         else {
@@ -299,8 +342,15 @@ const getPending = async (req, res) => {
             const RHIds = usersRH.map(rh => rh._id.toString()).filter(id => id !== id_gerant);
             
             // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 2] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
-            var allRequest = await LeaveRequestTest.find({status: { $ne: "approved" }, "validation.user": { $nin: RHIds}, type: { $eq: ""} }).populate({ path: "validation.user", select: 'usuel _id' }).sort({ leavePriority: 'desc' });
-            allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
+            var allRequest = await LeaveRequestTest.find({
+                status: { $nin: ["approved", "declined"] },
+                // "validation.user": { $nin: RHIds},
+                type: { $eq: ""}
+            })
+            .populate({ path: "validation.user", select: 'usuel _id' })
+            .sort({ leavePriority: 'desc' });
+
+            // allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
             res.json(allRequest);
         }
     }
@@ -326,7 +376,8 @@ const answerRequest = async (req, res) => {
         var approbator = {
             user: session.idUser,
             approbation: true,
-            date:moment().format("YYYY-MM-DD")
+            date:moment().format("YYYY-MM-DD"),
+            comment: comment
         }
         var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true }).populate({ path: "validation.user", select: "usuel" });
         var extension = thisLeave.piece.split(".")
@@ -355,9 +406,16 @@ const answerRequest = async (req, res) => {
         var approbator = {
             user: session.idUser,
             approbation: response,
-            date:moment().format("YYYY-MM-DD")
+            date:moment().format("YYYY-MM-DD"),
+            comment: comment
         }
-        var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: "progress" }, { new: true }).populate({ path: "validation.user", select: "usuel" });
+
+        var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },
+            { $push: { validation: approbator },
+            comment: comment, status: "progress" },
+            { new: true }
+        ).populate({ path: "validation.user", select: "usuel" });
+
         var title = `Absence pour ${thisLeave.motif}`
         var content = "";
         if (status == "declined") {
@@ -371,10 +429,9 @@ const answerRequest = async (req, res) => {
             var concerned = ["Admin", "Surveillant"]
             await setGlobalAdminNotifications(notification, concerned, true, req);
             // si 2 responsables ont réfusé la demande
-            if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
-                setEachUserNotification(thisLeave.m_code, title, content, req);
-
-            }
+            // if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
+            //     setEachUserNotification(thisLeave.m_code, title, content, req);
+            // }
         }
         else {
             forRH = `${actor.usuel} a traité la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")}`
@@ -408,14 +465,20 @@ const answerRequest = async (req, res) => {
             var approbator = {
                 user: session.idUser,
                 approbation: response,
-                date:moment().format("YYYY-MM-DD")
+                date:moment().format("YYYY-MM-DD"),
+                comment: comment
             }
 
             let search = await LeaveRequestTest.findOne({_id: id});
             if (search.type === '') {
                 status = status === "approved" ? "progress" : status;
             }
-            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { $push: { validation: approbator }, comment: comment, status: status }, { new: true })
+            // update leave
+            var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },
+                { $push: { validation: approbator },
+                comment: comment, status: status },
+                { new: true }
+            );
 
             if (response == "true") { // approbation true
                 
@@ -429,14 +492,17 @@ const answerRequest = async (req, res) => {
                     var concerned = ["Admin", "Surveillant", "Opération"]
                     await setGlobalAdminNotifications(notification, concerned, true, req);
                     content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuvée`
-                    setEachUserNotification(thisLeave.m_code, title, content, req);
+                    // send notification to employee if type of leave is defined
+                    if (thisLeave.type !== "")
+                        setEachUserNotification(thisLeave.m_code, title, content, req);
                     // update employee interface
                     // io.sockets.emit("isTreated", [id, thisLeave]);
                 } 
             } else {
+                /* LE GERANT A REFUSE */
                 let title = `<span style="color: red;">Refus de congé</span>`;
                 // send notification if gerant refused
-                content = content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
+                content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
                 forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
                 var notification = {
                     title: `<span style="color: red;">Refus de congé</span>`,
@@ -446,25 +512,26 @@ const answerRequest = async (req, res) => {
                 var concerned = ["Surveillant", "Opération", "Admin"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
                 // si 2 responsables ont réfusé la demande, envoyé une notification au demandeur
-                if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
-                    setEachUserNotification(thisLeave.m_code, title, content, req);
-                    // update status of leaves on employee page
-                    io.sockets.emit("isTreated", [id, thisLeave]);
-                }
+                setEachUserNotification(thisLeave.m_code, title, content, req);
+                // update status of leaves on employee page
+                io.sockets.emit("isTreated", [id, thisLeave]);
             }
 
+            console.log('tokony handeha')
+            io.sockets.emit("rhDone", "");
             res.json(thisLeave);
         }
         else {
             var order = req.body.order;
             var preStatus = order == "false" ? "progress" : "approved";
-            status = response == "true" ? preStatus : "declined";
+            status = response == "true" ? preStatus : "progress"; // "declined";
             var type = req.body.typeleave;
             var forGerant = "";
             var approbator = {
                 user: session.idUser,
                 approbation: response,
-                date:moment().format("YYYY-MM-DD")
+                date:moment().format("YYYY-MM-DD"),
+                comment: comment
             }
 
             const Data = {
@@ -496,7 +563,8 @@ const answerRequest = async (req, res) => {
 
             var title = `Absence pour ${thisLeave.motif}`
             var content = "";
-            if (status == "declined") {
+            
+            if (response != "true") {
                 let title = `<span style="color: red;">Refus de congé</span>`;
                 content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
                 forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
@@ -505,10 +573,10 @@ const answerRequest = async (req, res) => {
                     content: forGerant,
                     datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                 }
-                var concerned = ["Surveillant", "Opération"]
+                var concerned = ["Surveillant", "Opération", "Admin"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
                 // si 2 responsables ont réfusé la demande, envoie une notification au demandeur
-                if (thisLeave.validation.filter(a => !a.approbation).length >= 2) {
+                if (thisLeave.validation.filter(a => !a.approbation).length >= 3) {
                     setEachUserNotification(thisLeave.m_code, title, content, req);
                     // update status of leaves on employee page
                     io.sockets.emit("isTreated", [id, thisLeave]);
@@ -727,8 +795,68 @@ async function cancelLeaveRequest(req, res) {
     }
 }
 
+// method to get leaves requests by month and date
+
+async function getLeaveRequestFiltered (req, res) {
+    try {
+        
+        const { year, month } = req.query;
+
+        let startDate;
+        let endDate;
+
+        if (month) {
+            startDate = moment({year, month: month - 1});
+            endDate = moment(startDate).endOf('month');
+        } else {
+            startDate = moment({year});
+            endDate = moment(startDate).endOf('year');
+            console.log(startDate, endDate)
+        }
+        const requests = await LeaveRequestTest.find({
+            date_start: {
+                $gte: startDate.format('YYYY-MM-DD'),
+                $lt: endDate.format('YYYY-MM-DD'),
+            }
+        }).populate({ path: "validation.user", select: 'usuel' });
+
+        res.json({
+            ok: true,
+            data: requests
+        });
+
+    } catch (error) {
+        res.json({
+            ok: true,
+            data: []
+        });
+    }
+}
+
+async function seeTreatedLeave(req, res) {
+    var session = req.session;
+    const leaveRequests = await LeaveRequestTest.find({ status: { $in: ["declined", "approved"] } });
+    var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
+    var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+    var role = "Admin";
+
+    const currentYear = new Date().getFullYear() + 1;
+    const years = [];
+    for (let year = 2021; year <= currentYear; year++) {
+        years.push(year);
+    }
+    const months = [ "janvier", "février", "mars", "avril", "mai", "juin",
+    "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+
+
+    res.render('PageAdministration/DemandeTraite.html', {
+        users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser,
+        leaveRequests: leaveRequests, years: years, months: months
+    });
+}
+
 module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seePending, getPending, answerRequest, getNotifications,
     removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,
-    getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother
+    getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother, seeTreatedLeave, getLeaveRequestFiltered
 }

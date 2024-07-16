@@ -44,6 +44,10 @@ const Leave = mongoose.Schema({
         date: {
             type: String,
             default: moment().format('YYYY-MM-DD')
+        },
+        comment: {
+            type: String,
+            default: ""
         }
     }],
 
@@ -61,5 +65,9 @@ Leave.virtual('priorityValue').get(function() {
     return priorityMap[this.leavePriority];
 });
 
+Leave.virtual('dateValue').get(function() {
+    let date = new Date(this.date_start);
+    return date;
+});
 
 module.exports = mongoose.model('LeaveRequestTest', Leave);
