@@ -23,8 +23,19 @@ $("#editRequest").on('click', () => {
     (!endDate) ? $("#edit-endDate").css({ "border-color": "red" }) : $("#edit-endDate").css({ "border-color": "" });
     (!startTime) ? $("#edit-startTime").css({ "border-color": "red" }) : $("#edit-startTime").css({ "border-color": "" });
     (!endTime) ? $("#edit-endTime").css({ "border-color": "red" }) : $("#edit-endTime").css({ "border-color": "" });
-    (!motif) ? $("#edit-motif").css({ "border-color": "red" }) : $("#edit-motif").css({ "border-color": "" });
-    const formData = new FormData();
+    // variable remplaçant le "motif" ou "recovery"
+    var reason;
+    // si c'est un conge
+    if ($('#edit-request-type').val() === 'conge') {
+        (!motif) ? $("#edit-motif").css({ "border-color": "red" }) : $("#edit-motif").css({ "border-color": "" });
+        $("#edit-recovery").css({ "border-color": "" }) // remove border of recovery field
+        reason = motif;
+    }
+    else {
+        (!recovery) ? $("#edit-recovery").css({ "border-color": "red" }) : $("#edit-recovery").css({ "border-color": "" });
+        $("#edit-motif").css({ "border-color": "" }) // remove border of motif field
+        reason = recovery;
+    }
 
     var dateRequest = {
         join: editJoinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime,
@@ -43,7 +54,7 @@ $("#editRequest").on('click', () => {
     formData.append("leavePriority", priority);
     formData.append("deductedDay", deductedDay);
     formData.append("fileIn", editFileIn)
-    if (startDate && endDate && startTime && endTime && motif) {
+    if (startDate && endDate && startTime && endTime && reason) {
         if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate)) {
             $("#notification").attr("class", "notice-denied");
             $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
@@ -236,21 +247,31 @@ $("#edit-startDate").on('change', () => {
 
     var startDate = $("#edit-startDate").val()
     var endDate = $("#edit-endDate").val();
-
-    (!startDate) ? $("#edit-startDate").css({ "border-color": "red" }) : (
-        $("#edit-startDate").css({ "border-color": "" }),
-        (endDate) ? editDateDiff(startDate, endDate) : ""
-    );
+    
+    let eDate = new Date(endDate);
+    let sDate = new Date(startDate);
+    
+    if (eDate.getFullYear() >= sDate.getFullYear()) {
+        (!startDate) ? $("#edit-startDate").css({ "border-color": "red" }) : (
+            $("#edit-startDate").css({ "border-color": "" }),
+            (endDate) ? editDateDiff(startDate, endDate) : ""
+        );
+    }
 })
 $("#edit-endDate").on('change', () => {
 
     var startDate = $("#edit-startDate").val()
     var endDate = $("#edit-endDate").val();
 
-    (!endDate) ? $("#edit-endDate").css({ "border-color": "red" }) : (
-        $("#edit-endDate").css({ "border-color": "" }),
-        (startDate) ? editDateDiff(startDate, endDate) : ""
-    );
+    let eDate = new Date(endDate);
+    let sDate = new Date(startDate);
+    
+    if (eDate.getFullYear() >= sDate.getFullYear()) {
+        (!endDate) ? $("#edit-endDate").css({ "border-color": "red" }) : (
+            $("#edit-endDate").css({ "border-color": "" }),
+            (startDate) ? editDateDiff(startDate, endDate) : ""
+        );
+    }
 })
 $("#edit-startTime").on('change', () => {
     var startTime = $("#edit-startTime").val();
@@ -388,71 +409,73 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
     edit_deduction = 0;
     var weekendDays = [];
 
-    // If the end date is a Friday, push it by 2 days to Sunday
-    if (end.getDay() === 5) {
-        // to pass on saturday
-        end.setDate(end.getDate() + 1); // next day (6)
-        weekendDays.push(end.toISOString());
-        $("#edit-weekend-workingdates").show();
-        let saturdayRadio = `
-        <div>
-            <input type="radio" id="edit-saturday" value="2" name="edit-start-working" date="${end.toISOString()}">
-            <label for="edit-saturday">Samedi ${end.toLocaleDateString('fr')}</label>
-        </div>`;
-        
-        // pass on sunday
-        end.setDate(end.getDate() + 1); //next day (7)
-        weekendDays.push(end.toISOString());
-        let sundayRadio = `
-        <div>
-            <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
-            <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
-        </div>`;
-        let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
+    if ($("#edit-request-type").val() === "conge") {
+        // If the end date is a Friday, push it by 2 days to Sunday
+        if (end.getDay() === 5) {
+            // to pass on saturday
+            end.setDate(end.getDate() + 1); // next day (6)
+            weekendDays.push(end.toISOString());
+            $("#edit-weekend-workingdates").show();
+            let saturdayRadio = `
+            <div>
+                <input type="radio" id="edit-saturday" value="2" name="edit-start-working" date="${end.toISOString()}">
+                <label for="edit-saturday">Samedi ${end.toLocaleDateString('fr')}</label>
+            </div>`;
+            
+            // pass on sunday
+            end.setDate(end.getDate() + 1); //next day (7)
+            weekendDays.push(end.toISOString());
+            let sundayRadio = `
+            <div>
+                <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
+                <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
+            </div>`;
+            let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
 
-        // add monday 
-        let mondayDate = new Date(end);
-        mondayDate.setDate(mondayDate.getDate() + 1);
-        let mondayRadio = `
-        <div>
-            <input type="radio" id="edit-monday" value="0" name="edit-start-working" date="${mondayDate.toISOString()}">
-            <label for="edit-monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
-        </div>`;
+            // add monday 
+            let mondayDate = new Date(end);
+            mondayDate.setDate(mondayDate.getDate() + 1);
+            let mondayRadio = `
+            <div>
+                <input type="radio" id="edit-monday" value="0" name="edit-start-working" date="${mondayDate.toISOString()}">
+                <label for="edit-monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
+            </div>`;
 
-        // generate radio button for saturaday, sunday and monday
-        $(".edit-dates-options").html(saturdayRadio + sundayRadio + mondayRadio);
-        // default check
-        $("#edit-monday").click();
-        // change end date value
-        $('#edit-endDate').val(defaultEndDateString);
-    }
-    // If it fall for Saturday, we add 1 day for Sunday
-    if (end.getDay() === 6) {
-        $("#edit-weekend-workingdates").show();
-        // pass on sunday
-        end.setDate(end.getDate() + 1); //next day (7)
-        weekendDays.push(end.toISOString());
-        let sundayRadio = `
-        <div>
-            <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
-            <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
-        </div>`;
-        let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
+            // generate radio button for saturaday, sunday and monday
+            $(".edit-dates-options").html(saturdayRadio + sundayRadio + mondayRadio);
+            // default check
+            $("#edit-monday").click();
+            // change end date value
+            $('#edit-endDate').val(defaultEndDateString);
+        }
+        // If it fall for Saturday, we add 1 day for Sunday
+        if (end.getDay() === 6) {
+            $("#edit-weekend-workingdates").show();
+            // pass on sunday
+            end.setDate(end.getDate() + 1); //next day (7)
+            weekendDays.push(end.toISOString());
+            let sundayRadio = `
+            <div>
+                <input type="radio" id="edit-sunday" value="1" name="edit-start-working" date="${end.toISOString()}">
+                <label for="edit-sunday">Dimanche ${end.toLocaleDateString('fr')}</label>
+            </div>`;
+            let defaultEndDateString = formatDateToYyyDdMm(new Date(end.toISOString()));
 
-        // add monday 
-        let mondayDate = new Date(end);
-        mondayDate.setDate(mondayDate.getDate() + 1);
-        let mondayRadio = `
-        <div>
-            <input type="radio" id="edit-monday" value="0" name="edit-start-working" date="${mondayDate.toISOString()}">
-            <label for="edit-monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
-        </div>`;
-        // generate radio button for sunday and monday
-        $(".edit-dates-options").html(sundayRadio + mondayRadio);
-        // default check
-        $("#edit-monday").click();
-        // change end date value
-        $('#edit-endDate').val(defaultEndDateString);
+            // add monday 
+            let mondayDate = new Date(end);
+            mondayDate.setDate(mondayDate.getDate() + 1);
+            let mondayRadio = `
+            <div>
+                <input type="radio" id="edit-monday" value="0" name="edit-start-working" date="${mondayDate.toISOString()}">
+                <label for="edit-monday">Lundi ${mondayDate.toLocaleDateString('fr')}</label>
+            </div>`;
+            // generate radio button for sunday and monday
+            $(".edit-dates-options").html(sundayRadio + mondayRadio);
+            // default check
+            $("#edit-monday").click();
+            // change end date value
+            $('#edit-endDate').val(defaultEndDateString);
+        }
     }
 
     // event handler

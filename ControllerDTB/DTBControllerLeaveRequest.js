@@ -287,7 +287,7 @@ const getPending = async (req, res) => {
 
         // var allRequest = await LeaveRequestTest.find({ status: { $ne: "approved" }, validation: [] }).sort({ leavePriority: 'desc' }).populate({ path: "validation.user", select: 'usuel' });
         var allRequest = await LeaveRequestTest.find({
-            m_code: { $nin: [...filtersMcode] }, // n'afficher pas si la demande venant d'un ROP et TL
+            m_code: { $nin: [...filtersMcode, 'M-NAT', 'Charles'] }, // n'afficher pas si la demande venant d'un RH, ROP ou TL
             status: { $nin: ["approved", "declined"] },
             "validation.user": { $nin: TLIds }
         })
@@ -314,7 +314,7 @@ const getPending = async (req, res) => {
 
         // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         var allRequest = await LeaveRequestTest.find({
-            m_code: { $nin: filtersMcode }, // n'afficher pas si la demande venant d'un ROP
+            m_code: { $nin: [...filtersMcode, 'M-NAT', 'Charles'] }, // n'afficher pas si la demande venant d'un ROP
             status: { $nin: ["approved", "declined"] },
             "validation.user": { $nin: ROPIds }
         })
@@ -518,7 +518,6 @@ const answerRequest = async (req, res) => {
                 io.sockets.emit("isTreated", [id, thisLeave]);
             }
 
-            console.log('tokony handeha')
             io.sockets.emit("rhDone", "");
             res.json(thisLeave);
         }
@@ -818,6 +817,9 @@ async function getLeaveRequestFiltered (req, res) {
             date_start: {
                 $gte: startDate.format('YYYY-MM-DD'),
                 $lt: endDate.format('YYYY-MM-DD'),
+            },
+            status: { 
+                $in: ["declined", "approved"]
             }
         }).populate({ path: "validation.user", select: 'usuel' });
 

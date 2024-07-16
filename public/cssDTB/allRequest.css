@@ -135,7 +135,7 @@
 
 .allRequest {
     background: linear-gradient(to bottom right, #e6edf0, #fbfeff);
-    height: 80vh;
+    min-height: 80vh;
 }
 
 .content-leave {
