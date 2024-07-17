@@ -339,9 +339,10 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         }
         $('#datestart').val(datestart);
         $('#dateend').val(dateend);
+        $("#nbr-day").val(duration);
         $("#motif-input").val(motif);
         // disable fields
-        disable(['one', 'demi', 'quart', 'datestart', 'dateend', 'motif-input', 'typeLeave', 'end', 'begin']);
+        disable(['one', 'demi', 'quart', 'datestart', 'dateend', 'motif-input', 'typeLeave', 'end', 'begin', 'nbr-day']);
         
     }
     else {
@@ -349,6 +350,13 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $("#motif-input").val(motif);
         $("#datestart").val(datestart);
         $("#dateend").val(dateend);
+        $("#default-nbr-day").val(duration);
+        $("#nbr-day").val(duration);
+        $('#nbr-day').on('change', () => {
+            let nDuration = parseFloat($('#nbr-day').val())
+            console.log('ato')
+            renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at);
+        });
     }
     idActive = id;
     userActive = users.find(user => user.m_code == code);
@@ -451,7 +459,7 @@ function ApproveLast(){
     let leaveType = $('#typeLeave').val();
 
     // leave duration
-    let lDuration = +$('#modal-duration').val();
+    let lDuration = parseFloat($('#nbr-day').val());
 
     console.log(checking)
     // condition
@@ -474,7 +482,7 @@ function ApproveLast(){
             }
         }
         // calcul duration
-        lDuration -= checking;
+        // lDuration -= checking;
 
     } else { // checking value eq "n"
         if (startDate === '') {
@@ -848,12 +856,14 @@ function dissapearq(input) {
         $('#demi').prop('checked', false);
         $('#one').prop('checked', false);
         checking = 0.25;
+        $('#nbr-day').val(checking);
     }
     else {
         $('#hour_absence').attr('class', "d-flex hiding-hour");
         $('#hour_absence').attr('class', "hide top_down");
         $('#dateend').removeAttr('hidden', '');
         checking = "n";
+        $('#nbr-day').val($('#default-nbr-day').val());
     }
 }
 
@@ -864,10 +874,12 @@ function dissapeard(input) {
         $('#one').prop('checked', false);
         $('#hour_absence').attr('class', "hide top_down");
         checking = 0.5;
+        $('#nbr-day').val(checking);
     }
     else {
         $('#dateend').removeAttr('hidden', '');
         checking = "n";
+        $('#nbr-day').val($('#default-nbr-day').val());
     }
 }
 
@@ -878,8 +890,10 @@ function dissapearo(input) {
         $('#dateend').attr('hidden', '');
         $('#hour_absence').attr('class', "hide top_down");
         checking = 1;
+        $('#nbr-day').val(checking);
     } else {
         $('#dateend').removeAttr('hidden', '');
         checking = "n";
+        $('#nbr-day').val($('#default-nbr-day').val());
     }
 }

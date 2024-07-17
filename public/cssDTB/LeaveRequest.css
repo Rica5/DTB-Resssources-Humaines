@@ -845,6 +845,7 @@ input:focus {
     transform: translateY(-50%);
     pointer-events: none; /* Make sure the arrow doesn't block clicks */
     color: #757575;
+    font-size: 12px;
 }
 
 .workingdate-options {

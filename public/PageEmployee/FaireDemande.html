@@ -170,8 +170,15 @@
                     </div>
                 </div>
                 <div id="container-make" class="container-make mt-2">
-                        <h5 class="">
+                    
+                        <h5 class="d-flex align-items-center justify-content-between">
                             <span class="point-text">AUTORISATION D'ABSENCE / REGULARISATION D'ABSENCE</span>
+                            <div class="styled-select">
+                                <select id="request-type">
+                                    <option value="conge">Congé</option>
+                                    <option value="recup">Récupération</option>
+                                </select>
+                            </div>
                         </h5>
                         <label for="" class="request-warning">
                             Toutes demandes de : - congés > à 3 jours doivent être déposées au moins 10 jours ou une (1) semaine ouvrable,
@@ -317,8 +324,14 @@
                 <div class="content">
                     <div class="container-make mt-2">
                         <button class="close-btn" type="button" onclick="toggleEditModal()">&times;</button>
-                        <h5 class="">
+                        <h5 class="d-flex align-items-center justify-content-between">
                             <span class="point-text">AUTORISATION D'ABSENCE / REGULARISATION D'ABSENCE</span>
+                            <div class="styled-select">
+                                <select id="edit-request-type">
+                                    <option value="conge">Congé</option>
+                                    <option value="recup">Récupération</option>
+                                </select>
+                            </div>
                         </h5>
                         <label for="" class="request-warning">
                             Toutes demandes de : - congés > à 3 jours doivent être déposées au moins 10 jours ou une (1) semaine ouvrable,
