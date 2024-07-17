@@ -105,7 +105,6 @@ routeExpDTB.route("/UpdateRequestLeave/:id").put(Controller.updateLeaveRequest);
 routeExpDTB.route("/CancelRequestLeave/:id").post(Controller.cancelLeaveRequest);
 
 
-
 //Salary Advance
 routeExpDTB.route("/SalaryAdvance").get(ControllerSalaryAdvance.getSalaryAdvance);
 //Solumada News

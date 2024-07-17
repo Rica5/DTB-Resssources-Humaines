@@ -457,7 +457,8 @@ const answerRequest = async (req, res) => {
         var checking = req.body.checking;
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
-        
+        var newDuration = parseFloat(req.body.newduration);
+
         const io = req.app.get("io");
 
         // if (session.idUser == "645a417e9d34ed8965caea9e") {
@@ -554,6 +555,8 @@ const answerRequest = async (req, res) => {
             } else if (checking >= 0.5) {
                 Data.duration = +checking;
             }
+            // nouvelle duration
+            Data.duration = newDuration;
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
@@ -575,7 +578,7 @@ const answerRequest = async (req, res) => {
                 }
                 var concerned = ["Surveillant", "Opération", "Admin"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
-                // si 2 responsables ont réfusé la demande, envoie une notification au demandeur
+                // si 3 au moins responsables ont réfusé la demande, envoie une notification au demandeur
                 if (thisLeave.validation.filter(a => !a.approbation).length >= 3) {
                     setEachUserNotification(thisLeave.m_code, title, content, req);
                     // update status of leaves on employee page
