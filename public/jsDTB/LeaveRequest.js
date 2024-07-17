@@ -196,6 +196,7 @@ function myRequestRender(data) {
     $("#progress").text(progressNumber)
 }
 function Approved(data) {
+    let _date = new Date();
     data.sort((a, b) => b.date_start - a.date_start);
     myUpcomingContent = '<div class="row p-3">'
     var approvedNumber = 0;
@@ -261,9 +262,9 @@ function Approved(data) {
                         <div><span>Décision : ${decided(element.type)}</span></div>
                     </div>
                     <div class="duration">
-                        ${itCount(element.type) == true ? `<div><span> 2024 | ${(element.acc + element.duration) - (element.rest + element.duration)} | 2023 | ${element.rest + element.duration} |</span> </div>
+                        ${itCount(element.type) == true ? `<div><span> ${_date.getFullYear()}: ${(element.acc + element.duration) - (element.rest + element.duration)} | ${_date.getFullYear() - 1}: ${element.rest + element.duration} |</span> </div>
                         <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>` :
-                        `<div><span>| 2024: ${element.acc - element.rest} | 2023: ${element.rest} |</span></div>
+                        `<div><span>| ${_date.getFullYear()}: ${element.acc - element.rest} | ${_date.getFullYear() - 1}: ${element.rest} |</span></div>
                         <div><span>Reste après autorisation | </span>${element.acc} |</span></div>`}
                     </div>
                     </div>
