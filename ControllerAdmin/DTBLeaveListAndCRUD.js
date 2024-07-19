@@ -811,6 +811,7 @@ const editLeave = async (req, res) => {
         await LeaveSchema.findOneAndDelete({ _id: id });
         leave_specific = await LeaveSchema.find({
           m_code: user.m_code,
+          validation: false,
           date_start: { $regex: moment().format("YYYY"), $options: "i" },
         }).sort({
           date_start: 1,
@@ -889,6 +890,7 @@ const editLeave = async (req, res) => {
           } else {
             var year_change = await LeaveSchema.find({
               m_code: user.m_code,
+              validation: false,
               date_start: {
                 $regex: moment().add(1, "years").format("YYYY"),
                 $options: "i",
@@ -1009,6 +1011,7 @@ const editLeave = async (req, res) => {
         await LeaveSchema.findOneAndDelete({ _id: id });
         leave_specific = await LeaveSchema.find({
           m_code: user.m_code,
+          validation: false,
           date_start: { $regex: moment().format("YYYY"), $options: "i" },
         }).sort({
           date_start: 1,
@@ -1072,6 +1075,7 @@ const editLeave = async (req, res) => {
           } else {
             var year_change = await LeaveSchema.find({
               m_code: user.m_code,
+              validation: false,
               date_start: {
                 $regex: moment().add(1, "years").format("YYYY"),
                 $options: "i",

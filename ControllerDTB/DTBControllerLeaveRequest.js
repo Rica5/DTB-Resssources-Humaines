@@ -3,8 +3,8 @@ const LeaveSchema = require("../models/ModelLeave");
 const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-// const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
-const id_gerant = "6673ecbf0f644c29f7a997f7"
+const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
+// const id_gerant = "6673ecbf0f644c29f7a997f7"
 //Home page
 const getHomePage = async (req, res) => {
     var session = req.session;
@@ -69,6 +69,7 @@ const makeLeaveRequest = async (req, res) => {
                 recovery: req.body.recovery,
                 duration: req.body.duration,
                 deductedDay: req.body.deductedDay,
+                shift: req.body.shift,
                 type: "",
                 exceptType: "",
                 status: "pending",
@@ -125,6 +126,7 @@ const updateLeaveRequest = async (req, res) => {
                 hour_begin: req.body.startTime,
                 hour_end: req.body.endTime,
                 motif: req.body.motif,
+                shift: req.body.shift,
                 recovery: req.body.recovery,
                 duration: req.body.duration,
                 deductedDay: req.body.deductedDay,
@@ -305,7 +307,7 @@ const getPending = async (req, res) => {
         const ROPIds = usersROP.map(rop => rop._id);
         
         // si (ROP, ADMIN), n'affiche pas (tsy affichena ny raha ireto no nandefa ilay demande)
-        const staffs = await UserSchema.find({ occupation: { $in: ["Admin", "Surveillant"] } });
+        const staffs = await UserSchema.find({ occupation: { $in: ["Admin", "Opération"] } });
         const staffsUsername = staffs.map(f => f.username);
         
         // staffs alaina @ alalan'ny email na username
@@ -314,7 +316,7 @@ const getPending = async (req, res) => {
 
         // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         var allRequest = await LeaveRequestTest.find({
-            m_code: { $nin: [...filtersMcode, 'M-NAT', 'Charles'] }, // n'afficher pas si la demande venant d'un ROP
+            m_code: { $nin: [...filtersMcode, 'M-NAT', 'Charles', 'M-SAF'] }, // n'afficher pas si la demande venant d'un ROP
             status: { $nin: ["approved", "declined"] },
             "validation.user": { $nin: ROPIds }
         })
@@ -458,6 +460,8 @@ const answerRequest = async (req, res) => {
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
         var newDuration = parseFloat(req.body.newduration);
+        var newStartDate = req.body.newStartDate;
+        var newEndDate = req.body.newEndDate;
 
         const io = req.app.get("io");
 
@@ -466,7 +470,7 @@ const answerRequest = async (req, res) => {
             status = response == "true" ? "approved" : "declined";
             var approbator = {
                 user: session.idUser,
-                approbation: response,
+                approbation: response == "true",
                 date:moment().format("YYYY-MM-DD"),
                 comment: comment
             }
@@ -555,8 +559,14 @@ const answerRequest = async (req, res) => {
             } else if (checking >= 0.5) {
                 Data.duration = +checking;
             }
-            // nouvelle duration
-            Data.duration = newDuration;
+
+            // si ce n'est pas un réfus
+            if (response == "true") {
+                // nouvelle duration
+                if (newDuration) Data.duration = newDuration;
+                if (newStartDate) Data.date_start = newStartDate;
+                if (newEndDate) Data.date_end = newEndDate;
+            }
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
