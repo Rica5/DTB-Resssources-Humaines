@@ -24,6 +24,10 @@ const Leave = mongoose.Schema({
         enum: [3, 2, 1],
         default: 2
     },
+    shift: {
+        type: Number,
+        default: 8
+    },
     comment: String,
     order: Boolean,
     piece: String,

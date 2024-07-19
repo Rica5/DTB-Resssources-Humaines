@@ -1,5 +1,5 @@
-// const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
-const GerantId = "6673ecbf0f644c29f7a997f7";
+const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
+// const GerantId = "6673ecbf0f644c29f7a997f7";
 var myRequestContent = "";
 var idActive = "";
 var allRequest = [];
@@ -54,6 +54,15 @@ function getShift(code){
     shift.includes(theUser.shift) ? value = theUser.shift : value = "08 heures";
     return value
 }
+
+
+// methode pour afficher le shift (ex: 08:00 -> 08 heures)
+function formatShift(hours = 8) {
+    // let [hours] = value.split(':');
+    return `${hours} heures`;
+}
+
+
 function renderAllRequest(Leave){
     let mappedLeave = Leave.map(leave => {
         userActive = users.find(user => user.m_code == leave.m_code)
@@ -71,10 +80,10 @@ function renderAllRequest(Leave){
                 <div>
                     <p id="codeUser" class="code-text">${leave.m_code}</p>
                     <p class='text-duration'>${leave.duration} ${leave.duration > 1 ? "jours" : "jour"}</p>
-                    <div> 
+                    <div>
                     <p class="priority">${leave.priorityValue}</p>
-                    </div>
                 </div>
+            </div>
             </div>
             <div class="leave-infos">
                 <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
@@ -90,7 +99,7 @@ function renderAllRequest(Leave){
                         </h1>
                         <div class="ask">
                             <span>Nom: ${leave.nom}</span>
-                            <span>Shift: ${getShift(leave.m_code)}</span>
+                            <span>Shift: ${formatShift(leave.shift)}</span>
                             <span>Matricule: ${leave.matr}</span>
                         </div>
                     </div>
@@ -204,12 +213,12 @@ function renderButton(role,leave){
     var button = ""
     switch(role){
         case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
-                                     <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Accéptée <i class="fa-solid fa-thumbs-up"></i></button>
+                                     <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfusée <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin": case "Gerant": button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
-                                 <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Accéptée <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfusée <i class="fa-solid fa-ban"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', '${leave.motif}', '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Accéptée <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -495,6 +504,9 @@ function ApproveLast(){
         }
     }
 
+    // nouvelles start et end dates
+    var newStartDate = $('#datestart').val();
+    var newEndDate = $('#dateend').val();
 
     if (role == "Admin"){
         if ($('#typeLeave').val() != ""){
@@ -506,6 +518,8 @@ function ApproveLast(){
                 newduration: lDuration,
                 newStartTime: begin,
                 newEndTime: end,
+                newStartDate: newStartDate,
+                newEndDate: newEndDate,
                 reason:"",
                 typeleave: $('#typeLeave').val(),
                 order:order,
@@ -787,7 +801,7 @@ $('#join').on('change', function (event) {
                         </div>
                       </div>
                       ${auth == "n" ? `<div class="d-flex text-center">
-                      <label class="warning">Non autorisée qu'a partir de ${moment(save).add(1,"years").locale("Fr").format("MMMM YYYY")} </label>  
+                      <label class="warning">Non autorisée qu'à partir de ${moment(save).add(1,"years").locale("Fr").format("MMMM YYYY")} </label>  
                     </div>` : ""}
     `
     $("#leaveLeft").html(html)

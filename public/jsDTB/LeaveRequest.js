@@ -3,6 +3,7 @@ var Approves = [];
 var allLeave = [];
 var myRequestContent;
 var myUpcomingContent;
+var defaultHours = 0;
 var leaveDuration = 0;
 var leaveDurationTwo = 0;
 var deduction = 0;
@@ -55,13 +56,15 @@ $("#sendRequest").on('click', () => {
     var endTime = $("#endTime").val();
     var motif = $("#motif").val();
     var recovery = $("#recovery").val();
+    var shift = $('#shift').val();
     var deductedDay = deduction;
 
 
     (!startDate) ? $("#startDate").css({ "border-color": "red" }) : $("#startDate").css({ "border-color": "" });
     (!endDate) ? $("#endDate").css({ "border-color": "red" }) : $("#endDate").css({ "border-color": "" });
-    (!startTime) ? $("#startTime").css({ "border-color": "red" }) : $("#startTime").css({ "border-color": "" });
-    (!endTime) ? $("#endTime").css({ "border-color": "red" }) : $("#endTime").css({ "border-color": "" });
+    // (!startTime) ? $("#startTime").css({ "border-color": "red" }) : $("#startTime").css({ "border-color": "" });
+    // (!endTime) ? $("#endTime").css({ "border-color": "red" }) : $("#endTime").css({ "border-color": "" });
+    (!shift) ? $("#shift").css({ "border-color": "red" }) : $("#shift").css({ "border-color": "" });
     
     // variable remplaçant le "motif" ou "recovery"
     var reason;
@@ -82,16 +85,17 @@ $("#sendRequest").on('click', () => {
     formData.append("code", code)
     formData.append("startDate", startDate)
     formData.append("endDate", endDate)
+    formData.append("shift", shift)
     formData.append("startTime", startTime)
     formData.append("endTime", endTime)
     formData.append("motif", motif)
     formData.append("recovery", recovery)
     formData.append("deductedDay", deductedDay)
-    formData.append("duration", (leaveDuration + leaveDurationTwo - deduction))
+    formData.append("duration", (leaveDuration + defaultHours + leaveDurationTwo - deduction))
     formData.append("priority", $("#toggle").is(':checked'));
     formData.append("leavePriority", +$("#priority").val());
     formData.append("fileIn", fileIn)
-    if (startDate && endDate && startTime && endTime && reason) {
+    if (startDate && endDate /* && startTime && endTime */ && reason && shift) {
         if (checkduplicata(allLeave, startDate, endDate)) {
             $("#notification").attr("class", "notice-denied");
             $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
@@ -122,7 +126,6 @@ $("#sendRequest").on('click', () => {
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
-                        $("#weekend-workingdates").show();
                     }
                     else {
                         $("#sendRequest").prop("disabled", false);
@@ -195,6 +198,15 @@ function myRequestRender(data) {
     $("#declined").text(declinedNumber)
     $("#progress").text(progressNumber)
 }
+
+
+// methode pour afficher le shift (ex: 08:00 -> 08 heures)
+function formatShift(hours = 8) {
+    // let [hours] = value.split(':');
+    return `${hours} heures`;
+}
+
+
 function Approved(data) {
     let _date = new Date();
     data.sort((a, b) => b.date_start - a.date_start);
@@ -218,7 +230,7 @@ function Approved(data) {
                             </h1>
                             <div class="ask">
                                 <span>Nom: ${element.nom}</span>
-                                <span>Shift: ${getShift(element.m_code)}</span>
+                                <span>Shift: ${formatShift(element.shift)}</span>
                                 <span>Matricule: ${element.matr}</span>
                             </div>
                         </div>
@@ -337,7 +349,7 @@ function renderMyRequest(Leave, stat) {
                         </h1>
                         <div class="ask">
                             <span>Nom: ${Leave.nom}</span>
-                            <span>Shift: ${getShift(Leave.m_code)}</span>
+                            <span>Shift: ${formatShift(Leave.shift)}</span>
                             <span>Matricule: ${Leave.matr}</span>
                         </div>
                     </div>
@@ -498,20 +510,39 @@ $("#endDate").on('change', () => {
 $("#startTime").on('change', () => {
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
-    (!startTime) ? $("#startTime").css({ "border-color": "red" }) : (
+    (!startTime) ? $("#startTime").css({ "border-color": "" }) : (
         $("#startTime").css({ "border-color": "" }),
         (endTime) ? hourDiff(startTime, endTime) : ""
     );
 
+    // no values
+    if (!startTime && !endTime) {
+        leaveDurationTwo = 0;
+    }
 })
+
+function emptyTimes() {
+    var startTime = $("#startTime").val();
+    var endTime = $("#endTime").val();
+    // no values
+    if (!startTime && !endTime) {
+        leaveDurationTwo = 0;
+        $("#dayNumber").text((leaveDuration + defaultHours + leaveDurationTwo - deduction) + " jour(s)")
+    }
+}
+
+$('#startTime').on('keydown', emptyTimes);
+$('#endTime').on('keydown', emptyTimes);
+
 $("#endTime").on('change', () => {
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
 
-    (!endTime) ? $("#endTime").css({ "border-color": "red" }) : (
+    (!endTime) ? $("#endTime").css({ "border-color": "" }) : (
         $("#endTime").css({ "border-color": "" }),
         (startTime) ? hourDiff(startTime, endTime) : ""
     );
+    
 
 })
 $("#motif").on('change', () => {
@@ -534,6 +565,12 @@ $('#join').on('change', function (event) {
 async function dateDiff(starting, ending) {
     const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 
+    // if shift value is there
+    // if starttime and endtime are empty
+    let st =$('#startTime').val();
+    let et =$('#endTime').val();
+
+
     if (datePattern.test(ending)) {
         // var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
         // var endings = moment(ending, "YYYY-MM-DD HH:mm");
@@ -541,19 +578,33 @@ async function dateDiff(starting, ending) {
         // var dayl = duration.asDays();
         // leaveDuration = dayl;
         leaveDuration = await CalculateDaysIncludingHolidays(starting, ending) - 1;
-        $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
+
+        defaultHours = (!et && !st) ? 1 : 0;
+
+        $("#dayNumber").text((leaveDuration + defaultHours + leaveDurationTwo - deduction) + " jour(s)")
     }
     else {
         leaveDuration = 0;
         $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
     }
+
+    // calculate by times also
+    var startTime = $("#startTime").val();
+    var endTime = $("#endTime").val();
+    if (startTime && endTime)
+        hourDiff(startTime, endTime)
+
     notValid()
 }
 
 function hourDiff(startTime, endTime) {
     var hours = 0;
     var minutes = 0;
+
+    console.log('change')
+    
     if (endTime != "") {
+
         startTime = moment(startTime, "HH:mm:ss a");
         endTime = moment(endTime, "HH:mm:ss a");
         var duration = moment.duration(endTime.diff(startTime));
@@ -596,6 +647,12 @@ function hourDiff(startTime, endTime) {
             $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
         }
         notValid()
+
+        
+        if (!startTime && !endTime) {
+            defaultHours = 1;
+            console.log('ato')
+        }
 
     }
 }
@@ -670,6 +727,8 @@ function restore() {
     $('#join').val('');
     fileIn = false
     $('#fileOk').css({ "opacity": "0" });
+    
+    $("#weekend-workingdates").hide();
 }
 
 function checkduplicata(leave, st, ed) {
@@ -959,11 +1018,13 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         let defaultEndDateAsDate = new Date(returnDate);
         defaultEndDateAsDate.setDate(defaultEndDateAsDate.getDate() - 1);
         
-        if (isValidDate(defaultEndDateAsDate))
+        console.log(isValidDate(defaultEndDateAsDate), defaultEndDateAsDate)
+
+        // if (isValidDate(defaultEndDateAsDate))
             $("#endDate").val(formatDateToYyyDdMm(defaultEndDateAsDate));
 
 
-        $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)")
+        $("#dayNumber").text((leaveDurationTwo + defaultHours + leaveDuration - deduction) + " jour(s)");
     });
     
     let totalDays = Math.floor((end - start) / oneDay) + 1; // Including the end date
@@ -980,7 +1041,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         }
     }
 
-    $("#dayNumber").text((leaveDurationTwo + leaveDuration - deduction) + " jour(s)");
+    $("#dayNumber").text((leaveDurationTwo + defaultHours + leaveDuration - deduction) + " jour(s)");
     
     return totalDays - holidayCount;
 };
