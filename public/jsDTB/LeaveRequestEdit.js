@@ -1,6 +1,7 @@
 var edit_leaveDuration = 0;
 var edit_leaveDurationTwo = 0;
 var edit_deduction = 0;
+var edit_defaultHours = 0;
 var editJoinedFile = [];
 var editFileIn = false;
 var oldStartDate = '';
@@ -16,13 +17,15 @@ $("#editRequest").on('click', () => {
     var motif = $("#edit-motif").val();
     var recovery = $("#edit-recovery").val();
     var priority = +$("#edit-priority").val();
+    var shift = $("#edit-shift").val();
     var deductedDay = edit_deduction;
 
 
     (!startDate) ? $("#edit-startDate").css({ "border-color": "red" }) : $("#edit-startDate").css({ "border-color": "" });
     (!endDate) ? $("#edit-endDate").css({ "border-color": "red" }) : $("#edit-endDate").css({ "border-color": "" });
-    (!startTime) ? $("#edit-startTime").css({ "border-color": "red" }) : $("#edit-startTime").css({ "border-color": "" });
-    (!endTime) ? $("#edit-endTime").css({ "border-color": "red" }) : $("#edit-endTime").css({ "border-color": "" });
+    // (!startTime) ? $("#edit-startTime").css({ "border-color": "red" }) : $("#edit-startTime").css({ "border-color": "" });
+    // (!endTime) ? $("#edit-endTime").css({ "border-color": "red" }) : $("#edit-endTime").css({ "border-color": "" });
+    (!shift) ? $("#edit-shift").css({ "border-color": "red" }) : $("#edit-shift").css({ "border-color": "" });
     // variable remplaçant le "motif" ou "recovery"
     var reason;
     // si c'est un conge
@@ -41,22 +44,22 @@ $("#editRequest").on('click', () => {
         join: editJoinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime,
         endTime: endTime, motif: motif, recovery: recovery, duration: (edit_leaveDuration + edit_leaveDurationTwo), priority: $("#edit-toggle").is(':checked')
     }
-    
     const formData = new FormData();
     formData.append("join", editJoinedFile)
     formData.append("code", code)
     formData.append("startDate", startDate)
     formData.append("endDate", endDate)
+    formData.append("shift", shift)
     formData.append("startTime", startTime)
     formData.append("endTime", endTime)
     formData.append("motif", motif)
     formData.append("recovery", recovery)
-    formData.append("duration", (edit_leaveDuration + edit_leaveDurationTwo - edit_deduction))
+    formData.append("duration", (edit_leaveDuration + edit_defaultHours + edit_leaveDurationTwo - edit_deduction))
     formData.append("priority", $("#edit-toggle").is(':checked'))
     formData.append("leavePriority", priority);
     formData.append("deductedDay", deductedDay);
     formData.append("fileIn", editFileIn)
-    if (startDate && endDate && startTime && endTime && reason) {
+    if (startDate && endDate /*&& startTime && endTime*/ && reason && shift) {
         if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate)) {
             $("#notification").attr("class", "notice-denied");
             $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
@@ -94,7 +97,7 @@ $("#editRequest").on('click', () => {
                         setTimeout(() => {
                             $("#notification").hide();
                         }, 5000);
-                        $("#edit-weekend-workingdates").show()
+                        $("#edit-weekend-workingdates").hide()
                     }
                     else {
                         $("#editRequest").prop("disabled", false);
@@ -125,6 +128,12 @@ $("#editRequest").on('click', () => {
 });
 
 async function editDateDiff(starting, ending) {
+    
+    // if shift value is there
+    // if starttime and endtime are empty
+    let st =$('#edit-startTime').val();
+    let et =$('#edit-endTime').val();
+
     if (ending != "") {
         // var startings = moment(moment(starting)).format("YYYY-MM-DD HH:mm");
         // var endings = moment(ending, "YYYY-MM-DD HH:mm");
@@ -132,8 +141,10 @@ async function editDateDiff(starting, ending) {
         // var dayl = duration.asDays();
         // leaveDuration = dayl;
         edit_leaveDuration = await EditCalculateDaysIncludingHolidays(starting, ending) - 1;
-        console.log(edit_leaveDuration, edit_leaveDurationTwo, edit_deduction)
-        $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
+
+        edit_defaultHours = (!et && !st) ? 1 : 0;
+
+        $("#edit-dayNumber").text((edit_leaveDuration + edit_defaultHours + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
     }
     else {
         edit_leaveDuration = 0;
@@ -195,6 +206,11 @@ function editHourDiff(startTime, endTime) {
             $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
         }
         editNotValid()
+        
+        
+        if (!startTime && !endTime) {
+            defaultHours = 1;
+        }
 
     }
 }
@@ -261,7 +277,7 @@ $("#edit-startDate").on('change', () => {
     let sDate = new Date(startDate);
     
     if (eDate.getFullYear() >= sDate.getFullYear()) {
-        (!startDate) ? $("#edit-startDate").css({ "border-color": "red" }) : (
+        (!startDate) ? $("#edit-startDate").css({ "border-color": "" }) : (
             $("#edit-startDate").css({ "border-color": "" }),
             (endDate) ? editDateDiff(startDate, endDate) : ""
         );
@@ -276,12 +292,27 @@ $("#edit-endDate").on('change', () => {
     let sDate = new Date(startDate);
     
     if (eDate.getFullYear() >= sDate.getFullYear()) {
-        (!endDate) ? $("#edit-endDate").css({ "border-color": "red" }) : (
+        (!endDate) ? $("#edit-endDate").css({ "border-color": "" }) : (
             $("#edit-endDate").css({ "border-color": "" }),
             (startDate) ? editDateDiff(startDate, endDate) : ""
         );
     }
 })
+
+
+function edit_EmptyTimes() {
+    var startTime = $("#edit-startTime").val();
+    var endTime = $("#edit-endTime").val();
+    // no values
+    if (!startTime && !endTime) {
+        edit_leaveDurationTwo = 0;
+        $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
+    }
+}
+
+$('#edit-startTime').on('keydown', edit_EmptyTimes);
+$('#edit-endTime').on('keydown', edit_EmptyTimes);
+
 $("#edit-startTime").on('change', () => {
     var startTime = $("#edit-startTime").val();
     var endTime = $("#edit-endTime").val();
@@ -524,7 +555,7 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
         }
     }
 
-    $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_leaveDuration - edit_deduction) + " jour(s)")
+    $("#edit-dayNumber").text((edit_leaveDurationTwo + edit_defaultHours + edit_leaveDuration - edit_deduction) + " jour(s)")
     
     return totalDays - holidayCount;
 };

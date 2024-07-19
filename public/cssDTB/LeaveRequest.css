@@ -869,3 +869,12 @@ input:focus {
 }
 
 /* update 04/07/24 */
+.input-shift > input {
+    position: relative;
+    width: 55px !important;
+    text-align: center;
+}
+
+.input-shift {
+    position: relative;
+}

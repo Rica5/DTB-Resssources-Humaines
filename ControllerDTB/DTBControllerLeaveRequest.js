@@ -69,6 +69,7 @@ const makeLeaveRequest = async (req, res) => {
                 recovery: req.body.recovery,
                 duration: req.body.duration,
                 deductedDay: req.body.deductedDay,
+                shift: req.body.shift,
                 type: "",
                 exceptType: "",
                 status: "pending",
@@ -125,6 +126,7 @@ const updateLeaveRequest = async (req, res) => {
                 hour_begin: req.body.startTime,
                 hour_end: req.body.endTime,
                 motif: req.body.motif,
+                shift: req.body.shift,
                 recovery: req.body.recovery,
                 duration: req.body.duration,
                 deductedDay: req.body.deductedDay,
@@ -458,6 +460,8 @@ const answerRequest = async (req, res) => {
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
         var newDuration = parseFloat(req.body.newduration);
+        var newStartDate = req.body.newStartDate;
+        var newEndDate = req.body.newEndDate;
 
         const io = req.app.get("io");
 
@@ -557,8 +561,19 @@ const answerRequest = async (req, res) => {
             } else if (checking >= 0.5) {
                 Data.duration = +checking;
             }
+<<<<<<< HEAD
             // nouvelle duration
             if (newDuration) Data.duration = newDuration;
+=======
+
+            // si ce n'est pas un réfus
+            if (response == "true") {
+                // nouvelle duration
+                if (newDuration) Data.duration = newDuration;
+                if (newStartDate) Data.date_start = newStartDate;
+                if (newEndDate) Data.date_end = newEndDate;
+            }
+>>>>>>> 92055dac3cdb5987c66a26148f501881dbae117e
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
