@@ -547,6 +547,13 @@ async function dateDiff(starting, ending) {
         leaveDuration = 0;
         $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
     }
+    
+    // calculate by times also
+    var startTime = $("#startTime").val();
+    var endTime = $("#endTime").val();
+    if (startTime && endTime)
+        hourDiff(startTime, endTime)
+    
     notValid()
 }
 
@@ -822,6 +829,7 @@ function cancelLeaveRequest() {
  * Method for fetching holidays at madagascar from api
  */
 const fetchHolidays = async (year) => {
+    return [];
     try {
         const country = 'MG';
         const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
@@ -959,7 +967,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
         let defaultEndDateAsDate = new Date(returnDate);
         defaultEndDateAsDate.setDate(defaultEndDateAsDate.getDate() - 1);
         
-        if (isValidDate(defaultEndDateAsDate))
+        // if (isValidDate(defaultEndDateAsDate))
             $("#endDate").val(formatDateToYyyDdMm(defaultEndDateAsDate));
 
 

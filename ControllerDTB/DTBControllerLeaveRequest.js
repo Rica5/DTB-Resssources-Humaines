@@ -305,7 +305,7 @@ const getPending = async (req, res) => {
         const ROPIds = usersROP.map(rop => rop._id);
         
         // si (ROP, ADMIN), n'affiche pas (tsy affichena ny raha ireto no nandefa ilay demande)
-        const staffs = await UserSchema.find({ occupation: { $in: ["Admin", "Surveillant"] } });
+        const staffs = await UserSchema.find({ occupation: { $in: ["Admin", "Opération"] } });
         const staffsUsername = staffs.map(f => f.username);
         
         // staffs alaina @ alalan'ny email na username
@@ -314,7 +314,7 @@ const getPending = async (req, res) => {
 
         // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         var allRequest = await LeaveRequestTest.find({
-            m_code: { $nin: [...filtersMcode, 'M-NAT', 'Charles'] }, // n'afficher pas si la demande venant d'un ROP
+            m_code: { $nin: [...filtersMcode, 'M-NAT', 'Charles', 'M-SAF'] }, // n'afficher pas si la demande venant d'un ROP
             status: { $nin: ["approved", "declined"] },
             "validation.user": { $nin: ROPIds }
         })
@@ -466,7 +466,7 @@ const answerRequest = async (req, res) => {
             status = response == "true" ? "approved" : "declined";
             var approbator = {
                 user: session.idUser,
-                approbation: response,
+                approbation: response == "true",
                 date:moment().format("YYYY-MM-DD"),
                 comment: comment
             }
@@ -542,6 +542,8 @@ const answerRequest = async (req, res) => {
                 type: type,
                 order: req.body.order,
                 exceptType: req.body.exceptType,
+                // date_start: newStartDate,
+                // date_end: newEndDate
             }
             // s'il y a un motif
             if (req.body.motif) {
@@ -556,7 +558,7 @@ const answerRequest = async (req, res) => {
                 Data.duration = +checking;
             }
             // nouvelle duration
-            Data.duration = newDuration;
+            if (newDuration) Data.duration = newDuration;
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{

@@ -41,6 +41,8 @@ $("#editRequest").on('click', () => {
         join: editJoinedFile, code: code, startDate: startDate, endDate: endDate, startTime: startTime,
         endTime: endTime, motif: motif, recovery: recovery, duration: (edit_leaveDuration + edit_leaveDurationTwo), priority: $("#edit-toggle").is(':checked')
     }
+    
+    const formData = new FormData();
     formData.append("join", editJoinedFile)
     formData.append("code", code)
     formData.append("startDate", startDate)
@@ -137,6 +139,13 @@ async function editDateDiff(starting, ending) {
         edit_leaveDuration = 0;
         $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
     }
+    
+    // calculate by times also
+    var startTime = $("#edit-startTime").val();
+    var endTime = $("#edit-endTime").val();
+    if (startTime && endTime)
+        editHourDiff(startTime, endTime)
+
     editNotValid()
 }
 
