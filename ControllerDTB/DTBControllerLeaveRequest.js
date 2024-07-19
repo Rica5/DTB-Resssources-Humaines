@@ -561,10 +561,6 @@ const answerRequest = async (req, res) => {
             } else if (checking >= 0.5) {
                 Data.duration = +checking;
             }
-<<<<<<< HEAD
-            // nouvelle duration
-            if (newDuration) Data.duration = newDuration;
-=======
 
             // si ce n'est pas un réfus
             if (response == "true") {
@@ -573,7 +569,6 @@ const answerRequest = async (req, res) => {
                 if (newStartDate) Data.date_start = newStartDate;
                 if (newEndDate) Data.date_end = newEndDate;
             }
->>>>>>> 92055dac3cdb5987c66a26148f501881dbae117e
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
