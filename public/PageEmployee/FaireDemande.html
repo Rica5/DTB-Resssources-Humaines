@@ -204,13 +204,10 @@
                                 <p class="point-text">M-code :</p>
                                 <p class="text-infos mx-2" id="code"><%= user.m_code %></p>
                             </div>
-                            <div class="col-md-4 d-flex justify-content- w-100" style="margin-left: -4px;">
+                            <div class="col-md-4 d-flex justify-content-between w-100" style="margin-left: -4px;">
                                 <p class="point-text">Shift :</p>
                                 <!-- <p class="text-infos mx-2" id="shift"><%= user.shift %></p> -->
-                                <div class="input-shift ml-3">
-                                    <input class="mx-1 date value" id="shift" type="number" value="<%= (user.user_ht) %>"/>
-                                    <span>heures</span>
-                                </div>
+                                <input class="mx-1 date value" id="shift" type="text" value=""/>
                             </div>
                         </div>
                         <br>
@@ -365,10 +362,7 @@
                             <div class="col-md-4 d-flex justify-content-between w-100" style="margin-left: -4px;">
                                 <p class="point-text">Shift :</p>
                                 <!-- <p class="text-infos mx-2" id="shift"><%= user.shift %></p> -->
-                                <div class="input-shift ml-3">
-                                    <input class="mx-1 date value" id="edit-shift" type="number" value="<%= (user.user_ht) %>"/>
-                                    <span>heures</span>
-                                </div>
+                                <input class="mx-1 date value" id="edit-shift" type="text" value=""/>
                             </div>
                         </div>
                         <div class="row">

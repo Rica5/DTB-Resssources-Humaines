@@ -723,6 +723,7 @@ function restore() {
     $("#dayNumber").text("0");
     $("#priority").val("2");
     $('#join').val('');
+    $('#shift').val('');
     fileIn = false
     $('#fileOk').css({ "opacity": "0" });
     
