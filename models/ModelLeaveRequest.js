@@ -25,8 +25,8 @@ const Leave = mongoose.Schema({
         default: 2
     },
     shift: {
-        type: Number,
-        default: 8
+        type: String,
+        default: ''
     },
     comment: String,
     order: Boolean,

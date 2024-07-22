@@ -240,6 +240,7 @@ function editRestore() {
     $("#edit-dayNumber").text("0");
     $("#edit-priority").val('2')
     $('#edit-join').val('');
+    $('#edit-shift').val('');
     editFileIn = false
     $('#edit-fileOk').css({ "opacity": "0" });
 }
@@ -387,6 +388,9 @@ function openEditModal(id) {
                 $('#edit-recovery').val(leave.recovery)
                 
                 $('#edit-priority').val(leave.leavePriority)
+                
+                $('#edit-shift').val(leave.shift)
+                
 
                 $("#edit-weekend-workingdates").hide();
 
