@@ -59,6 +59,7 @@ function getShift(code){
 // methode pour afficher le shift (ex: 08:00 -> 08 heures)
 function formatShift(hours = 8) {
     // let [hours] = value.split(':');
+    return hours;
     return `${hours} heures`;
 }
 
