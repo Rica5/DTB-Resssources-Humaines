@@ -1006,7 +1006,8 @@ const editLeave = async (req, res) => {
         type == "Congé de maternité" ||
         type == "Absent" ||
         type == "Congé sans solde" ||
-        type == "Absence Injustifiée"
+        type == "Absence Injustifiée" ||
+        type == "Consultation médicale"
       ) {
         await LeaveSchema.findOneAndDelete({ _id: id });
         leave_specific = await LeaveSchema.find({

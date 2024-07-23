@@ -99,6 +99,7 @@ function rendu_header(active) {
       <option value="Congé sans solde">Congé sans solde</option>
       <option value="Permission exceptionelle">Permission exceptionelle</option>
       <option value="Repos Maladie">Repos Maladie</option>
+      <option value="Consultation médicale">Consultation médicale</option>
       <option value="Absent">Absent</option>
       <option value="Congé de maternité">Congé de maternité</option>
       <option value="Mise a Pied">Mise à pied</option>
