@@ -29,7 +29,7 @@ $("#editRequest").on('click', () => {
     // variable remplaçant le "motif" ou "recovery"
     var reason;
     // si c'est un conge
-    if ($('#edit-request-type').val() === 'conge') {
+    if (['congé', 'régularisation'].includes($('#edit-request-type').val())) {
         (!motif) ? $("#edit-motif").css({ "border-color": "red" }) : $("#edit-motif").css({ "border-color": "" });
         $("#edit-recovery").css({ "border-color": "" }) // remove border of recovery field
         reason = motif;

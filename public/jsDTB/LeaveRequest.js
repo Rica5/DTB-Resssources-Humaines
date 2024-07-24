@@ -69,7 +69,7 @@ $("#sendRequest").on('click', () => {
     // variable remplaçant le "motif" ou "recovery"
     var reason;
     // si c'est un conge
-    if ($('#request-type').val() === 'conge') {
+    if (['congé', 'régularisation'].includes($('#request-type').val())) {
         (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
         $("#recovery").css({ "border-color": "" }) // remove border of recovery field
         reason = motif;
