@@ -24,6 +24,11 @@ const Leave = mongoose.Schema({
         enum: [3, 2, 1],
         default: 2
     },
+    mode: {
+        type: String,
+        enum: ["congé", "régularisation", "récupération"],
+        default: 'congé'
+    },
     shift: {
         type: String,
         default: ''

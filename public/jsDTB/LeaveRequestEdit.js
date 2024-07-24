@@ -59,6 +59,7 @@ $("#editRequest").on('click', () => {
     formData.append("leavePriority", priority);
     formData.append("deductedDay", deductedDay);
     formData.append("fileIn", editFileIn)
+    formData.append("mode", $('#edit-request-type').val())
     if (startDate && endDate /*&& startTime && endTime*/ && reason && shift) {
         if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate)) {
             $("#notification").attr("class", "notice-denied");
@@ -390,7 +391,8 @@ function openEditModal(id) {
                 $('#edit-priority').val(leave.leavePriority)
                 
                 $('#edit-shift').val(leave.shift)
-                
+
+                $('#edit-request-type').val(leave.mode)
 
                 $("#edit-weekend-workingdates").hide();
 
@@ -421,6 +423,7 @@ function toggleEditModal() {
  * Method for fetching holidays at madagascar from api
  */
 const editFetchHolidays = async (year) => {
+    return [];
     try {
         const country = 'MG';
         const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
@@ -453,7 +456,7 @@ const editCalculateEffectiveDays = (startDate, endDate, holidays) => {
     edit_deduction = 0;
     var weekendDays = [];
 
-    if ($("#edit-request-type").val() === "conge") {
+    if ($("#edit-request-type").val() === "congé") {
         // If the end date is a Friday, push it by 2 days to Sunday
         if (end.getDay() === 5) {
             // to pass on saturday
