@@ -878,3 +878,11 @@ input:focus {
 .input-shift {
     position: relative;
 }
+
+.mode {
+    width: auto !important;
+}
+
+.mode select {
+    padding-right: 22px;
+}

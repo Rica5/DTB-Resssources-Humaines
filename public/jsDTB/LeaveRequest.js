@@ -69,7 +69,7 @@ $("#sendRequest").on('click', () => {
     // variable remplaçant le "motif" ou "recovery"
     var reason;
     // si c'est un conge
-    if ($('#request-type').val() === 'conge') {
+    if (['congé', 'régularisation'].includes($('#request-type').val())) {
         (!motif) ? $("#motif").css({ "border-color": "red" }) : $("#motif").css({ "border-color": "" });
         $("#recovery").css({ "border-color": "" }) // remove border of recovery field
         reason = motif;
@@ -95,6 +95,7 @@ $("#sendRequest").on('click', () => {
     formData.append("priority", $("#toggle").is(':checked'));
     formData.append("leavePriority", +$("#priority").val());
     formData.append("fileIn", fileIn)
+    formData.append("mode", $("#request-type").val())
     if (startDate && endDate /* && startTime && endTime */ && reason && shift) {
         if (checkduplicata(allLeave, startDate, endDate)) {
             $("#notification").attr("class", "notice-denied");
@@ -926,7 +927,7 @@ const calculateEffectiveDays = (startDate, endDate, holidays) => {
     var weekendDays = [];
 
     // SI LE TYPE DE REQUEST EST UN <<CONGE>>
-    if ($('#request-type').val() === "conge") {
+    if ($('#request-type').val() === "congé") {
         // If the end date is a Friday, push it by 2 days to Sunday
         if (end.getDay() === 5) {
             // to pass on saturday
