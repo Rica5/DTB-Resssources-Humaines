@@ -548,6 +548,8 @@ const answerRequest = async (req, res) => {
                 type: type,
                 order: req.body.order,
                 exceptType: req.body.exceptType,
+                // date_start: newStartDate,
+                // date_end: newEndDate
             }
             // s'il y a un motif
             if (req.body.motif) {

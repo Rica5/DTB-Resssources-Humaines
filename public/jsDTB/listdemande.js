@@ -21,7 +21,6 @@ function fetchList(month) {
 
 function renderLeaveRequests(data = []) {
     $('#allRequests').html(renderAllRequest(data));
-    
 }
 
 
@@ -160,3 +159,5 @@ function approvingList(all, id){
     
     return `<div class="d-flex approving-list">${lists}</div> <input type="hidden" id="val-${id}" value="${all.map(u => u.user._id).join('|')}"  />`
 }
+
+fetchList('');

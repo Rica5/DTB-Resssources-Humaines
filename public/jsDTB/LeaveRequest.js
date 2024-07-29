@@ -85,7 +85,7 @@ $("#sendRequest").on('click', () => {
     formData.append("code", code)
     formData.append("startDate", startDate)
     formData.append("endDate", endDate)
-    formData.append("shift", shift)
+    formData.append("shift", +shift)
     formData.append("startTime", startTime)
     formData.append("endTime", endTime)
     formData.append("motif", motif)
@@ -589,13 +589,11 @@ async function dateDiff(starting, ending) {
         leaveDuration = 0;
         $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
     }
-
     // calculate by times also
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
     if (startTime && endTime)
         hourDiff(startTime, endTime)
-
     notValid()
 }
 
@@ -884,6 +882,7 @@ function cancelLeaveRequest() {
  * Method for fetching holidays at madagascar from api
  */
 const fetchHolidays = async (year) => {
+    return [];
     try {
         const country = 'MG';
         const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
