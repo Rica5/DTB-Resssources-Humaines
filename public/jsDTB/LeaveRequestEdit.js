@@ -49,7 +49,7 @@ $("#editRequest").on('click', () => {
     formData.append("code", code)
     formData.append("startDate", startDate)
     formData.append("endDate", endDate)
-    formData.append("shift", +shift)
+    formData.append("shift", shift)
     formData.append("startTime", startTime)
     formData.append("endTime", endTime)
     formData.append("motif", motif)
