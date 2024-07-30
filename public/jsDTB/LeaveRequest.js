@@ -54,7 +54,7 @@ $("#sendRequest").on('click', () => {
     var endDate = $("#endDate").val();
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
-    var motif = $("#motif").val();
+    var motif = $("#motif").val().split('\n').join(' ');
     var recovery = $("#recovery").val();
     var shift = $('#shift').val();
     var deductedDay = deduction;
@@ -85,7 +85,7 @@ $("#sendRequest").on('click', () => {
     formData.append("code", code)
     formData.append("startDate", startDate)
     formData.append("endDate", endDate)
-    formData.append("shift", +shift)
+    formData.append("shift", shift)
     formData.append("startTime", startTime)
     formData.append("endTime", endTime)
     formData.append("motif", motif)
@@ -99,7 +99,7 @@ $("#sendRequest").on('click', () => {
     if (startDate && endDate /* && startTime && endTime */ && reason && shift) {
         if (checkduplicata(allLeave, startDate, endDate)) {
             $("#notification").attr("class", "notice-denied");
-            $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
+            $("#notification").text("La date choisi existe déjà sur l'une de vos demandes");
             $("#notification").show();
             $("#sendRequest").prop("disabled", false);
             setTimeout(() => {

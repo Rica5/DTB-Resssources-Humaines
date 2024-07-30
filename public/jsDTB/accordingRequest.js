@@ -63,18 +63,32 @@ function formatShift(hours = 8) {
     return `${hours} heures`;
 }
 
+function uniqValidation(array) {
+    let seen = new Set();
+    let uniqueArray = array.filter(item => {
+        if (seen.has(item.user._id)) {
+            return false;
+        } else {
+            seen.add(item.user._id);
+            return true;
+        }
+    });
+    return uniqueArray;
+}
 
 function renderAllRequest(Leave){
     let mappedLeave = Leave.map(leave => {
         userActive = users.find(user => user.m_code == leave.m_code)
+    
+    // unique validation
+    leave.validation = uniqValidation(leave.validation)
 
-        
-      let code = leave.m_code;
-      let acc = userActive.leave_taked;
-      let rest = userActive.remaining_leave
-      let duration = leave.duration
-      let auth = userActive.leave_stat
-      let save = userActive.save_at
+    let code = leave.m_code;
+    let acc = userActive.leave_taked;
+    let rest = userActive.remaining_leave
+    let duration = leave.duration
+    let auth = userActive.leave_stat
+    let save = userActive.save_at
     return `
     <div id="${leave._id}" class="content-leave">
             <div class="code-person p_${leave.leavePriority}">
