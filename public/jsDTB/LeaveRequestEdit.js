@@ -5,7 +5,7 @@ var edit_defaultHours = 0;
 var editJoinedFile = [];
 var editFileIn = false;
 var oldStartDate = '';
-var oldEndDate = ''
+var oldEndDate = '', oldStartTime, oldEntTime;
 
 $("#editRequest").on('click', () => {
     $("#editRequest").prop("disabled", true);
@@ -14,7 +14,7 @@ $("#editRequest").on('click', () => {
     var endDate = $("#edit-endDate").val();
     var startTime = $("#edit-startTime").val();
     var endTime = $("#edit-endTime").val();
-    var motif = $("#edit-motif").val();
+    var motif = $("#motif").val().split('\n').join(' ');
     var recovery = $("#edit-recovery").val();
     var priority = +$("#edit-priority").val();
     var shift = $("#edit-shift").val();
@@ -61,7 +61,7 @@ $("#editRequest").on('click', () => {
     formData.append("fileIn", editFileIn)
     formData.append("mode", $('#edit-request-type').val())
     if (startDate && endDate /*&& startTime && endTime*/ && reason && shift) {
-        if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate)) {
+        if (checkduplicata2(allLeave, startDate, endDate, oldStartDate, oldEndDate, startTime, endTime, )) {
             $("#notification").attr("class", "notice-denied");
             $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
             $("#notification").show();
@@ -308,8 +308,11 @@ function edit_EmptyTimes() {
     // no values
     if (!startTime && !endTime) {
         edit_leaveDurationTwo = 0;
-        $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
+        edit_defaultHours = 1;
+    } else {
+        edit_defaultHours = 0;
     }
+    $("#edit-dayNumber").text((edit_leaveDuration + edit_leaveDurationTwo - edit_deduction) + " jour(s)")
 }
 
 $('#edit-startTime').on('keydown', edit_EmptyTimes);
@@ -372,6 +375,8 @@ function openEditModal(id) {
 
                 oldStartDate = leave.date_start;
                 oldEndDate = leave.date_end;
+                oldStartTime = leave.hour_begin;
+                oldEntTime = leave.hour_end;
 
                 // set the hidden id
                 $('#hidden-id').val(id);

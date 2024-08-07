@@ -63,18 +63,32 @@ function formatShift(hours = 8) {
     return `${hours} heures`;
 }
 
+function uniqValidation(array) {
+    let seen = new Set();
+    let uniqueArray = array.filter(item => {
+        if (seen.has(item.user._id)) {
+            return false;
+        } else {
+            seen.add(item.user._id);
+            return true;
+        }
+    });
+    return uniqueArray;
+}
 
 function renderAllRequest(Leave){
     let mappedLeave = Leave.map(leave => {
         userActive = users.find(user => user.m_code == leave.m_code)
+    
+    // unique validation
+    leave.validation = uniqValidation(leave.validation)
 
-        
-      let code = leave.m_code;
-      let acc = userActive.leave_taked;
-      let rest = userActive.remaining_leave
-      let duration = leave.duration
-      let auth = userActive.leave_stat
-      let save = userActive.save_at
+    let code = leave.m_code;
+    let acc = userActive.leave_taked;
+    let rest = userActive.remaining_leave
+    let duration = leave.duration
+    let auth = userActive.leave_stat
+    let save = userActive.save_at
     return `
     <div id="${leave._id}" class="content-leave">
             <div class="code-person p_${leave.leavePriority}">
@@ -334,6 +348,7 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
     const appr = $(`#val-${id}`).val();
     const misyGerant = appr.split('|').includes(GerantId);
 
+    userActive = users.find(user => user.m_code == code);
     if (role == 'Gerant' ){
         $("#typeLeave").val(type);
         $("#orderCheck").hide();
@@ -366,12 +381,12 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $("#nbr-day").val(duration);
         $('#nbr-day').on('change', () => {
             let nDuration = parseFloat($('#nbr-day').val())
-            console.log('ato')
+            console.log('ato', userActive.leave_stat)
             renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at);
         });
     }
     idActive = id;
-    userActive = users.find(user => user.m_code == code);
+    // userActive = users.find(user => user.m_code == code);
     $("#codeAccept").text(`Voulez vous vraiment accepter l'absence de ${code}`)
     $("#project").html(renderProject(userActive.project));
     duration = parseFloat(duration)
@@ -794,6 +809,7 @@ $('#join').on('change', function (event) {
     }
  }
  function renderSolde(code,acc,rest,duration,auth,save){
+    console.log(auth)
     var html = `
     <div>
                           <label class="text-center">Status / solde de ${code}</label>

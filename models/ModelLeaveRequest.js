@@ -79,4 +79,4 @@ Leave.virtual('dateValue').get(function() {
     return date;
 });
 
-module.exports = mongoose.model('LeaveRequestTest', Leave);
+module.exports = mongoose.model('newLeaveRequestTest', Leave);
