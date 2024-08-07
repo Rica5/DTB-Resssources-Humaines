@@ -95,11 +95,13 @@ $("#sendRequest").on('click', () => {
     formData.append("priority", $("#toggle").is(':checked'));
     formData.append("leavePriority", +$("#priority").val());
     formData.append("fileIn", fileIn)
-    formData.append("mode", $("#request-type").val())
+    formData.append("mode", $("#request-type").val());
+
+    $("#sendRequest").prop("disabled", false)
     if (startDate && endDate /* && startTime && endTime */ && reason && shift) {
-        if (checkduplicata(allLeave, startDate, endDate)) {
+        if (checkduplicata(allLeave, startDate, endDate, startTime, endTime)) {
             $("#notification").attr("class", "notice-denied");
-            $("#notification").text("La date choisi existe déjà sur l'une de vos demandes");
+            $("#notification").text("La date choisi existe déja sur l'une de vos demandes");
             $("#notification").show();
             $("#sendRequest").prop("disabled", false);
             setTimeout(() => {
@@ -516,11 +518,9 @@ $("#startTime").on('change', () => {
         $("#startTime").css({ "border-color": "" }),
         (endTime) ? hourDiff(startTime, endTime) : ""
     );
-
+    console.log()
     // no values
-    if (!startTime && !endTime) {
-        leaveDurationTwo = 0;
-    }
+    emptyTimes();
 })
 
 function emptyTimes() {
@@ -529,8 +529,11 @@ function emptyTimes() {
     // no values
     if (!startTime && !endTime) {
         leaveDurationTwo = 0;
-        $("#dayNumber").text((leaveDuration + defaultHours + leaveDurationTwo - deduction) + " jour(s)")
+        defaultHours = 1;
+    } else {
+        defaultHours = 0;
     }
+    $("#dayNumber").text((leaveDuration + defaultHours + leaveDurationTwo - deduction) + " jour(s)")
 }
 
 $('#startTime').on('keydown', emptyTimes);
@@ -545,6 +548,7 @@ $("#endTime").on('change', () => {
         (startTime) ? hourDiff(startTime, endTime) : ""
     );
     
+    emptyTimes();
 
 })
 $("#motif").on('change', () => {
@@ -589,11 +593,13 @@ async function dateDiff(starting, ending) {
         leaveDuration = 0;
         $("#dayNumber").text((leaveDuration + leaveDurationTwo - deduction) + " jour(s)")
     }
+
     // calculate by times also
     var startTime = $("#startTime").val();
     var endTime = $("#endTime").val();
     if (startTime && endTime)
         hourDiff(startTime, endTime)
+
     notValid()
 }
 
@@ -732,88 +738,73 @@ function restore() {
     $("#weekend-workingdates").hide();
 }
 
-function checkduplicata(leave, st, ed) {
+function checkduplicata(leave, sd, ed, st, et) {
     var value = false;
     for (l = 0; l < leave.length; l++) {
         var all_date = date_concerning(
-            moment(leave[l].date_start).format("YYYY-MM-DD"),
-            moment(leave[l].date_end).format("YYYY-MM-DD")
+            moment(leave[l].date_start + ' ' + leave[l].hour_begin).format("YYYY-MM-DD HH:mm"),
+            moment(leave[l].date_end + ' ' + leave[l].hour_end).format("YYYY-MM-DD HH:mm")
         );
         if (
-            all_date.includes(moment(st).format("YYYY-MM-DD")) ||
-            all_date.includes(moment(ed).format("YYYY-MM-DD"))
+            all_date.includes(moment(sd + ' ' + st).format("YYYY-MM-DD HH:mm")) ||
+            all_date.includes(moment(ed + ' ' + et).format("YYYY-MM-DD HH:mm"))
         ) {
             value = true;
         }
     }
     return value;
 }
-function date_concerning(date1, date2) {
-    var all_date = [];
-    if (date2 == date1) {
-        date1 = moment(date1).format("YYYY-MM-DD");
-        all_date.push(date1);
-        return all_date;
+
+function date_concerning(dateTime1, dateTime2) {
+    var all_date_times = [];
+    if (dateTime1 === dateTime2) {
+        all_date_times.push(dateTime1);
     } else {
-        date1 = moment(date1).format("YYYY-MM-DD");
-        date2 = moment(date2).format("YYYY-MM-DD");
-        while (date1 != date2) {
-            all_date.push(date1);
-            date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+        while (dateTime1 <= dateTime2) {
+            all_date_times.push(dateTime1);
+            dateTime1 = moment(dateTime1).add(1, "minutes").format("YYYY-MM-DD HH:mm");
         }
-        all_date.push(date2);
-        return all_date;
     }
+    return all_date_times;
 }
-function checkduplicata2(leave, st, ed, st1, ed1) {
+function checkduplicata2(leave, sd, ed, sd1, ed1, st, et, st1, et1) {
     var value = false;
     var all_date = date_concerning2(
-        moment(st).format("YYYY-MM-DD"),
-        moment(ed).format("YYYY-MM-DD"),
-        moment(st1).format("YYYY-MM-DD"),
-        moment(ed1).format("YYYY-MM-DD")
+        moment(sd + ' ' + st).format("YYYY-MM-DD HH:mm"),
+        moment(ed + ' ' + et).format("YYYY-MM-DD HH:mm"),
+        moment(sd1 + ' ' + st1).format("YYYY-MM-DD HH:mm"),
+        moment(ed1 + ' ' + set1).format("YYYY-MM-DD HH:mm")
     );
     for (l = 0; l < leave.length; l++) {
         if (
-            all_date.includes(moment(leave[l].date_start).format("YYYY-MM-DD")) ||
-            all_date.includes(moment(leave[l].date_end).format("YYYY-MM-DD"))
+            all_date.includes(moment(leave[l].date_start + ' ' + leave[l].hour_begin).format("YYYY-MM-DD HH:mm")) ||
+            all_date.includes(moment(leave[l].date_end  + ' ' + leave[l].hour_end).format("YYYY-MM-DD HH:mm"))
         ) {
             value = true;
         }
     }
     return value;
 }
-function date_concerning2(date1, date2, date3, date4) {
-    var all_date = [];
-    var not_in = date_concerning(date3, date4);
-    if (date2 == date1) {
-        date1 = moment(date1).format("YYYY-MM-DD");
-        if (not_in.includes(date1)) {
-        } else {
-            all_date.push(date1);
-        }
 
-        return all_date;
+function date_concerning2(dateTime1, dateTime2, dateTime3, dateTime4) {
+    var all_date_times = [];
+    var not_in = date_concerning(dateTime3, dateTime4);
+    
+    if (dateTime1 === dateTime2) {
+        if (!not_in.includes(dateTime1)) {
+            all_date_times.push(dateTime1);
+        }
     } else {
-        date1 = moment(date1).format("YYYY-MM-DD");
-        date2 = moment(date2).format("YYYY-MM-DD");
-
-        while (date1 != date2) {
-            if (not_in.includes(date1)) {
-                date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
-            } else {
-                all_date.push(date1);
-                date1 = moment(date1).add(1, "days").format("YYYY-MM-DD");
+        while (dateTime1 <= dateTime2) {
+            if (!not_in.includes(dateTime1)) {
+                all_date_times.push(dateTime1);
             }
+            dateTime1 = moment(dateTime1).add(1, "minutes").format("YYYY-MM-DD HH:mm");
         }
-        if (not_in.includes(date2)) {
-        } else {
-            all_date.push(date2);
-        }
-
-        return all_date;
     }
+    return all_date_times;
 }
+
 function triggerButton() {
     $("#join").click();
 }
@@ -882,7 +873,6 @@ function cancelLeaveRequest() {
  * Method for fetching holidays at madagascar from api
  */
 const fetchHolidays = async (year) => {
-    return [];
     try {
         const country = 'MG';
         const url = `https://api.api-ninjas.com/v1/holidays?&country=${country}&year=${year}&type=major_holiday`;
