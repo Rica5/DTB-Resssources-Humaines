@@ -25,7 +25,7 @@ const Leave = mongoose.Schema({
     request: {
         type:mongoose.Types.ObjectId,
         auto: true,
-        ref:"LeaveRequestTest"
+        ref:"newLeaveRequestTest"
     }
 })
 module.exports = mongoose.model('cleaveTest',Leave);
