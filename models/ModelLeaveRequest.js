@@ -44,7 +44,7 @@ const Leave = mongoose.Schema({
     validation: [{
         user: {
             type: mongoose.Types.ObjectId,
-            ref: "cuserTest"
+            ref: "newcuserTest"
         },
         approbation: {
             type: Boolean,
