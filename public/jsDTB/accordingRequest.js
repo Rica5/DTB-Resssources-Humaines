@@ -1,5 +1,10 @@
 const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
 // const GerantId = "6673ecbf0f644c29f7a997f7";
+const leaveModeValue = {
+    'congé': 'Congé',
+    'régularisation': "Régularisation d'absence",
+    'récupération': "Récupération"
+}
 var myRequestContent = "";
 var idActive = "";
 var allRequest = [];
@@ -102,10 +107,9 @@ function renderAllRequest(Leave){
             </div>
             <div class="leave-infos">
                 <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
-                <p id="motif" class="text-center">Motif: ${leave.motif}</p>
-                ${
-                    leave.recovery.trim().length > 0 ? `<p id="motif" class="text-center">Récupération: ${leave.recovery}</p>` : ''
-                }
+                <p id="motif" class="text-center">
+                    <b>Demande:</b> ${leaveModeValue[leave.mode]} <span class="mx-2">|</span> <b>Motif:</b>  ${(leave.recovery !== "" && leave.motif === "") ? leave.recovery : leave.motif}
+                </p>
                 <div class="date-heure">
                     <div class="ask-content">
                         <h1>
