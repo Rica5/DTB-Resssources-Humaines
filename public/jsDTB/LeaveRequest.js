@@ -1,3 +1,8 @@
+const leaveModeValue = {
+    'congé': 'Congé',
+    'régularisation': "Régularisation d'absence",
+    'récupération': "Récupération"
+}
 var PendingAndDecline = [];
 var Approves = [];
 var allLeave = [];
@@ -222,7 +227,8 @@ function Approved(data) {
             <div class="card-item">
                 <div class="card-header">
                     <div class="motif">
-                        <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${element.motif}
+                        <i class="fa-solid fa-person-walking-luggage mx-2"></i>
+                        ${leaveModeValue[element.mode]}: ${(element.recovery !== "" && element.motif === "") ? element.recovery : element.motif}
                     </div>
                     <div class="buttons">
                     </div>
@@ -328,7 +334,8 @@ function renderMyRequest(Leave, stat) {
         <div class="card-item">
             <div class="card-header">
                 <div class="motif ${Leave.status}">
-                    <i class="fa-solid fa-person-walking-luggage mx-2"></i> ${Leave.motif}
+                    <i class="fa-solid fa-person-walking-luggage mx-2"></i>
+                    ${leaveModeValue[Leave.mode]}: ${(Leave.recovery !== "" && Leave.motif === "") ? Leave.recovery : Leave.motif}
                 </div>
                 ${Leave.recovery.trim().length > 0 ? `
                 <div class="motif ${Leave.status}">

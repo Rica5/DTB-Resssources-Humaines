@@ -5,6 +5,13 @@ const moment = require("moment");
 const fs = require("fs");
 const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
 // const id_gerant = "6673ecbf0f644c29f7a997f7"
+
+const leaveModeValue = {
+    'congé': 'de congé',
+    'régularisation': "de régularisation d'absence",
+    'récupération': "de récupération"
+}
+
 //Home page
 const getHomePage = async (req, res) => {
     var session = req.session;
@@ -87,8 +94,8 @@ const makeLeaveRequest = async (req, res) => {
             files != "" ? files.mv("public/PieceJointe/" + new_request.piece) : "";
             await LeaveRequestTest(new_request).save();
             var notification = {
-                title: "Demande d'absence",
-                content: `${new_request.m_code} a envoyé une demande d'absence le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
+                title: "Demande " + leaveModeValue[req.body.mode],
+                content: `${new_request.m_code} a envoyé une demande ${leaveModeValue[req.body.mode]} le ${moment(new_request.date_start).format("DD/MM/YYYY")} au ${moment(new_request.date_end).format("DD/MM/YYYY")} (${new_request.duration} jour(s))`,
                 datetime: moment().format("DD/MM/YYYY HH:mm:ss")
             }
             var concerned = ["Admin", "Surveillant", "Opération"]
@@ -508,12 +515,12 @@ const answerRequest = async (req, res) => {
                 } 
             } else {
                 /* LE GERANT A REFUSE */
-                let title = `<span style="color: red;">Refus de congé</span>`;
+                let title = `<span style="color: red;">Refus ${leaveModeValue[thisLeave.mode]}</span>`;
                 // send notification if gerant refused
                 content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
                 forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
                 var notification = {
-                    title: `<span style="color: red;">Refus de congé</span>`,
+                    title: title,
                     content: forGerant,
                     datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                 }
@@ -582,11 +589,11 @@ const answerRequest = async (req, res) => {
             var content = "";
             
             if (response != "true") {
-                let title = `<span style="color: red;">Refus de congé</span>`;
+                let title = `<span style="color: red;">Refus ${leaveModeValue[thisLeave.mode]}</span>`;
                 content = `Votre demande du ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été refusée car : <br> ${thisLeave.comment}`;
                 forGerant = `${actor?.usuel} a refusé la demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} car : <br> ${thisLeave.comment}`;
                 var notification = {
-                    title: `<span style="color: red;">Refus de congé</span>`,
+                    title: title,
                     content: forGerant,
                     datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                 }
@@ -609,7 +616,7 @@ const answerRequest = async (req, res) => {
                     var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id }, { status: "approved" }, { new: true });
                     forGerant = `Le demande de ${thisLeave.m_code} le ${moment(thisLeave.date_start).format("DD/MM/YYYY")} au ${moment(thisLeave.date_end).format("DD/MM/YYYY")} a été approuvée`;
                     var notification = {
-                        title: "Congé approuvé",
+                        title: "Demande approuvée",
                         content: forGerant,
                         datetime: moment().format("DD/MM/YYYY HH:mm:ss"),
                     }
