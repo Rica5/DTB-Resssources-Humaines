@@ -720,7 +720,7 @@ $('#typeLeave').on('change', function () {
     $("#typeLeave").css('borderColor','#5AC4EC')
     if ($('#typeLeave').val() == "Permission exceptionelle"){
         activatePermission(true)
-        activateCp(false);
+        activateCp(true);
         activateRm(false)
     }
     else if ($('#typeLeave').val() == "Congé Payé"){
@@ -730,12 +730,17 @@ $('#typeLeave').on('change', function () {
     }
     else if ($('#typeLeave').val() == "Repos Maladie"){
         activatePermission(false)
-        activateCp(false);
+        activateCp(true);
         activateRm(true)
+    }
+    else if ($('#typeLeave').val() == ""){
+        activatePermission(false)
+        activateCp(false);
+        activateRm(false)
     }
     else {
         activatePermission(false)
-        activateCp(false);
+        activateCp(true);
         activateRm(false)
     }
 })

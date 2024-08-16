@@ -321,7 +321,7 @@ const getPending = async (req, res) => {
         
         // staffs alaina @ alalan'ny email na username
         const staffsFiltered = await UserSchema.find({ username: { $in: staffsUsername }, m_code: { $ne: "N/A" } });
-        const filtersMcode = staffsFiltered.map(f => f.m_code);
+        const filtersMcode = staffsFiltered.map(f => f.m_code).filter(mc => mc !== 'M-TF');
 
         // var allRequest = await LeaveRequestTest.find({ status: "progress", $expr: { $eq: [{ $size: '$validation' }, 1] } }).populate({ path: "validation.user", select: 'usuel' }).sort({ leavePriority: 'desc' });
         var allRequest = await LeaveRequestTest.find({
