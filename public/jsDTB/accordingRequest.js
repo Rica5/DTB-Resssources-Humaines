@@ -81,7 +81,39 @@ function uniqValidation(array) {
     return uniqueArray;
 }
 
+function chercherDemande(input) {
+    const key = input.value
+    let element = input.parentElement
+    // console.log("par", element);
+    
+    // Get the parent of the element
+    const parent = element.parentNode;
+
+    // Get all children of the parent
+    const allChildren = Array.from(parent.children);
+
+    // Filter out the element itself
+    const siblings = allChildren.filter(child => child !== element);
+
+    siblings.forEach(arr=>{
+        if (arr.getAttribute("key").includes(key)) {
+            arr.removeAttribute("hidden")
+        }else{
+            arr.setAttribute("hidden","")
+        }
+    } )
+    
+}
+
+
+
 function renderAllRequest(Leave){
+
+    var search = `
+            <div class="row  d-flex align-items-center" style="grid-column: span 2; position : relative">
+                <input type="search" placeholder="cherher m-code" oninput="chercherDemande(this)" class="form-control recherche-mcode"/>
+                <span class="mdi mdi-magnify" style="width: 20px; font-size: 20px; position: absolute; left: 4px; "></span>
+            </div>`
     let mappedLeave = Leave.map(leave => {
         userActive = users.find(user => user.m_code == leave.m_code)
     
@@ -95,7 +127,7 @@ function renderAllRequest(Leave){
     let auth = userActive.leave_stat
     let save = userActive.save_at
     return `
-    <div id="${leave._id}" class="content-leave">
+    <div id="${leave._id}" class="content-leave" key="${leave.m_code}">
             <div class="code-person p_${leave.leavePriority}">
                 <div>
                     <p id="codeUser" class="code-text">${leave.m_code}</p>
@@ -221,7 +253,7 @@ function renderAllRequest(Leave){
     `
     });
 
-    return mappedLeave.join('');
+    return search + mappedLeave.join('');
 }
 UpdateRequest();
 function isFloat(num) {

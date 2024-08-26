@@ -489,3 +489,9 @@ select.typeLeave:focus {
 p {
     margin-bottom: 0.2rem !important;
 }
+
+.recherche-mcode{
+    width: 200px;
+    padding-left: 35px;
+
+}
