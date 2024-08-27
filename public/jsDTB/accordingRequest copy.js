@@ -40,11 +40,10 @@ function UpdateRequest(){
             $('button[data-target="#lowRequest"] > span').text(lowRequests.length);
             $('#allRequest').html(renderAllRequest(allRequest));
 
-            // console.log(sortedAsc(mediumRequests))
+            console.log(sortedAsc(mediumRequests))
         }   
    })
 }
-
 
 
 // sort requests by date
@@ -421,13 +420,10 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $("#dateend").val(dateend);
         $("#default-nbr-day").val(duration);
         $("#nbr-day").val(duration);
-        
-        var typeL = $('#typeLeave').val();
-        console.log("typeL", typeL);
         $('#nbr-day').on('change', () => {
             let nDuration = parseFloat($('#nbr-day').val())
             console.log('ato', userActive.leave_stat)
-            renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
+            renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at);
         });
     }
     idActive = id;
@@ -435,11 +431,9 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
     $("#codeAccept").text(`Voulez vous vraiment accepter l'absence de ${code}`)
     $("#project").html(renderProject(userActive.project));
     duration = parseFloat(duration)
-    var typeL = $('#typeLeave').val();
-    console.log("typeL", typeL);
     if (role == "Admin"){
         reset()
-        renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,typeL);
+        renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at);
         setNumberPermission(code)
     }
     $("#ModalAccord").show();
@@ -867,18 +861,7 @@ $('#join').on('change', function (event) {
     }
  }
  // Congé payé
- function activateCp(choice, typeL){
-    // var typeL = $('#typeLeave').val();
-    // console.log("typeL", typeL);
-    let nDuration
-    if (typeL == "ndeduire") {
-        nDuration = 0
-    }else{
-         nDuration = parseFloat($('#nbr-day').val())
-
-    }
-    renderSolde(userActive.code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
-
+ function activateCp(choice){
     if (choice){
         $("#typeCp").attr("class","d-flex justify-content-between")
     }
@@ -886,9 +869,8 @@ $('#join').on('change', function (event) {
         $("#typeCp").attr("class","d-none")
     }
  }
- function renderSolde(code,acc,rest,duration,auth,save,typeL){
-    
-    
+ function renderSolde(code,acc,rest,duration,auth,save){
+    console.log(auth)
     var html = `
     <div>
                           <label class="text-center">Status / solde de ${code}</label>
