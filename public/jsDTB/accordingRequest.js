@@ -796,6 +796,11 @@ $('#typeLeave').on('change', function () {
         activateCp(true, "ndeduire");
         activateRm(false)
     }
+    else if ($('#typeLeave').val() == "Congé sans solde") {
+        activatePermission(false)
+        activateCp(true, "ndeduire");
+        activateRm(false)
+    }
     else{
         activatePermission(false)
         activateCp(true, "deduire");
