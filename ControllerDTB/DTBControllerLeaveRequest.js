@@ -412,6 +412,9 @@ const answerRequest = async (req, res) => {
     else if (session.occupation_op == "Opération") {
         var id = req.body.id;
         var response = req.body.response;
+        var date_start = req.body.datestart;
+        var date_end = req.body.dateend;
+        
         var comment = req.body.reason;
         var status = response == "true" ? "progress" : "declined";
         var forRH = ""  
@@ -423,7 +426,6 @@ const answerRequest = async (req, res) => {
             date:moment().format("YYYY-MM-DD"),
             comment: comment
         }
-        
         // modify by date and validations
         var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },
             { $push: { validation: approbator },
