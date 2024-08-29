@@ -414,16 +414,20 @@ const answerRequest = async (req, res) => {
         var response = req.body.response;
         var comment = req.body.reason;
         var status = response == "true" ? "progress" : "declined";
-        var forRH = ""
+        var forRH = ""  
+        var date_start = req.body.datestart;
+        var date_end = req.body.dateend;
         var approbator = {
             user: session.idUser,
             approbation: response,
             date:moment().format("YYYY-MM-DD"),
             comment: comment
         }
-
+        
+        // modify by date and validations
         var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },
             { $push: { validation: approbator },
+            date_start: date_start, date_end: date_end,
             comment: comment, status: "progress" },
             { new: true }
         ).populate({ path: "validation.user", select: "usuel" });
@@ -876,10 +880,26 @@ async function seeTreatedLeave(req, res) {
     "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 
 
-    res.render('PageAdministration/DemandeTraite.html', {
-        users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser,
-        leaveRequests: leaveRequests, years: years, months: months
-    });
+    if (session.occupation_a == "Admin") {
+        res.render('PageAdministration/DemandeTraite.html', {
+            users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser,
+            leaveRequests: leaveRequests, years: years, months: months
+        });
+        
+    } else if((session.occupation_op == "Opération")) {
+        res.render('PageOperation/DemandeTraite.html', {
+            users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser,
+            leaveRequests: leaveRequests, years: years, months: months
+        });
+    } else if((session.occupation_tl == "Surveillant")) {
+        res.render('PageTL/DemandeTraite.html', {
+            users: user, notif: dataUser.myNotifications, role: role, dataUser: dataUser,
+            leaveRequests: leaveRequests, years: years, months: months
+        });
+            
+    }else{
+        res.redirect('/')
+    }
 }
 
 module.exports = {

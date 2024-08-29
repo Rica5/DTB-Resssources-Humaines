@@ -16,7 +16,8 @@ const fs = require("fs");
 const getSalaryAdvance = async (req,res) => {
     var session = req.session;
    if ( session.occupation_u == "User"){
-        res.render("PageEmployee/AvanceSalaire.html",{codeUser:session.m_code});
+        var user = await UserSchema.findOne({ m_code: session.m_code });   
+        res.render("PageEmployee/AvanceSalaire.html",{codeUser:session.m_code, user});
    }
    else {
     res.send("Bad authentification please log in");

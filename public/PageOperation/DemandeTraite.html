@@ -21,10 +21,12 @@
   <link rel="stylesheet" href="assets/magnific-popup/magnific-popup.css">
   <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css">
   <link rel="stylesheet" href="cssDTB/allRequest.css">
+  <link rel="stylesheet" type="text/css" href="/assets/css1/checkbox.css" />
   <link rel="stylesheet" href="cssDTB/notification.css">
+  <link rel="stylesheet" href="cssDTB/demandeTraite.css">
   <script>
-  var users = JSON.parse('<%-JSON.stringify(users)%>')
-  var role = '<%= role %>';
+  var users = JSON.parse(`<%-JSON.stringify(users)%>`)
+  var role =  '<%= role %>';
   </script>
 </head>
 
@@ -175,63 +177,35 @@
       <div class="scroll-sidebar">
         <!-- Sidebar navigation-->
         <nav class="sidebar-nav">
-            <ul id="sidebarnav" class="pt-4">
-                <li class="sidebar-item">
-                  <a
-                    class="sidebar-link waves-effect waves-dark sidebar-link"
-                    href="/managementtl"
-                    aria-expanded="false"
-                    ><i class="fa-solid fa-users"></i>
-                    <span class="hide-menu">Status</span></a
-                  >
-                </li>
-                <li class="sidebar-item">
-                  <a
-                    class="sidebar-link waves-effect waves-dark sidebar-link"
-                    href="/pointagetl"
-                    aria-expanded="false"
-                    ><i class="fa-solid fa-book-open"></i>
-                    <span class="hide-menu">Tableau des pointages</span></a
-                  >
-                </li>
-                <li class="sidebar-item">
-                  <a
-                    class="sidebar-link waves-effect waves-dark sidebar-link"
-                    href="/absencetl"
-                    aria-expanded="false"
-                    ><i class="mdi mdi-border-inside"></i
-                    ><span class="hide-menu">Tableau des absences</span></a
-                  >
-                </li>
-                <li class="sidebar-item">
-                  <a
-                    class="sidebar-link waves-effect waves-dark sidebar-link"
-                    href="/validelatetl"
-                    aria-expanded="false"
-                    ><i class="mdi mdi-alarm-check"></i
-                    ><span class="hide-menu">Validation des retards</span></a
-                  >
-                </li>
-              
-                <li class="sidebar-item">
-                  <a
-                    class="sidebar-link waves-effect waves-dark sidebar-link"
-                    href="/leaveTreated"
-                    aria-expanded="false"
-                    ><i class="fa-solid fa-envelope-open-text"></i>
-                    <span class="hide-menu">Demandes traitées</span></a
-                  >
-                </li>
-                <li class="sidebar-item">
-                  <a
-                    class="sidebar-link waves-effect waves-dark sidebar-link"
-                    href="/leavePending"
-                    aria-expanded="false"
-                    ><i class="fa-solid fa-envelope"></i>
-                    <span class="hide-menu">Demande de congé</span></a
-                  >
-                </li>
-              </ul>
+          <ul id="sidebarnav" class="pt-4">
+            <li class="sidebar-item">
+              <a
+                class="sidebar-link waves-effect waves-dark sidebar-link"
+                href="/conge"
+                aria-expanded="false"
+                ><i class="mdi mdi-alarm-check"></i
+                ><span class="hide-menu">Liste des conges</span></a
+              >
+            </li>
+            <li class="sidebar-item">
+              <a
+                class="sidebar-link waves-effect waves-dark sidebar-link"
+                href="/leaveTreated"
+                aria-expanded="false"
+                ><i class="fa-solid fa-envelope-open-text"></i>
+                <span class="hide-menu">Demandes traitées</span></a
+              >
+            </li>
+            <li class="sidebar-item">
+              <a
+                class="sidebar-link waves-effect waves-dark sidebar-link"
+                href="/leavePending"
+                aria-expanded="false"
+                ><i class="fa-solid fa-envelope"></i>
+                <span class="hide-menu">Demande de congé</span></a
+              >
+            </li>
+          </ul>
         </nav>
         <!-- End Sidebar navigation -->
       </div>
@@ -292,54 +266,65 @@
                 <div class="col-12">
                   <div class="header-request">
                     <div class="buttons-tab">
-                      <!-- <button id="makeRequest" class="switch-button active-btn">
-                          Tout les requêtes
-                      </button> -->
-                      <button data-target="#highRequest" class="switch-button active-btn">
-                        Urgentes (<span>0</span>)
-                      </button>
-                      <button data-target="#mediumRequest" class="switch-button">
-                          Moyennes (<span>0</span>)
-                      </button>
-                      <button data-target="#lowRequest" class="switch-button">
-                          Basses (<span>0</span>)
-                      </button>
-                  </div>
-                  <div id="notification" class="notice-success">
-                    Requête accepter
+                    </div>
+                    <div id="notification" class="notice-success">
+                      Requête acceptée
                   </div>
                 </div>
-                
-                <div class="col-12 allRequest mt-2" id="content-allRequest">
-                  <div class="card-item" id="allRequest" hidden>
-                    
+                <div class="col-12 mt-2 p-1" id="content-allRequest">
+                  <div class="row">
+                    <div class="col-2">
+                      <select class="form-select" aria-label="Default select example" id="year">
+                        <!-- <option selected>Open this select menu</option> -->
+                        <% years.forEach((year, i) => { %>
+                          <option value="<%= year %>" <%=  i === years.length - 2 ? 'selected' : "" %>><%= year %></option>
+                        <% }) %>
+                      </select>
+                      <br>
+                      <ul class="list-group">
+                        <li class="list-group-item text-capitalize active" id="li-" onclick="fetchList('')">Toutes les demandes</li>
+                        <% months.forEach((month, index) => { %>
+                          <li class="list-group-item text-capitalize" id="li-<%= index + 1  %>" onclick="fetchList('<%= index + 1 %>')"><%= month %></li>
+                      <% }) %>
+                      </ul>
+                    </div>
+                    <div class="col-10">
+                      <div class="row">
+                        <div class="col-md-3">M-CODE: <input type="text" id="mcodeDemandeTraite" oninput="filterDemandeTrait()" placeholder="mcode"/></div>
+                        <div class="col-md-3">Shift: <input type="text" id="shiftDemandeTraite" oninput="filterDemandeTrait()"/></div>
+                        <div class="col-md-3">Projet: <input type="text" id="projetDemandeTraite" oninput="filterDemandeTrait()"/></div>
+                      </div>
+                      <div class="card-item" id="allRequests">
+                        
+                      </div>
+                    </div>
                   </div>
-                  <div class="card-item" id="highRequest"></div>
-                  <div class="card-item" id="mediumRequest" hidden></div>
-                  <div class="card-item" id="lowRequest" hidden></div>
                 </div>
-                </div>
-          <div id="ModalAccord" class="modal_conge">
-            <div class="modal_delete">
+            </div>
+          </div>
+          <input type="file" class="d-none" id="join">
+          <div id="ModalPiece" class="modal_conge">
+            <div class="modal_piece">
               <div class="row">
+                <div class="text-center modal-dismiss mb-3">
+                  <i onclick="closePiece()" class="fa-solid close-modal fa-circle-xmark"></i>
+                </div>
                 <div class="col-md-6">
                   <span class="logo-text mt-3">
                     <!-- dark Logo text -->
-                    <b>ACCORD DE CONGE</b>
+                    <b>PIECE JOINTE</b>
+                    <p id="who"></p>
                   </span>
                 </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-end">
+                  <button onclick="replacePiece()" class="btn btn-md btn-success">Remplacer la pièce <i class="fa-solid fa-file-pen"></i></button>
+                </div>
               </div>
-              <p id="codeAccept" class="warn-text mt-4">
-                Voulez vous vraiment accepter l'absence de M-FAM
-              </p>
-              <p id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
-              <div class="allProject" id="project">
-                  
+              <div class="d-flex justify-content-center align-items-center " id="PieceContent">
+
               </div>
-              <div class="mt-3">
-                <button id="accept" onclick="Approve()"  class="btn btn-sm btn-primary mx-1"><i style="opacity: 0;" id="waitingApprove" class="fa-solid fa-spinner fa-spin"></i> Confirmer <i class="fa-solid fa-check"></i></button>
-                <button id="cancel" onclick="closeModal()" class="btn btn-sm btn-danger mx-1">Annuler <i class="fa-solid fa-ban"></i></button>
-              </div>
+             
+            
             </div> 
           </div>
           <div id="ModalDecline" class="modal_conge">
@@ -375,7 +360,7 @@
         <!-- ============================================================== -->
         <!-- End Right sidebar -->
         <!-- ============================================================== -->
-        
+      
         <!-- notification modal -->
         <div class="notification-modal">
           <h2>
@@ -387,20 +372,6 @@
             <button type="button" class="delete" onclick="removeAllNotifications()">Effacer les notifications</button>
           </div>
           <div id="notifContent" class="notification-list">
-            <div id="${element._id}" class="notification-item seen" onClick="markAsRead('${element._id}')">
-              <div class="d-flex items-center gap-3">
-                <span class="btn btn-warning btn-circle d-flex align-items-center justify-content-center">
-                  <i class="mdi mdi-bell text-white"></i>
-                </span>
-                <div>
-                  <h1>${element.title}</h1>
-                  <p class="message">${element.content}</p>
-                  <div class="date-time">
-                    <span>${element.datetime}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -445,36 +416,29 @@
   <script src="assets/js1/examples.modals.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="/js_code/socket.js"></script>
-  <script>
-    const USERID = "<%= dataUser._id %>";
-    const RH_IDs = "<%= RH_Ids %>".split(',');
-  </script>
-  <script src="/jsDTB/accordingRequest.js"></script>
+  <!-- <script src="/jsDTB/accordingRequest.js"></script> -->
+  <script src="/jsDTB/listdemande.js"></script>
   <script src="/jsDTB/notification.js"></script>
   <script>
-    var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
-    var socket = io();
-    const audio = new Audio("ring.wav");
-    socket.on("notif", function (msg) {
+     var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
+      var socket = io();
+      const audio = new Audio("ring.wav");
+      socket.on("notif", function (msg) {
         var theNotif = msg[1];
-      var concerned = msg[0];
+        var concerned = msg[0];
         if (concerned.includes(role)){
-          const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
-          const notification = new Notification(title, {
+        const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+        const notification = new Notification(title, {
                      body: `${theNotif.content}`,
                     icon:  '../assets/images1/logo.jpg',
             })
-        UpdateRequest();
+        // UpdateRequest();
         pushNotification(theNotif,role)
         audio.play();
           }
       });
-    socket.on("isTreated", function (response){
-      $(`#${response[0]}`).addClass("disabled")
-    })
     
-    setnotification(notif);
-</script>
+  </script>
 </body>
 
 </html>
