@@ -11,8 +11,13 @@
     <link rel="stylesheet" type="text/css" href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="/cssDTB/space.css" />
     <link rel="stylesheet" type="text/css" href="/cssDTB/home.css" />
+    <link rel="stylesheet" type="text/css" href="/cssDTB/SalaryAdvance.css" />
     <link rel="stylesheet" type="text/css" href="/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css" />
+    <script>
+        var users = JSON.parse(`<%-JSON.stringify(user)%>`)
+        
+    </script>
 </head>
 
 <body>
@@ -63,8 +68,17 @@
         </div>
         <div class="content-home my-2">
             
-            <img src="../assets/images1/looking.gif" style="width:auto;height:75vh;object-fit: contain;">
+            <div class="all-fiche mt-4 border border-1">
+                <div class="row ">
+                    <div class="col-md-6">
+                        Date: <input type="date" name="" id="date-avance">
+                    </div>
+                    <div class="col-md-2">Matricule : <%= user.matr %> </div> 
+                    <div class="col-md-2">M-CODE : <%= user.m_code %> </div> 
+                    <div class="col-md-2">shift: </div>
+                </div>
 
+            </div>
             <!-- notification modal -->
             <div class="notification-modal">
                 <h2>

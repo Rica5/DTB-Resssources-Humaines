@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="cssDTB/allRequest.css">
   <link rel="stylesheet" type="text/css" href="/assets/css1/checkbox.css" />
   <link rel="stylesheet" href="cssDTB/notification.css">
+  <link rel="stylesheet" href="cssDTB/demandeTraite.css">
   <script>
   var users = JSON.parse(`<%-JSON.stringify(users)%>`)
   var role =  '<%= role %>';
@@ -367,6 +368,11 @@
                       </ul>
                     </div>
                     <div class="col-10">
+                      <div class="row">
+                        <div class="col-md-3">M-CODE: <input type="text" id="mcodeDemandeTraite" oninput="filterDemandeTrait()" placeholder="mcode"/></div>
+                        <div class="col-md-3">Shift: <input type="text" id="shiftDemandeTraite" oninput="filterDemandeTrait()"/></div>
+                        <div class="col-md-3">Projet: <input type="text" id="projetDemandeTraite" oninput="filterDemandeTrait()"/></div>
+                      </div>
                       <div class="card-item" id="allRequests">
                         
                       </div>

@@ -23,7 +23,32 @@ function renderLeaveRequests(data = []) {
     $('#allRequests').html(renderAllRequest(data));
 }
 
+function getProjects(code){
+    var theUser = users.find(employe => employe.m_code == code);
+    
+    return theUser ? theUser.project : ""
+}
 
+function filterDemandeTrait() {
+    var mcodeDemandeTraite = $("#mcodeDemandeTraite").val().toUpperCase()
+    var shiftDemandeTraite = $("#shiftDemandeTraite").val().toUpperCase()
+    var projetDemandeTraite = $("#projetDemandeTraite").val().toUpperCase()
+    $("#allRequests > div").each((index,div)=>{
+        var item = $(div)
+        var mcode = item.attr("m-code");
+        var shift = item.attr("shift");
+        var projet = item.attr("project");
+
+        if (mcode.includes(mcodeDemandeTraite) && shift.includes(shiftDemandeTraite) && projet.includes(projetDemandeTraite)) {
+            item.attr("style", "display:flex")
+            
+        }else{
+            item.attr("style", "display:none")
+
+        }
+        
+    })
+}
 function renderAllRequest(Leave){
     let mappedLeave = Leave.map(leave => {
         userActive = users.find(user => user.m_code == leave.m_code)
@@ -35,8 +60,9 @@ function renderAllRequest(Leave){
       let duration = leave.duration
       let auth = userActive.leave_stat
       let save = userActive.save_at
+      let projects = getProjects(code)
     return `
-    <div id="${leave._id}" class="content-leave">
+    <div id="${leave._id}" class="content-leave" m-code="${leave.m_code}" shift="${leave.shift}" project="${projects}">
             <div class="code-person p_${leave.leavePriority}">
                 <div>
                     <p id="codeUser" class="code-text">${leave.m_code}</p>
@@ -59,7 +85,7 @@ function renderAllRequest(Leave){
                         </h1>
                         <div class="ask">
                             <span>Nom: ${leave.nom}</span>
-                            <span>Shift: ${getShift(leave.m_code)}</span>
+                            <span>Shift: ${leave.shift}</span>
                             <span>Matricule: ${leave.matr}</span>
                         </div>
                     </div>
@@ -105,6 +131,17 @@ function renderAllRequest(Leave){
                             <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
                             <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
                             <span>Reste après autorisation: ${(acc - duration)}</span>
+                        </div>
+                    </div>
+                </div> 
+                <div class="date-heure">
+                    <div class="ask-content">
+                        <h1>
+                            <i class="fa-solid fa-calendar"></i>
+                            Projet de ${code}
+                        </h1>
+                        <div class="ask">
+                            <span>${getProjects(code)}</span>
                         </div>
                     </div>
                 </div> 

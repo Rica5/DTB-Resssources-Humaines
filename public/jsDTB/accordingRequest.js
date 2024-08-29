@@ -83,7 +83,7 @@ function uniqValidation(array) {
 }
 
 function chercherDemande(input) {
-    const key = input.value
+    const key = input.value.toUpperCase()
     let element = input.parentElement
     // console.log("par", element);
     
@@ -767,7 +767,7 @@ $('#typeLeave').on('change', function () {
     $("#typeLeave").css('borderColor','#5AC4EC')
     if ($('#typeLeave').val() == "Permission exceptionelle"){
         activatePermission(true)
-        activateCp(true, "deduire");
+        activateCp(true, "ndeduire");
         activateRm(false)
     }
     else if ($('#typeLeave').val() == "Congé Payé"){
@@ -801,6 +801,21 @@ $('#typeLeave').on('change', function () {
         activateRm(false)
     }
     else if ($('#typeLeave').val() == "Congé sans solde") {
+        activatePermission(false)
+        activateCp(true, "ndeduire");
+        activateRm(false)
+    }
+    else if ($('#typeLeave').val() == "Absent") {
+        activatePermission(false)
+        activateCp(true, "ndeduire");
+        activateRm(false)
+    }
+    else if ($('#typeLeave').val() == "Mise a Pied") {
+        activatePermission(false)
+        activateCp(true, "ndeduire");
+        activateRm(false)
+    }
+    else if ($('#typeLeave').val() == "Absence Injustifiée") {
         activatePermission(false)
         activateCp(true, "ndeduire");
         activateRm(false)
