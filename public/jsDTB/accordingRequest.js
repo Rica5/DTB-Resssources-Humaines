@@ -487,10 +487,14 @@ function renderProject(given){
 }
 function Approve(){
     $("#waitingApprove").css('opacity','1')
+
+    let start = $('#datestart').val();
+    let end = $('#dateend').val();
+
     $.ajax({
         url:"/requestAnswer",
         method:"POST",
-        data:{id:idActive,response:true,reason:""},
+        data:{id:idActive,response:true,reason:"", datestart: start, dateend: end},
         success: function(res) {
             UpdateRequest();
             $("#waitingApprove").css('opacity','0')
