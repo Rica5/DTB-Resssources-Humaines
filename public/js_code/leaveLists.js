@@ -170,7 +170,7 @@ function itCount(theType){
       return false
   }
 }
-function calcul_timediff_absencetl(startTime, endTime) {
+function calcul_timediff_absencetl_old(startTime, endTime) {
   if (startTime != "") {
     startTime = moment(startTime, "HH:mm:ss a");
     endTime = moment(endTime, "HH:mm:ss a");
@@ -207,6 +207,39 @@ function calcul_timediff_absencetl(startTime, endTime) {
     return "heure non défini"
   }
 }
+
+function calcul_timediff_absencetl(startTime, endTime) {
+  if (startTime != "") {
+    startTime = moment(startTime, "HH:mm:ss a");
+    endTime = moment(endTime, "HH:mm:ss a");
+    
+    // Calculate the duration between the two times
+    var duration = moment.duration(endTime.diff(startTime));
+    
+    // Get the duration in hours and minutes separately
+    var hours_fictif = parseInt(duration.asHours());
+    var minutes_fictif = parseInt(duration.asMinutes()) % 60;
+    
+    // Adjust minutes_fictif to be converted to hours
+    var additional_hours = minutes_fictif / 60;
+    
+    // Add the additional hours to the hours_fictif
+    hours_fictif += additional_hours;
+
+    // If the hours are negative (indicating crossing midnight), adjust by adding 24 hours
+    if (hours_fictif < 0) {
+      hours_fictif += 24;
+    }
+
+    // Return the total hours, rounded to two decimal places if desired
+    return hours_fictif.toFixed(2) + " heures";
+  } else {
+    return "heure non défini";
+  }
+}
+
+
+
 function render_button(temp_c) {
   var btn = "";
   btn += `<button onclick="printLeave('${temp_c._id}')" class="btn btn-sm btn-outline-secondary mx-3 mb-3 print-btn">Imprimer <i class="fa-solid fa-print"></i></button>`;

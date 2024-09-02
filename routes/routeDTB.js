@@ -13,6 +13,8 @@ const ControllerCheckPaie = require("../ControllerAdmin/DTBCheckPaie")
 const ControllerLateValidation = require("../ControllerDTB/DTBLateValidation")
 const ControllerLeaveCRUD = require("../ControllerAdmin/DTBLeaveListAndCRUD")
 const ControllerClockingTL = require("../ControllerTL/DTBClockingTL")
+const API = require("../ControllerDTB/api/leave-request")
+const API_Avance = require("../ControllerDTB/api/avance-salaire")
 
 //Authentification route
 // Default route
@@ -63,8 +65,11 @@ routeExpDTB.route("/gethour").post(ControllerClockingUser.getHour);//pass
 routeExpDTB.route("/change_entry").post(ControllerClockingUser.setEntry);//pass
 
 
-
-
+// API
+routeExpDTB.route('/api/leave-requests').get(API.getLeaves);
+// avance API
+routeExpDTB.route('/api/avance/:id').get(API_Avance.getListByUserId).put(API_Avance.updateAvance);
+routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 
 // Space Home for Employee
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);
@@ -103,6 +108,8 @@ routeExpDTB.route("/RequestLeave/:id").get(Controller.getLeaveRequestById);
 routeExpDTB.route("/UpdateRequestLeave/:id").put(Controller.updateLeaveRequest);
 // Cancel Leave
 routeExpDTB.route("/CancelRequestLeave/:id").post(Controller.cancelLeaveRequest);
+// SUIVI Leave
+routeExpDTB.route("/leave-tracking").get(Controller.leaveTracking);
 
 
 //Salary Advance
