@@ -1,6 +1,106 @@
 .all-fiche{
-    padding: 40px 0px 33px 95px;
-    width: 900px;
+    padding: 40px 25px;
+    width: 100%;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
+    font-size: 14px;
+    background-color: rgb(210, 211, 211, 0.5);
+    border-radius: 15px;
 }
+
+body{
+    font-family: "Sora" !important;
+}
+.date {
+    width: 150px !important;
+    height: 30px;
+    border: 1px solid rgb(72, 75, 72);
+    border-radius: 5px;
+    margin-top: -5px;
+    display: inline !important;
+    /* padding: 5px; */
+}
+
+.date-matr-mcode-shift{
+    margin: 12px;
+}
+
+.label-date{
+    padding: 10px;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.input-right{
+    width: 100%;
+    border: 1px solid rgb(72, 75, 72);
+    border-radius: 5px;
+    height: 30px;
+}
+
+.span-input{
+    height: 30px;
+    border: 5px;
+}
+
+.input-group{
+    /* border: 1px solid rgb(72, 75, 72);
+    border-radius: 5px; */
+}
+
+#envoyer-avance{
+    width: 114px; 
+    float: right; 
+    margin-left: auto !important;
+}
+
+
+
+table {
+    border-collapse: collapse;
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    border-radius: 25px;
+  }
+  
+  .listeDemandeEmployee{
+    margin-top: 25px;
+  }
+  caption {
+    caption-side: bottom;
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  thead,
+  tfoot {
+    background-color: #2FAD00;
+    color: aliceblue;    
+    border: 1px solid rgb(140 140 140) !important;
+
+  }
+  
+  th,
+  td {
+    border: 1px solid rgb(160 160 160);
+    padding: 8px 10px;
+  }
+  
+  td:last-of-type {
+    text-align: center;
+  }
+  
+  tbody > tr:nth-of-type(even) {
+    background-color: rgb(237 238 242);
+  }
+  
+  tfoot th {
+    text-align: right;
+  }
+  
+  tfoot td {
+    font-weight: bold;
+  }
+  
