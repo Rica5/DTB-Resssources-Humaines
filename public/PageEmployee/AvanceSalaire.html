@@ -73,7 +73,7 @@
             </div>
         </div>
         <div class="content-home my-2">
-            <div class="all-fiche mt-4 border border-1">
+            <div class="all-fiche mt-4 border border-1"  id="demande-avance">
                 <div style="text-align: center; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
                     <h5>DEMANDE D'AVANCE SUR SALAIRE</h5>
                 </div>
@@ -89,7 +89,7 @@
                         <%= user.m_code %>
                     </div>
                     <div class="col-lg-3 col-md-6"><label class="label-date">Shift:</label> <input type="text"
-                            class="date form-control" name="" id="shift-avance"></div>
+                            class="date form-control" name="" id="shift"></div>
                 </div>
                 <div class="row m-6">
                     <div class="col-lg-3 col-md-6">
@@ -122,7 +122,7 @@
                                     <% months.forEach((month, i)=> {
                                         const moonLanding = new Date().getMonth()
                                         %>
-                                        <option value="<%= month %>" <%=i===moonLanding ? 'selected' : "" %>><%= month
+                                        <option value="<%= i %>" <%=i===moonLanding ? 'selected' : "" %>><%= month
                                                 %>
                                         </option>
                                         <% }) %>
@@ -130,13 +130,6 @@
 
                             </div>
                         </div>
-                        <!-- <ul class="list-group">
-                            <li class="list-group-item text-capitalize active" id="li-" onclick="fetchList('')">Toutes les demandes</li>
-                            <% months.forEach((month, index) => { %>
-                              <li class="list-group-item text-capitalize" id="li-<%= index + 1  %>" onclick="fetchList('<%= index + 1 %>')"><%= month %></li>
-                          <% }) %>
-                          </ul> -->
-                        <!-- <input class="input-right form-control" type="text"/> -->
                     </div>
                 </div>
                 <div class="row m-6">
@@ -150,7 +143,6 @@
                                 aria-label="Amount (to the nearest dollar)">
                             <span class="input-group-text span-input">.00</span>
                         </div>
-                        <!-- <input class="input-right" type="number"/>Ar -->
                     </div>
                 </div>
                 <div class="row m-6">
@@ -167,13 +159,113 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-4">
+                        <label class="m-2">URGENT: </label>
+                        <input type="checkbox" id="urgent"/>
+                    </div>
+                    <div class="col-8">
                         <button class="btn btn-success mx-4" id="envoyer-avance">Envoyer</button>
                     </div>
                 </div>
 
             </div>
 
+            <div class="all-fiche mt-4 border border-1" id="update-avance">
+                <div style="text-align: center; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
+                    <h5>UPDATE DEMANDE D'AVANCE SUR SALAIRE</h5>
+                </div>
+                <div class="row m-6">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="label-date">Date: </label> <input type="date" class="date form-control" name=""
+                            id="date-avance-update">
+                    </div>
+                    <div class="col-lg-3 col-md-6"><label class="label-date">Matricule:</label>
+                        <%= user.matr %>
+                    </div>
+                    <div class="col-lg-3 col-md-6"><label class="label-date">M-CODE:</label>
+                        <%= user.m_code %>
+                    </div>
+                    <div class="col-lg-3 col-md-6"><label class="label-date">Shift:</label> <input type="text"
+                            class="date form-control" name="" id="shift-update"></div>
+                </div>
+                <div class="row m-6">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="label-date">Nom et prénoms: </label>
+                    </div>
+                    <div class="col-lg-6">
+                        <%= user.first_name + " " + user.last_name %>
+                    </div>
+                </div>
+                <div class="row m-6">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="label-date">Avance sur salaire du mois de : </label>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <select class="form-select" aria-label="Default select example" id="year-update">
+                                    <!-- <option selected>Open this select menu</option> -->
+                                    <% years.forEach((year, i)=> { %>
+                                        <option value="<%= year %>" <%=i===years.length - 2 ? 'selected' : "" %>><%=
+                                                year %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+
+                            </div>
+                            <div class="col-md-8">
+                                <select class="form-select" aria-label="Default select example" id="month-update">
+                                    <!-- <option selected>Open this select menu</option> -->
+                                    <% months.forEach((month, i)=> {
+                                        const moonLanding = new Date().getMonth()
+                                        %>
+                                        <option value="<%= i %>" <%=i===moonLanding ? 'selected' : "" %>><%= month
+                                                %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-6">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="label-date">Montant souhaité: </label>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text span-input">Ar</span>
+                            <input type="number" class="form-control input-right" id="montant_Demande-update"
+                                aria-label="Amount (to the nearest dollar)">
+                            <span class="input-group-text span-input">.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row m-6">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="label-date">Montant accordé: </label>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="input-group mb-3">
+                            <span class="input-group-text span-input">Ar</span>
+                            <input type="number" class="form-control input-right" disabled 
+                                aria-label="Amount (to the nearest dollar)">
+                            <span class="input-group-text span-input">.00</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label class="m-2">URGENT: </label>
+                        <input type="checkbox" id="urgent-update"/>
+                    </div>
+                    <div class="col-8">
+                        <button class="btn btn-success mx-4" id="envoyer-avance-update">Mis à jours</button>
+                    </div>
+                </div>
+
+            </div>
             <div class="listeDemandeEmployee">
                 <div class="col-12">
                     <table id="listeDemande" style="width: 100%;">
@@ -265,8 +357,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="/js_code/socket.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script src="../jsDTB/SalaireAvance.js"></script>
     <script src="../jsDTB/salaryRequestUI.js"></script>
+    <script src="../jsDTB/SalaireAvance.js"></script>
     <script>
         var socket = io();
         socket.on('<%= codeUser %>', function (theNotif) {

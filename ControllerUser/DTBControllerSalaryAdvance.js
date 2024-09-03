@@ -12,8 +12,8 @@ const crypto = require("crypto");
 const moment = require("moment");
 const fs = require("fs");
 
-const months = [ "janvier", "février", "mars", "avril", "mai", "juin",
-    "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+const months = [ "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
 const currentYear = new Date().getFullYear() + 1;
 const years = [];
 for (let year = 2021; year <= currentYear; year++) {
