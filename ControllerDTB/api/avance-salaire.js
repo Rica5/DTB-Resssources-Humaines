@@ -1,7 +1,6 @@
 const Avance = require("../../models/ModelAvance");
 
 async function getListByUserId(req, res) {
-    console.log(req.session)
     try {
         var { id } = req.params;
         if (!id) id = req.session.idUser;
@@ -10,7 +9,6 @@ async function getListByUserId(req, res) {
             path: 'validation.user',
             select: 'last_name occupation'
         });
-        console.log(result)
         res.json({ ok: true, data: result });
     } catch (error) {
         console.error("Error getting list:", error);
@@ -38,8 +36,7 @@ async function createAvance(req, res) {
     
     try {
 
-        const result = await Avance.create(req.body)
-
+        const result = await Avance.create(req.body)        
         res.json({ ok: true, data: result });
     } catch (error) {
         console.error("Error creating avance:", error);

@@ -49,7 +49,7 @@ body{
     border-radius: 5px; */
 }
 
-#envoyer-avance{
+#envoyer-avance, #envoyer-avance-update{
     width: 114px; 
     float: right; 
     margin-left: auto !important;

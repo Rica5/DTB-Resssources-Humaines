@@ -9,6 +9,10 @@ const Avance = mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'newcuserTest'
     },
+    shift: {
+        type: String,
+        default: ""
+    },
     date_of_avance: {
         type: Date,
         default: Date.now
