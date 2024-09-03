@@ -1,15 +1,16 @@
 const Avance = require("../../models/ModelAvance");
 
 async function getListByUserId(req, res) {
-    
+    console.log(req.session)
     try {
-        const { id } = req.params;
+        var { id } = req.params;
+        if (!id) id = req.session.idUser;
         const result = await Avance.find({ user: id})
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
         });
-
+        console.log(result)
         res.json({ ok: true, data: result });
     } catch (error) {
         console.error("Error getting list:", error);
@@ -50,6 +51,6 @@ async function createAvance(req, res) {
 module.exports = {
     getListByUserId,
     createAvance,
-    updateAvance
+    updateAvance,
 
 }

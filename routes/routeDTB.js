@@ -68,7 +68,7 @@ routeExpDTB.route("/change_entry").post(ControllerClockingUser.setEntry);//pass
 // API
 routeExpDTB.route('/api/leave-requests').get(API.getLeaves);
 // avance API
-routeExpDTB.route('/api/avance/:id').get(API_Avance.getListByUserId).put(API_Avance.updateAvance);
+routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Avance.updateAvance);
 routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 
 // Space Home for Employee
