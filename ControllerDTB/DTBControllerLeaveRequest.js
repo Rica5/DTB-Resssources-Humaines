@@ -904,8 +904,26 @@ async function seeTreatedLeave(req, res) {
     }
 }
 
+async function leaveTracking(req, res) {
+    
+    const session = req.session;
+    const role = "Admin";
+    const dataUser = await UserSchema.findOne({
+        _id: session.idUser
+    }).select("profil usuel myNotifications");
+
+    // find all leave requests
+
+    res.render('PageAdministration/SuiviConge.html', {
+        role,
+        dataUser,
+        notif: dataUser.myNotifications,
+    });
+}
+
 module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seePending, getPending, answerRequest, getNotifications,
     removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,
-    getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother, seeTreatedLeave, getLeaveRequestFiltered
+    getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother, seeTreatedLeave, getLeaveRequestFiltered,
+    leaveTracking
 }

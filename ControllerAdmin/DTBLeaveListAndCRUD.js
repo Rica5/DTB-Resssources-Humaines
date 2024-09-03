@@ -1254,7 +1254,7 @@ const downloadFile = async (req, res) => {
 
 //Methode about Leave
 //Method to calculate difference time
-function calcul_timediff_absencereport(startTime, endTime) {
+function calcul_timediff_absencereport_old(startTime, endTime) {
   startTime = moment(startTime, "HH:mm:ss a");
   endTime = moment(endTime, "HH:mm:ss a");
   var duration = moment.duration(endTime.diff(startTime));
@@ -1284,6 +1284,32 @@ function calcul_timediff_absencereport(startTime, endTime) {
     return hours_fictif + "h" + minutes_fictif + "'";
   }
 }
+
+function calcul_timediff_absencereport(startTime, endTime) {
+  startTime = moment(startTime, "HH:mm:ss a");
+  endTime = moment(endTime, "HH:mm:ss a");
+
+  var duration = moment.duration(endTime.diff(startTime));
+
+  // Calculate the total hours
+  var hours_fictif = parseInt(duration.asHours());
+
+  // Calculate the remaining minutes and convert them to fractional hours
+  var minutes_fictif = parseInt(duration.asMinutes()) % 60;
+  var additional_hours = minutes_fictif / 60;
+
+  // Add the fractional hours to hours_fictif
+  hours_fictif += additional_hours;
+
+  // Adjust for negative hours (e.g., when crossing midnight)
+  if (hours_fictif < 0) {
+    hours_fictif += 24;
+  }
+
+  // Return the total hours, rounded to two decimal places
+  return hours_fictif.toFixed(2) + "H";
+}
+
 function calcul_timediff_absencereport_spec(startTime, endTime) {
   startTime = moment(startTime, "HH:mm:ss a");
   endTime = moment(endTime, "HH:mm:ss a");
@@ -1315,7 +1341,7 @@ function calcul_timediff_absencereport_spec(startTime, endTime) {
   }
 }
 //Method to render a result string
-function renderResult(day, theHour, theMin) {
+function renderResult_old(day, theHour, theMin) {
   var result = "";
   result += day > 0 ? `${day}j ` : "";
   result += (day > 0 && (theHour > 0 || theMin)) > 0 ? `et ` : "";
@@ -1326,6 +1352,27 @@ function renderResult(day, theHour, theMin) {
   });
   return result
 }
+
+function renderResult(day, theHour, theMin) {
+  // Convert minutes to hours and remaining minutes
+  const additionalHours = Math.abs(theMin / 60);
+  const remainingMinutes = theMin % 60;
+  
+  // Add the additional hours to theHour
+  const totalHours = theHour + additionalHours;
+  
+  let result = "";
+  result += day > 0 ? `${day}j ` : "";
+  result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";
+  result += totalHours > 0 ? `${totalHours.toFixed(2)}H` : "";
+  
+  result = result.replace(/\d+\.\d+/g, function (match) {
+    return match.replace('.', ',');
+  });
+  
+  return result;
+}
+
 //MEthod to render the right motif
 function motif_rendered(mt, type) {
   if (type.includes("Repos Maladie")) {
