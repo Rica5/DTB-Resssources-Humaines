@@ -17,6 +17,19 @@ async function getListByUserId(req, res) {
 
 }
 
+async function getOneDemande(req, res) {
+    try {
+        var { id } = req.params;
+
+        const result = await Avance.findOne({ _id: id})
+        
+        res.json({ ok: true, data: result });
+    } catch (error) {
+        console.error("Error getting list:", error);
+        res.json({  ok: false, data: null });
+    }
+
+}
 async function updateAvance(req, res) {
     
     try {
@@ -49,5 +62,5 @@ module.exports = {
     getListByUserId,
     createAvance,
     updateAvance,
-
+    getOneDemande
 }
