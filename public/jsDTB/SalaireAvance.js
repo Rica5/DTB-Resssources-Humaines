@@ -48,6 +48,12 @@ class SalaryAvanceUI {
         return response.json()
     }
 
+    async deleteDemande(id){
+        const response = await fetch(`${this.baseurl}/delete/${id}`, {
+            method: 'DELETE',
+        })        
+        return response.json()
+    }
     loadDataTable(id, url) {
         // Sauvegarder la référence à `this` pour l'utiliser dans les callbacks
         const self = this;
@@ -84,8 +90,12 @@ class SalaryAvanceUI {
                 { 
                     "data": null,
                     "render": function(data, type, row) {
-                        return `<button id="${row._id}" class="edit_btn btn btn-sm btn-secondary mr-2">Edit</button>
-                        <button id="${row._id}" class="del_btn btn btn-sm btn-warning">Del</button>`;
+                        return `<button id="${row._id}" class="edit_btn btn btn-sm btn-secondary mr-2">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </button>
+                        <button id="${row._id}" class="del_btn btn btn-sm btn-warning" data-toggle="modal" data-target="#delete-demande" onclick="deleteDemande('${row._id}')">
+                            <i class="fa fa-trash" style="color: #E5E5E5" aria-hidden="true"></i>
+                        </button>`;
                     }
                 },
             ]
@@ -141,6 +151,23 @@ class SalaryAvanceUI {
 const ui = new SalaryAvanceUI();
 ui.loadDataTable("listeDemande", '/api/avance');
 
+function toggleDeleteModal() {
+    $('.delete-modal').toggleClass('open');
+}
+
+function deleteDemande(id) {
+    toggleDeleteModal()
+    $('#delete-id').val(id)
+
+}
+
+async function cancelLeaveRequest(){
+    var id = $('#delete-id').val()
+    await ui.deleteDemande(id)
+    ui.reloadDataTable()
+    toggleDeleteModal()
+}
+
 
 // Créez une nouvelle instance de la date actuelle
 const today = new Date();
@@ -179,7 +206,14 @@ $("#envoyer-avance").on("click", async function () {
         $("#year").val(new Date().getFullYear())
         $("#month").val(new Date().getMonth())
         $("#montant_Demande").val("")
-        console.log("");
+        Toastify({
+            text: "Votre demande est envoyé",
+            gravity: "bottom",
+            position: "center",
+            style: {
+                "background": "#29E342"
+            }
+          }).showToast();
         
         $("#urgent").prop("checked", false);
     }
