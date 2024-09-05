@@ -909,7 +909,7 @@ async function leaveTracking(req, res) {
     const session = req.session;
     const role = "Admin";
     const dataUser = await UserSchema.findOne({
-        _id: session.idUser
+        _id: session.idUser || '629759d56882b7a0742c0c7b'
     }).select("profil usuel myNotifications");
 
     // find all leave requests
@@ -917,7 +917,7 @@ async function leaveTracking(req, res) {
     res.render('PageAdministration/SuiviConge.html', {
         role,
         dataUser,
-        notif: dataUser.myNotifications,
+        notif: dataUser?.myNotifications || []
     });
 }
 

@@ -30,7 +30,7 @@
     "socket.io": "^4.7.4"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --watch --detectOpenHandles",
     "start": "nodemon app.js"
   },
   "repository": {
@@ -43,5 +43,10 @@
   "bugs": {
     "url": "https://github.com/Rica5/DTB-Resssources-Humaines/issues"
   },
-  "homepage": "https://github.com/Rica5/DTB-Resssources-Humaines#readme"
+  "homepage": "https://github.com/Rica5/DTB-Resssources-Humaines#readme",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jsdom": "^25.0.0",
+    "supertest": "^7.0.0"
+  }
 }

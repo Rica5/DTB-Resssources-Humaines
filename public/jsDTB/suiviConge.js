@@ -2,14 +2,39 @@
 document.addEventListener('DOMContentLoaded', async function() {
     // const res = await fetch('/api/leave-requests');
     // const data = await res.json();
+    let Data = [];
+    const transformedData = data => data.map(item => {
+        const validationObj = {
+            validationTL: '',
+            validationROP: '',
+            validationRH: ''
+        };
+        
+        item.validation.forEach(validation => {
+            const { occupation, _id } = validation.user;
+            const approbationText = validation.approbation ? 'OK' : validation.comment;
     
-
+            if (occupation === 'Admin') {
+                validationObj.validationRH = approbationText;
+            } else if (occupation === 'Opération' || _id === "64954ef126461078597606cd") {
+                validationObj.validationROP = approbationText;
+            } else if (occupation === 'Surveillant') {
+                validationObj.validationTL = approbationText;
+            }
+        });
+    
+        return {
+            ...item,
+            ...validationObj
+        };
+    });
+    
     function fetchData(page) {
-        console.log('fu')
         fetch(`/api/leave-requests?page=${page}&size=10`)
             .then(response => response.json())
             .then(data => {
-                grid.resetData(data.data); // Update grid with fetched data
+                Data = transformedData([...data.data]);
+                grid.resetData(Data); // Update grid with fetched data
             })
             .catch(error => console.error('Error fetching data:', error));
     }
@@ -42,37 +67,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
-    class AvisRenderer {
-        constructor(props) {
-            this.el = document.createElement('span');
-            this.render = debounce(this.render.bind(this), 100);
-            this.hasRendered = false; // Flag to track initial render
-            this.initialRender(props)
+    const DateEditor = {
+        type: 'custom',
+        options: {
+            editorConstructor: function(props) {
+                const input = document.createElement('input');
+                input.type = 'date';
+                input.value = props.value || '';
+                input.addEventListener('change', function() {
+                    props.onChange(input.value);
+                });
+                return input;
+            },
+            getValue: function() {
+                return this.el.value;
+            }
         }
-
-        getElement() {
-            return this.el;
-        }
-
-        initialRender(props) {
-            if (this.hasRendered) return;
-
-            const { value, grid, rowKey, columnInfo } = props;
-            const { target, userId } = columnInfo.renderer.options;
-            
-            const single = value.find(v => v.user.occupation === target || v.user._id ===  userId);
-            if (!single) return;
-            // Use the column's alignment property, defaulting to center
-            this.el.innerHTML = `${single.approbation ? '' : single.comment}`;
-
-            this.hasRendered = true;
-        }
-
-        render() {
-
-        }
-    }
-    
+    };
 
     const grid = new tui.Grid({
         el: $('#grid').get(0), // Container element
@@ -105,7 +116,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             {
                 header: 'Prénom',
                 name: 'nom',
-                align: 'center'
+                align: 'center',
             },
             {
                 header: 'M-CODE',
@@ -114,8 +125,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             },
             {
                 header: 'Projet',
-                name: 'motif',
-                align: 'center'
+                name: 'status',
+                align: 'center',
             },
             {
                 header: 'Motifs',
@@ -131,7 +142,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                         format: 'DD/MM/YYYY'
                     }
                 },
-                align: 'center'
+                align: 'center',
+                editor: "datePicker"
             },
             {
                 header: 'Fin',
@@ -142,49 +154,40 @@ document.addEventListener('DOMContentLoaded', async function() {
                         format: 'DD/MM/YYYY'
                     }
                 },
-                align: 'center'
+                align: 'center',
+                editor: "datePicker"
             },
             {
                 header: 'Avis chef de projet',
-                name: 'validation',
+                name: 'validationTL',
                 renderer: {
-                    type: AvisRenderer,
-                    options: {
-                        target: 'Surveillant'
-                    }
+                    // type: AvisRendererTL,
                 },
                 align: 'center'
             },
             {
                 header: 'Avis ROP',
-                name: 'validation',
+                name: 'validationROP',
                 renderer: {
-                    type: AvisRenderer,
-                    options: {
-                        target: 'Opération',
-                        userId: '64954ef126461078597606cd', /*id safidy surveillant*/
-                    }
+                    // type: AvisRendererROP,
                 },
                 align: 'center'
             },
             {
                 header: 'Avis RH',
-                name: 'validation',
+                name: 'validationRH',
                 renderer: {
-                    type: AvisRenderer,
-                    options: {
-                        target: 'Admin'
-                    }
+                    // type: AvisRendererRH,
                 },
                 align: 'center'
-            }
+            },
         ],
         columnOptions: {
             resizable: true
         },
         data: {
             api: {
-                readData: { url: '/api/leave-requests', method: 'GET', then: data => console.log(data) },
+                readData: { url: '/api/leave- ', method: 'GET', then: data => console.log(data) },
                 createData: { url: '/api/createData', method: 'POST' },
                 updateData: { url: '/api/updateData', method: 'PUT' },
                 modifyData: { url: '/api/modifyData', method: 'PUT' },
@@ -200,5 +203,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     // instance.resetData(newData); // Call API of instance's public method
 
     // tui.Grid.applyTheme('striped'); // Call API of static method
+    
+    function searchGrid() {  
+        const searchValue = document.getElementById('searchInput').value.toLowerCase();  
+        const filteredData = Data.filter(item =>   
+            item.m_code.toLowerCase().includes(searchValue) ||   
+            item.nom.toLowerCase().includes(searchValue)  
+        );  
+        grid.resetData(filteredData);  
+    }  
+
+    // Event listener for search input  
+    document.getElementById('searchInput').addEventListener('input', searchGrid);  
 
 })

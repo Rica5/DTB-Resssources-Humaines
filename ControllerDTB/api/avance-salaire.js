@@ -9,7 +9,7 @@ async function getListByUserId(req, res) {
             path: 'validation.user',
             select: 'last_name occupation'
         });
-        res.json({ ok: true, data: result });
+        res.status(200).json({ ok: true, data: result });
     } catch (error) {
         console.error("Error getting list:", error);
         res.json({  ok: false, data: [] });
