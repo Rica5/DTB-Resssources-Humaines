@@ -58,9 +58,22 @@ async function createAvance(req, res) {
     
 }
 
+async function deleteAvance(req, res) {
+    try{
+        const id = req.params.id
+        const result = await Avance.findByIdAndDelete({_id: id})
+        res.json({ok: true, data: "success"})
+    }catch(error){
+        console.error("Error creating avance:", error);
+        res.json({  ok: false, data: [] });
+
+    }
+}
+
 module.exports = {
     getListByUserId,
     createAvance,
     updateAvance,
-    getOneDemande
+    getOneDemande,
+    deleteAvance
 }

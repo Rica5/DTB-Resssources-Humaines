@@ -24,6 +24,8 @@
 
     </script>
     <link href="/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 </head>
 
 <body>
@@ -316,6 +318,20 @@
         </div>
     </div>
 
+        
+    <div class="delete-modal modal" id="delete-demande" >
+        <div class="content">
+            <div class="head">
+                <img width="48" height="48" src="https://img.icons8.com/emoji/48/warning-emoji.png" alt="warning-emoji"/>
+                <h4>Voulez-vous annuler cette demande?</h4>
+            </div>
+            <div class="foot">
+                <input type="hidden" id="delete-id">
+                <button type="button" onclick="cancelLeaveRequest()">Oui, annuler</button>
+                <button type="button" onclick="toggleDeleteModal()">Non</button>
+            </div>
+        </div>
+    </div>
     <script>
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
@@ -353,7 +369,8 @@
         function logOut() {
             window.location = "/exit_a";
         }
-    </script>
+    </script>    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="/js_code/socket.js"></script>
