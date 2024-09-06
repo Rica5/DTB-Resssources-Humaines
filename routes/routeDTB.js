@@ -111,7 +111,7 @@ routeExpDTB.route("/UpdateRequestLeave/:id").put(Controller.updateLeaveRequest);
 // Cancel Leave
 routeExpDTB.route("/CancelRequestLeave/:id").post(Controller.cancelLeaveRequest);
 // SUIVI Leave
-routeExpDTB.route("/leave-tracking").get(Controller.leaveTracking);
+routeExpDTB.route("/suivi-conge").get(Controller.leaveTracking);
 
 
 //Salary Advance

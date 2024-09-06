@@ -19,7 +19,41 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
+  // BE CAREFULL, NEVER CALL THIS SH*T
+  // cloneCollectionData('cusers', 'newcusertests')
+  //   .then(() => console.log('Cloning completed'))
+  //   .catch((err) => console.error('Cloning failed', err));
+  
 });
+
+// Function to clone data from one collection to another using native MongoDB methods
+async function cloneCollectionData(sourceCollectionName, targetCollectionName) {
+  try {
+    return 'If you are sure, delete this line';
+    // Access the collections dynamically
+    const sourceCollection = mongoose.connection.db.collection(sourceCollectionName); // Use .db to access native methods
+    const targetCollection = mongoose.connection.db.collection(targetCollectionName);
+
+    // Fetch all documents from the source collection using MongoDB cursor
+    const dataToClone = await sourceCollection.find({}).toArray();
+
+    if (dataToClone.length === 0) {
+      console.log('No data found in the source collection');
+      return;
+    }
+
+    // Clean (delete all documents) in the target collection
+    await targetCollection.deleteMany({});
+    console.log(`Cleared all documents from ${targetCollectionName}`);
+
+    // Insert the data into the target collection
+    await targetCollection.insertMany(dataToClone);
+
+    console.log(`Successfully cloned ${dataToClone.length} documents from ${sourceCollectionName} to ${targetCollectionName}`);
+  } catch (error) {
+    console.error('Error cloning collection data:', error);
+  }
+}
 
 app.use(methodOverride("X-HTTP-Method"));
 app.use(methodOverride("X-HTTP-Method-Override"));
@@ -108,3 +142,5 @@ server.listen(PORT, () => {
   // });
   // task.start()
 });
+
+module.exports = app;
