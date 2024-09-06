@@ -525,219 +525,269 @@
                     </div>
                   </div>
                   <hr class="mb-4" />
-                  <div class="col-12">
-                    <select class="sheet-choice2 mb-3" id="type_leave">
-                      <option value="">Type de congé</option>
-                      <option value="Congé Payé">
-                        Congé Payé ( rien à déduire )
-                      </option>
-                      <option value="Congé sans solde">
-                        Congé Sans Solde ( à déduire sur salaire )
-                      </option>
-                      <option value="Permission exceptionelle">
-                        Permission exceptionnelle ( rien à déduire )
-                      </option>
-                      <option value="Repos Maladie">
-                        Repos Maladie ( rien à déduire )
-                      </option>
-                      <option value="Absent">
-                        Absent ( à déduire sur salaire )
-                      </option>
-                      <option value="Congé de maternité">
-                        Congé de maternité ( rien à déduire )
-                      </option>
-                      <option value="Mise a Pied">
-                        Mise a pied ( à déduire sur salaire )
-                      </option>
-                      <option value="Absence Injustifiée">
-                        Absence Injustifiée ( à déduire sur salaire )
-                      </option>
-                    </select>
-                    <div id="alertConge" class="d-none">
-                      
-                    </div>
-                    <div id="typeGranted" class="d-none">
-                      <div class="col-md-12 ">
-                          <label id="title" class="col-md-12" style="font-size: 14px; font-weight: 500" for="type_leave"><p style="font-size: 14px; font-weight: 500">Choisissez le cas du permission || <b>Pris en <span id="thisYearPerm">2024</span>: <span id="numberPermission">10</span></b></p></label>
-                        <select class="sheet-choice3 mb-2" id="exceptType">
-                          <option value="Férié">Jour férié</option>
-                          <option value="Décès">Décès (conjointe, sns)</option>
-                          <option value="Décès (frères, soeurs)">Décès (frères,soeurs)</option>
-                          <option value="Naissance">Naissance (enfant légitime)</option>
-                          <option value="Mariage">Mariage (employé)</option>
-                          <option value="Mariage (enfant légitime)">Mariage (enfant légitime)</option>
-                          <option value="Exhumation">Exhumation (conjointe, sns)</option>
-                          <option value="Exhumation (parents,beaux parents)">Exhumation (parents,beaux parents)</option>
-                          <option value="Déménagement">Déménagement</option>
-                          <option value="Circoncision">Circoncision</option>
-                        </select>
-                        <div id="alertPermission" class="d-none">
-                          Cette type de permission a été déja prise cette année
-                        </div>
-                      </div>
-                  </div>
-                  <div id="typeRm" class="d-none">
-                    <div class="col-md-10">
-                      <label id="title" class="col-md-12"  for="type_leave"><p style="font-size: 14px; font-weight: 500">Changer le motif du répos maladie en: </p></label>
-                      <select class="sheet-choice3 mb-3" id="rmType">
-                        <option value="">Par défaut</option>
-                        <option value="Consultation médicale">Consultation médicale</option>
-                        <option value="Assistance maternelle">Assistance maternelle</option>
-                        <option value="Visite médicale">Visite médicale</option>
-                      </select>
-                    </div>
-                    </div>
-                    <input
-                      id="motif"
-                      class="input-choice2 mb-3"
-                      type="text"
-                      placeholder="Motif du congé (optionelle)"
-                    />
-                    <div class="form-group row">
-                      <label class="col-md-3"
-                        ><p style="font-size: 14px; font-weight: 500">
-                          Quart / Démi / Une journée
-                        </p></label
-                      >
-                      <div class="col-md-9">
-                        <div class="form-check mr-sm-2">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            value="0.25"
-                            onclick="dissapearq()"
-                            id="quart"
-                          />
-                          <label
-                            class="form-check-label mb-0"
-                            for="customControlAutosizing3"
-                            ><p style="font-size: 12px; font-weight: 500">
-                              Quart de journée
-                            </p></label
-                          >
-                          <div class="hide top_down" id="hour_absence">
-                            <input type="time" class="time-leave" id="begin" />
-                            <p
-                              class="mx-5"
-                              style="
-                                font-size: 12px;
-                                font-weight: 500;
-                                padding-top: 15px;
-                              "
-                            >
-                              jusqu'à
-                            </p>
-                            <input type="time" class="time-leave" id="end" />
-                          </div>
-                        </div>
-                        <div class="form-check mr-sm-2">
-                          <input
-                            type="checkbox"
-                            onclick="dissapeard()"
-                            class="form-check-input"
-                            value="0.5"
-                            id="demi"
-                          />
-                          <label
-                            class="form-check-label mb-0"
-                            for="customControlAutosizing1"
-                            ><p style="font-size: 12px; font-weight: 500">
-                              Démi journée
-                            </p></label
-                          >
-                        </div>
-                        <div class="form-check mr-sm-2">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            value="1"
-                            onclick="dissapearo()"
-                            id="one"
-                          />
-                          <label
-                            class="form-check-label mb-0"
-                            for="customControlAutosizing3"
-                            ><p style="font-size: 12px; font-weight: 500">
-                              Une journée
-                            </p></label
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label
-                            ><p style="font-size: 14px; font-weight: 500">
-                              Date de début
-                            </p></label
-                          >
-                          <input
-                            type="date"
-                            class="input-choice2date"
-                            id="datestart"
-                            placeholder="Enter Date"
-                          />
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div id="pde" class="form-group">
-                          <label
-                            ><p style="font-size: 14px; font-weight: 500">
-                              Date de fin
-                            </p></label
-                          >
-                          <input
-                            type="date"
-                            class="input-choice2date"
-                            id="dateend"
-                            placeholder="Enter Date"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                  <div class="row">
 
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div
-                          id="info"
-                          style="display: none"
-                          class="alert alert-info"
-                          role="alert"
-                        >
-                          Here is an information
+                    <ul class="nav nav-tabs" role="tablist">
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="disabled-tab-0" data-bs-toggle="tab" href="#disabled-tabpanel-0" role="tab" aria-controls="disabled-tabpanel-0" aria-selected="true">
+                          Modifier le Solde
+                        </a>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="disabled-tab-1" data-bs-toggle="tab" href="#disabled-tabpanel-1" role="tab" aria-controls="disabled-tabpanel-1" aria-selected="false">
+                          Ajouter un congé
+                        </a>
+                      </li>
+                    </ul>
+                    <div class="tab-content pt-5" id="tab-content">
+                      <div class="tab-pane active" id="disabled-tabpanel-0" role="tabpanel" aria-labelledby="disabled-tab-0">
+                        <!-- Form to modify solde -->
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="reste_auto">RESTE APRES AUTORISATION</label>
+                            <input type="number" id="u-reste-auto" class="form-control input-choice2" step="0.25" value="0">
+                          </div>
+                          <div class="form-group">
+                            <label for="reste_auto">DROIS AQUIS RESTANT:</label>
+                            <input type="number" id="u-droit-rest" class="form-control input-choice2" step="0.25" value="0">
+                          </div>
+                          <!-- id of the employee -->
+                          <input type="hidden" id="u-employee-id">
                         </div>
-                      </div>
-                      <div
-                        class="col-md-6 d-flex align-items-end justify-content-end"
-                      >
-                      <div class="d-flex">
-                        <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mt-3"></i>
+
                         <button
                           type="button"
-                          id="save_leave"
-                          class="btn btn-secondary mx-1"
-                          onclick="addPiece()"
-                        >
-                          Pièce justificative <i class="fa-solid fa-file"></i>
-                        </button>
-                      </div>
-                      
-                        <button
-                          type="button"
-                          id="save_leave"
                           class="btn btn-primary mx-1"
-                          onclick="define_leave()"
+                          onclick="edit_solde()"
                         >
                           <i
                             id="waiting"
                             class="fa-solid fa-spinner fa-spin"
                           ></i>
-                          ENREGISTRER <i class="fa-solid fa-floppy-disk"></i>
+                          METTRE À JOUR <i class="fa-solid fa-floppy-disk"></i>
                         </button>
                       </div>
+                      <div class="tab-pane" id="disabled-tabpanel-1" role="tabpanel" aria-labelledby="disabled-tab-1">
+                        <!-- Form to add new leave -->
+                        <div class="col-12">
+                          <select class="sheet-choice2 mb-3" id="type_leave">
+                            <option value="">Type de congé</option>
+                            <option value="Congé Payé">
+                              Congé Payé ( rien à déduire )
+                            </option>
+                            <option value="Congé sans solde">
+                              Congé Sans Solde ( à déduire sur salaire )
+                            </option>
+                            <option value="Permission exceptionelle">
+                              Permission exceptionnelle ( rien à déduire )
+                            </option>
+                            <option value="Repos Maladie">
+                              Repos Maladie ( rien à déduire )
+                            </option>
+                            <option value="Absent">
+                              Absent ( à déduire sur salaire )
+                            </option>
+                            <option value="Congé de maternité">
+                              Congé de maternité ( rien à déduire )
+                            </option>
+                            <option value="Mise a Pied">
+                              Mise a pied ( à déduire sur salaire )
+                            </option>
+                            <option value="Absence Injustifiée">
+                              Absence Injustifiée ( à déduire sur salaire )
+                            </option>
+                          </select>
+                          <div id="alertConge" class="d-none">
+                            
+                          </div>
+                          <div id="typeGranted" class="d-none">
+                            <div class="col-md-12 ">
+                                <label id="title" class="col-md-12" style="font-size: 14px; font-weight: 500" for="type_leave"><p style="font-size: 14px; font-weight: 500">Choisissez le cas du permission || <b>Pris en <span id="thisYearPerm">2024</span>: <span id="numberPermission">10</span></b></p></label>
+                              <select class="sheet-choice3 mb-2" id="exceptType">
+                                <option value="Férié">Jour férié</option>
+                                <option value="Décès">Décès (conjointe, sns)</option>
+                                <option value="Décès (frères, soeurs)">Décès (frères,soeurs)</option>
+                                <option value="Naissance">Naissance (enfant légitime)</option>
+                                <option value="Mariage">Mariage (employé)</option>
+                                <option value="Mariage (enfant légitime)">Mariage (enfant légitime)</option>
+                                <option value="Exhumation">Exhumation (conjointe, sns)</option>
+                                <option value="Exhumation (parents,beaux parents)">Exhumation (parents,beaux parents)</option>
+                                <option value="Déménagement">Déménagement</option>
+                                <option value="Circoncision">Circoncision</option>
+                              </select>
+                              <div id="alertPermission" class="d-none">
+                                Cette type de permission a été déja prise cette année
+                              </div>
+                            </div>
+                        </div>
+                        <div id="typeRm" class="d-none">
+                          <div class="col-md-10">
+                            <label id="title" class="col-md-12"  for="type_leave"><p style="font-size: 14px; font-weight: 500">Changer le motif du répos maladie en: </p></label>
+                            <select class="sheet-choice3 mb-3" id="rmType">
+                              <option value="">Par défaut</option>
+                              <option value="Consultation médicale">Consultation médicale</option>
+                              <option value="Assistance maternelle">Assistance maternelle</option>
+                              <option value="Visite médicale">Visite médicale</option>
+                            </select>
+                          </div>
+                          </div>
+                          <input
+                            id="motif"
+                            class="input-choice2 mb-3"
+                            type="text"
+                            placeholder="Motif du congé (optionelle)"
+                          />
+                          <div class="form-group row">
+                            <label class="col-md-3"
+                              ><p style="font-size: 14px; font-weight: 500">
+                                Quart / Démi / Une journée
+                              </p></label
+                            >
+                            <div class="col-md-9">
+                              <div class="form-check mr-sm-2">
+                                <input
+                                  type="checkbox"
+                                  class="form-check-input"
+                                  value="0.25"
+                                  onclick="dissapearq()"
+                                  id="quart"
+                                />
+                                <label
+                                  class="form-check-label mb-0"
+                                  for="customControlAutosizing3"
+                                  ><p style="font-size: 12px; font-weight: 500">
+                                    Quart de journée
+                                  </p></label
+                                >
+                                <div class="hide top_down" id="hour_absence">
+                                  <input type="time" class="time-leave" id="begin" />
+                                  <p
+                                    class="mx-5"
+                                    style="
+                                      font-size: 12px;
+                                      font-weight: 500;
+                                      padding-top: 15px;
+                                    "
+                                  >
+                                    jusqu'à
+                                  </p>
+                                  <input type="time" class="time-leave" id="end" />
+                                </div>
+                              </div>
+                              <div class="form-check mr-sm-2">
+                                <input
+                                  type="checkbox"
+                                  onclick="dissapeard()"
+                                  class="form-check-input"
+                                  value="0.5"
+                                  id="demi"
+                                />
+                                <label
+                                  class="form-check-label mb-0"
+                                  for="customControlAutosizing1"
+                                  ><p style="font-size: 12px; font-weight: 500">
+                                    Démi journée
+                                  </p></label
+                                >
+                              </div>
+                              <div class="form-check mr-sm-2">
+                                <input
+                                  type="checkbox"
+                                  class="form-check-input"
+                                  value="1"
+                                  onclick="dissapearo()"
+                                  id="one"
+                                />
+                                <label
+                                  class="form-check-label mb-0"
+                                  for="customControlAutosizing3"
+                                  ><p style="font-size: 12px; font-weight: 500">
+                                    Une journée
+                                  </p></label
+                                >
+                              </div>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group">
+                                <label
+                                  ><p style="font-size: 14px; font-weight: 500">
+                                    Date de début
+                                  </p></label
+                                >
+                                <input
+                                  type="date"
+                                  class="input-choice2date"
+                                  id="datestart"
+                                  placeholder="Enter Date"
+                                />
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div id="pde" class="form-group">
+                                <label
+                                  ><p style="font-size: 14px; font-weight: 500">
+                                    Date de fin
+                                  </p></label
+                                >
+                                <input
+                                  type="date"
+                                  class="input-choice2date"
+                                  id="dateend"
+                                  placeholder="Enter Date"
+                                />
+                              </div>
+                            </div>
+                          </div>
+      
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div
+                                id="info"
+                                style="display: none"
+                                class="alert alert-info"
+                                role="alert"
+                              >
+                                Here is an information
+                              </div>
+                            </div>
+                            <div
+                              class="col-md-6 d-flex align-items-end justify-content-end"
+                            >
+                            <div class="d-flex">
+                              <i id="fileOk"  class="fa-solid fa-file-circle-check fa-xl file-ok mt-3"></i>
+                              <button
+                                type="button"
+                                id="save_leave"
+                                class="btn btn-secondary mx-1"
+                                onclick="addPiece()"
+                              >
+                                Pièce justificative <i class="fa-solid fa-file"></i>
+                              </button>
+                            </div>
+                            
+                              <button
+                                type="button"
+                                id="save_leave"
+                                class="btn btn-primary mx-1"
+                                onclick="define_leave()"
+                              >
+                                <i
+                                  id="waiting"
+                                  class="fa-solid fa-spinner fa-spin"
+                                ></i>
+                                ENREGISTRER <i class="fa-solid fa-floppy-disk"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
                     </div>
+
                   </div>
+                  <br>
                   <hr />
                 </div>
               </div>

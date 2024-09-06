@@ -152,7 +152,7 @@ function rendu_conge(temp_conge) {
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Fin : ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_end) + " à " + temp_conge.hour_end : date_conversion(temp_conge.date_end)}</p>
                                       ${give_motif(temp_conge.motif)}
                                       <p class="info-text text-center">Durée : ${temp_conge.duration == 0.25 ? calcul_timediff_absencetl(temp_conge.hour_begin, temp_conge.hour_end) : temp_conge.duration.toString().replace(".",",") + " jour(s)"}
-                                        | 2024: ${(temp_conge.acc - temp_conge.rest).toString().replace(".",",")} | 2023: ${itCount(temp_conge.type) ? (temp_conge.rest + temp_conge.duration).toString().replace(".",",") :  temp_conge.rest.toString().replace(".",",")} |</p>
+                                        | 2024: ${(temp_conge.acc - temp_conge.rest).toString().replace(".",",")} | 2023: ${itCount(temp_conge.type) ? (temp_conge.rest /* - temp_conge.duration */).toString().replace(".",",") :  temp_conge.rest.toString().replace(".",",")} |</p>
                                       <p class="info-text text-center">Reste aprés autorisation | ${(temp_conge.acc.toString().replace(".",","))} |</p>
                                       </div>
                                       <div class="text-center">

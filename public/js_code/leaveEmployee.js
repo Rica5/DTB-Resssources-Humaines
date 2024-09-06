@@ -15,6 +15,9 @@ var full_name = document.getElementById("full_name");
 var post = document.getElementById("poste");
 var opens = document.getElementById("open");
 var sum = document.getElementById("sum");
+var reste_apres_auto = document.getElementById('u-reste-auto');
+var employee_id = document.getElementById('u-employee-id');
+var droit_rest = document.getElementById('u-droit-rest');
 var last = document.getElementById("last");
 var upcoming = document.getElementById("upcoming");
 var waiting = document.getElementById("waiting");
@@ -225,8 +228,13 @@ function getdata(code) {
           profil.setAttribute("src", `Profil/${initData[d].profil}`)
           full_name.innerHTML = `${initData[d].first_name} ${initData[d].last_name}`;
           post.innerHTML = "POSTE => " + initData[d].project;
-          opens.innerHTML = " Congé ouvert cette année : " + initData[d].remaining_leave;
-          sum.innerHTML = "Congé accumulée : " + initData[d].leave_taked;
+          opens.innerHTML = "Droit acquis restant (jours) : 2023: " + initData[d].remaining_leave + " | 2024: "+ (initData[d].leave_taked - initData[d].remaining_leave);
+          sum.innerHTML = "Reste après autorisation : ".toUpperCase() + initData[d].leave_taked;
+          // update by njato
+          employee_id.value =initData[d]._id; 
+          reste_apres_auto.value = initData[d].leave_taked; 
+          droit_rest.value = initData[d].remaining_leave; 
+
           if (data[1]) {
             last.innerHTML = `Recement en congé le : ${convert_date(data[1].date_start, data[1].date_end)}`;
           }
@@ -537,4 +545,25 @@ function Abreviation(given){
     }
     
   }
+}
+
+async function edit_solde() {
+  let empId = employee_id.value;
+  let restAuto = reste_apres_auto.value;
+  let droitRest = droit_rest.value;
+
+  const res = await fetch('/api/solde/' + empId, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      remaining_leave: droitRest,
+      leave_taked: restAuto
+    })
+  })
+
+  const { data } = await res.json();
+
+  console.log(data)
 }
