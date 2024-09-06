@@ -166,6 +166,14 @@ async function cancelLeaveRequest(){
     await ui.deleteDemande(id)
     ui.reloadDataTable()
     toggleDeleteModal()
+    Toastify({
+        text: "Votre demande a été annulé",
+        gravity: "bottom",
+        position: "center",
+        style: {
+            "background": "#29E342"
+        }
+    }).showToast();
 }
 
 
@@ -207,13 +215,13 @@ $("#envoyer-avance").on("click", async function () {
         $("#month").val(new Date().getMonth())
         $("#montant_Demande").val("")
         Toastify({
-            text: "Votre demande est envoyé",
+            text: "Votre demande a été envoyée",
             gravity: "bottom",
             position: "center",
             style: {
                 "background": "#29E342"
             }
-          }).showToast();
+        }).showToast();
         
         $("#urgent").prop("checked", false);
     }
@@ -248,7 +256,15 @@ $("#envoyer-avance-update").on("click",async function () {
             shift: shift_update,
             is_urgent: is_urgent_update,
         }
-        await ui.sendUpdate(demandeAvance, id_upate)
+        await ui.sendUpdate(demandeAvance, id_upate);
+        Toastify({
+            text: "Une demande a été modifié",
+            gravity: "bottom",
+            position: "center",
+            style: {
+                "background": "#29E342"
+            }
+        }).showToast();
         ui.reloadDataTable();
         $("#date-avance-update").val(formattedDate)
         $("#year-update").val(new Date().getFullYear())
