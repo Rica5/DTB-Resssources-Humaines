@@ -563,7 +563,11 @@ async function edit_solde() {
     })
   })
 
-  const { data } = await res.json();
+  const { ok, data } = await res.json();
+
+  if (ok) {
+    
+  }
 
   console.log(data)
 }
