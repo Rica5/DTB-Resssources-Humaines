@@ -80,7 +80,7 @@ Leave.virtual('dateValue').get(function() {
 });
 
 Leave.virtual('sendingDate').get(function() {
-    let date = moment(this.datetime, 'DD/MM/YYYY').toDate();
+    let date = moment(this.datetime, 'DD/MM/YYYY HH:mm:ss').toDate();
     return date;
 });
 

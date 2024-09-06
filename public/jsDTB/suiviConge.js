@@ -29,8 +29,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         };
     });
     
-    function fetchData(page) {
-        fetch(`/api/leave-requests?page=${page}&size=10`)
+    function fetchData(month, year) {
+        fetch(`/api/leave-requests?month=${month}&year=${year}`)
             .then(response => response.json())
             .then(data => {
                 Data = transformedData([...data.data]);
@@ -67,30 +67,13 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
-    const DateEditor = {
-        type: 'custom',
-        options: {
-            editorConstructor: function(props) {
-                const input = document.createElement('input');
-                input.type = 'date';
-                input.value = props.value || '';
-                input.addEventListener('change', function() {
-                    props.onChange(input.value);
-                });
-                return input;
-            },
-            getValue: function() {
-                return this.el.value;
-            }
-        }
-    };
-
     const grid = new tui.Grid({
         el: $('#grid').get(0), // Container element
+        rowKey: "id",
         scrollX: false,
         scrollY: false,
         minBodyHeight: 30,
-        // rowHeaders: ['rowNum'],
+        rowHeaders: ['rowNum'],
         pageOptions: {
             useClient: true,
             perPage: 17,     // Number of rows per page
@@ -187,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         },
         data: {
             api: {
-                readData: { url: '/api/leave- ', method: 'GET', then: data => console.log(data) },
+                readData: { url: '/api/leave-requests ', method: 'GET', then: data => console.log(data) },
                 createData: { url: '/api/createData', method: 'POST' },
                 updateData: { url: '/api/updateData', method: 'PUT' },
                 modifyData: { url: '/api/modifyData', method: 'PUT' },
@@ -196,9 +179,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
+    // Add an event listener for cell value changes
+    grid.on('afterChange', (event) => {
+        event.changes.forEach(change => {
+            console.log(`Cell changed - row: ${change.rowKey}, column: ${change.columnName}, new value: ${change.value}`);
+            const rowKey = grid.getFocusedCell().rowKey
+            console.log(rowKey)
+        // Add your custom logic here
+        // For example, update the UI or trigger some actions when the value changes
+        });
+    });
+
 
     // Fetch initial data
-    fetchData(1);
+    let date = new Date();
+    fetchData(date.getMonth(), date.getFullYear());
+    $('#year').val(date.getFullYear());
+    $('#month').val(date.getMonth() + 1);
     
     // instance.resetData(newData); // Call API of instance's public method
 
@@ -213,7 +210,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         grid.resetData(filteredData);  
     }  
 
+    function filterSearch() {
+        let month = Number($('#month').val()) - 1;
+        let year = ($('#year').val());
+        fetchData(month, year);
+    }
+
     // Event listener for search input  
     document.getElementById('searchInput').addEventListener('input', searchGrid);  
+    document.getElementById('month').addEventListener('change', filterSearch);  
+    document.getElementById('year').addEventListener('change', filterSearch);  
 
 })
