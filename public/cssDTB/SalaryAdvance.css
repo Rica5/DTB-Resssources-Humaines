@@ -103,4 +103,60 @@ table {
   tfoot td {
     font-weight: bold;
   }
+
+
+
+
+  .delete-modal {
+    position: fixed;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    inset: 0;
+    z-index: 100;
+    display: none;
+}
+
+.delete-modal.open {
+    display: block;
+}
+.delete-modal .content {
+    background: white;
+    border-radius: 10px;
+    padding: 6px 4px;
+    width: 100%;
+    max-width: 500px;
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    scale: 1;
+    opacity: 1;
+    transform: translateX(-50%);
+    transition:  0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.delete-modal.open .content {
+    animation: container-delete-animation 0.6s cubic-bezier(0.075, 0.82, 0.165, 1) forwards;
+}
+
+.delete-modal .head {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.delete-modal .head h4 {
+    margin: 1rem auto;
+    font-size: 14px;
+}
+
+.delete-modal .foot {
+    display: flex;
+    padding: 1rem;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+.delete-modal .foot button {
+    font-size: 14px;
+}
   

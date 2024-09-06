@@ -71,6 +71,7 @@ routeExpDTB.route('/api/leave-requests').get(API.getLeaves);
 routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Avance.updateAvance);
 routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
+routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
 
 // Space Home for Employee
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);
