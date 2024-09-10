@@ -73,6 +73,7 @@ routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Av
 routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
+routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
 
 // Space Home for Employee

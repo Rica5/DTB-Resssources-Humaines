@@ -70,10 +70,87 @@ async function deleteAvance(req, res) {
     }
 }
 
+
+async function getAllDemand(req, res) {
+    try {
+        var { urgent } = req.params;
+        const result = await Avance.find({ is_urgent: urgent})
+        .populate({
+            path: 'validation.user',
+            select: 'last_name occupation'
+        })
+        .populate('user');
+        res.status(200).json({ ok: true, data: result });
+    } catch (error) {
+        console.error("Error getting list:", error);
+        res.json({  ok: false, data: [] });
+    }
+
+}
+
+async function validateAvance(req, res) {
+    try {
+        // req body avec le montant accordé
+        const { amount_granted } = req.body;
+        // avance id
+        const { id } = req.params;
+
+        // update avance
+        const updated = await Avance.findByIdAndUpdate(id, {
+            amount_granted: amount_granted
+        }, { new: true });
+
+        
+        res.json({
+            ok: true,
+            data: updated
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({
+            ok: false,
+            message: 'Error'
+        })
+    }
+}
+
+
+async function refuseAvance(req, res) {
+    try {
+        // req body avec le montant accordé
+        const { comment } = req.body;
+        // avance id
+        const { id } = req.params;
+
+        // update avance
+        const updated = await Avance.findByIdAndUpdate(id, {
+            status: "refused",
+            comment: comment
+        }, { new: true });
+
+        
+        res.json({
+            ok: true,
+            data: updated
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(503).json({
+            ok: false,
+            message: 'Error'
+        })
+    }
+}
+
 module.exports = {
     getListByUserId,
     createAvance,
     updateAvance,
     getOneDemande,
-    deleteAvance
+    deleteAvance,
+    validateAvance,
+    refuseAvance,
+    getAllDemand
 }
