@@ -33,6 +33,7 @@ const getSalaryAdvance = async (req,res) => {
    }
 }
 
+
 module.exports = {
     getSalaryAdvance
 }
