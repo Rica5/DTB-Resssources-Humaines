@@ -13,6 +13,7 @@ const ControllerCheckPaie = require("../ControllerAdmin/DTBCheckPaie")
 const ControllerLateValidation = require("../ControllerDTB/DTBLateValidation")
 const ControllerLeaveCRUD = require("../ControllerAdmin/DTBLeaveListAndCRUD")
 const ControllerClockingTL = require("../ControllerTL/DTBClockingTL")
+const ControllerRequestSalary = require("../ControllerAdmin/DTBRequestSalary")
 const API = require("../ControllerDTB/api/leave-request")
 const API_Avance = require("../ControllerDTB/api/avance-salaire")
 const API_Solde = require("../ControllerDTB/api/solde")
@@ -73,7 +74,11 @@ routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Av
 routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
+routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
+//administrator avance
+routeExpDTB.route('/advancesalarylist').get(ControllerRequestSalary.getListSalaryAdvance)
+routeExpDTB.route('/requestsalary').get(ControllerRequestSalary.requestSalaryAdvance)
 
 // Space Home for Employee
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);
