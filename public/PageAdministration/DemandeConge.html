@@ -28,6 +28,19 @@
   var allPermission = JSON.parse(`<%-JSON.stringify(allPermission)%>`)
   var role =  '<%= role %>';
   </script>
+  <style>
+    .search {
+      display: flex;
+      gap: 4px;
+      border: 1px solid #dadada;
+      padding: 1px 6px;
+      border-radius: 8px;
+      min-width: 220px;
+    }
+    .search > input {
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
@@ -381,7 +394,7 @@
               <div class="card-body">
                 <div class="col-12">
                   <div class="header-request">
-                    <div class="buttons-tab">
+                    <div class="buttons-tab" style="width: 100%;">
                       <!-- <button data-target="#allRequest" class="switch-button active-btn">
                           Tout les requêtes (<span>0</span>)
                       </button> -->
@@ -394,6 +407,12 @@
                       <button data-target="#lowRequest" class="switch-button">
                           Basses (<span>0</span>)
                       </button>
+                      <div class="mx-auto">
+                        <div class="search">
+                          <i class="mdi mdi-magnify font-24"></i>
+                          <input type="search" placeholder="Chercher..." id="global-search">
+                        </div>
+                      </div>
                   </div>
                   <div id="notification" class="notice-success">
                     Requête acceptée
@@ -402,7 +421,7 @@
                  
                 <div class="col-12 allRequest mt-2" id="content-allRequest">
                     <div class="card-item" id="allRequest" hidden>
-                      
+                      <!-- to show all requests -->
                     </div>
                     <div class="card-item" id="highRequest"></div>
                     <div class="card-item" id="mediumRequest" hidden></div>
@@ -437,7 +456,7 @@
                           Permission exceptionelle ( rien à déduire )
                         </option>
                         <option value="Repos Maladie">
-                          Repos Maladie ( rien à déduire )
+                          Repos Médical ( rien à déduire )
                         </option>
                         <option value="Consultation médicale">
                           Consultation médicale ( rien à déduire )
@@ -450,6 +469,9 @@
                         </option>
                         <option value="Mise a Pied">
                           Mise a pied ( à déduire sur salaire )
+                        </option>
+                        <option value="Assistance maternelle">
+                          Assistance maternelle ( rien à déduire )
                         </option>
                         <option value="Absence Injustifiée">
                           Absence Injustifiée ( à déduire sur salaire )
