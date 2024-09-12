@@ -74,7 +74,7 @@ async function deleteAvance(req, res) {
 async function getAllDemand(req, res) {
     try {
         var { urgent } = req.params;
-        const result = await Avance.find({ is_urgent: urgent, status: "progress"})
+        const result = await Avance.find({ is_urgent: urgent})
         .populate('user')
         .populate({
             path: 'validation.user',
