@@ -30,10 +30,21 @@
   row-gap: 0.5em;
   column-gap: 2em;
   box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.4),
-    inset 0.05em 0.05em rgba(255, 255, 255, 1);
+    inset 0.05em 0.05em rgb(145, 140, 140);
   counter-increment: ol-cards-counter;
   text-align: left;
   background-color: var(--ol-cards-color-bg);
+}
+
+
+.paye{
+  float: right;
+  height: 40px;
+  padding: 0px 12px;
+  box-shadow: inset 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.4),
+    0em 0.05em rgba(255, 255, 255, 1);
+  /* display: flex; */
+
 }
 
 /* .ol-cards.alternate li:nth-child(even) {
@@ -93,10 +104,11 @@
   grid-area: content;
   font-size: 0.9em;
 }
-
-.bouton, .show{
+.bouton{
   display: flex;
   gap: 6px;
+}
+.bouton, .input-group-mod{
   padding-left: 6px ;
 
 }
@@ -116,16 +128,63 @@
 }
 
 .toutBouton{
-  padding: 6px 8px;
+  padding: 6px 8px !important;
 }
 
-.btnModifMontant{
-  box-shadow: 0px 5px 0px #aaa04a, 0px 8px 15px rgba(0, 0, 0, 0.3);
+.btnModifMontant , .btnAccorde{
+  box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.4),
+    inset 0.05em 0.05em rgb(145, 140, 140);
+  padding: 0px 12px ;
 }
 
-.btnAccorde{
+/* {
   box-shadow: 0px 5px 0px #5386c0, 0px 8px 15px rgba(0, 0, 0, 0.3);
+} */
+
+
+.input-group-mod {
+  display: flex;
+  align-items: center;
+  width: 53%;
+  margin: 10px 0; /* Espacement autour de l'input */
 }
+
+.input-group-text {
+  background-color: #f0f0f0; /* Couleur d'arrière-plan */
+  border: 1px solid #ccc; /* Bordure pour correspondre à l'input */
+  padding: 5px 10px;
+  font-weight: bold;
+  color: #333; /* Couleur du texte */
+}
+
+.input-right {
+  flex: 1; /* Prend tout l'espace disponible */
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-left: none; /* Pas de bordure à gauche pour un style continu */
+  border-right: none; /* Pas de bordure à droite pour un style continu */
+  font-size: 1rem;
+}
+
+.span-input {
+  white-space: nowrap; /* Empêche le texte de s'enrouler */
+}
+
+.input-group-text:first-of-type {
+  border-right: none; /* Retire la bordure droite pour l'élément "Ar" */
+}
+
+.input-group-text:last-of-type {
+  border-left: none; /* Retire la bordure gauche pour l'élément ".00" */
+  
+}
+
+.input-group-text:first-of-type ,
+.input-group-text:last-of-type {
+
+  padding: 7px 10px;
+}
+
 
 @media only screen and (max-width: 500px) {
   .ol-cards{
