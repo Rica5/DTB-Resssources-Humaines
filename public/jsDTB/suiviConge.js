@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 validationObj.validationTL = approbationText;
             }
         });
+        item.code = item.m_code
     
         return {
             ...item,
@@ -67,6 +68,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
     
+    class ProjectRenderer {
+        constructor(props) {
+            this.el = document.createElement('span');
+            this.render = debounce(this.render.bind(this), 100);
+            this.render(props)
+        }
+
+        getElement() {
+            return this.el;
+        }
+
+        render(props) {
+            const { value } = props;
+            // Use the column's alignment property, defaulting to center
+            let data = USERS.find(u => u.m_code === value)
+            this.el.innerHTML = `${data?.project}`
+        }
+    }
     const grid = new tui.Grid({
         el: $('#grid').get(0), // Container element
         rowKey: "id",
@@ -86,7 +105,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 renderer: {
                     type: DateFormatRenderer,
                     options: {
-                        format: 'DD-MMM.-YYYY'
+                        format: 'DD-MMM-YYYY'
                     }
                 },
                 align: 'center'
@@ -94,6 +113,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             {
                 header: 'Shift',
                 name: 'shift',
+                width: 50,
                 align: 'center'
             },
             {
@@ -108,7 +128,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             },
             {
                 header: 'Projet',
-                name: 'status',
+                name: 'code',
+                renderer: {
+                    type: ProjectRenderer
+                },
                 align: 'center',
             },
             {
@@ -164,6 +187,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 },
                 align: 'center'
             },
+            {
+                header: 'Observation',
+                name: 'duration',
+                renderer: {
+                    // type: AvisRendererRH,
+                },
+                align: 'center'
+            },
         ],
         columnOptions: {
             resizable: true
@@ -176,7 +207,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 modifyData: { url: '/api/modifyData', method: 'PUT' },
                 deleteData: { url: '/api/deleteData', method: 'DELETE' }
             }
-        }
+        },
+        rowClassName: (row) => {  
+            console.log(row)
+            return row.someCondition ? 'highlight-row' : '';  
+        }  
     });
 
     // Add an event listener for cell value changes
