@@ -74,7 +74,7 @@ async function deleteAvance(req, res) {
 async function getAllDemand(req, res) {
     try {
         var { urgent } = req.params;
-        const result = await Avance.find({ is_urgent: urgent})
+        const result = await Avance.find({ is_urgent: urgent, status: "progress"})
         .populate('user')
         .populate({
             path: 'validation.user',
@@ -91,15 +91,14 @@ async function getAllDemand(req, res) {
 async function validateAvance(req, res) {
     try {
         // req body avec le montant accordé
-        const { amount_granted } = req.body;
+        const { amount_granted, _id} = req.body;
         // avance id
-        const { id } = req.params;
-
+        // const { id } = req.params;
         // update avance
-        const updated = await Avance.findByIdAndUpdate(id, {
-            amount_granted: amount_granted
+        const updated = await Avance.findByIdAndUpdate(_id, {
+            amount_granted: amount_granted, status: "approved"
         }, { new: true });
-
+        
         
         res.json({
             ok: true,

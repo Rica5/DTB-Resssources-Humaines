@@ -94,12 +94,27 @@
   font-size: 0.9em;
 }
 
-.bouton{
+.bouton, .show{
   display: flex;
   gap: 6px;
   padding-left: 6px ;
 
 }
+
+.show{
+  display: block;
+}
+.hide {
+  display:  none;
+}
+
+.show>input[type="text"] {
+  border: 1px solid #dadada;
+  padding: 0 10px;
+  width: 100px;
+  height: 34px;
+}
+
 .toutBouton{
   padding: 6px 8px;
 }
