@@ -52,19 +52,39 @@ class RequestSalary {
        var listeDemand =  `
         <li style="--ol-cards-color-accent:#ff624f">
             <div class="step" m-code="${props.user.m_code}"><i class="far fa-user" style="background: aliceblue"></i></div>
-            <div class="title">${props.desired_amount} MGA</div>
+            <div class="title">
+                <div class="desire-amount">
+                    ${props.desired_amount} MGA
+                </div>
+                ${((props.amount_granted !== 0)) ? `
+                <div class="amount-granted">
+                    <label style="color: #817679; font-size: x-small;">Montant accordé:</label>
+                    <label style="color: #27A9E3"> ${props.amount_granted} MGA </label>
+                </div>` :''}
+            </div>
             <div class="content">
             ${props.user.last_name} ${props.user.first_name}<br />
             </div>
             <div class="changeMontant-${props._id} hide" style="grid-column: span 2;">
-                <input type="text" id="granted_${props._id}" value="${props.desired_amount}"/>MGA
+                <div class="input-group-mod">
+                    <span class="input-group-text span-input">MGA</span>
+                    <input type="number" class="form-control input-right" 
+                    id="granted_${props._id}" 
+                    value="${((props.amount_granted !== props.desired_amount) && (props.amount_granted == 0)) ? props.desired_amount : props.amount_granted}"
+                        aria-label="Amount (to the nearest dollar)">
+                    <span class="input-group-text span-input">.00</span>
+
+                </div>
             </div>
             <div class="bouton">
-                <button id="modif-${props._id}" class="btn btn-warning  btnModifMontant" >Modif montant</button>
+                <button id="modif-${props._id}" class="btn btn-warning  btnModifMontant toutBouton" >Modif montant</button>
                 <button id="accord-${props._id}" onclick="accordSalaryUrgent('${props._id}')" class="btn btn-primary toutBouton btnAccorde" >Accordée</button>
-
+            </div>
+            <div class="">
+                <button onclick="donner('${props._id}')" class="btn btn-success paye">Payé</button>
             </div>
         </li>`
+        // <button class="btn btn-secondary" id="ok-${props._id}" onclick="accordSalaryUrgent('${props._id}')">OK</button>
 
         $("#UrgentList").append(listeDemand)
         $(`#modif-${props._id}`).on("click", function () {
@@ -79,20 +99,43 @@ class RequestSalary {
 
     renderNonUrgent(props){
         var listeDemand = `
-        <li style="--ol-cards-color-accent:#00a560">
+        
+        <li style="--ol-cards-color-accent:#ff624f">
             <div class="step" m-code="${props.user.m_code}"><i class="far fa-user" style="background: aliceblue"></i></div>
-            <div class="title">${props.desired_amount} MGA</div>
+            <div class="title">
+                <div class="desire-amount">
+                    ${props.desired_amount} MGA
+                </div>
+                ${((props.amount_granted !== props.desired_amount) && (props.amount_granted !== 0)) ? `
+                <div class="amount-granted">
+                    <label style="color: #817679">accordée</label>
+                    <label style="color: #27A9E3"> ${props.amount_granted} MGA </label>
+                </div>` :''}
+            </div>
             <div class="content">
             ${props.user.last_name} ${props.user.first_name}<br />
             </div>
             <div class="changeMontant-${props._id} hide" style="grid-column: span 2;">
-                <input type="text" id="granted_${props._id}" value="${props.desired_amount}"/>MGA
+                <div class="input-group-mod">
+                    <span class="input-group-text span-input">Ar</span>
+                    <input type="number" class="form-control input-right" 
+                    id="granted_${props._id}" 
+                    value="${((props.amount_granted !== props.desired_amount) && (props.amount_granted == 0)) ? props.desired_amount : props.amount_granted}"
+                        aria-label="Amount (to the nearest dollar)">
+                    <span class="input-group-text span-input">.00</span>
+
+                </div>
             </div>
             <div class="bouton">
-                <button id="modif-${props._id}" class="btn btn-warning toutBouton btnModifMontant" >Modif montant</button>
+                <button id="modif-${props._id}" class="btn btn-warning  btnModifMontant toutBouton" >Modif montant</button>
                 <button id="accord-${props._id}" onclick="accordSalaryNUrgent('${props._id}')" class="btn btn-primary toutBouton btnAccorde" >Accordée</button>
             </div>
+            <div>
+                <button onclick="donner('${props._id}')" class="btn btn-success paye">Payé</button>
+            </div>
         </li>`
+
+        //accordSalaryNUrgent
         $("#NUrgentList").append(listeDemand)
         $(`#modif-${props._id}`).on("click", function () {
             var div = $(`.changeMontant-${props._id}`)
