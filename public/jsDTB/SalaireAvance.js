@@ -90,12 +90,22 @@ class SalaryAvanceUI {
                 { 
                     "data": null,
                     "render": function(data, type, row) {
-                        return `<button id="${row._id}" class="edit_btn btn btn-sm btn-secondary mr-2">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </button>
-                        <button id="${row._id}" class="del_btn btn btn-sm btn-warning" data-toggle="modal" data-target="#delete-demande" onclick="deleteDemande('${row._id}')">
-                            <i class="fa fa-trash" style="color: #E5E5E5" aria-hidden="true"></i>
-                        </button>`;
+
+                        console.log("row", row);
+                        
+                        if (row.status == "progress") {
+                            return `<button id="${row._id}" class="edit_btn btn btn-sm btn-secondary mr-2">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                            </button>
+                            <button id="${row._id}" class="del_btn btn btn-sm btn-warning" data-toggle="modal" data-target="#delete-demande" onclick="deleteDemande('${row._id}')">
+                                <i class="fa fa-trash" style="color: #E5E5E5" aria-hidden="true"></i>
+                            </button>`;
+                        }else{
+                            return `<button class="edit_btn btn btn-sm btn-success mr-2">
+                                <i class="fa fa-check" aria-hidden="true"></i>
+
+                            </button>`
+                        }
                     }
                 },
             ]
