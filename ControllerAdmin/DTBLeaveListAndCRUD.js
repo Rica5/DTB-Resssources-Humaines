@@ -618,6 +618,7 @@ const createLeave = async (req, res) => {
         type == "Mise a Pied" ||
         type == "Permission exceptionelle" ||
         type == "Repos Maladie" ||
+        type == "Assistance maternelle" ||
         type == "Congé de maternité" ||
         type == "Absent" ||
         type == "Congé sans solde" ||
@@ -1003,6 +1004,7 @@ const editLeave = async (req, res) => {
         type == "Mise a Pied" ||
         type == "Permission exceptionelle" ||
         type == "Repos Maladie" ||
+        type == "Assistance maternelle" ||
         type == "Congé de maternité" ||
         type == "Absent" ||
         type == "Congé sans solde" ||

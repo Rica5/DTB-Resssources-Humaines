@@ -1,5 +1,5 @@
-const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
-// const GerantId = "6673ecbf0f644c29f7a997f7";
+// const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
+const GerantId = "6673ecbf0f644c29f7a997f7";
 const leaveModeValue = {
     'congé': 'Congé',
     'régularisation': "Régularisation d'absence",
@@ -795,6 +795,11 @@ $('#typeLeave').on('change', function () {
         activateCp(true, "ndeduire");
         activateRm(false)
     }
+    else if ($('#typeLeave').val() == "Assistance maternelle") {
+        activatePermission(false)
+        activateCp(true, "ndeduire");
+        activateRm(false)
+    }
     else if ($('#typeLeave').val() == "Récupération") {
         activatePermission(false)
         activateCp(true, "ndeduire");
@@ -1036,3 +1041,28 @@ function dissapearo(input) {
         $('#nbr-day').val($('#default-nbr-day').val());
     }
 }
+
+$('#global-search').on('input',function() {
+    $('#allRequest').html('');
+    const key = $(this).val().toUpperCase();
+    if (!key) {
+        // hide all request container
+        $('#allRequest').attr('hidden', '');
+        return;
+    }
+    const children = [
+        $("#lowRequest").children().clone().toArray(),
+        $("#mediumRequest").children().clone().toArray(),
+        $("#highRequest").children().clone().toArray()
+    ].flat().filter(e => $(e).attr('key'));
+
+    const filtered = children.filter(c => {
+        return $(c).attr('key').includes(key)
+    });
+
+    $('#allRequest').append(`<p style="grid-column: span 2; text-align:center;">Résultats de recherche: ${key}</p>`);
+    $('#allRequest').append(filtered.length === 0 ? '<p style="grid-column: span 2; text-align:center; text-transform: uppercase;">Aucunes demandes trouvées</p>' : filtered);
+    $('#allRequest').append(`<p  style="grid-column: span 2; text-align:center;">------------------Fin de resultats------------------</p>`);
+    $('#allRequest').removeAttr('hidden');
+
+});

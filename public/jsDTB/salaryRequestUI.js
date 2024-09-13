@@ -100,7 +100,7 @@ class RequestSalary {
     renderNonUrgent(props){
         var listeDemand = `
         
-        <li style="--ol-cards-color-accent:#ff624f">
+        <li style="--ol-cards-color-accent:#92D13F">
             <div class="step" m-code="${props.user.m_code}"><i class="far fa-user" style="background: aliceblue"></i></div>
             <div class="title">
                 <div class="desire-amount">

@@ -20,7 +20,7 @@ async function getListByUserId(req, res) {
 async function getOneDemande(req, res) {
     try {
         var { id } = req.params;
-
+g
         const result = await Avance.findOne({ _id: id})
         
         res.json({ ok: true, data: result });
