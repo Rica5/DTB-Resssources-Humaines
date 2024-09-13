@@ -77,6 +77,8 @@ routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
 routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
 routeExpDTB.route('/api/avance/validate').post(API_Avance.validateAvance)
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
+routeExpDTB.route('/api/avance/verification/:id?').get(API_Avance.verificationDemand)
+routeExpDTB.route('/api/avance/payer/:id?').get(API_Avance.payerAvance)
 //administrator avance
 routeExpDTB.route('/advancesalarylist').get(ControllerRequestSalary.getListSalaryAdvance)
 routeExpDTB.route('/requestsalary').get(ControllerRequestSalary.requestSalaryAdvance)

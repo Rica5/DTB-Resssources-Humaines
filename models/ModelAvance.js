@@ -41,7 +41,7 @@ const Avance = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['progress', 'approved', 'rejected', 'canceled', 'completed'],
+        enum: ['progress', 'approved', 'rejected', 'verify', 'paid'],
         default: 'progress'
     },
     comment: {

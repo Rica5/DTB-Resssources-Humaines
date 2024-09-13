@@ -1,4 +1,7 @@
+const { text } = require("body-parser");
 const Avance = require("../../models/ModelAvance");
+const crypto = require('crypto')
+const nodemailer = require("nodemailer")
 
 async function getListByUserId(req, res) {
     try {
@@ -30,6 +33,7 @@ async function getOneDemande(req, res) {
     }
 
 }
+
 async function updateAvance(req, res) {
     
     try {
@@ -43,7 +47,6 @@ async function updateAvance(req, res) {
     }
     
 }
-
 
 async function createAvance(req, res) {
     
@@ -74,12 +77,14 @@ async function deleteAvance(req, res) {
 async function getAllDemand(req, res) {
     try {
         var { urgent } = req.params;
-        const result = await Avance.find({ is_urgent: urgent})
+        const result = await Avance.find({ is_urgent: urgent, status:{$ne: "paid"} })
         .populate('user')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
         });
+        
+        
         res.status(200).json({ ok: true, data: result });
     } catch (error) {
         console.error("Error getting list:", error);
@@ -95,9 +100,18 @@ async function validateAvance(req, res) {
         // avance id
         // const { id } = req.params;
         // update avance
-        const updated = await Avance.findByIdAndUpdate(_id, {
-            amount_granted: amount_granted, status: "approved"
-        }, { new: true });
+
+        const getAvance = await Avance.findOne({_id: _id})
+        
+        var updated  
+        if (getAvance.status == "progress") {
+            updated = await Avance.findByIdAndUpdate(_id, {
+                amount_granted: amount_granted, status: "approved"
+            }, { new: true });
+                
+        }else{
+            updated = {}
+        }
         
         
         res.json({
@@ -143,6 +157,72 @@ async function refuseAvance(req, res) {
     }
 }
 
+
+async function verificationDemand(req, res) {
+    var id = req.params.id
+
+    const getAvance = await Avance.findOne({_id: id}).populate("user")
+    await Avance.findByIdAndUpdate(id, {status: "verify"}, {new: true})
+    
+    var token = generateTokenWithId(id)
+    const emailUser = getAvance.user.username
+    
+    sendVerificationEmail(emailUser, token)
+    
+
+    res.status(200).json({ok: true})
+    
+}
+
+async function payerAvance(req, res) {
+    var id = req.params.id
+    await Avance.findByIdAndUpdate(id, {status: "paid"}, {new: true})
+
+    res.status(200).json({ok: true})
+}
+
+function generateTokenWithId(id) {
+    const randomBytes = crypto.randomBytes(16).toString("hex")
+    const token = crypto
+    .createHash('sha256')
+    .update(id + randomBytes)
+    .digest('hex')
+
+    const expirationTime = Date.now() + 24 * 60 * 60 * 1000
+    return {token, expirationTime}
+}
+
+
+var transporter = nodemailer.createTransport({
+    
+    host: 'da-uk2.hostns.io',
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+        user: 'dtb@solumada.mg', // your email address
+        pass: 'Dev2024', // your email password
+    },
+
+  });
+
+function sendVerificationEmail(userEmail, token) {
+    const verificationLink = '/';
+    var mailOptions = {
+        from : `"Vérification"  <dtb@solumada.mg>`,
+        to: userEmail,
+        subject: "Vérification de la Réception de l'Avance",
+        text: `Veuillez cliquer sur le lien suivant pour confirmer que vous avez bien reçcu votre avance  : ${verificationLink}`
+    }
+
+    transporter.sendMail(mailOptions, (error, info)=>{
+        if (error) {
+            console.log(error);
+        } else {
+            console.log("Email envoyé: " + info.response);
+            
+        }
+    })
+}
 module.exports = {
     getListByUserId,
     createAvance,
@@ -151,5 +231,7 @@ module.exports = {
     deleteAvance,
     validateAvance,
     refuseAvance,
-    getAllDemand
+    getAllDemand,
+    verificationDemand,
+    payerAvance
 }

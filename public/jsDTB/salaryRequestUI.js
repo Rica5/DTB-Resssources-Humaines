@@ -6,11 +6,14 @@ class RequestSalary {
     async fetchRequestUrgent(){
         var result = await fetch("/api/avance/all/true")
         const {ok, data} = await result.json()
+        console.log("fetcUrgent", data);
         return data
     }
     async fetchRequestNUrgent(){
         var result = await fetch("/api/avance/all/false")
         const {ok, data} = await result.json()
+        console.log("fetchRequestNUrgent", data);
+        
         return data
     }
 
@@ -35,6 +38,12 @@ class RequestSalary {
         return response.json()
     }
 
+    async verificationRequest(id){
+        var result = await fetch("/api/avance/verification/"+id)
+        const  {ok, data} = await result.json()
+        return data
+    }
+
     async renderAllNonUrgent(){
         
         $("#NUrgentList").html("")
@@ -43,6 +52,12 @@ class RequestSalary {
         dataNUrg.forEach(element =>{
             this.renderNonUrgent(element)
         })
+    }
+
+
+    async paid(id){
+        var res = await fetch(`/api/avance/payer`+id )
+        return res
     }
 
 
@@ -80,9 +95,17 @@ class RequestSalary {
                 <button id="modif-${props._id}" class="btn btn-warning  btnModifMontant toutBouton" >Modif montant</button>
                 <button id="accord-${props._id}" onclick="accordSalaryUrgent('${props._id}')" class="btn btn-primary toutBouton btnAccorde" >Accordée</button>
             </div>
-            <div class="">
-                <button onclick="donner('${props._id}')" class="btn btn-success paye">Payé</button>
-            </div>
+
+            ${props.status == "approved" ? 
+                `<div class="">
+                    <button onclick="confirmer('${props._id}')" class="btn btn-success paye">Envoyé la confirmation</button>
+                </div>`:
+                props.status == "verify" ?
+                    
+                `<div class="">
+                <button onclick="payer('${props._id}')" class="btn btn-success paye">Payé</button>
+            </div>` : ""
+            }
         </li>`
         // <button class="btn btn-secondary" id="ok-${props._id}" onclick="accordSalaryUrgent('${props._id}')">OK</button>
 
@@ -130,9 +153,17 @@ class RequestSalary {
                 <button id="modif-${props._id}" class="btn btn-warning  btnModifMontant toutBouton" >Modif montant</button>
                 <button id="accord-${props._id}" onclick="accordSalaryNUrgent('${props._id}')" class="btn btn-primary toutBouton btnAccorde" >Accordée</button>
             </div>
-            <div>
-                <button onclick="donner('${props._id}')" class="btn btn-success paye">Payé</button>
-            </div>
+           
+            ${props.status == "approved" ? 
+                `<div class="">
+                    <button onclick="confirmer('${props._id}')" class="btn btn-success paye">Envoyé la confirmation</button>
+                </div>`:
+                props.status == "verify" ?
+                    
+                `<div class="">
+                <button onclick="payer('${props._id}')" class="btn btn-success paye">Payé</button>
+            </div>` : ""
+            }
         </li>`
 
         //accordSalaryNUrgent
@@ -198,6 +229,24 @@ async function accordSalaryNUrgent(id) {
     ui.renderAllNonUrgent()
 }
 
+async function confirmer(id){
+    await ui.verificationRequest(id)
+
+    Toastify({
+        text: "Email envoyé vers l'utilisateur",
+        gravity: "bottom",
+        position: "center",
+        style: {
+            "background": "#29E342"
+        }
+    }).showToast()
+    ui.renderAllUrgent()
+    ui.renderAllNonUrgent()
+}
+
+async function payer(id) {
+    
+}
 // $(`#accord-${props._id}`).on("click", async function(){
 // })
 $("#UrgentBtn").on("click", function () {
