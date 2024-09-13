@@ -3,8 +3,8 @@ const LeaveSchema = require("../models/ModelLeave");
 const LeaveRequestTest = require("../models/ModelLeaveRequest");
 const moment = require("moment");
 const fs = require("fs");
-const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
-// const id_gerant = "6673ecbf0f644c29f7a997f7"
+// const id_gerant = "645a417e9d34ed8965caea9e"     //Gérant Id du Navalona
+const id_gerant = "6673ecbf0f644c29f7a997f7"
 
 const leaveModeValue = {
     'congé': 'de congé',
@@ -911,12 +911,15 @@ async function leaveTracking(req, res) {
     const dataUser = await UserSchema.findOne({
         _id: session.idUser || '629759d56882b7a0742c0c7b'
     }).select("profil usuel myNotifications");
+    // all users
+    const users = await UserSchema.find().select('m_code project');
 
     // find all leave requests
 
     res.render('PageAdministration/SuiviConge.html', {
         role,
         dataUser,
+        users: [...users],
         notif: dataUser?.myNotifications || []
     });
 }

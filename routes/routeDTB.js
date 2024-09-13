@@ -17,6 +17,7 @@ const ControllerRequestSalary = require("../ControllerAdmin/DTBRequestSalary")
 const API = require("../ControllerDTB/api/leave-request")
 const API_Avance = require("../ControllerDTB/api/avance-salaire")
 const API_Solde = require("../ControllerDTB/api/solde")
+const ControllerAvance = require("../ControllerDTB/DTBConontrollerAvance")
 
 //Authentification route
 // Default route
@@ -79,6 +80,7 @@ routeExpDTB.route('/api/avance/validate').post(API_Avance.validateAvance)
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
 routeExpDTB.route('/api/avance/verification/:id?').get(API_Avance.verificationDemand)
 routeExpDTB.route('/api/avance/payer/:id?').get(API_Avance.payerAvance)
+routeExpDTB.route('/avance/verification/:id?').get(ControllerAvance.getVerificationPage)
 //administrator avance
 routeExpDTB.route('/advancesalarylist').get(ControllerRequestSalary.getListSalaryAdvance)
 routeExpDTB.route('/requestsalary').get(ControllerRequestSalary.requestSalaryAdvance)

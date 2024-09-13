@@ -100,6 +100,7 @@ function rendu_header(active) {
       <option value="Permission exceptionelle">Permission exceptionelle</option>
       <option value="Repos Maladie">Repos Maladie</option>
       <option value="Consultation médicale">Consultation médicale</option>
+      <option value="Assistance maternelle">Assistance maternelle</option>
       <option value="Absent">Absent</option>
       <option value="Congé de maternité">Congé de maternité</option>
       <option value="Mise a Pied">Mise à pied</option>
@@ -133,7 +134,7 @@ function empty_search() {
                       </div>`
 }
 function reset() {
-  search_div = "none";
+  search_div = "block"//"none";
   year_month.setAttribute("class", "col-md-2 text-center disabled");
   year.value = moment().format("YYYY")
 }

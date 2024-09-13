@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmation de demande d'Avance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        h2 {
+            margin: 10px 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #eee;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 500px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            cursor: not-allowed;
+            opacity: .7;
+            background-color: #45a049;
+        }
+        .signature {
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+
+        .checkmark {
+            display: block;
+            margin: 10px auto;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid green;
+            position: relative;
+            margin-top: 20px;
+            opacity: 0;
+            transform: scale(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .checkmark:after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 10px;
+            border: solid green;
+            border-width: 0 0 3px 3px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .show-checkmark {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .show-checkmark:after {
+            opacity: 1;
+        }
+        .message {
+            color: #5a5a5a;
+            line-height: 1.3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Confirmation de la Demande d'Avance</h2>
+        <br>
+        <p>Bonjour <%= username  %>, </p>
+        <br>
+        <p>Confirmez-vous avoir demandé une avance sur salaire ?</p>
+        <br>
+        <p>Montant accordé : <strong id="montantAccorde"><%= avance.amount_granted  %> Ariary</strong></p>
+        <br>
+        <div id="checkAnimation" class="checkmark"></div>
+        <button id="confirmButton">Confirmer</button>
+        <br>
+        <br>
+        <p id="confirmationMessage" class="message"></p>
+    </div>
+
+    <script>
+
+        document.getElementById('confirmButton').addEventListener('click', function() {
+            const confirmationMessage = document.getElementById('confirmationMessage');
+            const checkmark = document.getElementById('checkAnimation');
+            const montant = document.getElementById('montantAccorde').innerText;
+
+            // Message de confirmation avec le montant et rendez-vous
+            confirmationMessage.innerHTML = `Votre demande d'avance de ${montant} a été confirmée. Veuillez prendre rendez-vous avec le service RH pour récupérer votre salaire.`;
+            confirmationMessage.style.display = "block";
+
+            // Afficher l'animation du check
+            checkmark.classList.add('show-checkmark');
+
+            // Désactiver le bouton
+            this.disabled = true;
+            this.innerText = 'Demande confirmée';
+        });
+        
+    </script>
+</body>
+</html>
