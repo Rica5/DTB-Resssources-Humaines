@@ -112,10 +112,14 @@
 
     <script>
 
-        document.getElementById('confirmButton').addEventListener('click', function() {
+        document.getElementById('confirmButton').addEventListener('click', async function() {
             const confirmationMessage = document.getElementById('confirmationMessage');
             const checkmark = document.getElementById('checkAnimation');
             const montant = document.getElementById('montantAccorde').innerText;
+
+            // send request to the server
+            const res = await fetch('/api/avance/confirm');
+            const { ok, data } = await res.json();
 
             // Message de confirmation avec le montant et rendez-vous
             confirmationMessage.innerHTML = `Votre demande d'avance de ${montant} a été confirmée. Veuillez prendre rendez-vous avec le service RH pour récupérer votre salaire.`;
