@@ -111,7 +111,7 @@ function chercherDemande(input) {
 function renderAllRequest(Leave){
 
     var search = `
-            <div class="row  d-flex align-items-center" style="grid-column: span 2; position : relative">
+            <div class="row  d-flex align-items-center" style="grid-column: span 2; position : relative; display: none !important">
                 <input type="search" placeholder="cherher m-code" oninput="chercherDemande(this)" class="form-control recherche-mcode"/>
                 <span class="mdi mdi-magnify" style="width: 20px; font-size: 20px; position: absolute; left: 4px; "></span>
             </div>`
