@@ -86,6 +86,24 @@ document.addEventListener('DOMContentLoaded', async function() {
             this.el.innerHTML = `${data?.project}`
         }
     }
+    
+    class ObservationRenderer {
+        constructor(props) {
+            this.el = document.createElement('span');
+            this.render(props)
+        }
+
+        getElement() {
+            return this.el;
+        }
+
+        render(props) {
+            const { value } = props;
+            // Use the column's alignment property, defaulting to center
+            console.log(props)
+            this.el.innerHTML = `${value}`
+        }
+    }
     const grid = new tui.Grid({
         el: $('#grid').get(0), // Container element
         rowKey: "id",
@@ -191,9 +209,13 @@ document.addEventListener('DOMContentLoaded', async function() {
                 header: 'Observation',
                 name: 'duration',
                 renderer: {
-                    // type: AvisRendererRH,
+                    // type: ObservationRenderer,
                 },
-                align: 'center'
+                formatter: function({ row }) {
+                    const { duration, type } = row;
+                    return `${duration}j ${type ? getFrPrefix(type).toLowerCase() : ''}`
+                },
+                align: 'left'
             },
         ],
         columnOptions: {
@@ -213,6 +235,21 @@ document.addEventListener('DOMContentLoaded', async function() {
             return row.someCondition ? 'highlight-row' : '';  
         }  
     });
+
+    function getFrPrefix(text) {
+        // Define vowels in French
+        const vowels = ['a', 'e', 'i', 'o', 'u', 'y', 'é', 'è', 'ê', 'à', 'ù', 'ï', 'î', 'ô'];
+    
+        // Trim any leading spaces and convert to lowercase to avoid case sensitivity
+        const firstLetter = text.trim().charAt(0).toLowerCase();
+    
+        // Check if the first letter is a vowel
+        if (vowels.includes(firstLetter)) {
+            return `d'${text}`;
+        } else {
+            return `de ${text}`;
+        }
+    }
 
     // Add an event listener for cell value changes
     grid.on('afterChange', (event) => {

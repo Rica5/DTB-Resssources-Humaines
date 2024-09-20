@@ -42,7 +42,17 @@
   .highlight-row {
     background-color: #ffeb3b;
   }
- </style>
+  /* Make borders thicker and more visible */
+  .tui-grid-cell {
+    border: 1px solid #d3d3d3 !important;  /* 2px thickness, black color */
+  }
+
+  /* Optionally, style the header cells */
+  .tui-grid-header-area .tui-grid-cell {
+    border: 1px solid #d3d3d3 !important;  /* Thicker borders for header cells */
+  }
+
+</style>
 </head>
 
 <body>

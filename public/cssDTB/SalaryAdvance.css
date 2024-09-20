@@ -1,11 +1,16 @@
+:root {
+  --sgreen: #34C100;
+  --sblue: #1622CE;
+
+}
 .all-fiche{
     padding: 40px 25px;
     width: 100%;
     max-width: 1200px;
-    margin-left: auto;
+    /* margin-left: auto; */
     margin-right: auto;
     font-size: 14px;
-    background-color: rgb(210, 211, 211, 0.5);
+    background-color: #E8E9E9;
     border-radius: 15px;
 }
 
@@ -43,12 +48,6 @@ body{
     height: 30px;
     border: 5px;
 }
-
-.input-group{
-    /* border: 1px solid rgb(72, 75, 72);
-    border-radius: 5px; */
-}
-
 #envoyer-avance, #envoyer-avance-update{
     width: 114px; 
     float: right; 
@@ -104,8 +103,68 @@ table {
     font-weight: bold;
   }
 
+.layout {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  justify-content: stretch;
+  margin: 0 auto;
+}
 
+.formulaire {
+  width: 100%;
+}
 
+.status-container {
+  background-color: #E8E9E9;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 15px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: 1rem;
+}
+
+#nbr-sent {
+  color: var(--approved);
+}
+
+#nbr-paid {
+  color: var(--paid);
+}
+
+#nbr-declined {
+  color: var(--rejected);
+}
+
+.status-container .status-item {
+  background-color: white;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-container .status-item h3 {
+  margin: 0;
+}
+
+@media screen and (max-width: 1360px) {
+  .layout {
+    flex-direction: column;
+  }
+  
+  .salary-list-container {
+    max-width: none !important;
+  }
+}
 
   .delete-modal {
     position: fixed;
@@ -159,4 +218,258 @@ table {
 .delete-modal .foot button {
     font-size: 14px;
 }
-  
+
+.flexy-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+/* Styling for the Salary Request List */
+
+.salary-list-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #E8E9E9;
+  /* padding: 20px; */
+  border-radius: 10px;
+}
+
+.salary-list-container .head {
+  padding: 10px 20px;
+  background: linear-gradient(180deg, #E8E9E9, #dddddd);
+  border-bottom: 1px solid #d3d2d2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Bottom shadow effect */
+}
+
+.salary-list-container h2 {
+  text-align: center;
+  color: #333;
+  font-size: 18px !important;
+  margin: 10px 0;
+  margin-bottom: 14px;
+}
+
+.salary-list-container .list-container {
+  position: relative;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+.salary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px;
+}
+
+.salary-list .details{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.salary-list .dates {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  margin-top: 8px;
+}
+
+
+.salary-list li {
+  position: relative;
+  background-color: #fff;
+  border-left: 3px solid transparent;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+}
+
+.salary-list li:not(.to-verify) {
+  border: 1px solid #d4d4d4;
+}
+
+.salary-list li.to-verify {
+  cursor: pointer;
+  position: relative;
+  animation: to-verify 2s infinite;
+}
+
+.salary-list li.to-verify:hover {
+  border: 2px solid #c45eff;
+  background: #f7eaff;
+}
+
+
+.salary-list li.to-verify .animated-cursor {
+  position: absolute;
+  top: 0px;
+  width: 30px;
+  height: 30px;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFJUlEQVR4nO2Ze2gcRRzHt1oVRfCB0IKCLwQxwUsjBalGJRUlPlqTkmq1DzBaarVK2yR39pGLJLe/TZqnPSr5y8bGtDlyM0mKD0whfwg1uzfz27QGhaoFH//UojXYxvR1K3O5TXKTu+Ryr14gX5h/dmdn5rMzv998Z1dRFrSgBSWsA++cvMPttq5T5rNa1hq51QX6BX8N/4MAar01Q/cr8xFiz+P6WHmObn26jVsU0KLArxLg/T2AG32Nx29W5hNEeY5u1a8KhEEmCwF+jgK29cDQMiVb1b6DufavZ1Z1gRECceUbFvFEgkQWbhCVb/Fp7DYlm0Td5u1UxVExyMO70RJQnzvZSGyQcFFxlAB+RsF8xrKsRUo2iALvkN56Z48HHxFBT1Q8OxsUAfxN1KVg3ndNQfzACiMGpvKxvgZ2l7j3ZeupmwiYpRTwKFXxysxQ1zhBWJa1iKr4swTznlzvaK15NwXupIC/zD5L/G+RIGitmZdRGKriXmm5nIhVV2yaRGNPioESwAuzxhMgI4Af+BqH70w7iF87cY+8dOJJtyJ7UeCbxWDjAPqPAvf1AD6b1gRBAb+SOt4/l+d7NTMn3gRBVX6KAq/uruH3phwkHNQRG2EiQZtIgiBglra1sRtSAuJzD99Igf8ZGfS4LuklC9xJgJ+ON0H4AR1JwxDAZqnx/qQbtROEaj5HAI+I9B5HPB2nGns+4Q79nqFcKQ0Hu8F4QEm1mxhPEHyWZbcmuY6AG1KD1Uqa5Ad0+AGPiRcmLemzItaSalyYQinD/O7z+a5XUiwK/GV5Iw77uCBReUPSHYi9Qd7oxPpOyegn0jTvj52a8YeUBLzQuLONaPxwsm36tg4vHTeX/GKMveWvkANI5ewLey7FyUXbSM5V7qetxfCScdCVr1/1bmTR3PNlkXYTbX9GCQtBAH+SYLbNtZ2WUn1L1Qpj1D6BihIBo/JvxJFBSaco4K54jWQs7SvRd1Y+Oglhl0/KAucJ4GolEwrZdsli+GtZ/lzbaSo23nU69KAAcDp0q3Uds0gtWkRDl5IpEeBfSEHvne2ZzrKTS+RrzSX6jroXA5e79tpfaWyHzbcrmRDx8BIJ5J8+N7slVv3mTWberuX6laY1bJN8j3pYAQX+77Rg1zIwM8KRUpWfiehcw9dj1a9daZwOLaG8wWDWwVDARinoj0Wr11Csv1WROxnQrmV68MCbxqqsgen2sIdlI0nq2YNyum59LRCaDbu4nzAsv8rP+VVcnjUwVMXvpF34o6n3CfD14nrLq4EJkPbtfOKAljUwxGO+HctIilMkUfFX+56AgaLIT69ZA+NzD98qd2gbSQJYJS29sa4q3h7NS0Xbh/zACqN9jWkr481pgaHAD0pBf0RsmkTl56XrdaH6KtZM91XxzYx3AwstT3jB+Dr1IKHOIo0kBeyS3vqZqR+4E4HxhiHskh4YwB/lDCbBbZ72jMoh3mXWUcG7ZG/mzNODjWsHU3M+sSWCMOpZYhxqeMA9sDjqC4hjZqiHV4rrIts5HeO/OSodg1ZjMXtfSbV89fpSquKlqDAevnKmZ2eaGQJ8z9TrAubDx/TgvtVsq5IuERX7pr9d7I3n2WgwH7/BLnVURJpJAjjSuZsVpg0iNBiP+YoUF9931+FDcT8/BcYbDmxXnm4dKrc3UByhGq5Q0i0RB+IDQTL/FUXMeKXsJGDad/LRHuBPKfNJWpHx7VQQEdhNxYE5H6ezCqZyPkPY0oqMgaZSY9r+s6AFKZnX/9bBi2dq2qBZAAAAAElFTkSuQmCC'); /* Replace with your cursor image */
+  background-size: cover;
+  animation: moveCursor 2s infinite;
+  z-index: 0;
+}
+
+/* Animation for the cursor */
+@keyframes moveCursor {
+  0% {
+    transform: translate(-50px, -50px) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0px, 0px) rotate(180deg);
+    opacity: 0;
+  }
+}
+@keyframes to-verify {
+  0% {
+    border: 2px solid transparent;
+    background-color: white;
+  }
+  100% {
+    border: 2px solid #d793ff;
+    background-color: #e3c7f5;
+  }
+}
+
+.salary-list li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.date-envoie {
+  font-size: 12px;
+  color: #666;
+  margin-right: 4px;
+}
+
+.amount {
+  font-size: 16px;
+  color: #4a90e2;
+}
+.amounts {
+  padding-left: 6px;
+  border-left: 2px solid #E8E9E9;
+  height: 100%;
+}
+
+.status {
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: .25rem;
+  color: white;
+  font-size: 0.75rem;
+}
+
+:root {
+  --progress: #FFA500;
+  --approved: #28A745;
+  --verifying: #9d04f5;
+  --verified: #17A2B8;
+  --rejected: #DC3545 ;
+  --paid: #007BFF;
+}
+.status.progress {
+  background-color: var(--progress);
+  height: auto !important;
+}
+.status.approved {
+  background-color: var(--approved);
+}
+.status.verifying {
+  background-color: var(--verifying);
+}
+.status.verified {
+  background-color: var(--verified);
+}
+.status.rejected {
+  background-color: var(--rejected) ;
+}
+.status.paid {
+  background-color: var(--paid);
+}
+
+
+.desired-amount,
+.granted-amount {
+  font-size: 13px;
+  color: #636363;
+}
+
+.desired-amount b {
+  color: #3D4BD6; /* Blue color for desired amount */
+}
+
+.granted-amount b {
+  color: #34C100; /* Green color for granted amount */
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.actions .edit-btn {
+  color: #007bff;
+}
+
+.actions .edit-btn:hover {
+  color: #0056b3;
+}
+
+.actions .delete-btn {
+  color: #dc3545;
+}
+
+.actions .delete-btn:hover {
+  color: #c82333;
+}
+
+.actions i {
+  margin: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #868686;
+}
+.click-here {
+  margin: 0 auto;
+  color: var(--verifying);
+  font-size: 12px;
+}

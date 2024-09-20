@@ -366,14 +366,14 @@ const LeaveReport = async (req, res) => {
         row_property.push({ hpt: 90 });
       } else if (r >= 3) {
         if (rowLength[r - 3] && rowLength[r - 3][1] > 1) {
-          row_property.push({ hpt: (25 + (rowLength[r - 3][1] * 8)) });
+          row_property.push({ hpt: (26 + (rowLength[r - 3][1] * 8)) });
         }
         else {
-          row_property.push({ hpt: 25 });
+          row_property.push({ hpt: 26 });
         }
       }
       else {
-        row_property.push({ hpt: 25 });
+        row_property.push({ hpt: 26 });
       }
     }
     globaleVariable.ws_leave["!rows"] = row_property;
@@ -534,7 +534,7 @@ const createLeave = async (req, res) => {
           request: idRequest,
           exceptType: exceptType
         };
-        idRequest == "" ? delete new_leave.request : ""
+        !idRequest ? delete new_leave.request : ""
         var last_rest = rest;
         indice_change.forEach(async (change) => {
           if (leave_specific[change].type.includes("Congé Payé")) {
@@ -577,7 +577,7 @@ const createLeave = async (req, res) => {
         var d1 = moment(leavestart).format("YYYY-MM-DD");
         var d2 = moment(leaveend).format("YYYY-MM-DD");
         if (split_date(d1, d2) && type != "Congé de maternité") {
-          if (idRequest != "") {
+          if (idRequest) {
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
             new_leave.piece = thisLeave.piece;
             const io = req.app.get("io");
@@ -602,7 +602,7 @@ const createLeave = async (req, res) => {
           theLeave.status = "Ok";
           res.send(theLeave);
         } else {
-          if (idRequest != "") {
+          if (idRequest) {
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
             new_leave.piece = thisLeave.piece;
             const io = req.app.get("io");
@@ -676,11 +676,11 @@ const createLeave = async (req, res) => {
           request: idRequest,
           exceptType: exceptType
         };
-        idRequest == "" ? delete new_leave.request : ""
+        !idRequest ? delete new_leave.request : ""
         var d1 = moment(leavestart).format("YYYY-MM-DD");
         var d2 = moment(leaveend).format("YYYY-MM-DD");
         if (split_date(d1, d2) && type != "Congé de maternité") {
-          if (idRequest != "") {
+          if (idRequest) {
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
             new_leave.piece = thisLeave.piece;
             const io = req.app.get("io");
@@ -701,7 +701,7 @@ const createLeave = async (req, res) => {
           theLeave.status = "Ok";
           res.send(theLeave);
         } else {
-          if (idRequest != "") {
+          if (idRequest) {
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, { acc: new_leave.acc, rest: new_leave.rest }, { new: true })
             new_leave.piece = thisLeave.piece;
             const io = req.app.get("io");

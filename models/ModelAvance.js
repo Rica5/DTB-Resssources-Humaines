@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment');
 const Avance = mongoose.Schema({
     date: {
         type: Date,
@@ -41,7 +40,7 @@ const Avance = mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['progress', 'approved', 'rejected', 'verify', 'paid'],
+        enum: ['progress', 'approved', 'rejected', 'verifying', 'verified', 'paid'],
         default: 'progress'
     },
     comment: {

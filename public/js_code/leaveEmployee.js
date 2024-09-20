@@ -392,7 +392,7 @@ function take_leave(url, type, startings, endings, val, mt, begin, end) {
   http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      if (this.responseText == "Ok") {
+      if (this.response.status == "Ok") {
         var duree = "";
         if (begin == ""){
           duree = " de durée de " + date_diff(startings,endings) + " jour(s)"

@@ -77,7 +77,7 @@
   </head>
 
   <body>
-    <form action="/login" method="post">
+    <form action="/login?<%= typeof back_url !== 'undefined' ? 'back_url=' + back_url : '' %>" method="post">
       <div class="limiter" id="login">
         <div class="container-login100">
           <div class="wrap-login000">
