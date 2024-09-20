@@ -13,7 +13,7 @@ async function updateSolde(req, res) {
         res.json({ ok: true, data: updated });
     } catch (error) {
         console.error("Error updating solde:", error);
-        res.json({ o: false, data: [] });
+        res.json({ ok: false, data: [] });
     }
 }
 

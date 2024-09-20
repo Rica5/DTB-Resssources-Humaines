@@ -240,29 +240,44 @@
             <div class="card">
               <div class="card-body">
                 <div class="header-request">
-                  <div class="buttons-tab">
+                  <div class="buttons-tab" style="width: 100%;">
                     <button id="UrgentBtn" class="switch-button active-btn">
                       Urgentes (<span>0</span>)
                     </button>
                     <button id="NUrgentBtn" class="switch-button">
                       Non-Urgentes (<span>0</span>)
                     </button>
+
+                    <div class="mx-auto">
+                      <div class="search">
+                        <i class="mdi mdi-magnify"></i>
+                        <input type="search" placeholder="Chercher..." id="global-search">
+                      </div>
+                    </div>
+
                   </div>
                 </div>
                 <div class="coll-12 allRequest mt-2" id="content-allRequest">
-                  <div  id="Urgent">
+                  <div class="" >
+                    <main class="cd__main">
+                      <div class="ol-cards alternate" id="allRequest" hidden>
+                        <!-- to show all search results (requests)-->
+                      </div>
+                    </main>
+                  </div>
+                  <div id="Urgent">
 
                     <main class="cd__main">
-                      <ol class="ol-cards alternate" id="UrgentList">
-                       
-                      </ol>
+                      <div class="ol-cards alternate" id="UrgentList">
+                      
+                      </div>
                     </main>
                   </div>
                   <div id="NUrgent" style="display: none;">
                     <main class="cd__main">
-                      <ol class="ol-cards alternate" id="NUrgentList">
-                       
-                      </ol>
+                      <div class="ol-cards alternate" id="NUrgentList">
+                        
+                      </div>
                     </main>
                   
                   </div>
@@ -279,6 +294,7 @@
   <script src="/js_code/socket.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="/jsDTB/notification.js"></script>
 
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>

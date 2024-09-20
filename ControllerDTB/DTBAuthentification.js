@@ -28,12 +28,14 @@ const defaultPage = async (req, res) => {
   } else {
     await daily_restart(req);
     await monthly_restart();
-    res.render("LoginPage/Login.html", { erreur: "" });
+    // get back url
+    const { back_url } = req.query;
+    res.render("LoginPage/Login.html", { erreur: "", back_url });
   }
 }
 //Login authentification
 const authSolumada = async (req, res) => {
-  await login(req.body.username, req.body.pwd, req.session, res);
+  await login(req.body.username, req.body.pwd, req.session, res, req);
 }
 //Set user Ip according to apify Ip posted
 const setIp = async (req, res) => {
@@ -112,8 +114,11 @@ const logOut = async (req, res) => {
 
 // Methode used on Login Page
 //Check User and render page
-async function login(username, pwd, session, res) {
+async function login(username, pwd, session, res, req) {
   try {
+    // back_url 
+    const { back_url } = req.query;
+    console.log(req.query)
     let hash = crypto.createHash("md5").update(pwd.trim()).digest("hex");
     var logger = await UserSchema.findOne({
       username: username.trim(),
@@ -193,7 +198,7 @@ async function login(username, pwd, session, res) {
             logger.late = "n";
           }
           session.reason = "N/A";
-          res.redirect("/mySpace");
+          res.redirect(back_url || "/mySpace");
         } else if (logger.occupation == "Admin") {
           session.occupation_a = logger.occupation;
           globalVariable.filtrage = {};

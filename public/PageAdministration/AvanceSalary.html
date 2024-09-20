@@ -9,7 +9,7 @@
   <meta name="keywords" content="solumada-clocking" />
   <meta name="description" content="solumada-clocking" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Dashboard</title>
+  <title>Liste des avances</title>
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images1/logo.jpg" />
   <!-- Custom CSS -->
@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="cssDTB/notification.css">
   <link rel="stylesheet" href="cssDTB/allRequest.css">
   <link rel="stylesheet" href="cssDTB/RequestSalary.css">
+  <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
   <script>
     var role = '<%= role %>';
   </script>
@@ -234,27 +235,20 @@
             <div class="card">
               <div class="card-body">
                 <div class="header-request">
-                  <div class="buttons-tab">
-                    <button data-target="#Urgent" class="switch-button active-btn">
-                      Urgentes (<span>0</span>)
-                    </button>
-                    <button data-target="#NUrgent" class="switch-button">
-                      Non-Urgentes (<span>0</span>)
-                    </button>
+                  <div class="buttons-tab" style="width: 100%;">
+                    <!-- filter -->
+                    <select name="f-month" id="f-month"></select>
+                    <select name="f-year" id="f-year"></select>
                   </div>
                 </div>
                 <div class="coll-12 allRequest mt-2" id="content-allRequest">
-                  <div  id="Urgent">
-
-                    <main class="cd__main">
-                      <ol class="ol-cards alternate" id="UrgentList">
-                       
-                      </ol>
-                    </main>
-                  </div>
-                  <div class="card-item" id="NUrgent">
-                  
-                  </div>
+                    <div class="p-4">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="text-center" id="date-display">Aout 2025</h3>
+                        <h3 class="text-center">Total: <b id="total-display">0</b></h3>
+                      </div>
+                      <div id="wrapper"></div>
+                    </div>
                 </div>
               </div>
             </div>
@@ -276,7 +270,8 @@
   <script src="../dist/js/waves.js"></script>
   <script src="../dist/js/sidebarmenu.js"></script>
   <script src="../dist/js/custom.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+  <script src="/jsDTB/avanceList.js"></script>
 </body>
 
 </html>

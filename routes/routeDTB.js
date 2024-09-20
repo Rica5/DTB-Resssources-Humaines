@@ -17,7 +17,7 @@ const ControllerRequestSalary = require("../ControllerAdmin/DTBRequestSalary")
 const API = require("../ControllerDTB/api/leave-request")
 const API_Avance = require("../ControllerDTB/api/avance-salaire")
 const API_Solde = require("../ControllerDTB/api/solde")
-const ControllerAvance = require("../ControllerDTB/DTBConontrollerAvance")
+const ControllerAvance = require("../ControllerDTB/DTBControllerAvance")
 
 //Authentification route
 // Default route
@@ -71,12 +71,15 @@ routeExpDTB.route("/change_entry").post(ControllerClockingUser.setEntry);//pass
 // API
 routeExpDTB.route('/api/leave-requests').get(API.getLeaves);
 // avance API
-routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Avance.updateAvance);
-routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
-routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
 routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
+routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
+routeExpDTB.route('/api/avance/paid').get(API_Avance.getPaidDemands)
+routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
 routeExpDTB.route('/api/avance/validate').post(API_Avance.validateAvance)
+routeExpDTB.route('/api/avance/employe-confirm/:id').post(API_Avance.employeeConfirmRequest)
+routeExpDTB.route('/api/avance/complete/:id').post(API_Avance.completeRequest)
+routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Avance.updateAvance);
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
 routeExpDTB.route('/api/avance/verification/:id?').get(API_Avance.verificationDemand)
 routeExpDTB.route('/api/avance/payer/:id?').get(API_Avance.payerAvance)

@@ -3,8 +3,8 @@
 .ol-cards *,
 .ol-cards *::before,
 .ol-cards *::after {
-  margin: 0;
-  padding: 0;
+  /* margin: 0;
+  padding: 0; */
   box-sizing: border-box;
 }
 .ol-cards {
@@ -18,15 +18,29 @@
   gap: 2em;
   counter-reset: ol-cards-counter;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(400px, 1fr));
 }
+
+@media screen and (max-width: 1480px) {
+  .ol-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .ol-cards {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
 
 .ol-cards li {
   display: grid;
   grid-template-areas:
     "step title"
     "step content";
-  padding: 1em 2em 1em 0;
+    overflow-x: auto;
+  padding: 1em 1em 1em 0;
   row-gap: 0.5em;
   column-gap: 2em;
   box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.4),
@@ -36,6 +50,10 @@
   background-color: var(--ol-cards-color-bg);
 }
 
+.ol-cards .timestamps {
+  color: #696969;
+  font-size: 0.81rem;
+}
 
 .paye{
   float: right;
@@ -69,6 +87,7 @@
 
 .ol-cards li .step::before {
   content: attr(m-code);
+  white-space: nowrap;
   flex: 1;
   align-self: center;
   color: var(--ol-cards-color-bg);
@@ -80,6 +99,38 @@
   border-radius: 50em 0 0 50em;
   flex-direction: row-reverse;
 } */
+
+.ol-cards .flexy {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.3rem;
+}
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.45rem;
+  color: #fff;
+}
+
+.badge-success {
+  background-color: #28a745; /* Green color */
+  border: 1px solid #28a745;
+}
+.badge-warning {
+  background-color: #b8952c; /* Yellow color */
+  border: 1px solid #b8952c;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
 
 .ol-cards li .step i {
   color: var(--ol-cards-color-accent);
@@ -109,7 +160,16 @@
 }
 .bouton, .input-group-mod{
   padding-left: 6px ;
+}
 
+.ol-cards button {
+  font-size: 0.9rem !important;
+}
+.ellipsis {
+  white-space: nowrap;          /* Prevents text from wrapping to the next line */
+  overflow: hidden;             /* Hides text that overflows the container */
+  text-overflow: ellipsis;      /* Adds "..." when text overflows */
+  max-width: 190px;
 }
 
 .show{
@@ -217,4 +277,43 @@
   .ol-cards li .content{
     padding: 0 1em;
   }
+}
+
+
+.my-confirm-button {
+  background-color: #28a745 !important; /* Green background */
+  color: white !important; /* White text */
+}
+
+.my-confirm-button:hover {
+  background-color: #218838 !important; /* Darker green on hover */
+}
+
+.non-urgent {
+  --ol-cards-color-accent: #76d18b;
+}
+.urgent {
+  --ol-cards-color-accent: #e09595;
+}
+
+.form-control.input-right {
+  position: relative;
+  z-index: 5;
+}
+
+
+.search {
+  display: flex;
+  gap: 4px;
+  border: 1px solid #dadada;
+  padding: 6px;
+  border-radius: 8px;
+  min-width: 220px;
+}
+.search > input {
+  font-size: 0.9rem !important;
+  width: 100%;
+}
+.all-line {
+  grid-column: 1 / -1;
 }
