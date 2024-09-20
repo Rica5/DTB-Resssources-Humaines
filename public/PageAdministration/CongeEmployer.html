@@ -59,7 +59,7 @@
     <link rel="stylesheet" href="/cssDTB/notification.css">
     
     <script>
-      var initData = JSON.parse('<%-JSON.stringify(users)%>');
+      var initData = JSON.parse(String.raw`<%-JSON.stringify(users)%>`);
       var leave_in_progress = JSON.parse('<%-JSON.stringify(leave_in_progress)%>');
       var allPermission = JSON.parse(`<%-JSON.stringify(allPermission)%>`)
       var role =  '<%= role %>';
