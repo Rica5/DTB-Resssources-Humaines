@@ -9,7 +9,6 @@ function fetchList(month) {
     fetch(`/filterLeaveRequest?month=${month}&year=${year}`)
     .then(async res => {
         const {ok, data} = await res.json();
-        console.log(data)
         if (ok)
             renderLeaveRequests(data);
     })
@@ -130,7 +129,7 @@ function renderAllRequest(Leave){
                         <div class="ask">
                             <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
                             <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
-                            <span>Reste après autorisation: ${(acc - duration)}</span>
+                            <span>Reste après autorisation: ${(acc)}</span>
                         </div>
                     </div>
                 </div> 
