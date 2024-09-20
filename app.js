@@ -25,6 +25,7 @@ db.once('open', () => {
   //   .then(() => console.log('Cloning completed'))
   //   .catch((err) => console.error('Cloning failed', err));
 
+  // copyNonExistingRecords('cleavesolumadas', 'cleavetests');
   
 });
 
@@ -54,6 +55,47 @@ async function cloneCollectionData(sourceCollectionName, targetCollectionName) {
     console.log(`Successfully cloned ${dataToClone.length} documents from ${sourceCollectionName} to ${targetCollectionName}`);
   } catch (error) {
     console.error('Error cloning collection data:', error);
+  }
+}
+
+// Function to copy not existing documents to an another collection
+async function copyNonExistingRecords(sourceCollectionName, destinationCollectionName) {
+  try {
+
+    const SourceCollection = mongoose.connection.db.collection(sourceCollectionName); // Use .db to access native methods
+    const DestinationCollection = mongoose.connection.db.collection(destinationCollectionName);
+
+    // Fetch all records from the source collection
+    const sourceRecords = await SourceCollection.find({
+      date_start: { 
+        $regex: "^2024-08" 
+      }
+    }).toArray();
+
+    console.log(sourceRecords.length)
+
+    for (const record of sourceRecords) {
+      // Check if a document with the same date_start, date_end, and m_code exists in the destination collection
+      const exists = await DestinationCollection.findOne({
+        date_start: record.date_start,
+        date_end: record.date_end,
+        m_code: record.m_code,
+      });
+
+      if (!exists) {
+        // Copy the record to the destination collection
+        await DestinationCollection.insertOne(record);
+        console.log(`Copied record with m_code: ${record.m_code}`);
+      } else {
+        console.log(`Record with m_code: ${record.m_code} already exists.`);
+      }
+    }
+
+    console.log('Data copy completed!');
+    // Close the connection
+    // mongoose.connection.close();
+  } catch (error) {
+    console.error('Error copying records:', error);
   }
 }
 
