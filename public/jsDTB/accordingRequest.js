@@ -1,5 +1,5 @@
-// const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
-const GerantId = "6673ecbf0f644c29f7a997f7";
+const GerantId = "645a417e9d34ed8965caea9e"; // Navalona
+// const GerantId = "6673ecbf0f644c29f7a997f7";
 const leaveModeValue = {
     'congé': 'Congé',
     'régularisation': "Régularisation d'absence",
@@ -36,6 +36,7 @@ function UpdateRequest(){
             $('button[data-target="#mediumRequest"] > span').text(mediumRequests.length)
             // render low priority requests
             const lowRequests = allRequest.filter((lr) => lr.leavePriority === 1)
+            
             $('#lowRequest').html(renderAllRequest(lowRequests));
             $('button[data-target="#lowRequest"] > span').text(lowRequests.length);
             $('#allRequest').html(renderAllRequest(allRequest));
@@ -45,8 +46,26 @@ function UpdateRequest(){
    })
 }
 
+function getListGerantDemand() {
+    $.ajax({
+        url: "/getDemandeGerant",
+        method: "GET",
+        data: {},
+        success: function (res) {
+            var dataGerant = res.data
+            // const gerantRequests = res.data.filter((lr) => lr.leavePriority === 3);
+            $('#gerantList').html(renderAllRequest(dataGerant));
 
+            $('button[data-target="#listeGerant"] > span').text(dataGerant.length);
+            
+        }
+    })
+}
+getListGerantDemand()
 
+if (USERID == GerantId) {
+    $("#btnListGerant").attr('style', 'display: none')
+}
 // sort requests by date
 const sortedAsc = data => data.slice().sort((a, b) => {
     // Compare dates
@@ -109,7 +128,7 @@ function chercherDemande(input) {
 
 
 function renderAllRequest(Leave){
-
+    
     var search = `
             <div class="row  d-flex align-items-center" style="grid-column: span 2; position : relative; display: none !important">
                 <input type="search" placeholder="cherher m-code" oninput="chercherDemande(this)" class="form-control recherche-mcode"/>
@@ -257,6 +276,7 @@ function renderAllRequest(Leave){
     return search + mappedLeave.join('');
 }
 UpdateRequest();
+
 function isFloat(num) {
     // Check if the number has a fractional part
     return num % 1 !== 0;
@@ -1066,3 +1086,8 @@ $('#global-search').on('input',function() {
     $('#allRequest').removeAttr('hidden');
 
 });
+
+$("#btnListGerant").on("click", function () {
+    $('#gerantList').removeAttr('hidden');
+})
+
