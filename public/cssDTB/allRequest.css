@@ -495,3 +495,7 @@ p {
     padding-left: 35px;
 
 }
+
+#gerantList button{
+    display: none !important;
+}
