@@ -239,6 +239,8 @@ routeExpDTB.route("/validelatetl").get(ControllerLateValidation.getlateValidatio
 routeExpDTB.route("/scheduled-leaves-requests-checker").get(ControllerScheduled.checkNotTakenLeavesRequests);//pass
 routeExpDTB.route("/scheduled-automatic-requests-confirmation").get(ControllerScheduled.automaticRequestConfirmation);//pass
 
+routeExpDTB.route("/getDemandeGerant").get(API.getListGerantDemandC)
+
 
 
 //Logout

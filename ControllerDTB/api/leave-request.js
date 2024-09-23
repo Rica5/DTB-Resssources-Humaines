@@ -1,5 +1,7 @@
 const LeaveRequestTest = require("../../models/ModelLeaveRequest");
 const moment = require('moment');
+const UserSchema = require("../../models/ModelMember");
+const id_gerant = "645a417e9d34ed8965caea9e"  //Gérant Id du Navalona
 
 async function getLeaves(req, res) {
     try {
@@ -32,6 +34,28 @@ async function getLeaves(req, res) {
     }
 }
 
+async function getListGerantDemandC(req, res) {
+    try {
+        
+        // ids RH
+        var RH_Ids = await UserSchema.find({ occupation: "Admin", _id: { $ne: id_gerant } });
+        RH_Ids = RH_Ids.map(e => e._id);
+
+        var allRequest = await LeaveRequestTest.find({
+            status: { $nin: ["approved", "declined"] },
+            "validation.user": { $in: RH_Ids}
+        })
+        .populate({ path: "validation.user", select: 'usuel' })
+        .sort({ leavePriority: 'desc' });
+        
+        // allRequest = allRequest.filter(leave => leave.validation.filter(v => !v.approbation).length < 2);
+        res.json({data: allRequest});
+    } catch (error) {
+        console.error("Error get data Gerant", error)
+        res.json({data: []})
+    }
+}
+
 module.exports = {
-    getLeaves
+    getLeaves, getListGerantDemandC
 }
