@@ -428,23 +428,26 @@ async function completeRequest(req, res) {
 
 async function addPeriodDates(req, res) {
     try {
-        const data = req.body;
-        let month = moment().format('YYYY-MM');
+        const { month, ...data } = req.body;
         const exists = await DateAvance.findOne({ month: month });
         if (exists) {
             // update existing
-            const updated = await DateAvance.findByIdAndUpdate(exists._id, {...data}, { new: true });
+            const updated = await DateAvance.findByIdAndUpdate(exists._id, {
+                ...data,
+                month: month
+            }, { new: true });
+
             res.json({
                 ok: true,
                 data: updated
-            })
+            });
         } else {
             // add new 
-            const created = await DateAvance.create({...data});
+            const created = await DateAvance.create({...data, month});
             res.json({
                 ok: true,
                 data: created
-            })
+            });
         }
 
     } catch (error) {
@@ -452,7 +455,32 @@ async function addPeriodDates(req, res) {
         res.json({
             ok: false,
             data: null
-        })
+        });
+    }
+}
+
+async function getPeriodInMonth(req, res) {
+    try {
+        const { month } = req.params;
+        var data = await DateAvance.findOne({ month: month });
+        if (!data) {
+            data = await DateAvance.create({
+                month: month,
+                start_date: moment(month, 'YYYY-MM').date(20).toDate(),
+                end_date: moment(month, 'YYYY-MM').endOf('month').add(-3, 'day').toDate(),
+            });
+        }
+        res.json({
+            ok: true,
+            data: data
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.json({
+            ok: false,
+            data: null
+        });
     }
 }
 
@@ -470,5 +498,6 @@ module.exports = {
     employeeConfirmRequest,
     completeRequest,
     getPaidDemands,
-    addPeriodDates
+    addPeriodDates,
+    getPeriodInMonth
 }

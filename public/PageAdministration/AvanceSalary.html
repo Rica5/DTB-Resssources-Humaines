@@ -261,7 +261,7 @@
                   </div>
                 </div>
                 <div class="coll-12 allRequest mt-2" id="content-allRequest">
-                  <div class="p-3">
+                  <div class="p-3" id="period-container">
                     <!-- Formulaire pour definir les dates ouvrables  -->
                     <button class="btn btn-primary" id="open-form">
                       Changer les dates ouvrables <i class="fa-solid fa-chevron-up ms-2"></i>
@@ -288,7 +288,7 @@
                         </div>
   
   
-                        <div class="form-group">
+                        <div class="form-group" hidden>
                             <label>Jours ouvrables :</label>
                             <div class="checkbox-group">
                                 <label><input type="checkbox" name="working_days" value="1" checked> Lundi</label>
@@ -308,6 +308,8 @@
                             </div>
                             <button type="button" id="addHoliday">Ajouter un jour férié</button>
                         </div>
+
+                        <input type="hidden" name="month" id="month">
   
                         <button type="submit" class="btn btn-primary">Soumettre</button>
                       </form>
@@ -362,11 +364,39 @@
       }
     });
 
-    $('#avanceDateForm').on('submit', function(){
+    $('#avanceDateForm').on('submit', async function(){
       event.preventDefault();
       let $form = $(this);
       const serialized = $form.serializeArray();
-      console.log(serialized)
+
+      const body = serialized.reduce((acc, { name, value }) => {
+        if (acc[name] !== undefined) {
+            // If the property already exists, make sure it's an array and then push the value
+            if (!Array.isArray(acc[name])) {
+                acc[name] = [acc[name]]; // Convert to array if it's not already
+            }
+            acc[name].push(value);
+        } else {
+            // If it's the first occurrence, directly assign the value
+            acc[name] = value;
+        }
+        return acc;
+      }, {});
+
+      const res = await fetch('/api/avance/addperiod', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const { data } = await res.json();
+
+      if (data) {
+        alert('Success')
+      }
+      
     });
 
   </script>
