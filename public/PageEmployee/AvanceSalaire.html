@@ -614,10 +614,22 @@
     </script>
     <script>
         
-        const start_date = new Date('2024-09-20')  
-        const end_date = new Date('2024-09-30') 
-        const dateNow = new Date('2024-09-3')
-        
+    // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
+    async function getPeriodByMonth(month) {
+        const res = await fetch('/api/avance/getperiod/' + month);
+        const { data } = await res.json();
+        return data;
+    }
+     
+    const dateNow = new Date()
+    var getMonth = dateNow.getMonth()+1
+    var getYear = dateNow.getFullYear()
+    
+    getPeriodByMonth(getYear+"-"+getMonth).then(data=>{
+            
+        const start_date = data.start_date  
+        const end_date = data.end_date 
+
         // Comparer les dates
         if (start_date < dateNow && dateNow < end_date) {
             $("#aucun-demande").attr("style", "display: none")
@@ -626,14 +638,18 @@
             $("#aucun-demande").attr("style", "display: block")
             $("#demande-avance").attr("style", "display: none")
         }
+    })
 
-        $("#urgent-avance").on("click", function () {
-            $("#demande-avance").attr("style", "display: block")
-            $("#aucun-demande").attr("style", "display: none !important")
-            $("#urgent").prop("checked",true)
-            
-        })
+
+
+    $("#urgent-avance").on("click", function () {
+        $("#demande-avance").attr("style", "display: block")
+        $("#aucun-demande").attr("style", "display: none !important")
+        $("#urgent").prop("checked",true)
+        
+    })
     </script>
+
     <script src="../jsDTB/no-connection.js"></script>
 </body>
 
