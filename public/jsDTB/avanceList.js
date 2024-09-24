@@ -48,6 +48,32 @@ class AvanceList {
         // show total
         const totalAmount = data.map(s => s.amount_granted).reduce((acc, cur) => acc + cur, 0);
         $("#total-display").html(formatNumber(totalAmount));
+
+        // hide period container if month is equal to 0
+        if (this.month === 0) {
+            $('#period-container').attr('hidden', '');
+        } else {
+            $('#period-container').removeAttr('hidden');
+            let month = `${this.year}-${this.month.toString().padStart(2, "0")}`;
+            // input month value
+            $('#month').val(month);
+            const data = await this.getPeriodByMonth(month);
+            this.fillInPeriodForm(data)
+        }
+    }
+
+    // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
+    async getPeriodByMonth(month) {
+        const res = await fetch('/api/avance/getperiod/' + month);
+        const { data } = await res.json();
+        return data;
+    }
+
+    // method to display data in the form
+    fillInPeriodForm(data) {
+        const f = (d) => moment(d).format('YYYY-MM-DD')
+        $('#start_date').val(data ? f(data.start_date) : '');
+        $('#end_date').val(f(data ? data.end_date : ''));
     }
 
     addFilters() {
