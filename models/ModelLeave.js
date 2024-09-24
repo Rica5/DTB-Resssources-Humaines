@@ -28,4 +28,4 @@ const Leave = mongoose.Schema({
         ref:"newLeaveRequestTest"
     }
 })
-module.exports = mongoose.model('cleaveTest2',Leave);
+module.exports = mongoose.model('cleaveTest',Leave);
