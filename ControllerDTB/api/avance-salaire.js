@@ -1,5 +1,6 @@
 const moment = require("moment");
 const Avance = require("../../models/ModelAvance");
+const DateAvance = require("../../models/ModelDatesAvance");
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")
 
@@ -425,6 +426,36 @@ async function completeRequest(req, res) {
     }
 }
 
+async function addPeriodDates(req, res) {
+    try {
+        const data = req.body;
+        let month = moment().format('YYYY-MM');
+        const exists = await DateAvance.findOne({ month: month });
+        if (exists) {
+            // update existing
+            const updated = await DateAvance.findByIdAndUpdate(exists._id, {...data}, { new: true });
+            res.json({
+                ok: true,
+                data: updated
+            })
+        } else {
+            // add new 
+            const created = await DateAvance.create({...data});
+            res.json({
+                ok: true,
+                data: created
+            })
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.json({
+            ok: false,
+            data: null
+        })
+    }
+}
+
 module.exports = {
     getListByUserId,
     createAvance,
@@ -438,5 +469,6 @@ module.exports = {
     payerAvance,
     employeeConfirmRequest,
     completeRequest,
-    getPaidDemands
+    getPaidDemands,
+    addPeriodDates
 }
