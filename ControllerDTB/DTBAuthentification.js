@@ -43,7 +43,8 @@ const setIp = async (req, res) => {
 }
 //When user switch interface 
 const switchInterface = async (req, res) => {
-  await switch_interface(req.session, req.body.mail, req.body.opt, res);
+  
+  await switch_interface(req.session, req.body.mail, req.body.opt, req.body.poste, res);
 }
 // Acces denied to an inauthorized IP
 const notAuthorized = async (req, res) => {
@@ -240,15 +241,15 @@ async function set_ip(ip_get, device, session, res) {
   res.send("Ok");
 }
 // Switch Interface 
-async function switch_interface(session, mail, opt, res) {
+async function switch_interface(session, mail, opt, status, res) {
   var theUser = await UserSchema.findOne({
     username: mail,
     occupation: "User",
   })
-
+  
   let userCheck = (await UserSchema.findOne({
     username: mail,
-    occupation: { $in: ["Opération", "Surveillant"]},
+    occupation: { $in: ["Opération", "Surveillant", "Finance"]},
   }));
 
   if (
@@ -274,12 +275,20 @@ async function switch_interface(session, mail, opt, res) {
       session.occupation_tl = null;
       session.m_code = theUser.m_code;
       res.redirect("/employee");
-    } else if (opt == "s") {
+    } else if (opt == "s" && status == "Surveillant") {
       session.occupation_tl = "Surveillant";
       session.occupation_op = null;
       session.occupation_u = null;
       globalVariable.data_desired[session.m_code] = {};
       res.redirect("/managementtl");
+    }else if (opt == "s" && status == "Finance") {
+      console.log("Finance");
+      session.occupation_tl = null;
+      session.occupation_op = null;
+      session.occupation_u = null;
+      session.occupation_f =  "Finance";
+      globalVariable.data_desired[session.m_code] = {};
+      res.redirect("/finance");
     }
   } else {
     let userAdmin = await UserSchema.findOne({ username: mail, occupation: "Admin" });

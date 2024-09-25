@@ -63,6 +63,7 @@ const pageEmployee = async(req,res) => {
           var another_post = "n";
           var status_poste = "n";
           var administrator = "n";
+          var status_postefinance = "n";
           var occupations = await UserSchema.findOne({
             username: session.mailing,
             occupation: "Opération",
@@ -71,6 +72,11 @@ const pageEmployee = async(req,res) => {
             username: session.mailing,
             occupation: "Surveillant",
           });
+          var status_finance = await UserSchema.findOne({
+            username: session.mailing,
+            occupation: "Finance",
+          });
+          
           var administrator_occ = await UserSchema.findOne({
             username: session.mailing,
             occupation: "Admin",
@@ -89,6 +95,9 @@ const pageEmployee = async(req,res) => {
           if (administrator_occ) {
             administrator = "Admin";
           }
+          if (status_finance) {
+            status_poste = "Finance";
+          }
           if (session.time != "n") {
             res.render("PageEmployee/MaPointage.html", {
               user: user,
@@ -96,6 +105,7 @@ const pageEmployee = async(req,res) => {
               latelist: late_confirm,
               another: another_post,
               status_poste: status_poste,
+              status_postefinance: status_postefinance,
               administrator: administrator,
               warn_you: warn_you,
               codeUser:session.m_code
@@ -107,6 +117,7 @@ const pageEmployee = async(req,res) => {
               latelist: late_confirm,
               another: another_post,
               status_poste: status_poste,
+              status_postefinance: status_postefinance,
               administrator: administrator,
               warn_you: warn_you,
               codeUser:session.m_code

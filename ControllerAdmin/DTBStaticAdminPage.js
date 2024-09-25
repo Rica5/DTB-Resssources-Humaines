@@ -111,6 +111,29 @@ const getAbsenceList = async(req,res) => {
       res.redirect("/");
     }
 }
+
+const getPageFinance = async(req,res) => {
+  var session = req.session;
+  if (session.occupation_f == "Finance") {
+        var alluser = await UserSchema.find({
+          m_code: { $ne: "N/A" },
+          status: "Actif",
+        });
+        var show_another = "n";
+        var occupations = await UserSchema.findOne({
+          username: session.mailing,
+          occupation: "Finance",
+        });
+        if (occupations) {
+          show_another = occupations.occupation;
+        }
+        var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+        var role = "Surveillant";
+        res.render("PageTL/finance.html");
+  } else {
+    res.redirect("/");
+  }
+}
 //Get page status tl
 const getPageTl = async(req,res) => {
   var session = req.session;
@@ -168,5 +191,5 @@ const pageAbsenceTL = async(req,res) => {
 }
 
 module.exports = {
-  getDashboardPage,getPageStatusUser,getPageAbsenceList,getAbsenceList,getPageTl,pageAbsenceTL
+  getDashboardPage,getPageStatusUser,getPageAbsenceList,getAbsenceList,getPageTl,pageAbsenceTL,getPageFinance
 }
