@@ -43,6 +43,19 @@
       margin-right: 10px;
       margin-bottom: 5px;
     }
+
+    .btn:not(.loading) .load,
+    .btn.loading .normal {
+      display: none;
+    }
+    .btn.loading .load,
+    .btn:not(.loading) .normal {
+      display: block;
+    }
+    .btn.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 
@@ -203,12 +216,12 @@
               <ul aria-expanded="false" class="collapse first-level">
                 <li class="sidebar-item">
                   <a href="/advancesalarylist" class="sidebar-link"><i class="mdi mdi-format-list-bulleted"></i><span
-                      class="hide-menu">List des avances</span></a>
+                      class="hide-menu">Liste des avances</span></a>
                 </li>
                 <li class="sidebar-item">
                   <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/requestsalary"
                     aria-expanded="false"><i class="fa-solid fa-envelope"></i>
-                    <span class="hide-menu">Demande des salaires</span></a>
+                    <span class="hide-menu">Demande des avances</span></a>
                 </li>
               </ul>
             </li>
@@ -263,10 +276,10 @@
                 <div class="coll-12 allRequest mt-2" id="content-allRequest">
                   <div class="p-3" id="period-container">
                     <!-- Formulaire pour definir les dates ouvrables  -->
-                    <button class="btn btn-primary" id="open-form">
+                    <button class="btn btn-secondary" id="open-form">
                       Changer les dates ouvrables <i class="fa-solid fa-chevron-up ms-2"></i>
                     </button>
-                    <div class="form-container p-4 border my-3" hidden>
+                    <div class="form-container p-4 border my-3 bg-white" hidden>
                       <h3>Définir les Dates Ouvrables</h3>
                       <form id="avanceDateForm">
                         <div class="row">
@@ -311,7 +324,10 @@
 
                         <input type="hidden" name="month" id="month">
   
-                        <button type="submit" class="btn btn-primary">Soumettre</button>
+                        <button type="submit" id="submit" class="btn btn-primary">
+                          <span class="load">Mise à jour...</span>
+                          <span class="normal">Mettre à jour</span>
+                        </button>
                       </form>
                     </div>
                   </div>
@@ -383,6 +399,10 @@
         return acc;
       }, {});
 
+      // loading btn
+      let $btn = $form.find('button#submit');
+      $btn.addClass('loading');
+
       const res = await fetch('/api/avance/addperiod', {
         method: 'POST',
         body: JSON.stringify(body),
@@ -394,8 +414,10 @@
       const { data } = await res.json();
 
       if (data) {
-        alert('Success')
+        // alert('Success')
       }
+      
+      $btn.removeClass('loading');
       
     });
 

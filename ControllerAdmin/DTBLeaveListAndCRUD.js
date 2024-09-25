@@ -1309,7 +1309,7 @@ function calcul_timediff_absencereport(startTime, endTime) {
   }
 
   // Return the total hours, rounded to two decimal places
-  return hours_fictif.toFixed(2) + "H";
+  return formatNumber(hours_fictif) + "H";
 }
 
 function calcul_timediff_absencereport_spec(startTime, endTime) {
@@ -1342,6 +1342,22 @@ function calcul_timediff_absencereport_spec(startTime, endTime) {
     return [hours_fictif, minutes_fictif]
   }
 }
+
+// method to replace , with . and dont show if number after coma is 0 (eg: 2.00 => 2)
+function formatNumber(num) {
+  // Convert the number to a string with two decimal places
+  let formatted = num.toFixed(2);
+  
+  // Replace comma with a dot if needed (optional if locale uses a comma)
+  formatted = formatted.replace(',', '.');
+
+  // Remove unnecessary ".00" or trailing zeros after the decimal
+  formatted = formatted.replace(/\.00$/, '');    // Removes ".00"
+  formatted = formatted.replace(/(\.\d)0$/, '$1'); // Removes trailing zero after one decimal
+
+  return formatted;
+}
+
 //Method to render a result string
 function renderResult_old(day, theHour, theMin) {
   var result = "";
@@ -1366,7 +1382,7 @@ function renderResult(day, theHour, theMin) {
   let result = "";
   result += day > 0 ? `${day}j ` : "";
   result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";
-  result += totalHours > 0 ? `${totalHours.toFixed(2)}H` : "";
+  result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";
   
   result = result.replace(/\d+\.\d+/g, function (match) {
     return match.replace('.', ',');

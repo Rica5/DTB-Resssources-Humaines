@@ -282,7 +282,6 @@ async function switch_interface(session, mail, opt, status, res) {
       globalVariable.data_desired[session.m_code] = {};
       res.redirect("/managementtl");
     }else if (opt == "s" && status == "Finance") {
-      console.log("Finance");
       session.occupation_tl = null;
       session.occupation_op = null;
       session.occupation_u = null;
