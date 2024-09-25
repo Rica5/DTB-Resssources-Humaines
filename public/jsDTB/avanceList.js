@@ -73,7 +73,7 @@ class AvanceList {
     fillInPeriodForm(data) {
         const f = (d) => moment(d).format('YYYY-MM-DD')
         $('#start_date').val(data ? f(data.start_date) : '');
-        $('#end_date').val(f(data ? data.end_date : ''));
+        $('#end_date').val(data ? f(data.end_date) : '');
     }
 
     addFilters() {

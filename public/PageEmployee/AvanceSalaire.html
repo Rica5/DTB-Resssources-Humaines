@@ -84,9 +84,9 @@
                             <span>Demandes payées</span>
                         </div>
                     </div>
-                    <div class="all-fiche border border-1 bg-light shadow-sm d-flex flex-column justify-content-center align-items-center" id="aucun-demande" style="min-height: 300px; margin: 50px auto; max-width: 600px;">
+                    <div class="all-fiche border border-1 bg-light shadow-sm d-flex flex-column justify-content-center align-items-center" id="aucun-demande" style="display: none !important;">
                         <div class="mb-4 text-center">
-                            <h5 class="text-danger font-weight-bold">VOUS NE POUVEZ PAS DEMANDER UNE AVANCE EN DEHORS DE LA DATE</h5>
+                            <h5 class="text-danger font-weight-bold">VOUS NE POUVEZ PAS DEMANDER UNE AVANCE EN DEHORS DES DATE OUVRABLES</h5>
                         </div>
                     
                         <div class="mb-3 text-center d-flex flex-column align-items-center">
@@ -98,7 +98,7 @@
                     </div>
                     
                     
-                    <div class="all-fiche border border-1"  id="demande-avance">
+                    <div class="all-fiche border border-1"  id="demande-avance" style="display: none !important;">
                         <div style="text-align: left; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
                             <h5>DEMANDE D'AVANCE SUR SALAIRE</h5>
                         </div>
@@ -622,21 +622,25 @@
     }
      
     const dateNow = new Date()
-    var getMonth = dateNow.getMonth()+1
+    var getMonth = (dateNow.getMonth()+1).toString().padStart(2, '0');
     var getYear = dateNow.getFullYear()
+
     
     getPeriodByMonth(getYear+"-"+getMonth).then(data=>{
-            
-        const start_date = data.start_date  
-        const end_date = data.end_date 
+
+        const startDate = moment(data.start_date).startOf('day');
+        const endDate = moment(data.end_date).startOf('day');
+
+        // Check if the current date is between or equal to startDate and endDate
+        const isNowBetweenOrEqual = moment().startOf('day').isBetween(startDate, endDate, null, '[]');
 
         // Comparer les dates
-        if (start_date < dateNow && dateNow < end_date) {
-            $("#aucun-demande").attr("style", "display: none")
-            $("#demande-avance").attr("style", "display: block")
+        if (isNowBetweenOrEqual) {
+            $("#aucun-demande").attr("style", "display: none !important;")
+            $("#demande-avance").attr("style", "display: block !important;")
         } else {
-            $("#aucun-demande").attr("style", "display: block")
-            $("#demande-avance").attr("style", "display: none")
+            $("#aucun-demande").attr("style", "display: flex !important;")
+            $("#demande-avance").attr("style", "display: none !important;")
         }
     })
 

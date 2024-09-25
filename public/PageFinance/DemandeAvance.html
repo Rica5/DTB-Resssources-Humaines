@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keywords" content="solumada-clocking" />
+    <meta name="description" content="solumada-clocking" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Dashboard</title>
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images1/logo.jpg" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/css1/newmain_gen.css" />
+    <link rel="stylesheet" href="assets/libs/bootstrap/dist/css/bootstrap.css" />
+    <link href="../dist/css/style.min.css" rel="stylesheet" />
+    <link href="assets/css1/showLeaveEmployee.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/assets/fontawesome-free-6.4.0-web/css/all.css" />
+    <link rel="stylesheet" href="cssDTB/notification.css">
+    <link rel="stylesheet" href="cssDTB/allRequest.css">
+    <link rel="stylesheet" href="cssDTB/RequestSalary.css">
+
+    <!-- <link rel="stylesheet" href="cssDTB/SalaryAdvance.css"> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+    <script>
+        var role = '<%= role %>';
+    </script>
+</head>
+
+<body>
+    <div class="preloader">
+        <div class="lds-ripple">
+            <div class="lds-pos"></div>
+            <div class="lds-pos"></div>
+        </div>
+    </div>
+
+    <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
+        data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+        <header class="topbar" data-navbarbg="skin5">
+            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
+                <div class="navbar-header" data-logobg="skin5">
+                    <a class="navbar-brand" href="/">
+                        <b class="logo-icon ps-2">
+                            <img src="../assets/images1/logo.jpg" alt="homepage" class="light-logo" width="45" />
+                        </b>
+                        <span class="logo-text ms-3">
+                            <b>SOLUMADA</b>
+                        </span>
+                    </a>
+                    <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)"><i
+                            class="ti-menu ti-close"></i></a>
+                </div>
+                <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
+                    <ul class="navbar-nav float-start me-auto"></ul>
+                    <ul class="navbar-nav float-end">
+                        <li style="padding: 15px">
+                            <form action="/change_interface" method="post">
+                                <input type="hidden" name="mail" value="<%= username %>" />
+                                <input type="hidden" name="opt" value="p" />
+                                <button type="submit" class="btn btn-info mx-5 text-white">
+                                    <i class="mdi mdi-exit-to-app" width="31"> MON ESPACE</i>
+                                </button>
+                            </form>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link notif-btn" href="#" role="button" onclick="openNotif(this)">
+                                <i class="font-24 mdi mdi-bell"><span style="color:red" id="nbr-notif"
+                                        class="badge">0</span></i>
+                            </button>
+                            <ul hidden class="
+                      dropdown-menu dropdown-menu-end
+                      mailbox
+                      animated
+                      bounceInDown
+                    " aria-labelledby="2">
+                                <ul id="card-notif" class="list-style-none">
+                                    <li>
+                                        <div class="">
+                                            <!-- Notif -->
+                                            <a href="javascript:void(0)" class="link border-top">
+                                                <div class="d-flex no-block align-items-center p-10">
+                                                    <span class="
+                                btn btn-success btn-circle
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                              "><i id="ring" class="mdi mdi-bell text-white fs-4"></i>
+                                                    </span>
+                                                    <div class="ms-2">
+                                                        <h5 class="mb-0">Notification aujourd'hui</h5>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown d-flex p-1">
+                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic">
+                                <div class="content-circle">
+                                    <img src="../Profil/<%= dataUser.profil %>" alt="user" class="img-circle" />
+                                </div>
+
+                            </a>
+                            <div class="d-flex justify-content-center flex-column">
+                                <span class="name-admin">
+                                    <%= dataUser.usuel %>
+                                </span>
+                                <div><a class="logout" href="/exit_a">Se déconnecter</a></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <aside class="left-sidebar" data-sidebarbg="skin5">
+            <!-- Sidebar scroll-->
+            <div class="scroll-sidebar">
+                <!-- Sidebar navigation-->
+                <nav class="sidebar-nav">
+                    <ul id="sidebarnav" class="pt-4">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)"
+                                aria-expanded="false"><i class="mdi mdi-currency-usd"></i>
+                                <span class="hide-menu">Avance sur salaire</span></a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a href="/advancesalarylist" class="sidebar-link">
+                                        <i class="mdi mdi-format-list-bulleted"></i>
+                                        <span class="hide-menu">Liste des avances</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a class="sidebar-link waves-effect waves-dark sidebar-link" href="/requestsalary"
+                                        aria-expanded="false"><i class="fa-solid fa-envelope"></i>
+                                        <span class="hide-menu">Demande des avances</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- End Sidebar navigation -->
+            </div>
+            <!-- End Sidebar scroll-->
+        </aside>
+        <div class="page-wrapper">
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-12 d-flex no-block align-items-center">
+                        <b class="logo-icon ps-2">
+                            <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
+                            <!-- Dark Logo icon -->
+                            <img src="../assets/images1/logo.jpg" alt="homepage" class="light-logo" width="45" />
+                        </b>
+                        <!--End Logo icon -->
+                        <!-- Logo text -->
+                        <span class="logo-text ms-3">
+                            <!-- dark Logo text -->
+                            <b>DEMANDE D'AVANCE SUR SALAIRE</b>
+                        </span>
+                        <div class="ms-auto text-end">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="#"><i
+                                                class="mdi mdi-format-list-bulleted"></i>Demande</a></li>
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        <i class="mdi mdi-format-list-bulleted"></i> Avance sur salaire
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid position-relative">
+
+                <div class="row content-request">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="header-request">
+                                    <div class="buttons-tab" style="width: 100%;">
+                                        <button id="UrgentBtn" class="switch-button active-btn">
+                                            Urgentes (<span>0</span>)
+                                        </button>
+                                        <button id="NUrgentBtn" class="switch-button">
+                                            Non-Urgentes (<span>0</span>)
+                                        </button>
+
+                                        <div class="mx-auto">
+                                            <div class="search">
+                                                <i class="mdi mdi-magnify"></i>
+                                                <input type="search" placeholder="Chercher..." id="global-search">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="coll-12 allRequest mt-2" id="content-allRequest">
+                                    <div class="">
+                                        <main class="cd__main">
+                                            <div class="ol-cards alternate" id="allRequest" hidden>
+                                                <!-- to show all search results (requests)-->
+                                            </div>
+                                        </main>
+                                    </div>
+                                    <div id="Urgent">
+
+                                        <main class="cd__main">
+                                            <div class="ol-cards alternate" id="UrgentList">
+
+                                            </div>
+                                        </main>
+                                    </div>
+                                    <div id="NUrgent" style="display: none;">
+                                        <main class="cd__main">
+                                            <div class="ol-cards alternate" id="NUrgentList">
+
+                                            </div>
+                                        </main>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- Fichier Javascript -->
+    <script src="/js_code/socket.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/jsDTB/notification.js"></script>
+
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../assets/extra-libs/sparkline/sparkline.js"></script>
+    <script src="../dist/js/waves.js"></script>
+    <script src="../dist/js/sidebarmenu.js"></script>
+    <script src="../dist/js/custom.min.js"></script>
+    <script src="/jsDTB/salaryRequestUI.js"></script>
+</body>
+
+</html>
