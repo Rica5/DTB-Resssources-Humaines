@@ -84,7 +84,20 @@
                             <span>Demandes payées</span>
                         </div>
                     </div>
-
+                    <div class="all-fiche border border-1 bg-light shadow-sm d-flex flex-column justify-content-center align-items-center" id="aucun-demande" style="min-height: 300px; margin: 50px auto; max-width: 600px;">
+                        <div class="mb-4 text-center">
+                            <h5 class="text-danger font-weight-bold">VOUS NE POUVEZ PAS DEMANDER UNE AVANCE EN DEHORS DE LA DATE</h5>
+                        </div>
+                    
+                        <div class="mb-3 text-center d-flex flex-column align-items-center">
+                            <p class="text-secondary">Si urgent, cliquez sur le bouton "Urgent"</p>
+                            <button class="btn btn-danger btn-lg d-flex align-items-center justify-content-center" id="urgent-avance">
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Urgent
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
                     <div class="all-fiche border border-1"  id="demande-avance">
                         <div style="text-align: left; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
                             <h5>DEMANDE D'AVANCE SUR SALAIRE</h5>
@@ -181,6 +194,7 @@
                         </div>
         
                     </div>
+
         
                     <div class="all-fiche border border-1" id="update-avance">
                         <div style="text-align: left; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
@@ -375,6 +389,7 @@
             </div>
         </div>
     </div>
+    
     <script>
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
@@ -597,6 +612,44 @@
             });
         }
     </script>
+    <script>
+        
+    // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
+    async function getPeriodByMonth(month) {
+        const res = await fetch('/api/avance/getperiod/' + month);
+        const { data } = await res.json();
+        return data;
+    }
+     
+    const dateNow = new Date()
+    var getMonth = dateNow.getMonth()+1
+    var getYear = dateNow.getFullYear()
+    
+    getPeriodByMonth(getYear+"-"+getMonth).then(data=>{
+            
+        const start_date = data.start_date  
+        const end_date = data.end_date 
+
+        // Comparer les dates
+        if (start_date < dateNow && dateNow < end_date) {
+            $("#aucun-demande").attr("style", "display: none")
+            $("#demande-avance").attr("style", "display: block")
+        } else {
+            $("#aucun-demande").attr("style", "display: block")
+            $("#demande-avance").attr("style", "display: none")
+        }
+    })
+
+
+
+    $("#urgent-avance").on("click", function () {
+        $("#demande-avance").attr("style", "display: block")
+        $("#aucun-demande").attr("style", "display: none !important")
+        $("#urgent").prop("checked",true)
+        
+    })
+    </script>
+
     <script src="../jsDTB/no-connection.js"></script>
 </body>
 
