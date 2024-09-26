@@ -317,3 +317,26 @@
 .all-line {
   grid-column: 1 / -1;
 }
+
+
+.code-input {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  text-align: center;
+  margin: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  
+  -webkit-text-security: disc; /* Make dots appear for Webkit browsers */
+  text-security: disc; /* For other browsers */
+}
+.code-input:focus {
+  border: 1px solid #ccc !important;
+  box-shadow: 0 0 8px rgba(20, 172, 233, 0.4);
+}
+.container-code {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}

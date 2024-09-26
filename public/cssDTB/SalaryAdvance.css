@@ -479,3 +479,43 @@ table {
   color: var(--verifying);
   font-size: 12px;
 }
+
+.code-container {
+  background-color: white;
+  border: 1px solid #d4d4d4;
+  padding: 0.6rem;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px;
+}
+
+.code-container .show-code {
+  border: none;
+  padding: 1rem;
+  font-size: 18px;
+  border-radius: 50%;
+}
+
+.code-container .show-code:hover {
+  color: #2FAD00;
+}
+
+i.show, i.hide {
+  display: none;
+}
+
+.show-code.show .show{
+  display: block;
+}
+.show-code.hide .hide{
+  display: block;
+}
+
+.masked-text::before {
+  content: '****'; /* Replace the actual content with dots */
+  font-size: inherit;
+  letter-spacing: 5px; /* Adjust spacing between dots */
+}

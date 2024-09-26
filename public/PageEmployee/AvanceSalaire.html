@@ -90,15 +90,19 @@
                         </div>
                     
                         <div class="mb-3 text-center d-flex flex-column align-items-center">
-                            <p class="text-secondary">Si urgent, cliquez sur le bouton "Urgent"</p>
-                            <button class="btn btn-danger btn-lg d-flex align-items-center justify-content-center" id="urgent-avance">
+                            <p class="text-secondary" style="max-width: 500px;">Vous ne pouvez pas effectuer de demande d'avance sur salaire, car la date d'aujourd'hui ne fait plus partie des dates ouvrables.</p>
+                            <!-- <button class="btn btn-danger btn-lg d-flex align-items-center justify-content-center" id="urgent-avance">
                                 <i class="fa-solid fa-triangle-exclamation mr-2"></i> Urgent
-                            </button>
+                            </button> -->
+                            <p>La dernière date autorisée était le <span class="date-fin"></span>.</p>
                         </div>
                     </div>
                     
                     
                     <div class="all-fiche border border-1"  id="demande-avance" style="display: none !important;">
+                        <div style="text-align: left;" class="mb-3">
+                            <h6 style="color: #000000;">Vous pouvez demander une avance jusqu'au <span style="color: #4737b1;" class="date-fin"></span>.</h6>
+                        </div>
                         <div style="text-align: left; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
                             <h5>DEMANDE D'AVANCE SUR SALAIRE</h5>
                         </div>
@@ -291,6 +295,20 @@
                                 <input type="hidden" value="" id="id-update"/>
                                 <button class="btn btn-success mx-4" id="envoyer-avance-update">Mis à jours</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- CODE A 4 CHIFFRES -->
+                    <div class="all-fiche mt-3">
+                        <div class="code-container">
+                            <div class="">
+                                <span>Votre code est:</span>
+                                <h2 id="digits-4" class="masked-text"></h2>
+                            </div>
+                            <button id="show-code" class="show-code hide">
+                                <i class="fa-solid fa-eye show"></i>
+                                <i class="fa-solid fa-eye-slash hide"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -642,6 +660,9 @@
             $("#aucun-demande").attr("style", "display: flex !important;")
             $("#demande-avance").attr("style", "display: none !important;")
         }
+
+        // display date de fin
+        $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYY')));
     })
 
 
@@ -651,6 +672,23 @@
         $("#aucun-demande").attr("style", "display: none !important")
         $("#urgent").prop("checked",true)
         
+    })
+
+    $('#show-code').on('click', function(){
+        let $btn = $(this);
+        let $code = $('#digits-4');
+        let code = '<%= user.digit_code %>';
+        if ($btn.hasClass('show')) {
+            $btn.removeClass('show').addClass('hide');
+            // add masked text
+            $code.addClass('masked-text');
+            $code.html('');
+        } else {
+            $btn.removeClass('hide').addClass('show');
+            // show the code
+            $code.removeClass('masked-text');
+            $code.html(code);
+        }
     })
     </script>
 
