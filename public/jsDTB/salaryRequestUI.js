@@ -13,7 +13,7 @@ class RequestSalary {
         const response = await fetch(`/api/avance/demande/${id}`)
         return response.json()
     }
-    
+
     // function to render salary requests
     async renderAllRequest() {
         // vider les conteneurs
@@ -48,6 +48,40 @@ class RequestSalary {
         var result = await fetch("/api/avance/verification/"+id)
         const  { data} = await result.json()
         return data
+    }
+
+    async filterUserPerShift(shift){
+        var data = await this.fetchAllRequests(shift)
+        var dataShift
+        
+        if (shift !== "other" || shift !== "all") {
+            dataShift = data.filter(user => user.shift === shift);
+        }
+        if (shift == "other") {
+            dataShift = data.filter(user => !["SHIFT 1", "SHIFT 2", "SHIFT 3"].includes(user.user.shift));
+            // await User.find({shift: {$nin: ["SHIFT 1","SHIFT 2","SHIFT 3"]}})
+        }
+        if (shift == "all") {
+            dataShift = data
+        }
+        
+        console.log("data", dataShift);
+        // const {data} = await result.json()
+        // vider les conteneurs
+        $("#UrgentList").html("");
+        $("#NUrgentList").html("");
+        // fetch data
+        // var data = await this.fetchAllRequests();
+        // afficher les nombre de demandes urgent et non urgent dans le boutton
+        $("#UrgentBtn span").text(dataShift.filter(d => d.is_urgent).length);
+        $("#NUrgentBtn span").text(dataShift.filter(d => !d.is_urgent).length);
+        // parcourir les données
+        dataShift.forEach(request => {
+            const $container = $(request.is_urgent ? "#UrgentList" : "#NUrgentList");
+            const item = this.createItem(request);
+            $container.append(item);
+        });
+        // return data
     }
 
     async completePayment(id){
@@ -119,12 +153,7 @@ class RequestSalary {
                 </div>
             </div>
 
-            ${props.status == "approved" ? 
-                `<div class="">
-                    <button onclick="confirmer('${props._id}', '${props.user.m_code}')" class="btn btn-success" title="Envoyer un email">
-                        <span class="mdi mdi-email"></span> Demander la confirmation
-                    </button>
-                </div>`:
+            ${
                 props.status == "verifying" ?
                 `<span class="badge badge-warning" style="margin: auto 0;">En attente de confirmation...</span>`
                 :
@@ -269,6 +298,13 @@ class RequestSalary {
 var ui = new RequestSalary()
 ui.renderAllRequest();
 ui.bindGlobalSearch();
+
+
+function filterUserPerShift(){
+    var shift = $("#select-shift").val()
+    console.log("shif", shift);
+    ui.filterUserPerShift(shift)
+}
 
 async function accordSalary(id) {
     

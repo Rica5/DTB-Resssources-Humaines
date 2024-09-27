@@ -148,6 +148,7 @@
                     <form action="/change_interface" method="post">
                       <input type="hidden" name="mail" value="<%= user.username %>" />
                       <input type="hidden" name="opt" value="c" />
+                      <input typte="hidden" name="poste" value="<%= status_poste %>" />
                       <button type="submit" class="btn btn-md btn-primary">
                         INFOS CONGES
                         <i class="fa-solid fa-person-walking-luggage"></i>
@@ -158,6 +159,7 @@
                     <form action="/change_interface" method="post">
                       <input type="hidden" name="mail" value="<%= user.username %>" />
                       <input type="hidden" name="opt" value="s" />
+                      <input typte="hidden" name="poste" value="<%= status_poste %>" />
                       <button type="submit" class="btn btn-md btn-success">
                         STATUS EMPLOYER <i class="fa-solid fa-users"></i>
                       </button>
@@ -167,6 +169,7 @@
                     <form action="/change_interface" method="post">
                       <input type="hidden" name="mail" value="<%= user.username %>" />
                       <input type="hidden" name="opt" value="a" />
+                      <input typte="hidden" name="poste" value="<%= status_poste %>" />
                       <button type="submit" class="btn btn-md btn-info">
                         ADMINISTRATION <i class="fa-solid fa-book-open"></i>
                       </button>

@@ -222,6 +222,10 @@ routeExpDTB.route("/print_leave/:id").post(ControllerLeaveCRUD.printLeave);//pas
 //Opération
 routeExpDTB.route("/conge").get(ControllerLeaveCRUD.getLeaveOperation);//pass
 
+// Finance Page
+
+routeExpDTB.route("/finance").get(ControllerStaticAdmin.getPageFinance)
+routeExpDTB.route("/financeList").get(ControllerStaticAdmin.getListAvanceFinance)
 //TL Page
 //Get status TL
 routeExpDTB.route("/managementtl").get(ControllerStaticAdmin.getPageTl);//pass
