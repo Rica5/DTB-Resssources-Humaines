@@ -1,7 +1,11 @@
 const moment = require("moment");
 const Avance = require("../../models/ModelAvance");
 const DateAvance = require("../../models/ModelDatesAvance");
+<<<<<<< HEAD
+const User = require("../../models/ModelMember")
+=======
 const User = require("../../models/ModelMember");
+>>>>>>> 9c734a36c604c2fd36c47ffb9dfe500fc0dc181a
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")
 
