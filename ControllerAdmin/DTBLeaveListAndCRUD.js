@@ -204,6 +204,7 @@ const LeaveReport = async (req, res) => {
                 globaleVariable.monthly_leave[i].date_start,
                 globaleVariable.monthly_leave[i].date_end
               )
+            console.log(motif)
             if (globaleVariable.monthly_leave[i].type.includes("Congé Payé")) {
               if (globaleVariable.monthly_leave[i].duration == 0.25) {
                 globaleVariable.monthly_leave[i].duration = 0;
@@ -298,7 +299,7 @@ const LeaveReport = async (req, res) => {
         count++;
         populateAll.populateConge[2] = renderResult(populateAll.populateConge[2], populateAll.populateConge[7], populateAll.populateConge[8]);
         populateAll.populateConge[6] = populateAll.populateConge[6].replace(/\d+\.\d+/g, function (match) {
-          return match.replace('.', ',');
+          return match.replace('.', '.');
         });
         rowLength.push([leave_report.length, populateAll.populateConge[9]])
         populateAll.populateConge.splice(-3);
@@ -308,7 +309,7 @@ const LeaveReport = async (req, res) => {
         count++;
         populateAll.populatePermission[3] = renderResult(populateAll.populatePermission[3], populateAll.populatePermission[7], populateAll.populatePermission[8]);
         populateAll.populatePermission[6] = populateAll.populatePermission[6].replace(/\d+\.\d+/g, function (match) {
-          return match.replace('.', ',');
+          return match.replace('.', '.');
         });
         rowLength.push([leave_report.length, populateAll.populatePermission[9]])
         populateAll.populatePermission.splice(-3);
@@ -318,7 +319,7 @@ const LeaveReport = async (req, res) => {
         count++;
         populateAll.populateRepos[4] = renderResult(populateAll.populateRepos[4], populateAll.populateRepos[7], populateAll.populateRepos[8]);
         populateAll.populateRepos[6] = populateAll.populateRepos[6].replace(/\d+\.\d+/g, function (match) {
-          return match.replace('.', ',');
+          return match.replace('.', '.');
         });
         rowLength.push([leave_report.length, populateAll.populateRepos[9]])
         populateAll.populateRepos.splice(-3);
@@ -329,7 +330,7 @@ const LeaveReport = async (req, res) => {
         count++;
         populateAll.populateSansSolde[5] = renderResult(populateAll.populateSansSolde[5], populateAll.populateSansSolde[7], populateAll.populateSansSolde[8]);
         populateAll.populateSansSolde[6] = populateAll.populateSansSolde[6].replace(/\d+\.\d+/g, function (match) {
-          return match.replace('.', ',');
+          return match.replace('.', '.');
         });
         rowLength.push([leave_report.length, populateAll.populateSansSolde[9]])
         populateAll.populateSansSolde.splice(-3);
@@ -1385,13 +1386,13 @@ function renderResult(day, theHour, theMin) {
   result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";
   
   result = result.replace(/\d+\.\d+/g, function (match) {
-    return match.replace('.', ',');
+    return match.replace('.', '.');
   });
   
   return result;
 }
 
-//MEthod to render the right motif
+// Method to render the right motif
 function motif_rendered(mt, type) {
   if (type.includes("Repos Maladie")) {
     if (mt == "") {

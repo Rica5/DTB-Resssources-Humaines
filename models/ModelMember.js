@@ -35,6 +35,10 @@ const User = mongoose.Schema({
    status:String,
    profil:String,
    phone:String,
+   digit_code: {
+      type: String,
+      default: '0000'
+   },
    myNotifications:[{
       title:String,
       content:String,
