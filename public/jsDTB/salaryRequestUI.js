@@ -84,8 +84,14 @@ class RequestSalary {
         // return data
     }
 
-    async completePayment(id){
-        var res = await fetch(`/api/avance/complete/${id}`, { method: 'POST' });
+    async completePayment({id, autruiInfo, isAutrui}){
+        var res = await fetch(`/api/avance/complete/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ autruiInfo, isAutrui })
+        });
         return res.json()
     }
 
@@ -451,20 +457,25 @@ async function payer(id) {
     }).then(async (result) => {
         const { isConfirmed, value } = result;
         if (isConfirmed) {
+            
             // Logic for confirmed action
-            // const {data} = await ui.completePayment(id);
-            // if (data && data.status === "paid") {
-            //     Swal.fire('Avance payé', "Un email a été envoyé au demandeur.", 'success');
-            //     ui.deleteItem(data._id);
-            // } else {
-            //     Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'error');
-            // }
-            console.log(value.autruiInfo)
-            if (value.autruiChecked) {
-                Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à une personne représentant le demandeur.", 'success');
+            const {data} = await ui.completePayment({id, isAutrui: value.autruiChecked, autruiInfo: value.autruiInfo});
+
+            if (data && data.status === "paid") {
+
+                if (value.autruiChecked) {
+                    Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à une personne représentant le demandeur.", 'success');
+                } else {
+                    Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à l'employé.", 'success');
+                }
+
+                ui.deleteItem(data._id);
             } else {
-                Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à l'employé.", 'success');
+
+                Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'error');
+
             }
+
         } else if (isDismissed) {
             Swal.fire('Annulé', 'La remise de l\'avance a été annulée.', 'error');
         }

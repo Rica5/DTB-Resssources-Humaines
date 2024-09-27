@@ -28,16 +28,17 @@ class AvanceList {
         const data = await this.getPaidAvances();
         
         this.grid = new gridjs.Grid({
-            columns: ["Nom", "M-CODE", "Montant", "Date de paiement"],
+            columns: ["Nom", "M-CODE", "Montant", "Date de paiement", "Status"],
             data: data.map(d => [
                 `${d.user.first_name} ${d.user.last_name}`,
                 d.user.m_code,
                 formatNumber(d.amount_granted),
-                moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm')
+                d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',
+                d.status === 'paid' ? 'Payé' : ''
             ]),
             pagination: {
                 enabled: true, // Enable pagination
-                limit: 3 // Number of rows per page
+                limit: 20 // Number of rows per page
             },
             sort: true, // Enable sorting globally
             resizable: true, // Enable resizable columns globally
