@@ -110,7 +110,7 @@ async function getPaidDemands(req, res) {
     try {
         var { year= new Date().getFullYear(), month=0 } = req.query;
         const result = await Avance.find({
-            status: "paid",
+            // status: "paid",
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
                     ...(month != 0 ? {  // Use month check to determine condition
@@ -467,7 +467,7 @@ async function getPeriodInMonth(req, res) {
         if (!data) {
             data = await DateAvance.create({
                 month: month,
-                start_date: moment(month, 'YYYY-MM').date(20).toDate(),
+                start_date: moment(month, 'YYYY-MM').startOf('month').toDate(),
                 end_date: moment(month, 'YYYY-MM').endOf('month').add(-3, 'day').toDate(),
             });
         }
