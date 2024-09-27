@@ -26,7 +26,7 @@ db.once('open', () => {
   //   .catch((err) => console.error('Cloning failed', err));
 
   // copyNonExistingRecords('cleavesolumadas', 'cleavetests');
-  
+  // generate4digitsCode()
 });
 
 // Function to clone data from one collection to another using native MongoDB methods
@@ -97,6 +97,56 @@ async function copyNonExistingRecords(sourceCollectionName, destinationCollectio
   } catch (error) {
     console.error('Error copying records:', error);
   }
+}
+
+// generer des codes à 4 chiffres
+async function generate4digitsCode() {
+  const SourceCollection = mongoose.connection.db.collection('newcusertests'); // Use .db to access native methods
+
+  // Fetch all records from the source collection
+  const sourceRecords = await SourceCollection.find({
+    $or: [
+      { digit_code: "0000" }, // Filter for '0000'
+      { digit_code: { $exists: false } }, // Filter for empty (not set)
+      { digit_code: "" } // Filter for empty string
+    ]
+  }).toArray();
+
+  
+  function generateUniqueCodes(numEmployees) {
+    const uniqueCodes = new Set();
+  
+    while (uniqueCodes.size < numEmployees) {
+      // Generate a random 4-digit number
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      
+      // Add it to the set (duplicates will be ignored)
+      uniqueCodes.add(randomCode.toString());
+    }
+  
+    // Convert the set to an array and return it
+    return Array.from(uniqueCodes);
+  }
+  
+  // Generate unique 4-digit codes for 150 employees
+  const employeeCodes = generateUniqueCodes(sourceRecords.length);
+  // loop for codes
+  sourceRecords.forEach(async (employee, i) => {
+    employee.digit_code = employeeCodes[i];
+    // Update the employee's digit_code using $set
+    // return
+    const updated = await SourceCollection.findOneAndUpdate(
+      {
+        _id: employee._id, // Query by employee ID
+        $or: [
+          { digit_code: "0000" }, // Filter for '0000'
+          { digit_code: { $exists: false } }, // Filter for empty (not set)
+          { digit_code: "" } // Filter for empty string
+        ]
+      },
+      { $set: { digit_code: employeeCodes[i] } } // Update operation
+    );
+  })
 }
 
 app.use(methodOverride("X-HTTP-Method"));

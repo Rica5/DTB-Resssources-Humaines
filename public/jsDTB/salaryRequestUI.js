@@ -1,5 +1,6 @@
 class RequestSalary {
     constructor() {
+        this.typedCode = '';
     }
 
     async fetchAllRequests(){
@@ -226,6 +227,71 @@ class RequestSalary {
         });
     }
 
+    async verifyCode(email, code) {
+        console.log(code, email)
+        const res = await fetch('/api/avance/verify-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ code, email })
+        });
+
+
+        const { data } = await res.json();
+
+        return data;
+    }
+
+    bindCodeListeners() {
+        let self = this;
+        const inputs = document.querySelectorAll('.code-input');
+
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                const value = e.target.value;
+                if (value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+
+                // Automatically validate when all inputs are filled
+                if (Array.from(inputs).every(input => input.value.length === 1)) {
+                    const code = Array.from(inputs).map(input => input.value).join('');
+                    validateCode(code); // Call validation function
+                }
+            });
+
+            // Handle backspace: move focus to the previous input if empty
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+
+            // Handle paste: fill all fields when pasting a 4-digit code
+            input.addEventListener('paste', (e) => {
+                const pasteData = e.clipboardData.getData('text');
+                if (/^\d{4}$/.test(pasteData)) { // Check if the pasted data is exactly 4 digits
+                    pasteData.split('').forEach((char, i) => {
+                    if (inputs[i]) {
+                        inputs[i].value = char;
+                    }
+                    });
+                    inputs[3].focus(); // Focus the last input field after paste
+                    validateCode(pasteData); // Auto-validate after pasting
+                }
+                e.preventDefault(); // Prevent default paste behavior
+            });
+        });
+
+        // Example validation function
+        function validateCode(code) {
+            if (code.length === 4) {
+                // alert('Code entered: ' + code);
+            }
+            self.typedCode = code;
+        }
+    }
 }
 
 
@@ -308,37 +374,105 @@ async function payer(id) {
     if (!data) {
         return alert('Request not found');
     }
-
+    ui.typedCode = '';
     Swal.fire({
-        title: 'Confirmation de Demande d\'Avance',
-        html: `<p>Êtes-vous sûr de vouloir accorder cette avance ?</p>
-                <p><strong>Montant accordé : ${currencyFormat(data.amount_granted)}</strong></p>
-                <p><strong>Demandeur : ${data.user.m_code}</strong></p>`,
+        title: 'Validation de l\'Avance en Espèces',
+        html: `<p>Veuillez entrer votre code de validation à 4 chiffres pour confirmer la remise de l'avance en espèces.</p>
+                <p><strong>Montant de l'avance : ${currencyFormat(data.amount_granted)}</strong></p>
+                <p><strong>Demandeur : ${data.user.m_code}</strong></p>
+                <div class="container-code">
+                    <input type="text" maxlength="1" class="code-input" id="digit1" autocomplete="off" autofocus>
+                    <input type="text" maxlength="1" class="code-input" id="digit2" autocomplete="off">
+                    <input type="text" maxlength="1" class="code-input" id="digit3" autocomplete="off">
+                    <input type="text" maxlength="1" class="code-input" id="digit4" autocomplete="off">
+                </div>
+                <p class="instructions">Saisissez les chiffres un par un. Ce code est requis pour la remise de l'avance en espèces.</p>
+                <div class="form-check mt-3">
+                <label class="form-check-label" for="autruiCheckbox">
+                    <input type="checkbox" class="form-check-input" id="autruiCheckbox"> Un tiers récupère l'avance pour le demandeur
+                </label>
+                </div>
+                <div id="autruiInfo" style="display: none; margin-top: 10px;">
+                    <textarea id="autruiText" class="swal2-textarea" placeholder="Veuillez entrer les informations sur la personne représentant le demandeur."></textarea>
+                </div>`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Oui, payé l\'avance',
-        cancelButtonText: 'Non, annuler',
+        allowOutsideClick: false,
+        confirmButtonText: 'Confirmer le paiement',
+        cancelButtonText: 'Annuler la transaction',
         customClass: {
             confirmButton: 'btn-confirm',
             cancelButton: 'btn-cancel'
+        },
+        preConfirm: async () => {
+            const enteredCode = ui.typedCode;
+            
+            // Validation de code
+            const correctCode  = await ui.verifyCode(data.user.username, enteredCode);
+                
+            const autruiChecked = document.getElementById('autruiCheckbox').checked;
+            const autruiInfo = document.getElementById('autruiText').value;
+
+
+            if (!correctCode) {
+                Swal.showValidationMessage('Le code saisi est incorrect. Veuillez entrer un code valide.');
+                return false;
+            }
+
+            // Validation du champ "Autrui" si sélectionné
+            if (autruiChecked && !autruiInfo.trim()) {
+                Swal.showValidationMessage('Veuillez entrer les informations sur la personne représentant le demandeur.');
+                return false;
+            }
+
+            return {
+                code: enteredCode,
+                autruiChecked,
+                autruiInfo: autruiChecked ? autruiInfo : null
+            };
+        },
+        didOpen: () => {
+            // code comportement
+            ui.bindCodeListeners();
+
+            // Ajout du comportement lors de l'ouverture du Swal
+            const autruiCheckbox = document.getElementById('autruiCheckbox');
+            const autruiInfo = document.getElementById('autruiInfo');
+
+            // Afficher le textarea si la checkbox est cochée
+            autruiCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    autruiInfo.style.display = 'block';  // Affiche le champ d'information
+                } else {
+                    autruiInfo.style.display = 'none';   // Cache le champ d'information
+                }
+            });
         }
     }).then(async (result) => {
-            if (result.isConfirmed) {
-                // payer l'avance
-                const {data} = await ui.completePayment(id);
-                if (data && data.status === "paid") {
-                    // Action après confirmation
-                    Swal.fire('Avance payé', "Un email a été envoyé au demandeur.", 'success');
-                    // delete the item from view
-                    ui.deleteItem(data._id);
-                }
-                else
-                    Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'erreur');
-            } else if (result.isDismissed) {
-                // Action après annulation
-                Swal.fire('Annulé', 'Le paiement de l\'avance a été annulé.', 'error');
+        const { isConfirmed, value } = result;
+        if (isConfirmed) {
+            // Logic for confirmed action
+            // const {data} = await ui.completePayment(id);
+            // if (data && data.status === "paid") {
+            //     Swal.fire('Avance payé', "Un email a été envoyé au demandeur.", 'success');
+            //     ui.deleteItem(data._id);
+            // } else {
+            //     Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'error');
+            // }
+            console.log(value.autruiInfo)
+            if (value.autruiChecked) {
+                Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à une personne représentant le demandeur.", 'success');
+            } else {
+                Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à l'employé.", 'success');
             }
+        } else if (isDismissed) {
+            Swal.fire('Annulé', 'La remise de l\'avance a été annulée.', 'error');
+        }
     });
+
+
+    
+
 }
 
 $("#UrgentBtn").on("click", function () {

@@ -1,7 +1,11 @@
 const moment = require("moment");
 const Avance = require("../../models/ModelAvance");
 const DateAvance = require("../../models/ModelDatesAvance");
+<<<<<<< HEAD
 const User = require("../../models/ModelMember")
+=======
+const User = require("../../models/ModelMember");
+>>>>>>> 9c734a36c604c2fd36c47ffb9dfe500fc0dc181a
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")
 
@@ -485,6 +489,27 @@ async function getPeriodInMonth(req, res) {
     }
 }
 
+async function checkAvanceCode(req, res) {
+    try {
+        const { code, email } = req.body;
+        const userWithTheCode = await User.findOne({
+            username: email,
+            digit_code: code
+        });
+
+        console.log(req.body, userWithTheCode)
+
+        res.json({
+            ok: true, data: userWithTheCode !== null
+        });
+    } catch (error) {
+        res.json({
+            ok: false,
+            data: null
+        })
+    }
+}
+
 module.exports = {
     getListByUserId,
     createAvance,
@@ -501,4 +526,5 @@ module.exports = {
     getPaidDemands,
     addPeriodDates,
     getPeriodInMonth,
+    checkAvanceCode
 }
