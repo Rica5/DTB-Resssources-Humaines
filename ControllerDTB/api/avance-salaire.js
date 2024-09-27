@@ -401,7 +401,8 @@ async function completeRequest(req, res) {
             validation: {
                 user: idUser,
                 received_on: new Date()
-            }
+            },
+            ...req.body
         }, {
             new: true
         })
