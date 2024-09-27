@@ -1,6 +1,7 @@
 const moment = require("moment");
 const Avance = require("../../models/ModelAvance");
 const DateAvance = require("../../models/ModelDatesAvance");
+const User = require("../../models/ModelMember")
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")
 
@@ -499,5 +500,5 @@ module.exports = {
     completeRequest,
     getPaidDemands,
     addPeriodDates,
-    getPeriodInMonth
+    getPeriodInMonth,
 }

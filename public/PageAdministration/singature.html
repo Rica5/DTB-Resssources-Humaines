@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature après paiement</title>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad"></script>
+</head>
+<body>
+    <h2>Veuillez signer ci-dessous :</h2>
+    <canvas id="signature-pad" width="400" height="200" style="border:1px solid #000;"></canvas>
+    <button id="save-signature">Enregistrer la signature</button>
+
+    <script>
+        var canvas = document.getElementById('signature-pad');
+        var signaturePad = new SignaturePad(canvas);
+
+        document.getElementById('save-signature').addEventListener('click', function() {
+            if (signaturePad.isEmpty()) {
+                alert("Veuillez fournir une signature.");
+            } else {
+                // Envoyer la signature au backend
+                var signature = signaturePad.toDataURL('image/png');
+                console.log(signature);
+
+                // Envoi au backend (à implémenter)
+                // Exemple avec fetch API
+                fetch('/save-signature', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        signature: signature
+                    })
+                }).then(response => response.json())
+                  .then(data => {
+                      alert("Signature enregistrée avec succès !");
+                  }).catch(error => {
+                      console.error("Erreur lors de l'enregistrement : ", error);
+                  });
+            }
+        });
+    </script>
+</body>
+</html>

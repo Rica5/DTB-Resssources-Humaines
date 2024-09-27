@@ -1,58 +1,38 @@
+@import url("https://use.fontawesome.com/releases/v5.15.3/css/all.css");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
 .ol-cards,
-.ol-cards *,
 .ol-cards *::before,
 .ol-cards *::after {
-  /* margin: 0;
-  padding: 0; */
+  margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 .ol-cards {
   --ol-cards-color-bg: var(--color-bg);
   list-style-type: none;
-  /* display: flex; */
-  /* flex-direction: column; */
-  /* margin: 0 auto; */
-  /* max-width: 45em; */
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 50em;
   padding: 2em;
   gap: 2em;
   counter-reset: ol-cards-counter;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(400px, 1fr));
 }
-
-@media screen and (max-width: 1480px) {
-  .ol-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media screen and (max-width: 1000px) {
-  .ol-cards {
-    grid-template-columns: repeat(1, 1fr);
-  }
-}
-
 
 .ol-cards li {
   display: grid;
   grid-template-areas:
     "step title"
     "step content";
-    overflow-x: auto;
-  padding: 1em 1em 1em 0;
+  padding: 1em 2em 1em 0;
   row-gap: 0.5em;
   column-gap: 2em;
   box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.4),
-    inset 0.05em 0.05em rgb(145, 140, 140);
+    inset 0.05em 0.05em rgba(255, 255, 255, 1);
   counter-increment: ol-cards-counter;
   text-align: left;
   background-color: var(--ol-cards-color-bg);
-}
-
-.ol-cards .timestamps {
-  color: #696969;
-  font-size: 0.81rem;
 }
 
 .paye{
@@ -63,13 +43,12 @@
   /* display: flex; */
 
 }
-
-/* .ol-cards.alternate li:nth-child(even) {
+.ol-cards.alternate li:nth-child(even) {
   grid-template-areas:
     "title step"
     "content step";
   padding: 1em 0 1em 2em;
-} */
+}
 
 .ol-cards li .step {
   grid-area: step;
@@ -86,19 +65,31 @@
 }
 
 .ol-cards li .step::before {
-  content: attr(m-code);
-  white-space: nowrap;
+  content: attr(m-code);/*"0" counter(ol-cards-counter);*/
   flex: 1;
   align-self: center;
   color: var(--ol-cards-color-bg);
   font-weight: bold;
-  font-size: 1.6em;
+  font-size: 2em;
   text-shadow: 0.025em 0.025em 0.125em rgba(0, 0, 0, 0.4);
 }
 /* .ol-cards.alternate li:nth-child(even) .step {
   border-radius: 50em 0 0 50em;
   flex-direction: row-reverse;
 } */
+
+.ol-cards li .step i {
+  color: var(--ol-cards-color-accent);
+  width: 2em;
+  height: 2em;
+  font-size: 1.8em;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background-color: var(--ol-cards-color-bg);
+  box-shadow: 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.4),
+    inset 0.05em 0.05em rgba(255, 255, 255, 1);
+}
 
 .ol-cards .flexy {
   display: flex;
@@ -118,7 +109,6 @@
   border-radius: 0.45rem;
   color: #fff;
 }
-
 .badge-success {
   background-color: #28a745; /* Green color */
   border: 1px solid #28a745;
@@ -126,23 +116,6 @@
 .badge-warning {
   background-color: #b8952c; /* Yellow color */
   border: 1px solid #b8952c;
-}
-
-.nowrap {
-  white-space: nowrap;
-}
-
-.ol-cards li .step i {
-  color: var(--ol-cards-color-accent);
-  width: 2em;
-  height: 2em;
-  font-size: 1.8em;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background-color: var(--ol-cards-color-bg);
-  box-shadow: 0.25em 0.25em 0.5em rgba(0, 0, 0, 0.4),
-    inset 0.05em 0.05em rgba(255, 255, 255, 1);
 }
 
 .ol-cards li .title {
@@ -154,6 +127,7 @@
   grid-area: content;
   font-size: 0.9em;
 }
+
 .bouton{
   display: flex;
   gap: 6px;
@@ -171,35 +145,6 @@
   text-overflow: ellipsis;      /* Adds "..." when text overflows */
   max-width: 190px;
 }
-
-.show{
-  display: block;
-}
-.hide {
-  display:  none;
-}
-
-.show>input[type="text"] {
-  border: 1px solid #dadada;
-  padding: 0 10px;
-  width: 100px;
-  height: 34px;
-}
-
-.toutBouton{
-  padding: 4px 5px !important;
-}
-
-.btnModifMontant , .btnAccorde{
-  box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.4),
-    inset 0.05em 0.05em rgb(145, 140, 140);
-  padding: 0px 12px ;
-}
-
-/* {
-  box-shadow: 0px 5px 0px #5386c0, 0px 8px 15px rgba(0, 0, 0, 0.3);
-} */
-
 
 .input-group-mod {
   display: flex;
@@ -244,7 +189,9 @@
   padding: 7px 10px;
 }
 
-
+.ol-cards button {
+  font-size: 0.9rem !important;
+}
 @media only screen and (max-width: 500px) {
   .ol-cards{
     padding: 1em;
@@ -257,14 +204,14 @@
     grid-template-columns: min-content auto;
     padding: 1em 0em;
   }
-  /* .ol-cards.alternate li:nth-child(even){
+  .ol-cards.alternate li:nth-child(even){
     column-gap: 0em;
     grid-template-areas:
       'title step'
       'content content';
     grid-template-columns: auto min-content ;
     padding: 1em 0em;
-  } */
+  }
   .ol-cards li .title{
     padding: 0 1em;
     align-self: center;
@@ -278,6 +225,31 @@
     padding: 0 1em;
   }
 }
+
+.non-urgent {
+  --ol-cards-color-accent: #76d18b;
+}
+.urgent {
+  --ol-cards-color-accent: #e09595;
+}
+
+.toutBouton{
+  padding: 4px 5px !important;
+}
+
+.btnModifMontant , .btnAccorde{
+  box-shadow: 0.5em 0.5em 1em rgba(0, 0, 0, 0.4),
+    inset 0.05em 0.05em rgb(145, 140, 140);
+  padding: 0px 12px ;
+}
+
+.show{
+  display: block;
+}
+.hide {
+  display:  none;
+}
+
 
 
 .my-confirm-button {
@@ -316,4 +288,15 @@
 }
 .all-line {
   grid-column: 1 / -1;
+}
+
+
+#select-shift{
+  padding: 0.5em;
+  font-size: 15px;
+  outline: none;
+  /* color: #fff; */
+  border-radius: 5px;
+  padding: 12px;
+  box-shadow: 0 2px rgba(241, 233, 233, 0.2);
 }
