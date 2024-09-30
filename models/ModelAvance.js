@@ -43,6 +43,14 @@ const Avance = mongoose.Schema({
         enum: ['progress', 'approved', 'rejected', 'verifying', 'verified', 'paid'],
         default: 'progress'
     },
+    isAutrui: {
+        type: Boolean,
+        default: false,
+    },
+    autruiInfo: {
+        type: String,
+        default: ''
+    },
     comment: {
         type: String,
         default: ''
