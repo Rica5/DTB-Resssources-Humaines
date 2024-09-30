@@ -171,7 +171,7 @@ async function validateAvance(req, res) {
         // const getAvance = await Avance.findOne({_id: _id})
         var updated = await Avance.findOneAndUpdate(
             { _id },
-            { amount_granted: parseFloat(amount_granted), status: "approved" },
+            { amount_granted: parseFloat(amount_granted), status: "verified" },
             { new: true }
         )
         .populate({
