@@ -452,13 +452,13 @@ async function payer(id) {
         const { isConfirmed, value } = result;
         if (isConfirmed) {
             // Logic for confirmed action
-            // const {data} = await ui.completePayment(id);
-            // if (data && data.status === "paid") {
-            //     Swal.fire('Avance payé', "Un email a été envoyé au demandeur.", 'success');
-            //     ui.deleteItem(data._id);
-            // } else {
-            //     Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'error');
-            // }
+            const {data} = await ui.completePayment(id);
+            if (data && data.status === "paid") {
+                Swal.fire('Avance payé', "Un email a été envoyé au demandeur.", 'success');
+                ui.deleteItem(data._id);
+            } else {
+                Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'error');
+            }
             console.log(value.autruiInfo)
             if (value.autruiChecked) {
                 Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à une personne représentant le demandeur.", 'success');
