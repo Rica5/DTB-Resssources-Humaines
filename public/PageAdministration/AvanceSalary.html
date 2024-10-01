@@ -22,6 +22,9 @@
   <link rel="stylesheet" href="cssDTB/allRequest.css">
   <link rel="stylesheet" href="cssDTB/RequestSalary.css">
   <link href="https://cdn.jsdelivr.net/npm/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
   <script>
     var role = '<%= role %>';
   </script>
@@ -271,6 +274,9 @@
                     <!-- filter -->
                     <select name="f-month" id="f-month"></select>
                     <select name="f-year" id="f-year"></select>
+                  </div>
+                  <div>
+                    <button class="btn btn-success" id="exportBtn">Export</button>
                   </div>
                 </div>
                 <div class="coll-12 allRequest mt-2" id="content-allRequest">

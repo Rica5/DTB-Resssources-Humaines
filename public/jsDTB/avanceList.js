@@ -21,6 +21,28 @@ class AvanceList {
         return data;
     }   
 
+    async downloadFile(month, year) {
+        const response = await fetch(`/exportExcel?month=${month}&year=${year}`, {  
+            method: 'GET',  
+        });  
+
+        if (!response.ok) {  
+            throw new Error('Network response was not ok');  
+        }  
+
+        // Create a blob from the response  
+        const blob = await response.blob();  
+
+        // Create a link to download the file  
+        const url = window.URL.createObjectURL(blob);  
+        const a = document.createElement('a');  
+        a.href = url;  
+        a.download = 'exported_file.xlsx'; // This is the default file name  
+        document.body.appendChild(a);  
+        a.click();  
+        a.remove();  
+        window.URL.revokeObjectURL(url); // Clean up the URL.createObjectURL 
+    }
     async initGrid() {
 
         if (this.grid) this.grid.destroy();
@@ -58,9 +80,27 @@ class AvanceList {
             let month = `${this.year}-${this.month.toString().padStart(2, "0")}`;
             // input month value
             $('#month').val(month);
-            const data = await this.getPeriodByMonth(month);
-            this.fillInPeriodForm(data)
+            const periodData  = await this.getPeriodByMonth(month);
+            this.fillInPeriodForm(periodData )
         }
+        // Fonction d'exportation des données en Excel
+        // document.getElementById("exportBtn").addEventListener("click", () => {
+        //     const tableData = data.map(d => ({
+        //         Nom: `${d.user.first_name} ${d.user.last_name}`,
+        //         M_CODE: d.user.m_code,
+        //         Montant: formatNumber(d.amount_granted),
+        //         Date_de_paiement: d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',
+        //         Status: d.status === 'paid' ? 'Payé' : ''
+        //     }));
+
+        //     const worksheet = XLSX.utils.json_to_sheet(tableData);
+        //     const workbook = XLSX.utils.book_new();
+        //     XLSX.utils.book_append_sheet(workbook, worksheet, "Avances");
+        //     const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+            
+        //     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+        //     saveAs(blob, "avances-data.xlsx");
+        // });
     }
 
     // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
@@ -106,6 +146,7 @@ class AvanceList {
         // add event listener
         $month.on('change', function() {
             self.month = +$(this).val();
+            (self.month==0)? $("#exportBtn").hide():$("#exportBtn").show()
             self.initGrid()
         });
 
@@ -131,3 +172,11 @@ function formatNumber(val) {
 const av = new AvanceList();
 av.initGrid();
 av.addFilters()
+
+$("#exportBtn").on("click", function (req, res) {
+    let month = $('#f-month').val();
+    let year = $('#f-year').val();
+    av.downloadFile(month, year).catch(error => {  
+        console.error('Error downloading file:', error);  
+    });
+})
