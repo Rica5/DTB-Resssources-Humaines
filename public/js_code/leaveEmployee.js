@@ -393,6 +393,7 @@ function take_leave(url, type, startings, endings, val, mt, begin, end) {
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       var response = JSON.parse(this.response)
+      console.log("response", response);
       
       if (response.status == "Ok") {
         var duree = "";

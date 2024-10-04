@@ -12,6 +12,7 @@ var rows = [];
 var navigation_point;
 var search_div;
 var search_text = "";
+var search_nom = ""
 var type_conge = "";
 var nothing = "none";
 var behavior = "left";
@@ -39,21 +40,24 @@ function get_all_leave() {
         var data = JSON.parse(this.responseText);
         leaves = data[0];
         users = data[1];
-        change_content(row_activated);
+        // console.log("data", leaves);
+        
+        // change_content(row_activated);
+        change_content();
 
       }
     }
   };
   http.send();
 }
-function change_content(val) {
+function change_content() {//val
   content = "";
   rows = [];
   navigation_point = "";
-  content += rendu_header(val);
+  content += rendu_header();//val
   content += `<div  class="row container-list-${behavior}" >`
   content += empty_search();
-  rendu_body(val);
+  rendu_body();//val
   if (rows.length > 0) {
     nothing = "none";
     rows[indice_row].forEach(element => {
@@ -67,6 +71,7 @@ function change_content(val) {
   container_conge.innerHTML = content;
   document.getElementById("search_div").style.display = search_div;
   document.getElementById("searching").value = search_text;
+  document.getElementById("searchingNom").value = search_nom
   document.getElementById("type").value = type_conge;
   document.getElementById("nothing").style.display = nothing;
   verify_navigation();
@@ -74,22 +79,22 @@ function change_content(val) {
   loading.style.display = "none";
 }
 get_all_leave();
-function rendu_header(active) {
+function rendu_header() { //active
   classes = ["header-standby", "header-standby", "header-standby"];
-  switch (active) {
-    case "en cours": classes[0] = "header-active"; reset(); break;
-    case "en attente": classes[1] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center book"); break;
-    case "Terminée": classes[2] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center book"); break;
-  }
+  // switch (active) {
+  //   case "en cours": classes[0] = "header-active"; reset(); break;
+  //   case "en attente": classes[1] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center book"); break;
+  //   case "Terminée": classes[2] = "header-active"; search_div = "block"; year_month.setAttribute("class", "col-md-2 text-center book"); break;
+  // }
   return `
     <div class="text-center d-flex justify-content-center align-items-center mb-3" >
-    <div onclick="active_row('en cours')" class="text-center mx-1 ${classes[0]}">
+    <div onclick="active_row('en cours')" class="text-center mx-1 ${classes[0]}"hidden>
       EN COURS
     </div>
-    <div onclick="active_row('en attente')" class="text-center mx-1 ${classes[1]}">
+    <div onclick="active_row('en attente')" class="text-center mx-1 ${classes[1]}" hidden>
       EN ATTENTE
     </div>
-    <div onclick="active_row('Terminée')" class="text-center mx-1 ${classes[2]}">
+    <div onclick="active_row('Terminée')" class="text-center mx-1 ${classes[2]}" hidden >
       TERMINER
     </div>
     <div>
@@ -106,6 +111,9 @@ function rendu_header(active) {
       <option value="Mise a Pied">Mise à pied</option>
       <option value="Récupération">Récupération</option>
     </select>
+    </div>
+    <div>
+      <input id="searchingNom" class="input-choice2 mx-2" onkeyup="set_text()" type="text" placeholder="Prénom ici..." >
     </div>
     <div id="search_div">
       <input id="searching" class="input-choice2 mx-2" onkeyup="set_text()" type="text" placeholder="M-CODE ici..." >
@@ -242,20 +250,27 @@ function calcul_timediff_absencetl(startTime, endTime) {
 
 
 function render_button(temp_c) {
+  console.log("temp_c", temp_c);
+  
   var btn = "";
   btn += `<button onclick="printLeave('${temp_c._id}')" class="btn btn-sm btn-outline-secondary mx-3 mb-3 print-btn">Imprimer <i class="fa-solid fa-print"></i></button>`;
-  switch (row_activated) {
-    case "en cours": btn += `
-    <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
-    <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
-    case "en attente": btn += `
-    <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
-    <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
-    case "Terminée": btn += `
-    <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+  // switch (row_activated) {
+  //   case "en cours": btn += `
+  //   <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+  //   <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
+  //   case "en attente": btn += `
+  //   <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+  //   <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> ANNULER <i class="fa-solid fa-ban"></i></button>`; break;
+  //   case "Terminée": btn += `
+  //   <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
 
-    <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> SUPPRIMER <i class="fa-solid fa-ban"></i></button>`; break;
-  }
+  //   <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> SUPPRIMER <i class="fa-solid fa-ban"></i></button>`; break;
+  // } 
+  btn += `
+  <button onclick="edit('${temp_c._id}','${temp_c.m_code}','${temp_c.piece}')" class="btn btn-sm btn-success mx-3 mb-3"> MODIFIER <i class="fa-solid fa-pen-to-square"></i></button>
+
+  <button onclick="select_delete('${temp_c._id}','${temp_c.m_code}','${temp_c.date_start}','${temp_c.date_end}','${temp_c.duration}',)" class="btn btn-sm btn-danger mb-3"> SUPPRIMER <i class="fa-solid fa-ban"></i></button>`; 
+
   return btn
 }
 
@@ -313,11 +328,12 @@ function rendu_footer() {
                                  
     `
 }
-function rendu_body(opt) {
+function rendu_body() {
   var temp_row = [];
   leaves.forEach(conge => {
-    if (conge.status == opt && search_year(conge.date_start, conge.date_end) && search_month(conge.date_start, conge.date_end) && search_texting(conge.m_code) && search_type(type_conge, conge.type)) {
-      temp_row.push(rendu_conge(conge))
+    // if (conge.status == opt && search_year(conge.date_start, conge.date_end) && search_month(conge.date_start, conge.date_end) && search_texting(conge.m_code) && search_type(type_conge, conge.type)) {
+    if (search_year(conge.date_start, conge.date_end) && search_month(conge.date_start, conge.date_end) && search_texting(conge.m_code) && search_type(type_conge, conge.type)) {
+        temp_row.push(rendu_conge(conge))
       if (temp_row.length == 4) {
         rows.push(temp_row);
         navigation_point += `<div class="indicator mx-1" onmouseover="hover_navigation('${rows.length - 1}')"></div>`;
@@ -371,28 +387,28 @@ function activate_indication() {
 function next() {
   indice_row++;
   behavior = "right";
-  change_content(row_activated);
+  change_content();//row_activated
 }
 function prev() {
   indice_row--;
   behavior = "left";
-  change_content(row_activated);
+  change_content();//row_activated
 }
 function active_row(value) {
   row_activated = value;
   indice_row = 0;
   behavior = "left";
-  change_content(row_activated);
+  change_content();//row_activated
 }
 function date_conversion(date) {
   return moment(date).format("DD/MM/YYYY")
 }
 function searching() {
   indice_row = 0;
-  change_content(row_activated);
+  change_content();//row_activated
 }
 function search_texting(code) {
-  if (search_text.trim() != "" && row_activated != "en cours") {
+  if (search_text.trim() != "") { //&& row_activated != "en cours") {
     if (code.includes(search_text.toUpperCase())) {
       return true
     }
@@ -404,20 +420,22 @@ function search_texting(code) {
     return true;
   }
 }
+
 function set_type() {
   type_conge = document.getElementById("type").value;
   searching();
 }
 function set_text() {
   search_text = document.getElementById("searching").value.trim();
-  if (search_text == "") {
+  search_nom = document.getElementById("searchingNom").value.trim();
+  if (search_text == "" && search_nom == "") {
     searching();
   }
 }
 function search_year(temp1, temp2) {
   var date1 = date_conversion(temp1).split("/");
   var date2 = date_conversion(temp2).split("/");
-  if (year.value != "" && row_activated != "en cours") {
+  if (year.value != ""){// && row_activated != "en cours") {
     if (date1[2] == year.value) {
       return true;
     }
@@ -450,7 +468,10 @@ function set_month(val, ind) {
   month_value = val;
   behavior = "left";
   indice_row = 0;
-  if (ind == 0 || row_activated == "en cours") {
+  console.log('val,', val);
+  console.log('ind,', ind);
+  
+  if (ind == 0) { // || row_activated == "en cours"
     download.innerHTML = `<i class="fa-solid fa-download"></i> INDISPONIBLE`
     download.disabled = true;
   }
@@ -471,12 +492,12 @@ function set_month(val, ind) {
       element.setAttribute("class", "month-standby mb-1");
     }
   }
-  change_content(row_activated)
+  change_content()
 }
 function search_month(temp1, temp2) {
   var date1 = date_conversion(temp1).split("/");
   var date2 = date_conversion(temp2).split("/");
-  if (month_value != "" && row_activated != "en cours") {
+  if (month_value != "") {// && row_activated != "en cours") {
     if (date1[1] == month_value && date1[2] == year.value) {
       return true;
     }

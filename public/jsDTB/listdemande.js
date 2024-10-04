@@ -60,6 +60,7 @@ function renderAllRequest(Leave){
       let auth = userActive.leave_stat
       let save = userActive.save_at
       let projects = getProjects(code)
+      
     return `
     <div id="${leave._id}" class="content-leave" m-code="${leave.m_code}" shift="${leave.shift}" project="${projects}">
             <div class="code-person p_${leave.leavePriority}">
@@ -127,9 +128,9 @@ function renderAllRequest(Leave){
                             Status / solde de ${code}
                         </h1>
                         <div class="ask">
-                            <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
-                            <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
-                            <span>Reste après autorisation: ${(acc)}</span>
+                            <span>${moment().add(-1,"years").format("YYYY")}: ${leave.rest}</span>
+                            <span>${moment().format("YYYY")}: ${(leave.acc - leave.rest)}</span>
+                            <span>Reste après autorisation: ${(leave.acc)}</span>
                         </div>
                     </div>
                 </div> 
