@@ -5,8 +5,6 @@ const User = require("../../models/ModelMember");
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")   
 const ExcelJS = require('exceljs');
-const XLSX = require('xlsx');  
-const fs = require('fs');  
 
 
 async function getListByUserId(req, res) {
@@ -20,13 +18,13 @@ async function getListByUserId(req, res) {
             user: id,
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
-                    ...(month != 0 ? {  // Use month check to determine condition
+                    ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
-                            { $eq: [{ $year: "$date" }, +year] },
-                            { $eq: [{ $month: "$date" }, +month] }
+                            { $eq: [{ $year: "$date_of_avance" }, +year] },
+                            { $eq: [{ $month: "$date_of_avance" }, +month] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
-                        $eq: [{ $year: "$date" }, +year]
+                        $eq: [{ $year: "$date_of_avance" }, +year]
                     })
                 }
             })
@@ -89,7 +87,7 @@ async function createAvance(req, res) {
     
     try {
 
-        const result = await Avance.create(req.body)        
+        const result = await Avance.create(req.body);
         res.json({ ok: true, data: result });
     } catch (error) {
         console.error("Error creating avance:", error);
@@ -582,6 +580,42 @@ async function checkAvanceCode(req, res) {
     }
 }
 
+
+// method to give access
+
+async function giveAccess(req, res) {
+
+    const { users } = req.body;
+    try {
+
+        if (users.length != 0) {
+            // give access to user
+            await User.updateMany(
+                { _id: { $in: users } },
+                { $set: { urgence_salary: true }}
+            );
+        }
+        // remove access
+        await User.updateMany(
+            { _id: { $nin: users } },
+            { $set: { urgence_salary: false }}
+        );
+    
+        res.json({
+            ok: true,
+            data: users
+        });
+
+    } catch (err) {
+        
+        res.json({
+            ok: false,
+            data: []
+        });
+    }
+
+}
+
 module.exports = {
     getListByUserId,
     createAvance,
@@ -599,5 +633,6 @@ module.exports = {
     addPeriodDates,
     getPeriodInMonth,
     checkAvanceCode,
-    exportFile
+    exportFile,
+    giveAccess
 }
