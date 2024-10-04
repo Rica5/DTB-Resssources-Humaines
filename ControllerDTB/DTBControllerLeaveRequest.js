@@ -477,6 +477,8 @@ const answerRequest = async (req, res) => {
         var newDuration = parseFloat(req.body.newduration);
         var newStartDate = req.body.newStartDate;
         var newEndDate = req.body.newEndDate;
+        var refus_order = req.body.refus_order;
+
 
         const io = req.app.get("io");
 
@@ -545,6 +547,11 @@ const answerRequest = async (req, res) => {
             var order = req.body.order;
             var preStatus = order == "false" ? "progress" : "approved";
             status = response == "true" ? preStatus : "progress"; // "declined";
+
+            if (response == "false" && refus_order == "true") {
+                status = "declined";
+            }
+
             var type = req.body.typeleave;
             var forGerant = "";
             var approbator = {
@@ -606,7 +613,7 @@ const answerRequest = async (req, res) => {
                 var concerned = ["Surveillant", "Opération", "Admin"]
                 await setGlobalAdminNotifications(notification, concerned, true, req);
                 // si 3 au moins responsables ont réfusé la demande, envoie une notification au demandeur
-                if (thisLeave.validation.filter(a => !a.approbation).length >= 3) {
+                if (thisLeave.validation.filter(a => !a.approbation).length >= 3 || refus_order == "true") {
                     setEachUserNotification(thisLeave.m_code, title, content, req);
                     // update status of leaves on employee page
                     io.sockets.emit("isTreated", [id, thisLeave]);

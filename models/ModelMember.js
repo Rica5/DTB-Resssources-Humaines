@@ -35,6 +35,10 @@ const User = mongoose.Schema({
    status:String,
    profil:String,
    phone:String,
+   urgence_salary: {
+      type: Boolean,
+      default: false
+   },
    digit_code: {
       type: String,
       default: '0000'
