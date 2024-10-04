@@ -1,133 +1,220 @@
+class AvanceList {  
+    // Constantes pour les URLs d'API  
+    static API_URL = {  
+        PAID: '/api/avance/paid',  
+        PERIOD: '/api/avance/getperiod/',  
+        EXPORT: '/exportExcel'  ,
+        EMPLOYEE: '/list_employee'
+    };  
 
-class AvanceList {
+    months = [  
+        "Les 12 mois", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",  
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"  
+    ];  
 
-    grid;
-    url;
-    months = [
-        "Les 12 mois", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-    ];
+    constructor() {  
+        this.grid = null;  
+        this.month = new Date().getMonth() + 1;  
+        this.year = new Date().getFullYear();  
+    }  
 
-    constructor() {
-        this.grid = null;
-        this.url = '/api/avance/paid';
-        this.month = new Date().getMonth() + 1;
-        this.year = new Date().getFullYear()
-    }
-
-    async getPaidAvances() {
-        const res = await fetch(`${this.url}?month=${this.month}&year=${this.year}`);
-        const { data } = await res.json();
-        return data;
-    }   
-
-    async initGrid() {
-
-        if (this.grid) this.grid.destroy();
-
-        const data = await this.getPaidAvances();
-        
-        this.grid = new gridjs.Grid({
-            columns: ["Nom", "M-CODE", "Montant", "Date de paiement", "Status"],
-            data: data.map(d => [
-                `${d.user.first_name} ${d.user.last_name}`,
-                d.user.m_code,
-                formatNumber(d.amount_granted),
-                d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',
-                d.status === 'paid' ? 'Payé' : ''
-            ]),
-            pagination: {
-                enabled: true, // Enable pagination
-                limit: 20 // Number of rows per page
-            },
-            sort: true, // Enable sorting globally
-            resizable: true, // Enable resizable columns globally
-        }).render(document.getElementById("wrapper"));
-
-        // show date display
-        $("#date-display").html(`${this.months[this.month]} ${this.year}`);
-        // show total
-        const totalAmount = data.map(s => s.amount_granted).reduce((acc, cur) => acc + cur, 0);
-        $("#total-display").html(formatNumber(totalAmount));
-
-        // hide period container if month is equal to 0
-        if (this.month === 0) {
-            $('#period-container').attr('hidden', '');
-        } else {
-            $('#period-container').removeAttr('hidden');
-            let month = `${this.year}-${this.month.toString().padStart(2, "0")}`;
-            // input month value
-            $('#month').val(month);
-            const data = await this.getPeriodByMonth(month);
-            this.fillInPeriodForm(data)
+    async getAllEmployee(){
+        try {
+            const res = await fetch(`${AvanceList.API_URL.EMPLOYEE}`,{
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                }
+            })
+  
+            const users = await res.json();  
+            // console.log("res", res.json());
+            
+            return users
+        } catch (error) {
+            
         }
     }
+    async getPaidAvances() {  
+        try {  
+            const res = await fetch(`${AvanceList.API_URL.PAID}?month=${this.month}&year=${this.year}`);  
+            const { data } = await res.json();  
+            
+            return data;  
+        } catch (error) {  
+            console.error('Error fetching paid advances:', error);  
+            return [];  
+        }  
+    }  
 
-    // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
-    async getPeriodByMonth(month) {
-        const res = await fetch('/api/avance/getperiod/' + month);
-        const { data } = await res.json();
-        return data;
-    }
 
-    // method to display data in the form
-    fillInPeriodForm(data) {
-        const f = (d) => moment(d).format('YYYY-MM-DD')
-        $('#start_date').val(data ? f(data.start_date) : '');
-        $('#end_date').val(data ? f(data.end_date) : '');
-    }
+    async downloadFile(month, year) {  
+        try {  
+            const response = await fetch(`${AvanceList.API_URL.EXPORT}?month=${month}&year=${year}`, { method: 'GET' });  
+            if (!response.ok) throw new Error('Network response was not ok');  
 
-    addFilters() {
-        const self = this;
-        // Create month options
-        const monthOptions = [];
+            const blob = await response.blob();  
+            const url = window.URL.createObjectURL(blob);  
+            const a = document.createElement('a');  
+            a.href = url;  
+            a.download = 'exported_file.xlsx';  
+            document.body.appendChild(a);  
+            a.click();  
+            a.remove();  
+            window.URL.revokeObjectURL(url);  
+        } catch (error) {  
+            console.error('Error downloading file:', error);  
+        }  
+    }  
+    async initGrid() {  
+        if (this.grid) this.grid.destroy();  
+    
+        // Récupérer les avances payées  
+        const data = await this.getPaidAvances();  
         
-        self.months.forEach((month, index) => {
-            monthOptions.push(`<option value="${index}">${month}</option>`);
-        });
-        // Create year options starting from 2024 to current year
-        const yearOptions = [];
-        const date = new Date();
-        const currentYear = date.getFullYear();
-        for (let year = 2024; year <= currentYear; year++) {
-            yearOptions.push(`<option value="${year}">${year}</option>`);
-        }
-
-        let $month = $('#f-month');
-        let $year = $('#f-year');
-
-        $month.html(monthOptions);
-        $year.html(yearOptions);
-
-        // default values
-        $month.val(date.getMonth() + 1);
-        $year.val(date.getFullYear());
-
-        // add event listener
-        $month.on('change', function() {
-            self.month = +$(this).val();
-            self.initGrid()
-        });
-
-        $year.on('change', function() {
-            self.year = +$(this).val();
-            self.initGrid()
-        });
-
+        // S'assurer que le conteneur est vide  
+        const wrapper = document.getElementById("wrapper");  
+        wrapper.innerHTML = ''; // Nettoyer le conteneur  
+    
+        // Initialiser et rendre la grille des paiements  
+        this.grid = new gridjs.Grid({  
+            columns: ["Nom", "M-CODE", "Montant", "Date de paiement", "Status"],  
+            data: data.map(d => [  
+                `${d.user.first_name} ${d.user.last_name}`,  
+                d.user.m_code,  
+                formatNumber(d.amount_granted),  
+                d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',  
+                d.status === 'paid' ? 'Payé' : ''  
+            ]),  
+            pagination: {  
+                enabled: true,  
+                limit: 20  
+            },  
+            sort: true,  
+            resizable: true,  
+        }).render(wrapper);  
+    
+        // Récupérer tous les employés et filtrer ceux qui ne sont pas dans les avances  
+        const User = await this.getAllEmployee();  
+        
+        const userIdsInResults = data.map(avance => avance.user._id.toString()); 
+        console.log("userIdsInResults", userIdsInResults); 
+        const usersNotInResults = User.filter(user => (  
+            !userIdsInResults.includes(user._id.toString()) && (user.status !== "Quitter") && (user.first_name !== "TL")
+            && (user.shift !== "RH") && (user.occupation !== "Opération" )&& (user.occupation !== "Surveillant" ) 
+            && (user.occupation !== "Finance") && (user.m_code !== "N/A")  && (!data.includes(user.m_code))  
+        ));  
+    
+    
+        // Nettoyer le conteneur pour la seconde grille  
+        const nonAvContainer = document.getElementById("non-av");  
+        nonAvContainer.innerHTML = ''; // Nettoyer le conteneur  
+    
+        // Initialiser et rendre la grille des utilisateurs non inclus  
+        new gridjs.Grid({  
+            columns: ["Nom", "M-CODE", "Montant"],  
+            data: usersNotInResults.map(d => [  
+                `${d.first_name} ${d.last_name}`,  
+                d.m_code,  
+                ""  
+            ]) , 
+            pagination: {  
+                enabled: true,  
+                limit: 20  
+            },  
+            sort: true,  
+            resizable: true, 
+        }).render(nonAvContainer);  
+        
+        // Affichage de la date et du montant total  
+        $("#date-display").html(`${this.months[this.month]} ${this.year}`);  
+        const totalAmount = data.reduce((acc, s) => acc + s.amount_granted, 0);  
+        $("#total-display").html(formatNumber(totalAmount));  
+    
+        // Gestion de l'affichage du conteneur de période  
+        if (this.month === 0) {  
+            $('#period-container').attr('hidden', true);  
+        } else {  
+            $('#period-container').removeAttr('hidden');  
+            const monthFormatted = `${this.year}-${this.month.toString().padStart(2, "0")}`;  
+            $('#month').val(monthFormatted);  
+            const periodData = await this.getPeriodByMonth(monthFormatted);  
+            this.fillInPeriodForm(periodData);  
+        }  
     }
 
-}
+    async getPeriodByMonth(month) {  
+        try {  
+            const res = await fetch(`${AvanceList.API_URL.PERIOD}${month}`);  
+            const { data } = await res.json();  
+            return data;  
+        } catch (error) {  
+            console.error('Error fetching period data:', error);  
+            return {};  
+        }  
+    }  
+
+    fillInPeriodForm(data) {  
+        const formatDate = (date) => moment(date).format('YYYY-MM-DD');  
+        $('#start_date').val(data.start_date ? formatDate(data.start_date) : '');  
+        $('#end_date').val(data.end_date ? formatDate(data.end_date) : '');  
+    }  
+
+    addFilters() {  
+        // Création des options pour le mois et l'année  
+        const monthOptions = this.months.map((month, index) => `<option value="${index}">${month}</option>`).join('');  
+        const currentYear = new Date().getFullYear();  
+        const yearOptions = Array.from({ length: currentYear - 2023 + 1 }, (_, i) => 2024 + i)  
+                                  .map(year => `<option value="${year}">${year}</option>`)  
+                                  .join('');  
+
+        $('#f-month').html(monthOptions).val(new Date().getMonth() + 1);  
+        $('#f-year').html(yearOptions).val(currentYear);  
+
+        // Ajout des écouteurs d'événements  
+        $('#f-month').on('change', () => {  
+            this.month = +$('#f-month').val();  
+            $("#exportBtn").toggle(this.month !== 0);  
+            this.initGrid();  
+        });  
+
+        $('#f-year').on('change', () => {  
+            this.year = +$('#f-year').val();  
+            this.initGrid();  
+        });  
+    }  
+}  
+
+function formatNumber(val) {  
+    return String(val).replace(/\D/g, '')  
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');  
+}  
+
+const av = new AvanceList();  
+av.initGrid();  
+av.addFilters();  
+
+$("#exportBtn").on("click", async () => {  
+    const month = $('#f-month').val();  
+    const year = $('#f-year').val();  
+    try {  
+        await av.downloadFile(month, year);  
+    } catch (error) {  
+        console.error('Error downloading file:', error);  
+    }  
+});
 
 
-function formatNumber(val) {
-    // Remove all non-digit characters
-    let value = String(val).replace(/\D/g, '');
-    // Add spaces every 3 digits
-    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-    // Get the new length of the value after formatting
-    return value;
-}
 
-const av = new AvanceList();
-av.initGrid();
-av.addFilters()
+$("#avance-liste").on("click", function () {
+    $("#wrapper").attr("style", "")
+    $("#non-av").attr("style", "display: none")
+    $("#avance-liste").addClass("active-btn")
+    $("#non-avance").removeClass("active-btn")
+})
+$("#non-avance").on("click", function () {
+    $("#non-av").attr("style", "")
+    $("#wrapper").attr("style", "display: none")
+    $("#avance-liste").removeClass("active-btn")
+    $("#non-avance").addClass("active-btn")
+})

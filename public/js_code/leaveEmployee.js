@@ -127,18 +127,18 @@ function counting(){
     }
   }
   render_element(employees["list1"], "list1")
-  console.log("list1");
+  // console.log("list1");
   render_element(employees["list2"], "list2")
-  console.log("list2");
+  // console.log("list2");
   render_element(employees["list3"], "list3")
-  console.log("list3");
+  // console.log("list3");
   render_element(employees["list4"], "list4")
-  console.log("list4");
+  // console.log("list4");
   render_element(employees["list5"], "list5")
-  console.log("list5");
+  // console.log("list5");
   render_element(employees["list6"], "list6")
-  console.log("list6");
-  console.log(employees["list7"])
+  // console.log("list6");
+  // console.log(employees["list7"])
   render_element(employees["list7"],"list7")
 }
 counting();
@@ -394,7 +394,10 @@ function take_leave(url, type, startings, endings, val, mt, begin, end) {
   http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   http.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
-      if (this.response.status == "Ok") {
+      var response = JSON.parse(this.response)
+      console.log("response", response);
+      
+      if (response.status == "Ok") {
         var duree = "";
         if (begin == ""){
           duree = " de durée de " + date_diff(startings,endings) + " jour(s)"
@@ -413,17 +416,17 @@ function take_leave(url, type, startings, endings, val, mt, begin, end) {
         getdata(code_selected);
         rest_begin_end();
       }
-      else if (this.responseText == "not authorized") {
+      else if (response.status == "not authorized") {
         info.innerHTML = code_selected + " n'est pas autorisée a prendre ce type de congé";
         info.style.display = "block";
       }
-      else if (this.responseText == "duplicata") {
+      else if (response.status == "duplicata") {
         info.innerHTML = "Un congé incluant la date choisi existe déja pour " + code_selected;
         info.style.display = "block";
       }
-      else {
-        window.location = "/session_end";
-      }
+      // else {
+      //   window.location = "/session_end";
+      // }
       btnsave.disabled = false;
       waiting.style.opacity = 0;
 
@@ -527,7 +530,6 @@ function render_element(array,list){
   rendu = '<div onclick="closeList('+"'"+list+"'"+')" class=""><h3 class="close-tag">X</h3></div><div class="row d-flex align-items-center justify-content-center">';
   for (let index = 0; index < array.length; index++) {
     const element = array[index];
-    console.log(element)
     rendu += `
     <div class="col-sm-4">
                             <h6 class="text-code2 mt-1 text-center">${element.m_code}<br>${Abreviation(element.type)} de ${element.duration} jour(s)</h6>

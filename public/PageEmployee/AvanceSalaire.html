@@ -21,7 +21,32 @@
     </script>
     <link href="/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-
+    <style>
+        .code-container-1 {
+            display: flex;
+            gap: 10px;
+            background-color: white;
+            border: 1px solid #d4d4d4;
+            padding: 0.6rem;
+            border-radius: 15px;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 300px;
+        }
+        .code-modif {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #333;
+            border-radius: 5px;
+            outline: none;
+        }
+        .code-modif:focus {
+            border-color: #007BFF;
+        }
+    </style>
 </head>
 
 <body>
@@ -303,12 +328,20 @@
                         <div class="code-container">
                             <div class="">
                                 <span>Votre code est:</span>
+                                <input type="hidden" value="<%= user.digit_code%>" id="codeHidden"/>
                                 <h2 id="digits-4" class="masked-text"></h2>
                             </div>
                             <button id="show-code" class="show-code hide">
                                 <i class="fa-solid fa-eye show"></i>
                                 <i class="fa-solid fa-eye-slash hide"></i>
                             </button>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modif_code">
+                                modif
+                            </button>
+                            <!-- <button type="button" class="btn btn-secondary" style="border: none; padding: 0.5rem;" data-bs-toggle="modal" data-bs-target="#modif_code">
+                                modif
+                            </button> -->
                         </div>
                     </div>
                 </div>
@@ -408,6 +441,30 @@
         </div>
     </div>
     
+    <!-- Modal -->
+    <div class="modal fade " id="modif_code" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">Nouveau code</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" value="<%= user._id %>" id="userId" />
+            <div class="code-container-1">
+                <input type="text" id="digit1" class="code-modif" maxlength="1" />
+                <input type="text" id="digit2" class="code-modif" maxlength="1" />
+                <input type="text" id="digit3" class="code-modif" maxlength="1" />
+                <input type="text" id="digit4" class="code-modif" maxlength="1" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" id="closeModifcode" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="modifierCode">Modifier</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script>
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
@@ -649,6 +706,8 @@
         const startDate = moment(data.start_date).startOf('day');
         const endDate = moment(data.end_date).startOf('day');
 
+        console.log("startDate",startDate, "endDate", endDate);
+        
         // Check if the current date is between or equal to startDate and endDate
         const isNowBetweenOrEqual = moment().startOf('day').isBetween(startDate, endDate, null, '[]');
 
@@ -662,7 +721,7 @@
         }
 
         // display date de fin
-        $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYY')));
+        $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYYY')));
     })
 
 
@@ -674,24 +733,7 @@
         
     })
 
-    $('#show-code').on('click', function(){
-        let $btn = $(this);
-        let $code = $('#digits-4');
-        let code = '<%= user.digit_code %>';
-        if ($btn.hasClass('show')) {
-            $btn.removeClass('show').addClass('hide');
-            // add masked text
-            $code.addClass('masked-text');
-            $code.html('');
-        } else {
-            $btn.removeClass('hide').addClass('show');
-            // show the code
-            $code.removeClass('masked-text');
-            $code.html(code);
-        }
-    })
     </script>
-
     <script src="../jsDTB/no-connection.js"></script>
 </body>
 

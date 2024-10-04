@@ -3,7 +3,11 @@ const Avance = require("../../models/ModelAvance");
 const DateAvance = require("../../models/ModelDatesAvance");
 const User = require("../../models/ModelMember");
 const crypto = require('crypto')
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer")   
+const ExcelJS = require('exceljs');
+const XLSX = require('xlsx');  
+const fs = require('fs');  
+
 
 async function getListByUserId(req, res) {
     try {
@@ -130,12 +134,83 @@ async function getPaidDemands(req, res) {
             select: 'last_name occupation'
         });
         
-        res.status(200).json({ ok: true, data: result });
+        res.status(200).json({ ok: true, data: result});
     } catch (error) {
         console.error("Error getting list:", error);
         res.json({  ok: false, data: [] });
     }
 
+}
+
+
+
+async function exportFile(req, res) {
+    
+    try {  
+        const workbook = new ExcelJS.Workbook();  
+        await workbook.xlsx.readFile('test1.xlsx');  
+
+        // Sélectionner la feuille de calcul  
+        const worksheet = workbook.getWorksheet(1);  
+        
+        // Extract year and month from query, default to current year and month 0  
+        var { year = new Date().getFullYear(), month = 0 } = req.query;  
+        console.log("Year:", year, "Month:", month);  
+        
+        // Fetch data based on the year and month  
+        const data = await Avance.find({  
+            ...(year && {  
+                $expr: {  
+                    ...(month != 0 ? {  
+                        $and: [  
+                            { $eq: [{ $year: "$date" }, +year] },  
+                            { $eq: [{ $month: "$date" }, +month] }  
+                        ]  
+                    } : {  
+                        $eq: [{ $year: "$date" }, +year]  
+                    })  
+                }  
+            })  
+        })  
+        .populate('user')  
+        .populate({  
+            path: 'validation.user',  
+            select: 'last_name occupation'  
+        });  
+
+        // Loop through specified rows in the worksheet  
+        for (let rowIndex = 3; rowIndex < 102; rowIndex++) {  
+            const row = worksheet.getRow(rowIndex);  
+            const rowData = row.values;  
+
+            // Check for matches in the database  
+            for (const entry of data) {  
+                const fullName = `${entry.user.first_name} ${entry.user.last_name}`.trim();  
+                const mcode = `${entry.user.m_code}`
+                
+                // Match the full name with the cell value  
+                if (rowData[1] === fullName || rowData[2] == mcode) {  
+                    worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
+                    if (entry.status == "paid") {
+                        worksheet.getCell(`D${rowIndex}`).value = "Payé"
+                    }
+                    break; // Exit loop after finding a match  
+                }  
+            }   
+        }  
+
+        // Write buffer and prepare response  
+        const buffer = await workbook.xlsx.writeBuffer();  
+
+        // Set headers for the response to download the Excel file  
+        res.setHeader('Content-Disposition', 'attachment; filename="votre_fichier_modifié.xlsx"');  
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');  
+        res.send(buffer);  
+        
+    } catch (error) {  
+        console.error("Error during file export:", error);  
+        res.status(500).send("Internal Server Error"); // Handle any errors  
+    }  
 }
 
 
@@ -171,7 +246,7 @@ async function validateAvance(req, res) {
         // const getAvance = await Avance.findOne({_id: _id})
         var updated = await Avance.findOneAndUpdate(
             { _id },
-            { amount_granted: parseFloat(amount_granted), status: "approved" },
+            { amount_granted: parseFloat(amount_granted), status: "verified" },
             { new: true }
         )
         .populate({
@@ -523,5 +598,6 @@ module.exports = {
     getPaidDemands,
     addPeriodDates,
     getPeriodInMonth,
-    checkAvanceCode
+    checkAvanceCode,
+    exportFile
 }

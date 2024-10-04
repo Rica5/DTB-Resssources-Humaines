@@ -204,7 +204,7 @@ const LeaveReport = async (req, res) => {
                 globaleVariable.monthly_leave[i].date_start,
                 globaleVariable.monthly_leave[i].date_end
               )
-            console.log(motif)
+            console.log("motifmotif",motif)
             if (globaleVariable.monthly_leave[i].type.includes("Congé Payé")) {
               if (globaleVariable.monthly_leave[i].duration == 0.25) {
                 globaleVariable.monthly_leave[i].duration = 0;
@@ -505,7 +505,7 @@ const createLeave = async (req, res) => {
                   last_acc = leave_specific[c].acc + leave_specific[c].duration - taked
                 } else {
                   rest = leave_specific[c].rest - taked;
-                  last_acc = leave_specific[c - 1].acc - taked
+                  last_acc = leave_specific[c].acc - taked
                 }
               }
             }
@@ -757,6 +757,7 @@ const createLeave = async (req, res) => {
     res.redirect("/");
   }
 }
+console.log(Methods.date_diff('2024-09-10', '2024-09-13'))
 //Edit leave 
 const editLeave = async (req, res) => {
   var session = req.session;
@@ -1395,18 +1396,18 @@ function renderResult(day, theHour, theMin) {
 // Method to render the right motif
 function motif_rendered(mt, type) {
   if (type.includes("Repos Maladie")) {
-    if (mt == "") {
+    // if (mt == "") {
       return precede(type) + type;
-    } else {
-      return precede(mt) + mt;
-    }
+    // } else {
+    //   return precede(mt) + mt;
+    // }
   }
   else {
-    if (mt == "") {
+    // if (mt == "") {
       return precede(type) + type.replace("Permission exceptionelle", "Permission exceptionnelle");
-    } else {
-      return precede(type) + type.replace("Permission exceptionelle", "Permission exceptionnelle") + " pour " + mt;
-    }
+    // } else {
+    //   return precede(type) + type.replace("Permission exceptionelle", "Permission exceptionnelle") ;
+    // }
   }
   function precede(letter) {
     var vowels = ["a", "e", "i", "o", "y"];

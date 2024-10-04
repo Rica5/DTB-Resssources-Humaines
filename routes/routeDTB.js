@@ -75,6 +75,7 @@ routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
 routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance/paid').get(API_Avance.getPaidDemands)
+routeExpDTB.route('/exportExcel').get(API_Avance.exportFile)
 routeExpDTB.route('/api/avance/addperiod').post(API_Avance.addPeriodDates)
 routeExpDTB.route('/api/avance/verify-code').post(API_Avance.checkAvanceCode)
 routeExpDTB.route('/api/avance/getperiod/:month').get(API_Avance.getPeriodInMonth)
@@ -86,6 +87,7 @@ routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Av
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
 routeExpDTB.route('/api/avance/verification/:id?').get(API_Avance.verificationDemand)
 routeExpDTB.route('/api/avance/payer/:id?').get(API_Avance.payerAvance)
+routeExpDTB.route("/api/avance/updateCode").post(ControllerMember.updateCode)
 routeExpDTB.route('/avance/verification/:id?').get(ControllerAvance.getVerificationPage)
 //administrator avance
 routeExpDTB.route('/advancesalarylist').get(ControllerRequestSalary.getListSalaryAdvance)

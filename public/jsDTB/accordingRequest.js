@@ -450,7 +450,10 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $('#nbr-day').on('change', () => {
             let nDuration = parseFloat($('#nbr-day').val())
             console.log('ato', userActive.leave_stat)
-            renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
+            if ($('#typeLeave').val() == "Congé Payé" || $('#typeLeave').val() == ""){
+                renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
+            }
+    
         });
     }
     idActive = id;
@@ -788,73 +791,101 @@ function addPiece(id){
     $("#join").click();
 }
 $('#typeLeave').on('change', function () {
-    $("#typeLeave").css('borderColor','#5AC4EC')
-    if ($('#typeLeave').val() == "Permission exceptionelle"){
-        activatePermission(true)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Congé Payé"){
-        activatePermission(false)
-        activateCp(true, "deduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Repos Maladie"){
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(true)
-    }
-    else if ($('#typeLeave').val() == ""){
-        activatePermission(false)
-        activateCp(false, "deduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Consultation médicale") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Congé de maternité") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Assistance maternelle") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Récupération") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Congé sans solde") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Absent") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Mise a Pied") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else if ($('#typeLeave').val() == "Absence Injustifiée") {
-        activatePermission(false)
-        activateCp(true, "ndeduire");
-        activateRm(false)
-    }
-    else{
-        activatePermission(false)
-        activateCp(true, "deduire");
-        activateRm(false)
-    }
+    const leaveType = $('#typeLeave').val();
+    $("#typeLeave").css('borderColor', '#5AC4EC');
+
+    const actions = {
+        "Permission exceptionelle": { permission: true, cp: ["ndeduire", true], rm: false },
+        "Congé Payé": { permission: false, cp: ["deduire", true], rm: false },
+        "Repos Maladie": { permission: false, cp: ["ndeduire", true], rm: true },
+        "Consultation médicale": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Congé de maternité": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Assistance maternelle": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Récupération": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Congé sans solde": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Absent": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Mise a Pied": { permission: false, cp: ["ndeduire", true], rm: false },
+        "Absence Injustifiée": { permission: false, cp: ["ndeduire", true], rm: false },
+        "": { permission: false, cp: ["deduire", false], rm: false },
+        "default": { permission: false, cp: ["deduire", true], rm: false }
+    };
+
+    const currentAction = actions[leaveType] || actions['default'];
+    
+    activatePermission(currentAction.permission);
+    activateCp(currentAction.cp[1], currentAction.cp[0]);
+    activateRm(currentAction.rm);
 });
+
+// $('#typeLeave').on('change', function () {
+//     const leaveType = $('#typeLeave').val();
+//     $("#typeLeave").css('borderColor','#5AC4EC')
+//     if ($('#typeLeave').val() == "Permission exceptionelle"){
+//         activatePermission(true)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Congé Payé"){
+//         activatePermission(false)
+//         activateCp(true, "deduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Repos Maladie"){
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(true)
+//     }
+//     else if ($('#typeLeave').val() == ""){
+//         activatePermission(false)
+//         activateCp(false, "deduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Consultation médicale") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Congé de maternité") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Assistance maternelle") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Récupération") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Congé sans solde") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Absent") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Mise a Pied") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else if ($('#typeLeave').val() == "Absence Injustifiée") {
+//         activatePermission(false)
+//         activateCp(true, "ndeduire");
+//         activateRm(false)
+//     }
+//     else{
+//         activatePermission(false)
+//         activateCp(true, "deduire");
+//         activateRm(false)
+//     }
+// });
 $('#join').on('change', function (event) {
     var selectedFile = event.target.files[0];
     if (selectedFile){

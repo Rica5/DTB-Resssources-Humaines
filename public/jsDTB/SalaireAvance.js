@@ -46,6 +46,18 @@ class SalaryAvanceUI {
         return response.json()
     }
 
+    async sendUpdateCode(data){
+        const response = await fetch(`${this.baseurl}/updateCode`, {
+            method: "POST",
+            body: JSON.stringify(data),
+            headers: {
+                "Content-type": "application/json"
+            }
+        })
+
+        
+        return response.status
+    }
     async deleteDemande(id){
         const response = await fetch(`${this.baseurl}/delete/${id}`, {
             method: 'DELETE',
@@ -398,4 +410,94 @@ function formatNumber(input) {
     input.setSelectionRange(cursorPosition, cursorPosition);
 }
 
+
+const submitBtn = document.getElementById('modifierCode');
+
+var userId = $("#userId").val()
+var code =""
+$('#show-code').on('click', function(){
+    let $btn = $(this);
+    let $code = $('#digits-4');
+    code = $("#codeHidden").val()
+    if ($btn.hasClass('show')) {
+        $btn.removeClass('show').addClass('hide');
+        // add masked text
+        $code.addClass('masked-text');
+        $code.html('');
+    } else {
+        $btn.removeClass('hide').addClass('show');
+        // show the code
+        $code.removeClass('masked-text');
+        $code.html(code);
+    }
+})
+console.log(code);
+
+var inputs = document.querySelectorAll('.code-container-1 input');
+inputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+        const nextInput = inputs[index + 1];
+        if (nextInput && input.value !== '') {
+            nextInput.focus();
+        }
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && input.value === '') {
+            const prevInput = inputs[index - 1];
+            if (prevInput) {
+                prevInput.focus();
+            }
+        }
+    });
+});
+submitBtn.addEventListener('click', async () => {
+    code = ""
+    
+    // const inputs = document.querySelectorAll('.inputField'); 
+    inputs.forEach(input => {
+        code += input.value;
+    });
+    
+    let isMasked = document.getElementById('digits-4').classList.contains('masked-text');
+    
+    if (code.length === 4) {
+        var data = {
+            code: code,
+            id: userId
+        }
+        await ui.sendUpdateCode(data);
+
+        $('#modif_code').modal('hide'); // Si tu utilises Bootstrap pour gérer la modal
+
+        // Vider les champs d'input après avoir récupéré leurs valeurs
+        inputs.forEach(input => {
+            input.value = ''; // Vider chaque champ d'input
+        });
+
+        // Mettre à jour le contenu de l'élément h3 avec le nouveau code
+        $("#digits-4").text("")
+        $("#codeHidden").val(code)
+        // Si le code était masqué avant la mise à jour, le garder masqué
+        if (isMasked) {
+            $("#digits-4").addClass('masked-text')
+        } else {
+            $("#digits-4").text(code)
+            $("#digits-4'").removeClass("masked-text")
+        }
+
+        
+        Toastify({
+            text: "Le code a été modifié",
+            gravity: "bottom",
+            position: "center",
+            style: {
+                "background": "#29E342"
+            }
+        }).showToast();
+
+    } else {
+        alert('Veuillez remplir tous les champs.');
+    }
+});
 
