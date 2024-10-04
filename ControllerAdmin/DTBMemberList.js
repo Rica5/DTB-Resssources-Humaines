@@ -47,6 +47,7 @@ const allMember = async(req,res) => {
               var users = await UserSchema.find({}).sort({
                 first_name: 1,
               });
+              
               res.send(users);
         }
 }
@@ -224,6 +225,21 @@ const updateUser = async(req,res) => {
       );
       res.send("Ok");
 }
+
+const updateCode = async(req,res) => {
+  
+  var id = req.body.id;
+  var newCode = req.body.code
+  console.log("req.body", req.body);
+  await UserSchema.findOneAndUpdate(
+    { _id: id },
+    {
+      digit_code: newCode
+    }
+  );
+  res.send({  ok: true, data: [] });;
+}
+
 // Delete User 
 const deleteUser = async(req,res) => {
     var names = req.body.fname;
@@ -400,5 +416,5 @@ async function ProjectFromTools() {
   }
 
   module.exports = {
-    getPageUserList,allMember,getUser,addMember,updateUser,deleteUser,reactivateUser,changeProfil
+    getPageUserList,allMember,getUser,addMember,updateUser,deleteUser,reactivateUser,changeProfil, updateCode
   }

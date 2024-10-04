@@ -519,3 +519,10 @@ i.show, i.hide {
   font-size: inherit;
   letter-spacing: 5px; /* Adjust spacing between dots */
 }
+
+.modal-body{
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

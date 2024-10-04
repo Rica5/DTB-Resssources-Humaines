@@ -134,7 +134,7 @@ async function getPaidDemands(req, res) {
             select: 'last_name occupation'
         });
         
-        res.status(200).json({ ok: true, data: result });
+        res.status(200).json({ ok: true, data: result});
     } catch (error) {
         console.error("Error getting list:", error);
         res.json({  ok: false, data: [] });
@@ -186,9 +186,10 @@ async function exportFile(req, res) {
             // Check for matches in the database  
             for (const entry of data) {  
                 const fullName = `${entry.user.first_name} ${entry.user.last_name}`.trim();  
-
+                const mcode = `${entry.user.m_code}`
+                
                 // Match the full name with the cell value  
-                if (rowData[1] === fullName) {  
+                if (rowData[1] === fullName || rowData[2] == mcode) {  
                     worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
                     if (entry.status == "paid") {
                         worksheet.getCell(`D${rowIndex}`).value = "Payé"

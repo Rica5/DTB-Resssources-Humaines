@@ -87,6 +87,7 @@ routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Av
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
 routeExpDTB.route('/api/avance/verification/:id?').get(API_Avance.verificationDemand)
 routeExpDTB.route('/api/avance/payer/:id?').get(API_Avance.payerAvance)
+routeExpDTB.route("/api/avance/updateCode").post(ControllerMember.updateCode)
 routeExpDTB.route('/avance/verification/:id?').get(ControllerAvance.getVerificationPage)
 //administrator avance
 routeExpDTB.route('/advancesalarylist').get(ControllerRequestSalary.getListSalaryAdvance)

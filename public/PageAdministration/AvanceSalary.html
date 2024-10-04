@@ -268,85 +268,92 @@
         <div class="row content-request">
           <div class="col-12">
             <div class="card">
-              <div class="card-body">
-                <div class="header-request">
-                  <div class="buttons-tab" style="width: 100%;">
-                    <!-- filter -->
-                    <select name="f-month" id="f-month"></select>
-                    <select name="f-year" id="f-year"></select>
-                  </div>
-                  <div>
-                    <button class="btn btn-success" id="exportBtn">Export</button>
-                  </div>
-                </div>
-                <div class="coll-12 allRequest mt-2" id="content-allRequest">
-                  <div class="p-3" id="period-container">
-                    <!-- Formulaire pour definir les dates ouvrables  -->
-                    <button class="btn btn-secondary" id="open-form">
-                      Changer les dates ouvrables <i class="fa-solid fa-chevron-up ms-2"></i>
-                    </button>
-                    <div class="form-container p-4 border my-3 bg-white" hidden>
-                      <h3>Définir les Dates Ouvrables</h3>
-                      <form id="avanceDateForm">
-                        <div class="row">
-  
-                          <div class="col-6">
-                            <div class="form-group">
-                              <label for="start_date">Date de début :</label>
-                              <input type="date" id="start_date" name="start_date" required>
-                            </div>
-                          </div>
-  
-                          <div class="col-6">
-                            <div class="form-group">
-                              <label for="end_date">Date de fin :</label>
-                              <input type="date" id="end_date" name="end_date" required>
-                            </div>
-                          </div>
-  
+              <div class="card-body">  
+                <div class="header-request">  
+                    <div class="buttons-tab d-flex justify-content-between" style="width: 100%;">  
+                        <!-- Filter Dropdowns -->  
+                        <div class="filter-dropdowns d-flex align-items-center">  
+                            <select name="f-month" id="f-month" class="form-select"></select>  
+                            <select name="f-year" id="f-year" class="form-select"></select>  
+                        </div>  
+                        <div>  
+                            <button class="btn btn-success" id="exportBtn">Export</button>  
+                        </div>  
+                    </div>  
+                </div>  
+            
+                <div class="coll-12 allRequest mt-2" id="content-allRequest">  
+                    <div class="p-3" id="period-container">  
+                        <!-- Form to set working dates -->  
+                        <button class="btn btn-secondary" id="open-form">  
+                            Changer les dates ouvrables <i class="fa-solid fa-chevron-up ms-2"></i>  
+                        </button>  
+                        <div class="form-container p-4 border my-3 bg-white" hidden>  
+                            <h3>Définir les Dates Ouvrables</h3>  
+                            <form id="avanceDateForm">  
+                                <div class="row">  
+                                    <div class="col-6">  
+                                        <div class="form-group">  
+                                            <label for="start_date">Date de début :</label>  
+                                            <input type="date" id="start_date" name="start_date" class="form-control" required>  
+                                        </div>  
+                                    </div>  
+            
+                                    <div class="col-6">  
+                                        <div class="form-group">  
+                                            <label for="end_date">Date de fin :</label>  
+                                            <input type="date" id="end_date" name="end_date" class="form-control" required>  
+                                        </div>  
+                                    </div>  
+                                </div>  
+            
+                                <div class="form-group" hidden>  
+                                    <label>Jours ouvrables :</label>  
+                                    <div class="checkbox-group">  
+                                        <label><input type="checkbox" name="working_days" value="1" checked> Lundi</label>  
+                                        <label><input type="checkbox" name="working_days" value="2" checked> Mardi</label>  
+                                        <label><input type="checkbox" name="working_days" value="3" checked> Mercredi</label>  
+                                        <label><input type="checkbox" name="working_days" value="4" checked> Jeudi</label>  
+                                        <label><input type="checkbox" name="working_days" value="5" checked> Vendredi</label>  
+                                        <label><input type="checkbox" name="working_days" value="6"> Samedi</label>  
+                                        <label><input type="checkbox" name="working_days" value="0"> Dimanche</label>  
+                                    </div>  
+                                </div>  
+            
+                                <div class="form-group" hidden>  
+                                    <label for="holidays">Jours fériés :</label>  
+                                    <div id="holidayFields" class="mb-2">  
+                                        <!-- Les champs de jours fériés seront ajoutés ici -->  
+                                    </div>  
+                                    <button type="button" id="addHoliday" class="btn btn-outline-secondary">Ajouter un jour férié</button>  
+                                </div>  
+            
+                                <input type="hidden" name="month" id="month">  
+            
+                                <button type="submit" id="submit" class="btn btn-primary">  
+                                    <span class="load" style="display: none;">Mise à jour...</span>  
+                                    <span class="normal">Mettre à jour</span>  
+                                </button>  
+                            </form>  
+                        </div>  
+                    </div>  
+            
+                    <div class="p-4">  
+                        <div class="d-flex align-items-center justify-content-between">  
+                            <h3 class="text-center" id="date-display">Août 2025</h3>  
+                            <h3 class="text-center">Total: <b id="total-display">0</b></h3>
                         </div>
-  
-  
-                        <div class="form-group" hidden>
-                            <label>Jours ouvrables :</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" name="working_days" value="1" checked> Lundi</label>
-                                <label><input type="checkbox" name="working_days" value="2" checked> Mardi</label>
-                                <label><input type="checkbox" name="working_days" value="3" checked> Mercredi</label>
-                                <label><input type="checkbox" name="working_days" value="4" checked> Jeudi</label>
-                                <label><input type="checkbox" name="working_days" value="5" checked> Vendredi</label>
-                                <label><input type="checkbox" name="working_days" value="6"> Samedi</label>
-                                <label><input type="checkbox" name="working_days" value="0"> Dimanche</label>
-                            </div>
+                        <button class="switch-button active-btn" id="avance-liste">Avance</button>
+                        <button class=" switch-button " id="non-avance" >Autre</button>  
+                        <div id="wrapper">
+                          
+                        </div>  
+                        <div id="non-av" style="display: none">
+
                         </div>
-  
-                        <div class="form-group" hidden>
-                            <label for="holidays">Jours fériés :</label>
-                            <div id="holidayFields">
-                                <!-- Les champs de jours fériés seront ajoutés ici -->
-                            </div>
-                            <button type="button" id="addHoliday">Ajouter un jour férié</button>
-                        </div>
-
-                        <input type="hidden" name="month" id="month">
-  
-                        <button type="submit" id="submit" class="btn btn-primary">
-                          <span class="load">Mise à jour...</span>
-                          <span class="normal">Mettre à jour</span>
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-
-                  <div class="p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <h3 class="text-center" id="date-display">Aout 2025</h3>
-                      <h3 class="text-center">Total: <b id="total-display">0</b></h3>
-                    </div>
-                    <div id="wrapper"></div>
-                  </div>
-
-                </div>
+                    </div>  
+                    
+                </div>  
               </div>
             </div>
           </div>
