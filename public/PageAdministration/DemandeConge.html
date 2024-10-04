@@ -641,6 +641,13 @@
               <p id="codeDecline" class="warn-text mt-4">
                 Voulez vous vraiment refuser l'absence de M-FAM
               </p>
+              <div class="refus-par-ordre" style="display: flex;">
+                <span>Par ordre: </span>
+                <div class="d-flex flex-column text-center">
+                  <input id="refus-ordre" type="checkbox" class="checking" value="yes" onchange="checkboxControl(this, 'yes')">
+                  <label>Oui</label>
+                </div>
+              </div>
               <textarea id="reason"></textarea>
               <div class="mt-3">
                 <button id="accept" onclick="Decline()"  class="btn btn-sm btn-warning btn-send mx-1"><i style="opacity: 0;" id="waitingDecline" class="fa-solid fa-spinner fa-spin"></i> Envoyer <i class="fa-solid fa-envelope"></i></button>

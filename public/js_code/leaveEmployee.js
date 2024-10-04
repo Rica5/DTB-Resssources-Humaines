@@ -21,11 +21,13 @@ var droit_rest = document.getElementById('u-droit-rest');
 var last = document.getElementById("last");
 var upcoming = document.getElementById("upcoming");
 var waiting = document.getElementById("waiting");
+var waiting_add = document.getElementById("waiting-add");
 var hour_absence = document.getElementById("hour_absence");
 var begin = document.getElementById("begin");
 var end = document.getElementById("end");
 var oneDay = false;
 waiting.style.opacity = 0;
+waiting_add.style.opacity = 0;
 var code_selected = ""
 var users;
 //Number of those in period of vacation for each SHIFT

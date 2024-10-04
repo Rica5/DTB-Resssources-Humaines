@@ -483,6 +483,7 @@ function Declined(id,code){
     $("#codeDecline").text(`Veuilez ecrire en dessous la raison du refus d'absence de ${code}`);
     $("#reason").val('');
     $("#ModalDecline").show();
+    $('#refus-ordre').prop('checked', false);
 }
 function closeModal(){
     $("#ModalAccord").hide();
@@ -700,7 +701,7 @@ function Decline(){
         $.ajax({
             url:"/requestAnswer",
             method:"POST",
-            data:{id:idActive,response:false,reason:$("#reason").val()},
+            data:{id:idActive,response:false,reason:$("#reason").val(), refus_order: $('#refus-ordre').is(':checked')},
             success: function(res) {
                 UpdateRequest();
                 $("#waitingDecline").css('opacity','0')
@@ -1094,3 +1095,8 @@ $("#btnListGerant").on("click", function () {
     $('#gerantList').removeAttr('hidden');
 })
 
+if (role === "Admin" && USERID !== GerantId) {
+    $('.refus-par-ordre').attr('style', 'display: flex; gap: 18px;')
+} else {
+    $('.refus-par-ordre').attr('style', 'display: none;')
+}
