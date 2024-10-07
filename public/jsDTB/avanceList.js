@@ -57,8 +57,9 @@ class AvanceList {
             const blob = await response.blob();  
             const url = window.URL.createObjectURL(blob);  
             const a = document.createElement('a');  
+            const dateDisplay = $('#date-display').text().split(' ').join('_');
             a.href = url;  
-            a.download = 'exported_file.xlsx';  
+            a.download = `Avance_${dateDisplay}.xlsx`;  
             document.body.appendChild(a);  
             a.click();  
             a.remove();  
