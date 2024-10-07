@@ -848,12 +848,11 @@ async function getLeaveRequestFiltered (req, res) {
         } else {
             startDate = moment({year});
             endDate = moment(startDate).endOf('year');
-            console.log(startDate, endDate)
         }
         const requests = await LeaveRequestTest.find({
             date_start: {
                 $gte: startDate.format('YYYY-MM-DD'),
-                $lt: endDate.format('YYYY-MM-DD'),
+                $lte: endDate.format('YYYY-MM-DD'),
             },
             status: { 
                 $in: ["declined", "approved"]

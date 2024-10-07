@@ -103,6 +103,7 @@ const retrieveLeaveList = async (req, res) => {
       .sort({
         m_code: 1,
       });
+    
     res.send([all_leave, users]);
   } else {
     res.redirect("/");

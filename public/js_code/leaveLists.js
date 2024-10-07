@@ -40,8 +40,10 @@ function get_all_leave() {
         var data = JSON.parse(this.responseText);
         leaves = data[0];
         users = data[1];
-        // console.log("data", leaves);
         
+        // console.log("data", data);
+        
+
         // change_content(row_activated);
         change_content();
 
@@ -250,7 +252,6 @@ function calcul_timediff_absencetl(startTime, endTime) {
 
 
 function render_button(temp_c) {
-  console.log("temp_c", temp_c);
   
   var btn = "";
   btn += `<button onclick="printLeave('${temp_c._id}')" class="btn btn-sm btn-outline-secondary mx-3 mb-3 print-btn">Imprimer <i class="fa-solid fa-print"></i></button>`;
@@ -330,9 +331,12 @@ function rendu_footer() {
 }
 function rendu_body() {
   var temp_row = [];
+  
+  // var don = data[0].filter(m => m.m_code == "M-SE" && m.date_start == "2024-09-30")
+  // console.log("done", don);
   leaves.forEach(conge => {
     // if (conge.status == opt && search_year(conge.date_start, conge.date_end) && search_month(conge.date_start, conge.date_end) && search_texting(conge.m_code) && search_type(type_conge, conge.type)) {
-    if (search_year(conge.date_start, conge.date_end) && search_month(conge.date_start, conge.date_end) && search_texting(conge.m_code) && search_type(type_conge, conge.type)) {
+    if (search_year(conge.date_start, conge.date_end) && search_month(conge.date_start, conge.date_end) && search_texting(conge.m_code) && search_textingNom(conge.nom) && search_type(type_conge, conge.type)) {
         temp_row.push(rendu_conge(conge))
       if (temp_row.length == 4) {
         rows.push(temp_row);
@@ -407,7 +411,8 @@ function searching() {
   indice_row = 0;
   change_content();//row_activated
 }
-function search_texting(code) {
+function search_texting(code) {  
+
   if (search_text.trim() != "") { //&& row_activated != "en cours") {
     if (code.includes(search_text.toUpperCase())) {
       return true
@@ -421,6 +426,21 @@ function search_texting(code) {
   }
 }
 
+function search_textingNom(nom) {
+  const upperSearchNom = search_nom.toUpperCase(); 
+  if (search_nom.trim() != "") { //&& row_activated != "en cours") {
+    // console.log("nom", nom);
+    if (nom.toUpperCase().includes(upperSearchNom)) {      
+      return true
+    }
+    else {
+      return false;
+    }
+  }
+  else {
+    return true;
+  }
+}
 function set_type() {
   type_conge = document.getElementById("type").value;
   searching();
@@ -433,6 +453,7 @@ function set_text() {
   }
 }
 function search_year(temp1, temp2) {
+  
   var date1 = date_conversion(temp1).split("/");
   var date2 = date_conversion(temp2).split("/");
   if (year.value != ""){// && row_activated != "en cours") {

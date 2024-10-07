@@ -1,3 +1,4 @@
+
 class AvanceList {  
     // Constantes pour les URLs d'API  
     static API_URL = {  
@@ -68,11 +69,13 @@ class AvanceList {
         }  
     }  
     async initGrid() {  
-        if (this.grid) this.grid.destroy();  
+        if (this.grid) {
+            this.grid.destroy(); 
+        } 
     
         // Récupérer les avances payées  
         const data = await this.getPaidAvances();  
-        
+                
         // S'assurer que le conteneur est vide  
         const wrapper = document.getElementById("wrapper");  
         wrapper.innerHTML = ''; // Nettoyer le conteneur  
@@ -141,16 +144,18 @@ class AvanceList {
                 parent.parentNode.insertBefore(tr, parent.nextSibling);
             }
         });
-    
+
+          
+
+
         // Récupérer tous les employés et filtrer ceux qui ne sont pas dans les avances  
-        const User = await this.getAllEmployee();  
-        
+        const User = await this.getAllEmployee(); 
         const userIdsInResults = data.map(avance => avance.user._id.toString()); 
-        console.log("userIdsInResults", userIdsInResults); 
+
         const usersNotInResults = User.filter(user => (  
             !userIdsInResults.includes(user._id.toString()) && (user.status !== "Quitter") && (user.first_name !== "TL")
             && (user.shift !== "RH") && (user.occupation !== "Opération" )&& (user.occupation !== "Surveillant" ) 
-            && (user.occupation !== "Finance") && (user.m_code !== "N/A")  && (!data.includes(user.m_code))  
+            && (user.occupation !== "Finance") && (user.m_code !== "N/A")  
         ));  
     
     
@@ -158,8 +163,8 @@ class AvanceList {
         const nonAvContainer = document.getElementById("non-av");  
         nonAvContainer.innerHTML = ''; // Nettoyer le conteneur  
     
-        // Initialiser et rendre la grille des utilisateurs non inclus  
-        new gridjs.Grid({  
+        // Initialiser la grille pour les utilisateurs non inclus  
+        this.nonAvGrid = new gridjs.Grid({  
             columns: ["Nom", "M-CODE", "Montant"],  
             data: usersNotInResults.map(d => [  
                 `${d.first_name} ${d.last_name}`,  
@@ -167,13 +172,68 @@ class AvanceList {
                 ""  
             ]) , 
             language: { ...LangueFROption },
+            data: usersNotInResults.map(user => [  
+                `${user.first_name} ${user.last_name}`,  
+                user.m_code,  
+                ""  // Montant ou autre information si nécessaire  
+            ]),  
             pagination: {  
                 enabled: true,  
                 limit: 20  
             },  
             sort: true,  
-            resizable: true, 
-        }).render(nonAvContainer);  
+            resizable: true,  
+        }).render(nonAvContainer); 
+       
+  
+        const filterMcode = document.getElementById("searchMCODE")
+        filterMcode.addEventListener("input", ()=>{
+            const filterValue = filterMcode.value.toLowerCase()
+
+            // console.log("dfefezfds",filterValue);
+            
+            
+            const filteredUsers = usersNotInResults.filter(user=>{
+                // console.log("user", user.m_code);
+                
+                const fullName = `${user.first_name} ${user.last_name}`.toLowerCase()
+                const firstname = `${user.last_name} ${user.first_name}`.toLowerCase()
+                return  fullName.includes(filterValue) || firstname.includes(filterValue) || user.m_code.toLowerCase().includes(filterValue)
+            })
+
+            // Rendre la grille des utilisateurs non inclus  
+            const nonAvData = filteredUsers.map(user => [  
+                `${user.first_name} ${user.last_name}`,  
+                user.m_code,  
+                ""  
+            ]);  
+            
+            if (this.nonAvGrid) {
+                this.nonAvGrid.updateConfig({
+                    data: nonAvData
+                }).forceRender()
+            }
+
+            const filterdData = data.filter(d=>{
+                const fullName = `${d.user.first_name} ${d.user.last_name}`.toLowerCase()    
+                const firstname = `${d.user.last_name} ${d.user.first_name}`.toLowerCase()            
+                return fullName.includes(filterValue) || firstname.includes(filterValue) || d.user.m_code.toLowerCase().includes(filterValue)
+            })
+
+            
+            // Assurez-vous de mettre à jour correctement la grille  
+            if (this.grid) {  
+                this.grid.updateConfig({  
+                    data: filterdData.map(d => [  
+                        `${d.user.first_name} ${d.user.last_name}`,  
+                        d.user.m_code,  
+                        formatNumber(d.amount_granted),  
+                        d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',  
+                        d.status === 'paid' ? 'Payé' : ''  
+                    ])  
+                }).forceRender(); // Forcer le rendu avec les nouvelles données  
+            }          
+        })
         
         // Affichage de la date et du montant total  
         $("#date-display").html(`${this.months[this.month]} ${this.year}`);  

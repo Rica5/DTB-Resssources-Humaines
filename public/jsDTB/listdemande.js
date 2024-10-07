@@ -9,6 +9,9 @@ function fetchList(month) {
     fetch(`/filterLeaveRequest?month=${month}&year=${year}`)
     .then(async res => {
         const {ok, data} = await res.json();
+        // var don = data.filter(m => m.m_code == "M-SE" && m.date_start == "2024-09-30")
+        // console.log("done", don);
+        
         if (ok)
             renderLeaveRequests(data);
     })
