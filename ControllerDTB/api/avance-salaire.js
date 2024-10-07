@@ -33,6 +33,7 @@ async function getListByUserId(req, res) {
             path: 'validation.user',
             select: 'last_name occupation'
         })
+        .populate('confirmed_by')
         .sort({
             createdAt: 'desc',
         });
@@ -50,6 +51,7 @@ async function getOneDemande(req, res) {
 
         const result = await Avance.findOne({ _id: id})
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -69,6 +71,7 @@ async function updateAvance(req, res) {
         const { id } = req.params;
         const result = await Avance.findByIdAndUpdate(id, req.body, { new: true })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -115,18 +118,19 @@ async function getPaidDemands(req, res) {
             // status: "paid",
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
-                    ...(month != 0 ? {  // Use month check to determine condition
+                    ...(month > 0 ? {  // Use month check to determine condition
                         $and: [
-                            { $eq: [{ $year: "$date" }, +year] },
-                            { $eq: [{ $month: "$date" }, +month] }
+                            { $eq: [{ $year: "$date_of_avance" }, +year] },
+                            { $eq: [{ $month: "$date_of_avance" }, +month-1] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
-                        $eq: [{ $year: "$date" }, +year]
+                        $eq: [{ $year: "$date_of_avance" }, +year]
                     })
                 }
             })
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -171,6 +175,7 @@ async function exportFile(req, res) {
             })  
         })  
         .populate('user')  
+        .populate('confirmed_by')
         .populate({  
             path: 'validation.user',  
             select: 'last_name occupation'  
@@ -220,6 +225,7 @@ async function getAllDemand(req, res) {
             status:{$ne: "paid"}
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -244,7 +250,7 @@ async function validateAvance(req, res) {
         // const getAvance = await Avance.findOne({_id: _id})
         var updated = await Avance.findOneAndUpdate(
             { _id },
-            { amount_granted: parseFloat(amount_granted), status: "verified" },
+            { amount_granted: parseFloat(amount_granted), status: "verified", confirmed_by: req.session.idUser },
             { new: true }
         )
         .populate({
@@ -252,6 +258,7 @@ async function validateAvance(req, res) {
             select: 'last_name occupation'
         })
         .populate('user')
+        .populate('confirmed_by')
         .exec();
         
         res.json({
@@ -441,6 +448,7 @@ async function employeeConfirmRequest(req, res) {
             status: 'verified',
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -480,6 +488,7 @@ async function completeRequest(req, res) {
             new: true
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'username last_name occupation'

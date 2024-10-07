@@ -25,6 +25,10 @@ const Avance = mongoose.Schema({
         type: Number,
         default: 0
     },
+    confirmed_by: {
+        type: mongoose.Types.ObjectId,
+        ref: 'newcuserTest'
+    },
     validation: {
         user: {
             type: mongoose.Types.ObjectId,

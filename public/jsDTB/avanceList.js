@@ -15,7 +15,7 @@ class AvanceList {
     constructor() {  
         this.grid = null;  
         this.month = new Date().getMonth() + 1;  
-        this.year = new Date().getFullYear();  
+        this.year = new Date().getFullYear();
     }  
 
     async getAllEmployee(){
@@ -79,21 +79,68 @@ class AvanceList {
     
         // Initialiser et rendre la grille des paiements  
         this.grid = new gridjs.Grid({  
-            columns: ["Nom", "M-CODE", "Montant", "Date de paiement", "Status"],  
-            data: data.map(d => [  
+            columns: [
+                // {
+                //     id: "expands",
+                //     name: "Expands",
+                //     width: '20px',
+                //     formatter: () => gridjs.html(`<i class="fa fa-chevron-right expand-icon"></i>`)
+                // },
+            "Nom", "M-CODE", "Montant", "Date de paiement", "Status", {
+                id:"tiers",
+                name: "Tiers collecteur",
+                width: "320px"
+            }],  
+            data: data.map(d => [
                 `${d.user.first_name} ${d.user.last_name}`,  
                 d.user.m_code,  
                 formatNumber(d.amount_granted),  
                 d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',  
-                d.status === 'paid' ? 'Payé' : ''  
-            ]),  
+                d.status === 'paid' ? 'Payé' : '',
+                d.autruiInfo
+            ]),
+            language: { ...LangueFROption },
             pagination: {  
                 enabled: true,  
                 limit: 20  
             },  
             sort: true,  
             resizable: true,  
-        }).render(wrapper);  
+        }).render(wrapper);
+
+
+        // Add the event listener for the expand icon
+        wrapper.addEventListener('click', function(event) {
+            if (event.target.classList.contains('expand-icon')) {
+            // Call your function when the expand icon is clicked
+                let el = event.target;
+                
+                //fetching the parent of the element
+                let parent = el.parentElement.parentElement.parentElement;
+                //this can be done way better but it is to show the thought process
+                // <i> => <td> => <tr>
+                
+                //let us create a row to hold the subtable
+                let tr = document.createElement('tr');
+                // now we know the new tr
+                    
+                    //creating a tableCell
+                let td = document.createElement('td');
+                //making sure is spans all columns elements
+                td.colSpan = '5'; // i had 5 columns
+                
+                //now you can do something like td.innerHTML(`<div class="card card-primary">... stuff you want </div>`)
+                // I would create a function to basically create whatever you want and return that
+                td.innerHTML = `<>Hello from me</>`;
+                
+                //adding it all to the TR
+                tr.appendChild(td);
+                
+                //now the last and fun part
+                //this wil insert a row right under the clicked row
+                parent.parentNode.insertBefore(tr, parent.nextSibling);
+            }
+        });
     
         // Récupérer tous les employés et filtrer ceux qui ne sont pas dans les avances  
         const User = await this.getAllEmployee();  
@@ -119,6 +166,7 @@ class AvanceList {
                 d.m_code,  
                 ""  
             ]) , 
+            language: { ...LangueFROption },
             pagination: {  
                 enabled: true,  
                 limit: 20  
@@ -191,6 +239,34 @@ function formatNumber(val) {
                       .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');  
 }  
 
+
+function buildSubTable(el) {
+    //fetching the parent of the element
+    let parent = el.parentElement.ParentElement.parentElement;
+    //this can be done way better but it is to show the thought process
+    // <i> => <td> => <tr>
+    
+    //let us create a row to hold the subtable
+    let tr = document.createElement('tr');
+    // now we know the new tr
+        
+        //creating a tableCell
+    let td = document.createElement('td');
+    //making sure is spans all columns elements
+    td.colSpan = '5'; // i had 5 columns
+    
+    //now you can do something like td.innerHTML(`<div class="card card-primary">... stuff you want </div>`)
+    // I would create a function to basically create whatever you want and return that
+    td.appendChild(theFunctionYouNeedToBuildTheHTML())
+    
+    //adding it all to the TR
+    tr.appendChild(td);
+    
+    //now the last and fun part
+    //this wil insert a row right under the clicked row
+    parent.parentNode.insertBefore(tr, parent.nextSibling);
+}
+
 const av = new AvanceList();  
 av.initGrid();  
 av.addFilters();  
@@ -219,3 +295,21 @@ $("#non-avance").on("click", function () {
     $("#avance-liste").removeClass("active-btn")
     $("#non-avance").addClass("active-btn")
 })
+
+const LangueFROption = {
+    'search': {
+        'placeholder': 'Rechercher...'
+    },
+    'pagination': {
+        'previous': 'Précédent',
+        'next': 'Suivant',
+        'showing': 'Affichage de',
+        'results': () => 'résultats',
+        // Customize 'to' and 'of'
+        'to': () => 'à',  // Change 'to' to 'à'
+        'of': () => 'sur'  // Change 'of' to 'sur'
+    },
+    'loading': 'Chargement...',
+    'noRecordsFound': 'Aucun enregistrement trouvé',
+    'error': 'Une erreur est survenue',
+}
