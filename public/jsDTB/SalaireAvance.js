@@ -11,6 +11,7 @@ class SalaryAvanceUI {
         this.declinedCount = 0;
         this.queries = this.baseurl;
         this.monthQuery = this.baseurl;
+        this.socket = null;
     }
 
     async checkAccess() {
@@ -111,16 +112,19 @@ class SalaryAvanceUI {
             <span class="status ${props.status}">${STATUS[props.status]}</span>
             <div class="actions">
                 ${
-                    !['verifying', 'verified', 'paid'].includes(props.status) ? `
+                    !['verifying', 'verified', 'paid', 'rejected'].includes(props.status) ? `
                     <button class="edit-btn" onclick="editDemande('${props._id}')"><i class="fas fa-edit"></i></button>
                     <button class="delete-btn"  data-toggle="modal" data-target="#delete-demande" onclick="deleteDemande('${props._id}')"><i class="fas fa-trash-alt"></i></button>`: ''
                 }
             </div>
         </div>
+
         <div class="dates">
             <span>Envoyé ${moment(props.createdAt).locale('fr').fromNow()}</span>
             ${ props.validation ? `<span>Reçu le ${moment(props.validation.received_on).format('DD/MM/YYYY [à] HH:mm')}</span>` : ''}
         </div>
+
+        ${props.status === 'rejected' ? `<div><span class="rejected-message alert alert-danger"><b>Votre demade à été refusée car:</b> ${props.comment}</span></div>`: ''}
 
         <div class="animated-cursor"></div>
             
@@ -134,6 +138,8 @@ class SalaryAvanceUI {
         $(`#item-${props._id}`).replaceWith(newItem);
         if (props.status === 'paid') {
             this.paidCount += 1;
+        } else if (props.status === 'rejected') {
+            this.declinedCount += 1;
         }
         this.updateStatusValues()
     }
@@ -187,7 +193,7 @@ class SalaryAvanceUI {
         // set variables count
         const count = (...status) => data.filter(d => status.includes(d.status)).length;
         this.sentCount = data.length;
-        this.declinedCount = count('declined');
+        this.declinedCount = count('rejected');
         this.paidCount = count('paid');
 
         this.updateStatusValues();
@@ -223,10 +229,10 @@ class SalaryAvanceUI {
     bindSocket() {
         if (typeof io !== 'undefined') {
 
-            const socket = io();
+            this.socket = io();
 
             // access set
-            socket.on('access_set', async (data) => {
+            this.socket.on('access_set', async (data) => {
             
                 // check if 
                 userHasAccess = await this.checkAccess();
@@ -236,7 +242,7 @@ class SalaryAvanceUI {
 
             
             // dates ouvrables set
-            socket.on('dates_set', async (data) => {
+            this.socket.on('dates_set', async (data) => {
             
                 const date = new Date();
 
@@ -260,7 +266,7 @@ var STATUS = {
     paid: 'Payé',
     verifying: 'A confirmer',
     progress: 'En cours',
-    rejected: 'Rejeté',
+    rejected: 'Refusé',
     approved: 'Accordé'
 }
 
@@ -617,7 +623,7 @@ function checkFormAvailability(data) {
         $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYYY')));
         $("#access-display").attr('style', `display: ${userHasAccess && !isNowBetweenOrEqual ? 'block' : 'none'}`);
         $("#ouvrables-display").attr('style', `display: ${!userHasAccess || isNowBetweenOrEqual ? 'block' : 'none'}`);
-        if (userHasAccess) $('#urgent').prop('checked', true);
+        if (!isNowBetweenOrEqual && userHasAccess) $('#urgent').prop('checked', true);
 
     }
 }

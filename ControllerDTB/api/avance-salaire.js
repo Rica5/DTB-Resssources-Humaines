@@ -229,14 +229,21 @@ async function exportFile(req, res) {
                 
                 // Match the full name with the cell value  
                 if (rowData[1] === fullName || rowData[2] == mcode) {  
-                    worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
+                    if (entry.amount_granted > 0)
+                        worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
                     if (entry.status == "paid") {
                         worksheet.getCell(`D${rowIndex}`).value = "Payé"
+                    } else if (entry.status == "rejected") {
+                        worksheet.getCell(`D${rowIndex}`).value = "Refusé"
                     }
                     break; // Exit loop after finding a match  
                 }  
             }   
         }  
+
+        // get total of amount_granted (la cell "C142" est à modifier s'il ya une changement sur le données du fichier excel)
+        const total = data.reduce((total, item) => total + item.amount_granted, 0);
+        worksheet.getCell(`C142`).value = Number(total);
 
         // Write buffer and prepare response  
         const buffer = await workbook.xlsx.writeBuffer();  
@@ -258,7 +265,7 @@ async function getAllDemand(req, res) {
         var { urgent } = req.params;
         const result = await Avance.find({
             ...(urgent && { is_urgent: urgent}),
-            status:{$ne: "paid"}
+            status:{$nin: ["paid", "rejected"]}
         })
         .populate('user')
         .populate('confirmed_by')
@@ -310,36 +317,6 @@ async function validateAvance(req, res) {
         })
     }
 }
-
-
-async function refuseAvance(req, res) {
-    try {
-        // req body avec le montant accordé
-        const { comment } = req.body;
-        // avance id
-        const { id } = req.params;
-
-        // update avance
-        const updated = await Avance.findByIdAndUpdate(id, {
-            status: "rejected",
-            comment: comment
-        }, { new: true });
-
-        
-        res.json({
-            ok: true,
-            data: updated
-        })
-
-    } catch (error) {
-        console.log(error);
-        res.status(503).json({
-            ok: false,
-            message: 'Error'
-        })
-    }
-}
-
 
 async function verificationDemand(req, res) {
     const id = req.params.id;
@@ -500,6 +477,45 @@ async function employeeConfirmRequest(req, res) {
         res.json({
             ok: false,
             message: "Error while confirming the request"
+        })
+    }
+}
+
+
+// when Admin reject or refuse the salary request
+async function refuseRequest(req, res) {
+    try {
+        const { idUser } = req.session;
+        const { id } = req.params; // id of avance
+        const { comment } = req.body;
+
+        console.log(comment, id, idUser);
+
+
+        const updateAvance = await Avance.findOneAndUpdate({
+            _id: id,
+        }, {
+            status: 'rejected',
+            confirmed_by: idUser,
+            comment: comment
+        })
+        .populate('user')
+        .populate('confirmed_by')
+        .populate({
+            path: 'validation.user',
+            select: 'last_name occupation'
+        });
+
+        res.json({
+            ok: true,
+            data: updateAvance
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.json({
+            ok: false,
+            message: "Error while refusing the request"
         })
     }
 }
@@ -700,7 +716,6 @@ module.exports = {
     getOneDemande,
     deleteAvance,
     validateAvance,
-    refuseAvance,
     getAllDemand,
     verificationDemand,
     payerAvance,
@@ -712,5 +727,6 @@ module.exports = {
     checkAvanceCode,
     exportFile,
     giveAccess,
-    checkUrgenceAccess
+    checkUrgenceAccess,
+    refuseRequest
 }
