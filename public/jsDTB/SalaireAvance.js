@@ -255,6 +255,14 @@ class SalaryAvanceUI {
 
             });
 
+            
+            // dates ouvrables set
+            this.socket.on('update_status', async (data) => {
+                
+                this.updateItem(data);
+
+            });
+
         }
     }
 

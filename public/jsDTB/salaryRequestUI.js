@@ -44,14 +44,6 @@ class RequestSalary {
 
     // function to render salary requests
     async renderOneRequest(data) {
-        
-        // Mettre à jour le compteur d'urgence ou non urgence
-        if (data.is_urgent) {
-            this.countUrgent += 1;
-        } else {
-            this.countNUrgent += 1;
-        }
-        this.updateCounts();
 
         // parcourir les données
         const $container = $(data.is_urgent ? "#UrgentList" : "#NUrgentList");
@@ -139,12 +131,12 @@ class RequestSalary {
     }
 
     // create element for list item
-    createItem(props) {
+    createItem(props, isForSearch = false) {
         const div = document.createElement('div');
         const li = document.createElement('li');
         
         div.setAttribute("key", props.user.m_code);
-        li.id = `item-${props._id}`;
+        li.id = isForSearch ? `search-item-${props._id}` : `item-${props._id}`;
 
         // li.setAttribute('style', `--ol-cards-color-accent:#${props.is_urgent ? 'cacaca' : '92D13F'}`);
         li.setAttribute('class', props.is_urgent ? 'urgent' : 'non-urgent');
@@ -185,7 +177,7 @@ class RequestSalary {
             <div class="bouton d-flex align-items-center justify-content-between" ${props.status === 'verified' ? 'hidden' : ''} style="grid-column: span 2;">
                 <div class="d-flex" style="gap: 6px">
                     <div>
-                        <button id="modif-${props._id}" onclick="updateSalary('${props._id}')" class="btn btn-warning ellipsis flexy" title="Définir le montant accordé" >
+                        <button id="modif-${props._id}" onclick="updateSalary('${props._id}', '${isForSearch}')" class="btn btn-warning ellipsis flexy" title="Définir le montant accordé" >
                             <span class="mdi mdi-pen"></span> Modifier
                         </button>
                     </div>
@@ -244,30 +236,17 @@ class RequestSalary {
     updateItem(props) {
         // create new li item
         const newItem = this.createItem(props);
+        const newItemEdit = this.createItem(props, true);
         // replace old item if there is no change in urgent field
         $(`#item-${props._id}`).replaceWith(newItem);
+        $(`#search-item-${props._id}`).replaceWith(newItemEdit);
         $(newItem).appendTo((props.is_urgent)?"#UrgentList":"#NUrgentList")
-
-        
-        Toastify({
-            text: "Une demande a été modifié",
-            gravity: "bottom",
-            position: "center",
-            style: {
-                "background": "#29E342"
-            }
-        }).showToast();
-        
-        // update counts
-        this.countUrgent += props.is_urgent ? 1 : -1;
-        this.countNUrgent += props.is_urgent ? -1 : 1;
-
-        this.updateCounts();
         
     }
     
     deleteItem(id, isUrgent) {
-        $(`#item-${id}`).remove();
+        $(`#item-${id}`).parent().remove();
+        $(`#search-item-${id}`).parent().remove(); // from search if exists
         this.countUrgent -= isUrgent ? 1 : 0;
         this.countNUrgent -= !isUrgent ? 1 : 0;
         this.updateCounts();
@@ -291,6 +270,19 @@ class RequestSalary {
             const filtered = children.filter(c => {
                 return $(c).attr('key').includes(key)
             });
+
+            // change id of element
+            filtered.forEach(f => {
+                const li = f.firstElementChild;
+                if (li) {
+                    let id = li.id?.replace('item-', '');
+                    li.setAttribute('id', `search-${li.getAttribute('id')}`);
+
+                    const modif_btn = li.querySelector(`#modif-${id}`);
+                    if(modif_btn)
+                        modif_btn.setAttribute('onclick', `updateSalary('${id}', 'true')`);
+                }
+            })
 
             $('#allRequest').append(`<p style="grid-column: 1 / -1; text-align:center;">Résultats de recherche: ${key}</p>`);
             $('#allRequest').append(filtered.length === 0 ? '<p style="grid-column: 1 / -1; text-align:center; text-transform: uppercase;">Aucunes demandes trouvées</p>' : filtered);
@@ -372,11 +364,29 @@ class RequestSalary {
             const socket = io();
 
             // access set
-            socket.on('updateAvance', async (data) => {                
+            socket.on('updateAvance', async (data) => {              
+                
+                // update counts
+                if (data.is_urgent) {
+                    // find if it exist in urgent container
+                    if ($('#UrgentList').find(`#item-${data._id}`).length === 0) {
+                        this.countUrgent += 1;
+                        this.countNUrgent -= 1;
+                    }
+                } else {
+                    if ($('#NUrgentList').find(`#item-${data._id}`).length === 0) {
+                        this.countUrgent -= 1;
+                        this.countNUrgent += 1;
+                    }
+                }
+                
+                this.updateCounts();
+
                 this.updateItem(data);
+
                 // show notification
                 Toastify({
-                    text: `${data.m_code} a modifié sa demande d'avance.`,
+                    text: `${data.user.m_code} a modifié sa demande d'avance.`,
                     gravity: "bottom",
                     position: "center",
                     style:{
@@ -387,21 +397,28 @@ class RequestSalary {
 
             
             // Écoute l'événement 'createAvance' envoyé par le serveur
-            socket.on("createAvance", function([adminIds, data]) {
+            socket.on("createAvance", (data) => {
                 // Vérifie si l'utilisateur actuel est un admin concerné
                 
-                if (adminIds.includes(id)) {
-                    ui.renderOneRequest(data)
-                    // show notification
-                    Toastify({
-                        text: `${data.user.m_code} a ajouté sa demande d'avance.`,
-                        gravity: "bottom",
-                        position: "center",
-                        style:{
-                            "background": "#29E342"
-                        }
-                    }).showToast();
+                ui.renderOneRequest(data);
+                
+                // Mettre à jour le compteur d'urgence ou non urgence
+                if (data.is_urgent) {
+                    this.countUrgent += 1;
+                } else {
+                    this.countNUrgent += 1;
                 }
+                this.updateCounts();
+
+                // show notification
+                Toastify({
+                    text: `${data.user.m_code} a ajouté sa demande d'avance.`,
+                    gravity: "bottom",
+                    position: "center",
+                    style:{
+                        "background": "#29E342"
+                    }
+                }).showToast();
             });
 
             
@@ -432,16 +449,15 @@ ui.bindSocket()
 
 
 function filterUserPerShift(){
-    var shift = $("#select-shift").val()
+    var shift = $("#select-shift").val();
     console.log("shif", shift);
     ui.filterUserPerShift(shift)
 }
 
-async function updateSalary(id) {
+async function updateSalary(id, isForSearch) {
     
-    const { data } = await ui.getOneDemande(id);
     
-    const li = document.getElementById(`item-${id}`);
+    const li = document.getElementById((isForSearch === "true") ? `search-item-${id}` : `item-${id}`);
     const button_container = li.querySelector('.bouton');
     const modif_btn = button_container.querySelector(`#modif-${id}`);
 

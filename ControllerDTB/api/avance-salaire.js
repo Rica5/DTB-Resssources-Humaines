@@ -106,12 +106,10 @@ async function createAvance(req, res) {
     try {
         const result = await Avance.create(req.body)  
         // Emission de l'événement Socket.io à l'admin
-        const io = req.app.get("io");
         
         const userCreate = await Avance.findById(result._id).populate('user');
         // Définir la liste des destinataires (par exemple, les admins)
-        const concerned = await User.find({ occupation: "Admin" }, '_id'); // Récupérer uniquement les IDs des admins
-        const adminIds = concerned.map(admin => admin._id.toString());
+        // const concerned = await User.find({ occupation: "Admin" }, '_id'); // Récupérer uniquement les IDs des admins
 
         // var notification = {
         //     title: "Création d'une demande d'avance",
@@ -122,7 +120,8 @@ async function createAvance(req, res) {
         // var concernNotif = ["^$$"]
         // await setGlobalAdminNotifications(notification, concernNotif, true, req);
         // Émettre l'événement "notif" pour les administrateurs
-        io.sockets.emit("createAvance", [adminIds, userCreate]);      
+        sendSocket(req, "createAvance", userCreate);
+        
         res.json({ ok: true, data: result });
 
 
@@ -138,7 +137,7 @@ async function createAvance(req, res) {
 async function deleteAvance(req, res) {
     try{
         const id = req.params.id
-        const result = await Avance.findByIdAndDelete({_id: id}, { new: true });
+        const result = await Avance.findByIdAndDelete({_id: id}, { new: true }).populate('user');
         // send socket to admin
         sendSocket(req, 'cancelAvance', result);
         res.json({ok: true, data: result})
@@ -305,6 +304,9 @@ async function validateAvance(req, res) {
         .populate('user')
         .populate('confirmed_by')
         .exec();
+
+        // send socket to user to update his request status
+        sendSocket(req, 'update_status', updated);
         
         res.json({
             ok: true,
@@ -500,13 +502,16 @@ async function refuseRequest(req, res) {
             status: 'rejected',
             confirmed_by: idUser,
             comment: comment
-        })
+        }, { new: true})
         .populate('user')
         .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
         });
+
+        // send socket to user to update his request status
+        sendSocket(req, 'update_status', updateAvance);
 
         res.json({
             ok: true,
@@ -548,6 +553,10 @@ async function completeRequest(req, res) {
             path: 'validation.user',
             select: 'username last_name occupation'
         });
+
+        
+        // send socket to user to update his request status
+        sendSocket(req, 'update_status', updateAvance);
 
         sendCompletedRequestEmail(updateAvance);
 
