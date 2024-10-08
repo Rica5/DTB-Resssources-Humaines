@@ -692,57 +692,6 @@
             });
         }
     </script>
-    <script>
-        
-    // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
-    async function getPeriodByMonth(month) {
-        const res = await fetch('/api/avance/getperiod/' + month);
-        const { data } = await res.json();
-        return data;
-    }
-    
-    const dateNow = new Date()
-    var getMonth = (dateNow.getMonth()+1).toString().padStart(2, '0');
-    var getYear = dateNow.getFullYear()
-
-    const userHasAccess = users.urgence_salary;
-    
-    getPeriodByMonth(getYear+"-"+getMonth).then(data=>{
-
-        const startDate = moment(data.start_date).startOf('day');
-        const endDate = moment(data.end_date).startOf('day');
-
-        // Check if the current date is between or equal to startDate and endDate
-        const isNowBetweenOrEqual = moment().startOf('day').isBetween(startDate, endDate, null, '[]');
-
-        // Comparer les dates
-        if (isNowBetweenOrEqual || userHasAccess) {
-            $("#aucun-demande").attr("style", "display: none !important;")
-            $("#demande-avance").attr("style", "display: block !important;")
-        } else {
-            $("#aucun-demande").attr("style", "display: flex !important;")
-            $("#demande-avance").attr("style", "display: none !important;")
-        }
-
-        // display date de fin
-        $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYYY')));
-        $("#access-display").attr('style', `display: ${userHasAccess ? 'block' : 'none'}`);
-        $("#ouvrables-display").attr('style', `display: ${!userHasAccess ? 'block' : 'none'}`);
-
-        // default check urgent
-        if (userHasAccess) $('#urgent').prop('checked', true);
-    })
-
-
-
-    $("#urgent-avance").on("click", function () {
-        $("#demande-avance").attr("style", "display: block")
-        $("#aucun-demande").attr("style", "display: none !important")
-        $("#urgent").prop("checked",true)
-        
-    })
-
-    </script>
     <script src="../jsDTB/no-connection.js"></script>
     <script src="../jsDTB/socket/avanceSalaryEmployee.js" type="text/javascript"></script>
 </body>
