@@ -99,7 +99,7 @@ class AvanceList {
                 d.user.m_code,  
                 formatNumber(d.amount_granted),  
                 d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',  
-                d.status === 'paid' ? 'Payé' : '',
+                d.status === 'paid' ? 'Payé' : d.status === 'rejected' ? 'Refusé' : '',
                 d.autruiInfo
             ]),
             language: { ...LangueFROption },

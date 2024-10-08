@@ -193,9 +193,12 @@ async function exportFile(req, res) {
                 
                 // Match the full name with the cell value  
                 if (rowData[1] === fullName || rowData[2] == mcode) {  
-                    worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
+                    if (entry.amount_granted > 0)
+                        worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
                     if (entry.status == "paid") {
                         worksheet.getCell(`D${rowIndex}`).value = "Payé"
+                    } else if (entry.status == "rejected") {
+                        worksheet.getCell(`D${rowIndex}`).value = "Refusé"
                     }
                     break; // Exit loop after finding a match  
                 }  
