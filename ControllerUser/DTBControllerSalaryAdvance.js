@@ -22,15 +22,15 @@ for (let year = 2021; year <= currentYear; year++) {
 //Home page
 const getSalaryAdvance = async (req,res) => {
     var session = req.session;
-   if ( session.occupation_u == "User"){
-        var user = await UserSchema.findOne({ m_code: session.m_code });   
-        // console.log("user", user);
-        
-        res.render("PageEmployee/AvanceSalaire.html",{codeUser:session.m_code, user, months, years});
-   }
-   else {
-    res.send("Bad authentification please log in");
-   }
+    if ( session.occupation_u == "User"){
+            var user = await UserSchema.findOne({ m_code: session.m_code });   
+            // console.log("user", user);
+            
+            res.render("PageEmployee/AvanceSalaire.html",{codeUser:session.m_code, user, months, years});
+    }
+    else {
+        res.send("Bad authentification please log in");
+    }
 }
 
 

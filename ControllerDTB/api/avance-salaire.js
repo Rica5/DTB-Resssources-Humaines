@@ -5,8 +5,6 @@ const User = require("../../models/ModelMember");
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")   
 const ExcelJS = require('exceljs');
-const XLSX = require('xlsx');  
-const fs = require('fs');  
 
 
 async function getListByUserId(req, res) {
@@ -20,13 +18,13 @@ async function getListByUserId(req, res) {
             user: id,
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
-                    ...(month != 0 ? {  // Use month check to determine condition
+                    ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
-                            { $eq: [{ $year: "$date" }, +year] },
-                            { $eq: [{ $month: "$date" }, +month] }
+                            { $eq: [{ $year: "$date_of_avance" }, +year] },
+                            { $eq: [{ $month: "$date_of_avance" }, +month] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
-                        $eq: [{ $year: "$date" }, +year]
+                        $eq: [{ $year: "$date_of_avance" }, +year]
                     })
                 }
             })
@@ -35,6 +33,7 @@ async function getListByUserId(req, res) {
             path: 'validation.user',
             select: 'last_name occupation'
         })
+        .populate('confirmed_by')
         .sort({
             createdAt: 'desc',
         });
@@ -52,6 +51,7 @@ async function getOneDemande(req, res) {
 
         const result = await Avance.findOne({ _id: id})
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -71,6 +71,7 @@ async function updateAvance(req, res) {
         const { id } = req.params;
         const result = await Avance.findByIdAndUpdate(id, req.body, { new: true })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -111,13 +112,13 @@ async function createAvance(req, res) {
         const concerned = await User.find({ occupation: "Admin" }, '_id'); // Récupérer uniquement les IDs des admins
         const adminIds = concerned.map(admin => admin._id.toString());
 
-        var notification = {
-            title: "Création d'une demande d'avance",
-            content: `${userCreate.user.m_code} a créé une demande d'avance de ${userCreate.desired_amount}`,
-            datetime: moment().format("DD/MM/YYYY HH:mm:ss")   
-        }
+        // var notification = {
+        //     title: "Création d'une demande d'avance",
+        //     content: `${userCreate.user.m_code} a créé une demande d'avance de ${userCreate.desired_amount}`,
+        //     datetime: moment().format("DD/MM/YYYY HH:mm:ss")   
+        // }
 
-        var concernNotif = ["^$$"]
+        // var concernNotif = ["^$$"]
         // await setGlobalAdminNotifications(notification, concernNotif, true, req);
         // Émettre l'événement "notif" pour les administrateurs
         io.sockets.emit("createAvance", [adminIds, userCreate]);      
@@ -152,18 +153,19 @@ async function getPaidDemands(req, res) {
             // status: "paid",
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
-                    ...(month != 0 ? {  // Use month check to determine condition
+                    ...(month > 0 ? {  // Use month check to determine condition
                         $and: [
-                            { $eq: [{ $year: "$date" }, +year] },
-                            { $eq: [{ $month: "$date" }, +month] }
+                            { $eq: [{ $year: "$date_of_avance" }, +year] },
+                            { $eq: [{ $month: "$date_of_avance" }, +month-1] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
-                        $eq: [{ $year: "$date" }, +year]
+                        $eq: [{ $year: "$date_of_avance" }, +year]
                     })
                 }
             })
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -183,7 +185,7 @@ async function exportFile(req, res) {
     
     try {  
         const workbook = new ExcelJS.Workbook();  
-        await workbook.xlsx.readFile('test1.xlsx');  
+        await workbook.xlsx.readFile('avance-template.xlsx');  
 
         // Sélectionner la feuille de calcul  
         const worksheet = workbook.getWorksheet(1);  
@@ -208,6 +210,7 @@ async function exportFile(req, res) {
             })  
         })  
         .populate('user')  
+        .populate('confirmed_by')
         .populate({  
             path: 'validation.user',  
             select: 'last_name occupation'  
@@ -257,6 +260,7 @@ async function getAllDemand(req, res) {
             status:{$ne: "paid"}
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -281,7 +285,7 @@ async function validateAvance(req, res) {
         // const getAvance = await Avance.findOne({_id: _id})
         var updated = await Avance.findOneAndUpdate(
             { _id },
-            { amount_granted: parseFloat(amount_granted), status: "verified" },
+            { amount_granted: parseFloat(amount_granted), status: "verified", confirmed_by: req.session.idUser },
             { new: true }
         )
         .populate({
@@ -289,6 +293,7 @@ async function validateAvance(req, res) {
             select: 'last_name occupation'
         })
         .populate('user')
+        .populate('confirmed_by')
         .exec();
         
         res.json({
@@ -478,6 +483,7 @@ async function employeeConfirmRequest(req, res) {
             status: 'verified',
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'last_name occupation'
@@ -517,6 +523,7 @@ async function completeRequest(req, res) {
             new: true
         })
         .populate('user')
+        .populate('confirmed_by')
         .populate({
             path: 'validation.user',
             select: 'username last_name occupation'
@@ -617,6 +624,42 @@ async function checkAvanceCode(req, res) {
     }
 }
 
+
+// method to give access
+
+async function giveAccess(req, res) {
+
+    const { users } = req.body;
+    try {
+
+        if (users.length != 0) {
+            // give access to user
+            await User.updateMany(
+                { _id: { $in: users } },
+                { $set: { urgence_salary: true }}
+            );
+        }
+        // remove access
+        await User.updateMany(
+            { _id: { $nin: users } },
+            { $set: { urgence_salary: false }}
+        );
+    
+        res.json({
+            ok: true,
+            data: users
+        });
+
+    } catch (err) {
+        
+        res.json({
+            ok: false,
+            data: []
+        });
+    }
+
+}
+
 module.exports = {
     getListByUserId,
     createAvance,
@@ -634,5 +677,6 @@ module.exports = {
     addPeriodDates,
     getPeriodInMonth,
     checkAvanceCode,
-    exportFile
+    exportFile,
+    giveAccess
 }

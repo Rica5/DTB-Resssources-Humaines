@@ -77,6 +77,7 @@ routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance/paid').get(API_Avance.getPaidDemands)
 routeExpDTB.route('/exportExcel').get(API_Avance.exportFile)
 routeExpDTB.route('/api/avance/addperiod').post(API_Avance.addPeriodDates)
+routeExpDTB.route('/api/avance/giveaccess').post(API_Avance.giveAccess)
 routeExpDTB.route('/api/avance/verify-code').post(API_Avance.checkAvanceCode)
 routeExpDTB.route('/api/avance/getperiod/:month').get(API_Avance.getPeriodInMonth)
 routeExpDTB.route('/api/avance/delete/:id?').delete(API_Avance.deleteAvance)
@@ -92,6 +93,7 @@ routeExpDTB.route('/avance/verification/:id?').get(ControllerAvance.getVerificat
 //administrator avance
 routeExpDTB.route('/advancesalarylist').get(ControllerRequestSalary.getListSalaryAdvance)
 routeExpDTB.route('/requestsalary').get(ControllerRequestSalary.requestSalaryAdvance)
+routeExpDTB.route('/acces-avanceurgent').get(ControllerRequestSalary.getAccesUrgentSalary)
 
 // Space Home for Employee
 routeExpDTB.route("/mySpace").get(Controller.getHomePage);

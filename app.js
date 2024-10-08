@@ -68,7 +68,7 @@ async function copyNonExistingRecords(sourceCollectionName, destinationCollectio
     // Fetch all records from the source collection
     const sourceRecords = await SourceCollection.find({
       date_start: { 
-        $regex: "^2024-08" 
+        $regex: "^2024" // (2024 volana janvier ) 2023 fotsiny raha année iray 
       }
     }).toArray();
 

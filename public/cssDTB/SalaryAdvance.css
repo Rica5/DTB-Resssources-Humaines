@@ -243,6 +243,7 @@ table {
   background-color: #E8E9E9;
   /* padding: 20px; */
   border-radius: 10px;
+  min-height: 500px;
 }
 
 .salary-list-container .head {
@@ -497,6 +498,8 @@ table {
   padding: 1rem;
   font-size: 18px;
   border-radius: 50%;
+  height: 56px;
+  aspect-ratio: 1 / 1;
 }
 
 .code-container .show-code:hover {

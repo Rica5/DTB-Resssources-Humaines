@@ -310,10 +310,14 @@
               >
               <ul aria-expanded="false" class="collapse first-level">
                 <li class="sidebar-item">
+                    <a href="/acces-avanceurgent" class="sidebar-link"><i
+                            class="mdi mdi-lock-open"></i><span class="hide-menu">Accès urgent</span></a>
+                </li>
+                <li class="sidebar-item">
                   <a href="/advancesalarylist" class="sidebar-link"
                     ><i class="mdi mdi-format-list-bulleted"></i
                     ><span class="hide-menu"
-                      >List des avances</span
+                      >Liste des avances</span
                     ></a
                   >
                 </li>
@@ -323,7 +327,7 @@
                     href="/requestsalary"
                     aria-expanded="false"
                     ><i class="fa-solid fa-envelope"></i>
-                    <span class="hide-menu">Demande des salaires</span></a
+                    <span class="hide-menu">Demande des avances</span></a
                   >
                 </li>
               </ul>
@@ -591,7 +595,7 @@
                           onclick="edit_solde()"
                         >
                           <i
-                            id="waiting"
+                            id="waiting-add"
                             class="fa-solid fa-spinner fa-spin"
                           ></i>
                           METTRE À JOUR <i class="fa-solid fa-floppy-disk"></i>
@@ -612,7 +616,7 @@
                               Permission exceptionnelle ( rien à déduire )
                             </option>
                             <option value="Repos Maladie">
-                              Repos Maladie ( rien à déduire )
+                              Repos Médicale ( rien à déduire )
                             </option>
                             <option value="Absent">
                               Absent ( à déduire sur salaire )

@@ -10,6 +10,7 @@ class SalaryAvanceUI {
         this.paidCount = 0;
         this.declinedCount = 0;
         this.queries = this.baseurl;
+        this.monthQuery = this.baseurl;
     }
 
     async getData(id) {
@@ -83,6 +84,7 @@ class SalaryAvanceUI {
         li.innerHTML = `
         <div class="details">
             <div class="info">
+                <span class="date-envoie mb-1" style="text-transform: capitalize; display: block;">${moment(props.date_of_avance).locale('fr').format('MMMM YYYY')}</span>
                 <span class="date-envoie">${moment(props.date).format('DD/MM/YYYY')}</span>
             </div>
             <div class="amounts">
@@ -131,7 +133,7 @@ class SalaryAvanceUI {
 
     addItem(parentId, props) {
         const $container = $(`#${parentId}`);
-        if ($container.find(`#item-${props._id}`).length === 0) {
+        if (props && $container.find(`#item-${props._id}`).length === 0) {
             // create new item
             let item = this.createItem(props);
             $container.append(item);
@@ -150,11 +152,19 @@ class SalaryAvanceUI {
         $(`#${id}`).text(nbr)
     }
 
+    async getMyRequestsOfThisMonth(url) {
+
+        this.monthQuery = `${this.baseurl}?month=${+$("#month").val()}&year=${$("#year").val()}`;
+
+        const res = await fetch(url || this.monthQuery);
+        const { data } = await res.json();
+        return data;
+    }
+
     async loadList(id, url) {
         let $div = $(`#${id}`);
         $div.html('');
-        const res = await fetch(url);
-        const { data } = await res.json();
+        const data = await this.getMyRequestsOfThisMonth(url);
 
         data.forEach(d => {
             let item = this.createItem(d);
@@ -173,23 +183,28 @@ class SalaryAvanceUI {
     bindFilters() {
         let self = this;
         let $month =  $('#f-month'),
-            $year =  $('#f-year'); 
+            $year =  $('#f-year');
 
         let date = new Date();
         $year.val(date.getFullYear());
         $month.val(String(date.getMonth() + 1).padStart(2, '0'));
 
+        self.monthQuery = `${self.baseurl}?month=${date.getMonth() - 1}&year=${date.getFullYear()}`;
+
         $month.on('change', function() {
-            self.queries = `${self.baseurl}?month=${$(this).val()}&year=${$("#f-year").val()}`;
-            console.log(self.queries)
+            self.queries = `${self.baseurl}?month=${$(this).val() - 1}&year=${$("#f-year").val()}`;
             self.loadList("salary-list", self.queries);
         });
 
 
         $year.on('change', function() {
-            self.queries = `${self.baseurl}?month=${$("#f-month").val()}&year=${$(this).val()}`;
+            self.queries = `${self.baseurl}?month=${$("#f-month").val() - 1}&year=${$(this).val()}`;
             self.loadList("salary-list", self.queries);
         });
+
+        // default queries after binding
+        self.queries = `${self.baseurl}?month=${$("#f-month").val() - 1}&year=${$("#f-year").val()}`;
+
     }
 
 }
@@ -205,8 +220,8 @@ var STATUS = {
 }
 
 const ui = new SalaryAvanceUI();
-ui.loadList("salary-list", '/api/avance');
 ui.bindFilters()
+ui.loadList("salary-list", ui.queries);
 
 
 async function editDemande(id) {
@@ -290,13 +305,37 @@ $("#envoyer-avance").on("click", async function () {
         var demandeAvance = {
             user : users._id,
             date : new Date(date_avance),
-            date_of_avance: new Date(annee, mois),
+            date_of_avance: new Date(annee, mois).toISOString(),
             desired_amount: parseFloat(montantD),
             shift: shift,
             is_urgent: is_urgent,
         }
+        // verify if employee has already sent a request of this month
+        const myRequestsOfThisMonth = await ui.getMyRequestsOfThisMonth();
+
+        if (myRequestsOfThisMonth.length !== 0) {
+            // alert
+            Toastify({
+                text: "Vous avez déjà envoyé une demande.",
+                duration: 10000,
+                gravity: "top",
+                position: "center",
+                style: {
+                    "background": "#F14236"
+                }
+            }).showToast();
+            return;
+        }
+
         const { data } = await ui.send(demandeAvance);
-        ui.addItem("salary-list", data);
+        
+        // Ajouter dans la page si la date de l'avance "Avance du mois du" est séléctionnée
+        const [year, month] = data.date_of_avance.split('T')[0].split('-');
+        console.log(year, $('#f-year').val(), month, $('#f-month').val())
+        if (($('#f-month').val() == 0 && year == $('#f-year').val()) || (year == $('#f-year').val() && month == $('#f-month').val() - 1)) {
+            // ajouter 
+            ui.addItem("salary-list", data);
+        }
 
         $("#date-avance").val(formattedDate)
         $("#year").val(new Date().getFullYear())
@@ -328,7 +367,6 @@ $("#envoyer-avance-update").on("click",async function () {
     var shift_update =  $("#shift-update").val()
     var id_upate = $("#id-update").val()
 
-    console.log("getId", id_upate);
     
     if (!montantD_update) {
         $("#montant_Demande-update").css('border' , '1px solid red')
@@ -430,7 +468,7 @@ $('#show-code').on('click', function(){
         $code.removeClass('masked-text');
         $code.html(code);
     }
-})
+});
 
 var inputs = document.querySelectorAll('.code-container-1 input');
 inputs.forEach((input, index) => {

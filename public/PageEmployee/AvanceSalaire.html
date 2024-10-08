@@ -126,7 +126,8 @@
                     
                     <div class="all-fiche border border-1"  id="demande-avance" style="display: none !important;">
                         <div style="text-align: left;" class="mb-3">
-                            <h6 style="color: #000000;">Vous pouvez demander une avance jusqu'au <span style="color: #4737b1;" class="date-fin"></span>.</h6>
+                            <h6 id="ouvrables-display" class="alert alert-primary"><i class="fas fa-info-circle me-2"></i> Vous pouvez demander une avance jusqu'au <span style="color: #4737b1;" class="date-fin"></span>.</h6>
+                            <h6 id="access-display" class="alert alert-success"><i class="fas fa-info-circle me-2"></i> Vous avez accès pour envoyer une demande urgente.</h6>
                         </div>
                         <div style="text-align: left; font-weight: 600; color: #2FAD00; margin-bottom: 25px;">
                             <h5>DEMANDE D'AVANCE SUR SALAIRE</h5>
@@ -331,14 +332,16 @@
                                 <input type="hidden" value="<%= user.digit_code%>" id="codeHidden"/>
                                 <h2 id="digits-4" class="masked-text"></h2>
                             </div>
-                            <button id="show-code" class="show-code hide">
-                                <i class="fa-solid fa-eye show"></i>
-                                <i class="fa-solid fa-eye-slash hide"></i>
-                            </button>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modif_code">
-                                modif
-                            </button>
+                            <div class="d-flex" style="gap: 4px;">
+                                <button id="show-code" class="show-code hide">
+                                    <i class="fa-solid fa-eye show"></i>
+                                    <i class="fa-solid fa-eye-slash hide"></i>
+                                </button>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="show-code" data-bs-toggle="modal" data-bs-target="#modif_code">
+                                    <i class="fas fa-pen"></i>
+                                </button>
+                            </div>
                             <!-- <button type="button" class="btn btn-secondary" style="border: none; padding: 0.5rem;" data-bs-toggle="modal" data-bs-target="#modif_code">
                                 modif
                             </button> -->
@@ -702,18 +705,18 @@
     var getMonth = (dateNow.getMonth()+1).toString().padStart(2, '0');
     var getYear = dateNow.getFullYear()
 
+    const userHasAccess = users.urgence_salary;
     
     getPeriodByMonth(getYear+"-"+getMonth).then(data=>{
 
         const startDate = moment(data.start_date).startOf('day');
         const endDate = moment(data.end_date).startOf('day');
 
-        
         // Check if the current date is between or equal to startDate and endDate
         const isNowBetweenOrEqual = moment().startOf('day').isBetween(startDate, endDate, null, '[]');
 
         // Comparer les dates
-        if (isNowBetweenOrEqual) {
+        if (isNowBetweenOrEqual || userHasAccess) {
             $("#aucun-demande").attr("style", "display: none !important;")
             $("#demande-avance").attr("style", "display: block !important;")
         } else {
@@ -723,6 +726,11 @@
 
         // display date de fin
         $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYYY')));
+        $("#access-display").attr('style', `display: ${userHasAccess ? 'block' : 'none'}`);
+        $("#ouvrables-display").attr('style', `display: ${!userHasAccess ? 'block' : 'none'}`);
+
+        // default check urgent
+        if (userHasAccess) $('#urgent').prop('checked', true);
     })
 
 

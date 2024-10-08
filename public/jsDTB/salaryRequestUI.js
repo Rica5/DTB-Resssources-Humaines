@@ -161,16 +161,21 @@ class RequestSalary {
                 </div>
             </div>
 
-            <div class="bouton" ${props.status === 'verified' ? 'hidden' : ''}>
-                <div>
-                    <button id="modif-${props._id}" class="btn btn-warning ellipsis flexy" title="Définir le montant accordé" >
-                        <span class="mdi mdi-pen"></span> Modifier
-                    </button>
+            <div class="bouton d-flex align-items-center justify-content-between" ${props.status === 'verified' ? 'hidden' : ''} style="grid-column: span 2;">
+                <div class="d-flex" style="gap: 6px">
+                    <div>
+                        <button id="modif-${props._id}" class="btn btn-warning ellipsis flexy" title="Définir le montant accordé" >
+                            <span class="mdi mdi-pen"></span> Modifier
+                        </button>
+                    </div>
+                    <div>
+                        <button id="accord-${props._id}" onclick="accordSalary('${props._id}')" class="btn btn-primary ellipsis" title="Accorder le montant">
+                            <span class="mdi mdi-thumb-up"></span> Accorder
+                        </button>
+                    </div>
                 </div>
                 <div>
-                    <button id="accord-${props._id}" onclick="accordSalary('${props._id}')" class="btn btn-primary ellipsis" title="Accorder le montant">
-                        <span class="mdi mdi-thumb-up"></span> Accorder
-                    </button>
+                    Mois de ${moment(props.date_of_avance).locale('fr').format('MMMM YYYY')}
                 </div>
             </div>
 
@@ -180,7 +185,7 @@ class RequestSalary {
                 :
                 props.status == "verified" ?
                 `<div class="flexy all-line ps-3">
-                    <span class="badge badge-success" style="margin: auto 0;">A été confirmé par ${props.user.m_code}</span>
+                    <span class="badge badge-success" style="margin: auto 0; ${props.confirmed_by ? '' : 'opacity: 0;'}">A été accordé par ${props.confirmed_by?.usuel}</span>
                     <button onclick="payer('${props._id}')" class="btn btn-danger" title="Donner l'avance à l'employé">
                         <span class="mdi mdi-cash-multiple"></span> Payer maintenant
                     </button>
