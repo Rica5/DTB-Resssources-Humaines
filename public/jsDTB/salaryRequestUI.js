@@ -3,6 +3,7 @@ class RequestSalary {
         this.typedCode = '';
         this.countUrgent =  Number($("#UrgentBtn span").text() || 0);
         this.countNUrgent =  Number($("#NUrgentBtn span").text() || 0);
+        this.modifTextContent = 'Modifier';
     }
 
     updateCounts() {
@@ -41,21 +42,17 @@ class RequestSalary {
         });
     }
 
-    updateCompte(props){
-        var compteUrg =parseInt($("#UrgentBtn > span").text())
-        var compteNUrg =parseInt($("#NUrgentBtn > span").text())
-    }
     // function to render salary requests
     async renderOneRequest(data) {
         
         // Mettre à jour le compteur d'urgence ou non urgence
         if (data.is_urgent) {
-            let urgentCount = parseInt($("#UrgentBtn span").text(), 10);
-            $("#UrgentBtn span").text(urgentCount + 1);
+            this.countUrgent += 1;
         } else {
-            let nUrgentCount = parseInt($("#NUrgentBtn span").text(), 10);
-            $("#NUrgentBtn span").text(nUrgentCount + 1);
+            this.countNUrgent += 1;
         }
+        this.updateCounts();
+
         // parcourir les données
         const $container = $(data.is_urgent ? "#UrgentList" : "#NUrgentList");
         const item = this.createItem(data);
@@ -188,7 +185,7 @@ class RequestSalary {
             <div class="bouton d-flex align-items-center justify-content-between" ${props.status === 'verified' ? 'hidden' : ''} style="grid-column: span 2;">
                 <div class="d-flex" style="gap: 6px">
                     <div>
-                        <button id="modif-${props._id}" class="btn btn-warning ellipsis flexy" title="Définir le montant accordé" >
+                        <button id="modif-${props._id}" onclick="updateSalary('${props._id}')" class="btn btn-warning ellipsis flexy" title="Définir le montant accordé" >
                             <span class="mdi mdi-pen"></span> Modifier
                         </button>
                     </div>
@@ -227,17 +224,18 @@ class RequestSalary {
         const button_container = li.querySelector('.bouton');
         const modif_btn = button_container.querySelector(`#modif-${props._id}`);
         const modifTextContent = modif_btn.innerHTML;
+        this.modifTextContent = modif_btn.innerHTML;
 
-        modif_btn.onclick = () => {
-            var div = li.querySelector(`.changeMontant-${props._id}`);
-            if (div.classList.contains("hide")) {
-                div.classList.replace("hide", "show");
-                modif_btn.innerHTML = '<span class="mdi mdi-close"></span> Annuler';
-            } else {
-                modif_btn.innerHTML = modifTextContent;
-                div.classList.replace("show", "hide");
-            }
-        };
+        // modif_btn.onclick = () => {
+        //     var div = li.querySelector(`.changeMontant-${props._id}`);
+        //     if (div.classList.contains("hide")) {
+        //         div.classList.replace("hide", "show");
+        //         modif_btn.innerHTML = '<span class="mdi mdi-close"></span> Annuler';
+        //     } else {
+        //         modif_btn.innerHTML = modifTextContent;
+        //         div.classList.replace("show", "hide");
+        //     }
+        // };
 
         div.append(li)
         return div;
@@ -261,8 +259,9 @@ class RequestSalary {
         }).showToast();
         
         // update counts
-        this.countUrgent -= props.is_urgent ? 0 : 1;
-        this.countNUrgent -= props.is_urgent ? 1 : 0;
+        this.countUrgent += props.is_urgent ? 1 : -1;
+        this.countNUrgent += props.is_urgent ? -1 : 1;
+
         this.updateCounts();
         
     }
@@ -374,10 +373,53 @@ class RequestSalary {
 
             // access set
             socket.on('updateAvance', async (data) => {                
-                this.updateItem(data)
+                this.updateItem(data);
+                // show notification
+                Toastify({
+                    text: `${data.m_code} a modifié sa demande d'avance.`,
+                    gravity: "bottom",
+                    position: "center",
+                    style:{
+                        "background": "#29E342"
+                    }
+                }).showToast();
             });
 
             
+            // Écoute l'événement 'createAvance' envoyé par le serveur
+            socket.on("createAvance", function([adminIds, data]) {
+                // Vérifie si l'utilisateur actuel est un admin concerné
+                
+                if (adminIds.includes(id)) {
+                    ui.renderOneRequest(data)
+                    // show notification
+                    Toastify({
+                        text: `${data.user.m_code} a ajouté sa demande d'avance.`,
+                        gravity: "bottom",
+                        position: "center",
+                        style:{
+                            "background": "#29E342"
+                        }
+                    }).showToast();
+                }
+            });
+
+            
+            // Écoute l'événement 'cancelAvance' envoyé par le serveur
+            socket.on("cancelAvance", function(data) {
+                // Vérifie si l'utilisateur actuel est un admin concerné
+                ui.deleteItem(data._id, data.is_urgent);
+                // show notification
+                Toastify({
+                    text: `${data.user.m_code} a annulé sa demande d'avance.`,
+                    gravity: "bottom",
+                    position: "center",
+                    style:{
+                        "background": "#29E342"
+                    }
+                }).showToast();
+            });
+
         }
     }
 }
@@ -393,6 +435,24 @@ function filterUserPerShift(){
     var shift = $("#select-shift").val()
     console.log("shif", shift);
     ui.filterUserPerShift(shift)
+}
+
+async function updateSalary(id) {
+    
+    const { data } = await ui.getOneDemande(id);
+    
+    const li = document.getElementById(`item-${id}`);
+    const button_container = li.querySelector('.bouton');
+    const modif_btn = button_container.querySelector(`#modif-${id}`);
+
+    var div = li.querySelector(`.changeMontant-${id}`);
+    if (div.classList.contains("hide")) {
+        div.classList.replace("hide", "show");
+        modif_btn.innerHTML = '<span class="mdi mdi-close"></span> Annuler';
+    } else {
+        modif_btn.innerHTML = ui.modifTextContent;
+        div.classList.replace("show", "hide");
+    }
 }
 
 async function accordSalary(id) {
@@ -624,13 +684,3 @@ function currencyFormat(number = 0) {
     })
 }
 
-
-
-// Écoute l'événement 'createAvance' envoyé par le serveur
-socket.on("createAvance", function([adminIds, data]) {
-    // Vérifie si l'utilisateur actuel est un admin concerné
-    
-    if (adminIds.includes(id)) {
-        ui.renderOneRequest(data)
-    }
-});
