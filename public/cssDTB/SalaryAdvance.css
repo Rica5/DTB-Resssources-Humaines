@@ -529,3 +529,9 @@ i.show, i.hide {
   justify-content: center;
   align-items: center;
 }
+.rejected-message {
+  display: block;
+  font-size: 0.8rem;
+  padding: .3rem !important;
+  margin-block: 0.6rem !important;
+}
