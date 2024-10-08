@@ -465,6 +465,8 @@
         </div>
       </div>
     </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         function openNotif(button) {
             let notif_div = document.querySelector('.notification-modal');
@@ -706,7 +708,6 @@
         const startDate = moment(data.start_date).startOf('day');
         const endDate = moment(data.end_date).startOf('day');
 
-        console.log("startDate",startDate, "endDate", endDate);
         
         // Check if the current date is between or equal to startDate and endDate
         const isNowBetweenOrEqual = moment().startOf('day').isBetween(startDate, endDate, null, '[]');
@@ -735,6 +736,7 @@
 
     </script>
     <script src="../jsDTB/no-connection.js"></script>
+    <script src="../jsDTB/socket/avanceSalaryEmployee.js" type="text/javascript"></script>
 </body>
 
 </html>

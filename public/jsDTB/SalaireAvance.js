@@ -431,7 +431,6 @@ $('#show-code').on('click', function(){
         $code.html(code);
     }
 })
-console.log(code);
 
 var inputs = document.querySelectorAll('.code-container-1 input');
 inputs.forEach((input, index) => {

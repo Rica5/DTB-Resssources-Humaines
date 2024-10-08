@@ -72,7 +72,6 @@ async function copyNonExistingRecords(sourceCollectionName, destinationCollectio
       }
     }).toArray();
 
-    console.log(sourceRecords.length)
 
     for (const record of sourceRecords) {
       // Check if a document with the same date_start, date_end, and m_code exists in the destination collection

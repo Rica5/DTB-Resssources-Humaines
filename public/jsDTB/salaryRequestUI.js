@@ -32,6 +32,22 @@ class RequestSalary {
         });
     }
 
+    // function to render salary requests
+    async renderOneRequest(data) {
+        
+        // Mettre à jour le compteur d'urgence ou non urgence
+        if (data.is_urgent) {
+            let urgentCount = parseInt($("#UrgentBtn span").text(), 10);
+            $("#UrgentBtn span").text(urgentCount + 1);
+        } else {
+            let nUrgentCount = parseInt($("#NUrgentBtn span").text(), 10);
+            $("#NUrgentBtn span").text(nUrgentCount + 1);
+        }
+        // parcourir les données
+        const $container = $(data.is_urgent ? "#UrgentList" : "#NUrgentList");
+        const item = this.createItem(data);
+        $container.append(item);
+    }
     async validateRequest(data){
         const response = await fetch(`/api/avance/validate`, {
             method: "POST",
@@ -65,7 +81,6 @@ class RequestSalary {
             dataShift = data
         }
         
-        console.log("data", dataShift);
         // const {data} = await result.json()
         // vider les conteneurs
         $("#UrgentList").html("");
@@ -506,3 +521,14 @@ function currencyFormat(number = 0) {
         currency: 'MGA'
     })
 }
+
+
+
+// Écoute l'événement 'createAvance' envoyé par le serveur
+socket.on("createAvance", function([adminIds, data]) {
+    // Vérifie si l'utilisateur actuel est un admin concerné
+    
+    if (adminIds.includes(id)) {
+        ui.renderOneRequest(data)
+    }
+});
