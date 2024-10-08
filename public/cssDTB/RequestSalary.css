@@ -321,3 +321,19 @@
   justify-content: center;
   margin-top: 10px;
 }
+
+#UrgentList:empty, #NUrgentList:empty {
+  position: relative;
+  min-height: 300px;
+}
+
+#UrgentList:empty::before, #UrgentList:empty::before {
+  content: attr(message);
+  font-size: 1.2rem;
+  color: #818181;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
