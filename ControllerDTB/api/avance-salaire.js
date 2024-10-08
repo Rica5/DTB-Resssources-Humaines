@@ -202,6 +202,10 @@ async function exportFile(req, res) {
             }   
         }  
 
+        // get total of amount_granted (la cell "C142" est à modifier s'il ya une changement sur le données du fichier excel)
+        const total = data.reduce((total, item) => total + item.amount_granted, 0);
+        worksheet.getCell(`C142`).value = Number(total);
+
         // Write buffer and prepare response  
         const buffer = await workbook.xlsx.writeBuffer();  
 
