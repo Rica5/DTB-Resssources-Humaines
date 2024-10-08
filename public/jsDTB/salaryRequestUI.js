@@ -35,7 +35,6 @@ class RequestSalary {
     updateCompte(props){
         var compteUrg =parseInt($("#UrgentBtn > span").text())
         var compteNUrg =parseInt($("#NUrgentBtn > span").text())
-        (props.is_urgent) ? $("#")
     }
     // function to render salary requests
     async renderOneRequest(data) {
