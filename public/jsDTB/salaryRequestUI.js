@@ -1,6 +1,13 @@
 class RequestSalary {
     constructor() {
         this.typedCode = '';
+        this.countUrgent =  Number($("#UrgentBtn span").text() || 0);
+        this.countNUrgent =  Number($("#NUrgentBtn span").text() || 0);
+    }
+
+    updateCounts() {
+        $("#UrgentBtn span").text(this.countUrgent);
+        $("#NUrgentBtn span").text(this.countNUrgent);
     }
 
     async fetchAllRequests(){
@@ -22,8 +29,10 @@ class RequestSalary {
         // fetch data
         var data = await this.fetchAllRequests();
         // afficher les nombre de demandes urgent et non urgent dans le boutton
-        $("#UrgentBtn span").text(data.filter(d => d.is_urgent).length);
-        $("#NUrgentBtn span").text(data.filter(d => !d.is_urgent).length);
+        this.countUrgent = data.filter(d => d.is_urgent).length;
+        this.countNUrgent = data.filter(d => !d.is_urgent).length;
+        this.updateCounts();
+
         // parcourir les données
         data.forEach(request => {
             const $container = $(request.is_urgent ? "#UrgentList" : "#NUrgentList");
@@ -221,10 +230,18 @@ class RequestSalary {
         // replace old item if there is no change in urgent field
         $(`#item-${props._id}`).replaceWith(newItem);
         
+        // update counts
+        this.countUrgent -= props.is_urgent ? 0 : 1;
+        this.countNUrgent -= props.is_urgent ? 1 : 0;
+        this.updateCounts();
+        
     }
     
-    deleteItem(id) {
+    deleteItem(id, isUrgent) {
         $(`#item-${id}`).remove();
+        this.countUrgent -= isUrgent ? 1 : 0;
+        this.countNUrgent -= !isUrgent ? 1 : 0;
+        this.updateCounts();
     }
 
     bindGlobalSearch() {
@@ -300,9 +317,9 @@ class RequestSalary {
                 const pasteData = e.clipboardData.getData('text');
                 if (/^\d{4}$/.test(pasteData)) { // Check if the pasted data is exactly 4 digits
                     pasteData.split('').forEach((char, i) => {
-                    if (inputs[i]) {
-                        inputs[i].value = char;
-                    }
+                        if (inputs[i]) {
+                            inputs[i].value = char;
+                        }
                     });
                     inputs[3].focus(); // Focus the last input field after paste
                     validateCode(pasteData); // Auto-validate after pasting
@@ -490,7 +507,7 @@ async function payer(id) {
                     Swal.fire('Avance confirmée', "L'avance en espèces a été donnée à l'employé.", 'success');
                 }
 
-                ui.deleteItem(data._id);
+                ui.deleteItem(data._id, data.is_urgent);
             } else {
 
                 Swal.fire('Une erreur s\'est produite', "Un email n'a pas été envoyé au demandeur.", 'error');
@@ -533,7 +550,7 @@ async function refuseDemand(id) {
             const { ok, data: rejected } = await ui.reject(data._id, result.value);
             if (ok) {
                 Swal.fire('Refusé', 'La demande a été refusée avec succès.', 'success');
-                ui.deleteItem(rejected._id)
+                ui.deleteItem(rejected._id, rejected.is_urgent)
             }
             else
                 Swal.fire('Echeck', 'Une erreur est survenue.', 'danger');
