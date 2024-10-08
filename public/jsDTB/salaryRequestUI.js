@@ -32,6 +32,11 @@ class RequestSalary {
         });
     }
 
+    updateCompte(props){
+        var compteUrg =parseInt($("#UrgentBtn > span").text())
+        var compteNUrg =parseInt($("#NUrgentBtn > span").text())
+        (props.is_urgent) ? $("#")
+    }
     // function to render salary requests
     async renderOneRequest(data) {
         
@@ -219,6 +224,17 @@ class RequestSalary {
         const newItem = this.createItem(props);
         // replace old item if there is no change in urgent field
         $(`#item-${props._id}`).replaceWith(newItem);
+        $(newItem).appendTo((props.is_urgent)?"#UrgentList":"#NUrgentList")
+
+        
+        Toastify({
+            text: "Une demande a été modifié",
+            gravity: "bottom",
+            position: "center",
+            style: {
+                "background": "#29E342"
+            }
+        }).showToast();
         
     }
     
@@ -318,12 +334,27 @@ class RequestSalary {
             self.typedCode = code;
         }
     }
+    
+    bindSocket() {
+        if (typeof io !== 'undefined') {
+
+            const socket = io();
+
+            // access set
+            socket.on('updateAvance', async (data) => {                
+                this.updateItem(data)
+            });
+
+            
+        }
+    }
 }
 
 
 var ui = new RequestSalary()
 ui.renderAllRequest();
 ui.bindGlobalSearch();
+ui.bindSocket()
 
 
 function filterUserPerShift(){

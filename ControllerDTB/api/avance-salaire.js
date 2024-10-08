@@ -78,6 +78,7 @@ async function updateAvance(req, res) {
         });
 
 
+        sendSocket(req, "updateAvance", result)
         res.json({ ok: true, data: result });
     } catch (error) {
         console.error("Error creating avance:", error);
