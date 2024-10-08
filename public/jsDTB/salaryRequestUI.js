@@ -95,6 +95,17 @@ class RequestSalary {
         return res.json()
     }
 
+    async reject(id, comment) {
+        var res = await fetch(`/api/avance/reject/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ comment: comment })
+        });
+        return res.json();
+    }
+
     currencyFormat(number = 0) {
         return number.toLocaleString('mg-MG', {
             style: 'currency',
@@ -156,6 +167,11 @@ class RequestSalary {
                     <div>
                         <button id="accord-${props._id}" onclick="accordSalary('${props._id}')" class="btn btn-primary ellipsis" title="Accorder le montant">
                             <span class="mdi mdi-thumb-up"></span> Accorder
+                        </button>
+                    </div>
+                    <div>
+                        <button id="refuse-${props._id}" onclick="refuseDemand('${props._id}')" class="btn btn-secondary ellipsis" title="Refuser la demande">
+                            <span class="mdi mdi-thumb-down"></span> Refuser
                         </button>
                     </div>
                 </div>
@@ -486,9 +502,43 @@ async function payer(id) {
         }
     });
 
+}
 
+
+async function refuseDemand(id) {
     
+    const {data} = await ui.getOneDemande(id);
 
+    if (!data) return;
+
+    Swal.fire({
+        title: 'Refuser la demande de salaire',
+        input: 'textarea',
+        inputLabel: `Raison du refus pour ${data.user.m_code}`,
+        inputPlaceholder: 'Écrivez votre commentaire ici...',
+        inputAttributes: {
+            'aria-label': 'Écrivez votre commentaire ici'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Refuser',
+        cancelButtonText: 'Annuler',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Vous devez écrire un commentaire pour refuser la demande !';
+            }
+
+        }
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            const { ok, data: rejected } = await ui.reject(data._id, result.value);
+            if (ok) {
+                Swal.fire('Refusé', 'La demande a été refusée avec succès.', 'success');
+                ui.deleteItem(rejected._id)
+            }
+            else
+                Swal.fire('Echeck', 'Une erreur est survenue.', 'danger');
+        }
+    });
 }
 
 $("#UrgentBtn").on("click", function () {

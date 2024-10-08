@@ -222,7 +222,7 @@ async function getAllDemand(req, res) {
         var { urgent } = req.params;
         const result = await Avance.find({
             ...(urgent && { is_urgent: urgent}),
-            status:{$ne: "paid"}
+            status:{$nin: ["paid", "rejected"]}
         })
         .populate('user')
         .populate('confirmed_by')
@@ -274,36 +274,6 @@ async function validateAvance(req, res) {
         })
     }
 }
-
-
-async function refuseAvance(req, res) {
-    try {
-        // req body avec le montant accordé
-        const { comment } = req.body;
-        // avance id
-        const { id } = req.params;
-
-        // update avance
-        const updated = await Avance.findByIdAndUpdate(id, {
-            status: "rejected",
-            comment: comment
-        }, { new: true });
-
-        
-        res.json({
-            ok: true,
-            data: updated
-        })
-
-    } catch (error) {
-        console.log(error);
-        res.status(503).json({
-            ok: false,
-            message: 'Error'
-        })
-    }
-}
-
 
 async function verificationDemand(req, res) {
     const id = req.params.id;
@@ -464,6 +434,45 @@ async function employeeConfirmRequest(req, res) {
         res.json({
             ok: false,
             message: "Error while confirming the request"
+        })
+    }
+}
+
+
+// when Admin reject or refuse the salary request
+async function refuseRequest(req, res) {
+    try {
+        const { idUser } = req.session;
+        const { id } = req.params; // id of avance
+        const { comment } = req.body;
+
+        console.log(comment, id, idUser);
+
+
+        const updateAvance = await Avance.findOneAndUpdate({
+            _id: id,
+        }, {
+            status: 'rejected',
+            confirmed_by: idUser,
+            comment: comment
+        })
+        .populate('user')
+        .populate('confirmed_by')
+        .populate({
+            path: 'validation.user',
+            select: 'last_name occupation'
+        });
+
+        res.json({
+            ok: true,
+            data: updateAvance
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.json({
+            ok: false,
+            message: "Error while refusing the request"
         })
     }
 }
@@ -664,7 +673,6 @@ module.exports = {
     getOneDemande,
     deleteAvance,
     validateAvance,
-    refuseAvance,
     getAllDemand,
     verificationDemand,
     payerAvance,
@@ -676,5 +684,6 @@ module.exports = {
     checkAvanceCode,
     exportFile,
     giveAccess,
-    checkUrgenceAccess
+    checkUrgenceAccess,
+    refuseRequest
 }
