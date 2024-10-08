@@ -78,6 +78,7 @@ async function updateAvance(req, res) {
         });
 
 
+        sendSocket(req, "updateAvance", result)
         res.json({ ok: true, data: result });
     } catch (error) {
         console.error("Error creating avance:", error);
@@ -86,12 +87,47 @@ async function updateAvance(req, res) {
     
 }
 
+async function setGlobalAdminNotifications(notification, concerned, spec, req) {
+    await User.updateMany({ occupation: { $in: concerned }, _id: { $ne: id_gerant } }, { $push: { myNotifications: notification } });
+    var idNotif = await UserSchema.findOne({ occupation: { $in: concerned } });
+    if (spec) {
+        concerned.push("Gerant")
+        var otherId = await User.findOneAndUpdate({ _id: id_gerant }, { $push: { myNotifications: notification } }, { new: true });
+        notification.otherId = otherId.myNotifications[otherId.myNotifications.length - 1]._id
+    }
+    var idNotif = await UserSchema.findOne({ occupation: { $in: concerned } });
+    idNotif ? notification.idNotif = idNotif.myNotifications[idNotif.myNotifications.length - 1]._id : notification.idNotif = ""
+    const io = req.app.get("io");
+    io.sockets.emit("notif", [concerned, notification]);
+}
+
 async function createAvance(req, res) {
     
     try {
+        const result = await Avance.create(req.body)  
+        // Emission de l'événement Socket.io à l'admin
+        const io = req.app.get("io");
+        
+        const userCreate = await Avance.findById(result._id).populate('user');
+        // Définir la liste des destinataires (par exemple, les admins)
+        const concerned = await User.find({ occupation: "Admin" }, '_id'); // Récupérer uniquement les IDs des admins
+        const adminIds = concerned.map(admin => admin._id.toString());
 
-        const result = await Avance.create(req.body);
+        // var notification = {
+        //     title: "Création d'une demande d'avance",
+        //     content: `${userCreate.user.m_code} a créé une demande d'avance de ${userCreate.desired_amount}`,
+        //     datetime: moment().format("DD/MM/YYYY HH:mm:ss")   
+        // }
+
+        // var concernNotif = ["^$$"]
+        // await setGlobalAdminNotifications(notification, concernNotif, true, req);
+        // Émettre l'événement "notif" pour les administrateurs
+        io.sockets.emit("createAvance", [adminIds, userCreate]);      
         res.json({ ok: true, data: result });
+
+
+
+
     } catch (error) {
         console.error("Error creating avance:", error);
         res.json({  ok: false, data: [] });

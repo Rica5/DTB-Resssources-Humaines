@@ -43,6 +43,7 @@ const getDashboardPage = async(req,res) => {
             contrat:"CDD"
           });
           var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
+          
            var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
           res.render("PageAdministration/Dashboard.html", {
             notif: dataUser.myNotifications,

@@ -283,13 +283,14 @@ async function editDemande(id) {
     // Utilisation de `self.getData` pour préserver le contexte de `this`
     try {
         const data = await ui.getOneDemande(id);
-
+        
         $("#date-avance-update").val(new Date(data.data.date).toISOString().split('T')[0])
         $("#shift-update").val(data.data.shift)
         $("#year-update").val(new Date(data.data.date_of_avance).getFullYear())
         $("#month-update").val(new Date(data.data.date_of_avance).getMonth())
         $("#montant_Demande-update").val(data.data.desired_amount)
         $("#id-update").val(id)
+        $("#urgent-update").prop("checked", data.data.is_urgent)
 
     } catch (error) {
         console.error("Erreur lors de la récupération des données :", error);

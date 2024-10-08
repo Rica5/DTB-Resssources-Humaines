@@ -41,6 +41,26 @@ class RequestSalary {
         });
     }
 
+    updateCompte(props){
+        var compteUrg =parseInt($("#UrgentBtn > span").text())
+        var compteNUrg =parseInt($("#NUrgentBtn > span").text())
+    }
+    // function to render salary requests
+    async renderOneRequest(data) {
+        
+        // Mettre à jour le compteur d'urgence ou non urgence
+        if (data.is_urgent) {
+            let urgentCount = parseInt($("#UrgentBtn span").text(), 10);
+            $("#UrgentBtn span").text(urgentCount + 1);
+        } else {
+            let nUrgentCount = parseInt($("#NUrgentBtn span").text(), 10);
+            $("#NUrgentBtn span").text(nUrgentCount + 1);
+        }
+        // parcourir les données
+        const $container = $(data.is_urgent ? "#UrgentList" : "#NUrgentList");
+        const item = this.createItem(data);
+        $container.append(item);
+    }
     async validateRequest(data){
         const response = await fetch(`/api/avance/validate`, {
             method: "POST",
@@ -74,7 +94,6 @@ class RequestSalary {
             dataShift = data
         }
         
-        console.log("data", dataShift);
         // const {data} = await result.json()
         // vider les conteneurs
         $("#UrgentList").html("");
@@ -229,6 +248,17 @@ class RequestSalary {
         const newItem = this.createItem(props);
         // replace old item if there is no change in urgent field
         $(`#item-${props._id}`).replaceWith(newItem);
+        $(newItem).appendTo((props.is_urgent)?"#UrgentList":"#NUrgentList")
+
+        
+        Toastify({
+            text: "Une demande a été modifié",
+            gravity: "bottom",
+            position: "center",
+            style: {
+                "background": "#29E342"
+            }
+        }).showToast();
         
         // update counts
         this.countUrgent -= props.is_urgent ? 0 : 1;
@@ -336,12 +366,27 @@ class RequestSalary {
             self.typedCode = code;
         }
     }
+    
+    bindSocket() {
+        if (typeof io !== 'undefined') {
+
+            const socket = io();
+
+            // access set
+            socket.on('updateAvance', async (data) => {                
+                this.updateItem(data)
+            });
+
+            
+        }
+    }
 }
 
 
 var ui = new RequestSalary()
 ui.renderAllRequest();
 ui.bindGlobalSearch();
+ui.bindSocket()
 
 
 function filterUserPerShift(){
@@ -578,3 +623,14 @@ function currencyFormat(number = 0) {
         currency: 'MGA'
     })
 }
+
+
+
+// Écoute l'événement 'createAvance' envoyé par le serveur
+socket.on("createAvance", function([adminIds, data]) {
+    // Vérifie si l'utilisateur actuel est un admin concerné
+    
+    if (adminIds.includes(id)) {
+        ui.renderOneRequest(data)
+    }
+});
