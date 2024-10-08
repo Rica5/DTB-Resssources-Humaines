@@ -474,6 +474,7 @@ async function completeRequest(req, res) {
     try {
         const { idUser } = req.session;
         const { id } = req.params; // id of avance
+        const { isAutrui } = req.body;
 
         const updateAvance = await Avance.findOneAndUpdate({
             _id: id,
@@ -495,6 +496,15 @@ async function completeRequest(req, res) {
         });
 
         sendCompletedRequestEmail(updateAvance);
+
+        // regenerer ou mettre à jour le code pour renforcer la sécurité
+        if (isAutrui) {
+            const newCode = Math.floor(1000 + Math.random() * 9000).toString();
+            // update user
+            await User.findByIdAndUpdate(updateAvance.user._id, {
+                digit_code: newCode
+            });
+        }
 
         res.json({
             ok: true,
@@ -521,6 +531,9 @@ async function addPeriodDates(req, res) {
                 month: month
             }, { new: true });
 
+            // send socket
+            sendSocket(req, 'dates_set', updated);
+
             res.json({
                 ok: true,
                 data: updated
@@ -528,6 +541,7 @@ async function addPeriodDates(req, res) {
         } else {
             // add new 
             const created = await DateAvance.create({...data, month});
+
             res.json({
                 ok: true,
                 data: created
@@ -609,6 +623,9 @@ async function giveAccess(req, res) {
             { _id: { $nin: users } },
             { $set: { urgence_salary: false }}
         );
+
+        // send socket
+        sendSocket(req, 'access_set', users);
     
         res.json({
             ok: true,
@@ -623,6 +640,21 @@ async function giveAccess(req, res) {
         });
     }
 
+}
+
+async function checkUrgenceAccess(req, res) {
+    const { idUser } = req.session;
+    const user = await User.findById(idUser);
+
+    res.json({
+        data: user
+    })
+}
+
+function sendSocket(req, _event, data) {
+    const io = req.app.get("io");
+    // send socket
+    io.sockets.emit(_event, data);
 }
 
 module.exports = {
@@ -643,5 +675,6 @@ module.exports = {
     getPeriodInMonth,
     checkAvanceCode,
     exportFile,
-    giveAccess
+    giveAccess,
+    checkUrgenceAccess
 }

@@ -13,9 +13,22 @@ class SalaryAvanceUI {
         this.monthQuery = this.baseurl;
     }
 
+    async checkAccess() {
+        const res = await fetch(`${this.baseurl}/check_access`);
+        const { data } = await res.json();
+        return data?.urgence_salary;
+    }
+
     async getData(id) {
         const response = await fetch(`${this.baseurl}/${id}`);
         return response.json();
+    }
+    
+    // method to get period defined in month (eg url: "/api/avance/getperiod/2024-09" to get dates defined on September 2024)
+    async getPeriodByMonth(month) {
+        const res = await fetch('/api/avance/getperiod/' + month);
+        const { data } = await res.json();
+        return data;
     }
 
     async getOneDemande(id){
@@ -207,6 +220,38 @@ class SalaryAvanceUI {
 
     }
 
+    bindSocket() {
+        if (typeof io !== 'undefined') {
+
+            const socket = io();
+
+            // access set
+            socket.on('access_set', async (data) => {
+            
+                // check if 
+                userHasAccess = await this.checkAccess();
+                // without param data to check only if has access
+                this.getPeriodByMonth(getYear+"-"+getMonth).then(checkFormAvailability);
+            });
+
+            
+            // dates ouvrables set
+            socket.on('dates_set', async (data) => {
+            
+                const date = new Date();
+
+                // le month du date set et dans ce mois ci (new Date())
+                if (date.toISOString().startsWith(data.month)) {
+
+                    checkFormAvailability(data)
+
+                }
+
+            });
+
+        }
+    }
+
 }
 
 
@@ -222,6 +267,7 @@ var STATUS = {
 const ui = new SalaryAvanceUI();
 ui.bindFilters()
 ui.loadList("salary-list", ui.queries);
+ui.bindSocket();
 
 
 async function editDemande(id) {
@@ -537,4 +583,51 @@ submitBtn.addEventListener('click', async () => {
         alert('Veuillez remplir tous les champs.');
     }
 });
+
+
+
+const dateNow = new Date()
+var getMonth = (dateNow.getMonth()+1).toString().padStart(2, '0');
+var getYear = dateNow.getFullYear()
+
+var userHasAccess = users.urgence_salary; // used globaly
+
+ui.getPeriodByMonth(getYear+"-"+getMonth).then(checkFormAvailability);
+
+function checkFormAvailability(data) {
+    
+    if (data) {
+        const startDate = moment(data.start_date).startOf('day');
+        const endDate = moment(data.end_date).startOf('day');
+
+        // Check if the current date is between or equal to startDate and endDate
+        const isNowBetweenOrEqual = moment().startOf('day').isBetween(startDate, endDate, null, '[]');
+
+        // Comparer les dates
+        if (isNowBetweenOrEqual || userHasAccess) {
+            $("#aucun-demande").attr("style", "display: none !important;")
+            $("#demande-avance").attr("style", "display: block !important;")
+        } else {
+            $("#aucun-demande").attr("style", "display: flex !important;")
+            $("#demande-avance").attr("style", "display: none !important;")
+        }
+
+        // display date de fin
+        $('.date-fin').each((i, e) => $(e).text(endDate.format('DD/MM/YYYY')));
+        $("#access-display").attr('style', `display: ${userHasAccess && !isNowBetweenOrEqual ? 'block' : 'none'}`);
+        $("#ouvrables-display").attr('style', `display: ${!userHasAccess || isNowBetweenOrEqual ? 'block' : 'none'}`);
+        if (userHasAccess) $('#urgent').prop('checked', true);
+
+    }
+}
+
+
+
+$("#urgent-avance").on("click", function () {
+    $("#demande-avance").attr("style", "display: block")
+    $("#aucun-demande").attr("style", "display: none !important")
+    $("#urgent").prop("checked",true)
+    
+})
+
 

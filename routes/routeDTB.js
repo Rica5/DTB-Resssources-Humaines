@@ -75,6 +75,7 @@ routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
 routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance/paid').get(API_Avance.getPaidDemands)
+routeExpDTB.route('/api/avance/check_access').get(API_Avance.checkUrgenceAccess)
 routeExpDTB.route('/exportExcel').get(API_Avance.exportFile)
 routeExpDTB.route('/api/avance/addperiod').post(API_Avance.addPeriodDates)
 routeExpDTB.route('/api/avance/giveaccess').post(API_Avance.giveAccess)
