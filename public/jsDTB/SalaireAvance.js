@@ -320,7 +320,7 @@ async function cancelLeaveRequest(){
     var id = $('#delete-id').val()
     const {data} = await ui.deleteDemande(id);
     ui.deleteItem(data._id);
-    toggleDeleteModal()
+    toggleDeleteModal();
     Toastify({
         text: "Votre demande a été annulé",
         gravity: "bottom",

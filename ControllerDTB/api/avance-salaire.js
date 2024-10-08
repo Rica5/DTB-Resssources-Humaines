@@ -138,7 +138,9 @@ async function createAvance(req, res) {
 async function deleteAvance(req, res) {
     try{
         const id = req.params.id
-        const result = await Avance.findByIdAndDelete({_id: id}, { new: true })
+        const result = await Avance.findByIdAndDelete({_id: id}, { new: true });
+        // send socket to admin
+        sendSocket(req, 'cancelAvance', result);
         res.json({ok: true, data: result})
     }catch(error){
         console.error("Error creating avance:", error);
