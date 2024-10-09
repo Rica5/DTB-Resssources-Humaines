@@ -53,4 +53,4 @@ const User = mongoose.Schema({
       }
    }]
 })
-module.exports = mongoose.model('newcuserTest',User);
+module.exports = mongoose.model('cuserTest',User);

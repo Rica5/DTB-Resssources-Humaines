@@ -550,17 +550,14 @@
             }
         })
         function findAndDeleteObject(arr, property, value) {
-    
-    var index = arr.findIndex(obj => obj[property] === value);
-
-    
-    if (index !== -1) {
-        arr.splice(index, 1);
-        console.log(`Object with ${property} ${value} found and deleted from the array.`);
-    } else {
-        console.log(`Object with ${property} ${value} not found in the array.`);
-    }
-}
+            var index = arr.findIndex(obj => obj[property] === value);
+            if (index !== -1) {
+                arr.splice(index, 1);
+                console.log(`Object with ${property} ${value} found and deleted from the array.`);
+            } else {
+                console.log(`Object with ${property} ${value} not found in the array.`);
+            }
+        }
         function pushNotification(theNotif){
             // Add a notification according to socket
             var notifElement = `
