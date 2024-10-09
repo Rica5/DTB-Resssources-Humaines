@@ -365,6 +365,20 @@
         </div>
       </div>
 
+      <!-- notification modal -->
+      <div class="notification-modal">
+        <h2>
+            <i class="fa-solid fa-bell icons"></i>
+            Notifications:
+        </h2>
+        <div class="notification-options">
+          <button type="button" class="mark" onclick="markAllAsRead()">Marquer tous comme lu</button>
+          <button type="button" class="delete" onclick="removeAllNotifications()">Effacer les notifications</button>
+        </div>
+        <div id="notifContent" class="notification-list">
+          
+        </div>
+      </div>
     </div>
   </div>
   <!-- Fichier Javascript -->
@@ -440,6 +454,45 @@
     });
 
   </script>
+  
+  <script>
+    var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
+    setnotification(notif);
+    var socket = io();
+    const audio = new Audio("ring.wav");
+    socket.on("notif", function (msg) {
+        var theNotif = msg[1];
+        var concerned = msg[0];
+        if (concerned.includes(role)){
+        const title = theNotif.title.replace(/<\/?[^>]+(>|$)/g, "");
+        const notification = new Notification(title, {
+            body: `${theNotif.content}`,
+            icon:  '../assets/images1/logo.jpg',
+        });
+        pushNotification(theNotif,role)
+        audio.play();
+        }
+    });
+    var notif = JSON.parse(String.raw`<%-JSON.stringify(notif)%>`);
+    setnotification(notif);
+
+    function closeHovering(id){
+    document.getElementById(id).style.display = "none";
+    }
+    function openHovering(id){
+    if (id == "conge"){
+        document.getElementById(id).style.display = "block";
+        closeHovering("late")
+    }
+    else {
+        document.getElementById(id).style.display = "block"
+        id = "late";
+        closeHovering("conge")
+    }
+    
+    }
+    
+</script>
 </body>
 
 </html>
