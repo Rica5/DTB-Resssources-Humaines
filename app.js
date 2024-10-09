@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const cron = require('node-cron');
 const axios = require('axios');
 const leaveS = require('./models/ModelLeave.js')
+const moment = require('moment');
 require('dotenv').config();
 // Connect to MongoDB using Mongoose
 mongoose.connect(process.env.DB_URI, {});
@@ -27,7 +28,33 @@ db.once('open', () => {
 
   // copyNonExistingRecords('cleavesolumadas', 'cleavetests');
   // generate4digitsCode()
+  getServerTime()
 });
+
+function getServerTime() {
+
+  // Override the moment function to always return Baghdad time  
+  function baghdad(...args) {  
+    // Call the original moment function with the provided arguments  
+    const localDate = moment(...args);  
+
+    // Calculate the timezone offset  
+    const serverOffset = localDate.utcOffset(); // Server's timezone offset in minutes  
+    const baghdadOffset = 180; // Baghdad's timezone offset in minutes  
+
+    // Calculate the time difference in minutes  
+    const offsetDifference = baghdadOffset - serverOffset;  
+
+    // Adjust the local date by the difference to get Baghdad time  
+    const baghdadTime = localDate.clone().add(offsetDifference, 'minutes');  
+
+    return baghdadTime;  
+  }  
+
+  // Example usage  
+  console.log(baghdad().format()); // This will now correctly log the current time in Baghdad  
+
+}
 
 // Function to clone data from one collection to another using native MongoDB methods
 async function cloneCollectionData(sourceCollectionName, targetCollectionName) {

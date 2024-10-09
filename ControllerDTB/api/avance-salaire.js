@@ -5,6 +5,25 @@ const User = require("../../models/ModelMember");
 const crypto = require('crypto')
 const nodemailer = require("nodemailer")   
 const ExcelJS = require('exceljs');
+const mongoose = require('mongoose');
+
+  // Override the moment function to always return Baghdad time  
+function baghdad(...args) {  
+    // Call the original moment function with the provided arguments  
+    const localDate = moment(...args);  
+
+    // Calculate the timezone offset  
+    const serverOffset = localDate.utcOffset(); // Server's timezone offset in minutes  
+    const baghdadOffset = 180; // Baghdad's timezone offset in minutes  
+
+    // Calculate the time difference in minutes  
+    const offsetDifference = baghdadOffset - serverOffset;  
+
+    // Adjust the local date by the difference to get Baghdad time  
+    const baghdadTime = localDate.clone().add(offsetDifference, 'minutes');  
+
+    return baghdadTime;  
+}  
 
 
 async function getListByUserId(req, res) {
@@ -307,6 +326,14 @@ async function validateAvance(req, res) {
 
         // send socket to user to update his request status
         sendSocket(req, 'update_status', updated);
+
+        // send notification to user concernet
+        notifyEmployee(
+            updated.user.m_code,
+            "Montant accordé",
+            `Un montant de ${parseFloat(amount_granted)} Ar a été accordé pour votre demande.`,
+            req
+        );
         
         res.json({
             ok: true,
@@ -493,8 +520,6 @@ async function refuseRequest(req, res) {
         const { id } = req.params; // id of avance
         const { comment } = req.body;
 
-        console.log(comment, id, idUser);
-
 
         const updateAvance = await Avance.findOneAndUpdate({
             _id: id,
@@ -512,6 +537,23 @@ async function refuseRequest(req, res) {
 
         // send socket to user to update his request status
         sendSocket(req, 'update_status', updateAvance);
+
+        let displayMonth = afficherMoisAnnee(updateAvance.date_of_avance); // eg: d'Octobre 2024
+
+        // send notification to user concerned
+        notifyEmployee(
+            updateAvance.user.m_code, 
+            "Demande d'avance réfusée",
+            `Votre demande d'avance du mois ${displayMonth} a été réfusée car ${comment}.`,
+            req
+        );
+        
+        // send notification to Admins
+        await notifyAdmin(
+            "Demande d'avance réfusée",
+            `La demande d'avance sur salaire du mois ${displayMonth} de ${updateAvance.user.m_code} a été réfusée car ${comment}.`,
+            req
+        )
 
         res.json({
             ok: true,
@@ -558,6 +600,23 @@ async function completeRequest(req, res) {
         // send socket to user to update his request status
         sendSocket(req, 'update_status', updateAvance);
 
+        let displayMonth = afficherMoisAnnee(updateAvance.date_of_avance); // eg: d'Octobre 2024
+
+        // send notification to users
+        await notifyEmployee(
+            updateAvance.user.m_code,
+            "Demande d'vance récupérée",
+            `${isAutrui ? "Un tiers a" : "Vous avez"} récupéré votre avance sur salaire du mois ${displayMonth}.`,
+            req
+        )
+
+        // send notification to Admin
+        await notifyAdmin(
+            "Demande d'vance récupérée",
+            `${updateAvance.user.m_code} a récupéré son avance sur salaire du mois ${displayMonth}.`,
+            req
+        )
+
         sendCompletedRequestEmail(updateAvance);
 
         // regenerer ou mettre à jour le code pour renforcer la sécurité
@@ -567,6 +626,14 @@ async function completeRequest(req, res) {
             await User.findByIdAndUpdate(updateAvance.user._id, {
                 digit_code: newCode
             });
+            // notify code changement
+            await notifyEmployee(
+                updateAvance.user.m_code,
+                "Changement du code",
+                "Votre code a été modifié suite à l'action d'une autre personne.",
+                req
+            );
+
         }
 
         res.json({
@@ -653,8 +720,6 @@ async function checkAvanceCode(req, res) {
             digit_code: code
         });
 
-        console.log(req.body, userWithTheCode)
-
         res.json({
             ok: true, data: userWithTheCode !== null
         });
@@ -674,6 +739,9 @@ async function giveAccess(req, res) {
     const { users } = req.body;
     try {
 
+        // get users thats are new (urgence_salary field is false)
+        const _users_hasNewAccess = await User.find({ _id : { $in: users }, urgence_salary: false });
+
         if (users.length != 0) {
             // give access to user
             await User.updateMany(
@@ -689,6 +757,15 @@ async function giveAccess(req, res) {
 
         // send socket
         sendSocket(req, 'access_set', users);
+
+        // notify user
+        _users_hasNewAccess.map(async (u) => {
+            notifyEmployee(u.m_code,
+                "Accès aux urgences",
+                "Vous avez un accès pour envoyer une demande urgente !",
+                req
+            );
+        });
     
         res.json({
             ok: true,
@@ -718,6 +795,80 @@ function sendSocket(req, _event, data) {
     const io = req.app.get("io");
     // send socket
     io.sockets.emit(_event, data);
+}
+
+// method to send notification to user by its m-code
+async function notifyEmployee(m_code, title, content, req) {
+    try {
+
+        var notification = {
+            _id: new mongoose.Types.ObjectId(), // generate id
+            title: title,
+            content: content,
+            datetime: moment().format("DD/MM/YYYY HH:mm"),
+            isSeen: false
+        }
+        await User.findOneAndUpdate({ m_code: m_code }, { $push: { myNotifications: notification } });
+    
+        sendSocket(req, m_code, notification);
+
+    } catch(err) {
+        console.error(err)
+    }
+}
+
+async function notifyAdmin(title, content, req) {
+    try {
+
+        var notification = {
+            _id: new mongoose.Types.ObjectId(), // generate id
+            title: title,
+            content: content,
+            datetime: moment().format("DD/MM/YYYY HH:mm"),
+            isSeen: false
+        }
+
+        const concerned = ['Admin'];
+
+        await User.findOneAndUpdate({ occupation: { $in: concerned } }, { $push: { myNotifications: notification } });
+    
+        sendSocket(req, "notif", [concerned, notification]);
+
+    } catch(err) {
+        console.error(err)
+    }
+}
+function afficherMoisAnnee(dateInput) {
+    // Créer un tableau des mois en français
+    const moisNoms = [
+        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+    ];
+
+    let date;
+    
+    // Si dateInput est une chaîne (ex. "2024-10-15"), on la convertit en Date
+    if (typeof dateInput === "string") {
+        date = new Date(dateInput);
+    } else if (dateInput instanceof Date) {
+        date = dateInput;
+    } else {
+        throw new Error("Invalid date input");
+    }
+
+    // Obtenir l'année et le mois à partir de l'objet Date
+    const annee = date.getFullYear();
+    const mois = date.getMonth(); // getMonth() retourne un index de 0 (Janvier) à 11 (Décembre)
+
+    // Obtenir le nom du mois
+    const moisNom = moisNoms[mois];
+
+    // Vérifier si le mois commence par une voyelle
+    const voyelles = ["A", "E", "I", "O", "U", "Y"];
+    const article = voyelles.includes(moisNom.charAt(0)) ? "d'" : "de";
+
+    // Retourner la chaîne avec "de" ou "d'" suivi du mois et de l'année
+    return `${article} ${moisNom} ${annee}`;
 }
 
 module.exports = {
