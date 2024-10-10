@@ -1,4 +1,4 @@
-const moment = require("moment");
+const MOMENT = require("moment");
 const Avance = require("../../models/ModelAvance");
 const DateAvance = require("../../models/ModelDatesAvance");
 const User = require("../../models/ModelMember");
@@ -8,9 +8,9 @@ const ExcelJS = require('exceljs');
 const mongoose = require('mongoose');
 
   // Override the moment function to always return Baghdad time  
-function baghdad(...args) {  
+function moment(...args) {  
     // Call the original moment function with the provided arguments  
-    const localDate = moment(...args);  
+    const localDate = MOMENT(...args);  
 
     // Calculate the timezone offset  
     const serverOffset = localDate.utcOffset(); // Server's timezone offset in minutes  
@@ -106,45 +106,25 @@ async function updateAvance(req, res) {
     
 }
 
-async function setGlobalAdminNotifications(notification, concerned, spec, req) {
-    await User.updateMany({ occupation: { $in: concerned }, _id: { $ne: id_gerant } }, { $push: { myNotifications: notification } });
-    var idNotif = await UserSchema.findOne({ occupation: { $in: concerned } });
-    if (spec) {
-        concerned.push("Gerant")
-        var otherId = await User.findOneAndUpdate({ _id: id_gerant }, { $push: { myNotifications: notification } }, { new: true });
-        notification.otherId = otherId.myNotifications[otherId.myNotifications.length - 1]._id
-    }
-    var idNotif = await UserSchema.findOne({ occupation: { $in: concerned } });
-    idNotif ? notification.idNotif = idNotif.myNotifications[idNotif.myNotifications.length - 1]._id : notification.idNotif = ""
-    const io = req.app.get("io");
-    io.sockets.emit("notif", [concerned, notification]);
-}
-
 async function createAvance(req, res) {
     
     try {
         const result = await Avance.create(req.body)  
+
         // Emission de l'événement Socket.io à l'admin
-        
-        const userCreate = await Avance.findById(result._id).populate('user');
-        // Définir la liste des destinataires (par exemple, les admins)
-        // const concerned = await User.find({ occupation: "Admin" }, '_id'); // Récupérer uniquement les IDs des admins
+        const avance = await Avance.findById(result._id).populate('user');
 
-        // var notification = {
-        //     title: "Création d'une demande d'avance",
-        //     content: `${userCreate.user.m_code} a créé une demande d'avance de ${userCreate.desired_amount}`,
-        //     datetime: moment().format("DD/MM/YYYY HH:mm:ss")   
-        // }
-
-        // var concernNotif = ["^$$"]
-        // await setGlobalAdminNotifications(notification, concernNotif, true, req);
         // Émettre l'événement "notif" pour les administrateurs
-        sendSocket(req, "createAvance", userCreate);
+        sendSocket(req, "createAvance", avance);
+        
+        // notify admin
+        notifyAdmin(
+            "Demande d'avance",
+            `${avance.user?.m_code} a envoyé une demande d'avance du mois ${afficherMoisAnnee(avance.date_of_avance)}.`,
+            req
+        );
         
         res.json({ ok: true, data: result });
-
-
-
 
     } catch (error) {
         console.error("Error creating avance:", error);
@@ -159,9 +139,15 @@ async function deleteAvance(req, res) {
         const result = await Avance.findByIdAndDelete({_id: id}, { new: true }).populate('user');
         // send socket to admin
         sendSocket(req, 'cancelAvance', result);
+        // notify admin
+        notifyAdmin(
+            "Demande d'avance",
+            `${result.user?.m_code} a annulé sa demande d'avance du mois ${afficherMoisAnnee(result.date_of_avance)}.`,
+            req
+        );
         res.json({ok: true, data: result})
     }catch(error){
-        console.error("Error creating avance:", error);
+        console.error("Error cancelling avance:", error);
         res.json({  ok: false, data: null });
 
     }
@@ -847,7 +833,7 @@ function afficherMoisAnnee(dateInput) {
 
     let date;
     
-    // Si dateInput est une chaîne (ex. "2024-10-15"), on la convertit en Date
+    // Si dateInput est une chaîne (ex. "2024-10-15"), on la convertir en Date
     if (typeof dateInput === "string") {
         date = new Date(dateInput);
     } else if (dateInput instanceof Date) {

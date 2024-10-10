@@ -366,7 +366,7 @@ $("#envoyer-avance").on("click", async function () {
         var demandeAvance = {
             user : users._id,
             date : new Date(date_avance),
-            date_of_avance: new Date(annee, mois).toISOString(),
+            date_of_avance: new Date(annee, +mois, 1).toISOString(),
             desired_amount: parseFloat(montantD),
             shift: shift,
             is_urgent: is_urgent,

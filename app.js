@@ -12,6 +12,7 @@ const cron = require('node-cron');
 const axios = require('axios');
 const leaveS = require('./models/ModelLeave.js')
 const moment = require('moment');
+const Status = require('./models/ModelClocking.js')
 require('dotenv').config();
 // Connect to MongoDB using Mongoose
 mongoose.connect(process.env.DB_URI, {});
@@ -28,33 +29,98 @@ db.once('open', () => {
 
   // copyNonExistingRecords('cleavesolumadas', 'cleavetests');
   // generate4digitsCode()
-  getServerTime()
+
+  // copyAllCollections();
+  // Call the function
+  // findDuplicateRecords();
+
 });
 
-function getServerTime() {
+const findDuplicateRecords = async () => {
+  try {
+    const dateToFind = "2024-10-08";
 
-  // Override the moment function to always return Baghdad time  
-  function baghdad(...args) {  
-    // Call the original moment function with the provided arguments  
-    const localDate = moment(...args);  
+    // Query to find records with the same `m_code`, `num_agent`, and `date`
+    const records = await Status.aggregate([
+      { $match: { date: dateToFind } },  // Match records with the given date
+      {
+        $group: {
+          _id: { m_code: "$m_code", num_agent: "$num_agent", date: "$date" },  // Group by `m_code`, `num_agent`, and `date`
+          count: { $sum: 1 },  // Count the occurrences
+        }
+      },
+      { $match: { count: { $gt: 1 } } }  // Return only groups with more than 1 entry
+    ]);
 
-    // Calculate the timezone offset  
-    const serverOffset = localDate.utcOffset(); // Server's timezone offset in minutes  
-    const baghdadOffset = 180; // Baghdad's timezone offset in minutes  
+    console.log("Duplicate records found:", records.map(d => d._id.m_code));
+    return records;
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-    // Calculate the time difference in minutes  
-    const offsetDifference = baghdadOffset - serverOffset;  
 
-    // Adjust the local date by the difference to get Baghdad time  
-    const baghdadTime = localDate.clone().add(offsetDifference, 'minutes');  
+async function copyAllCollections() {
 
-    return baghdadTime;  
-  }  
+  const FREE_URI = "mongodb+srv://Rica:Ryane_1888@cluster0.z3s3n.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+  const PAID_URI = "mongodb+srv://dev-solumada:05lyBVqDgjleonPF@solumada.yqeyglv.mongodb.net/Timesheets?retryWrites=true&w=majority&appName=Solumada"
 
-  // Example usage  
-  console.log(baghdad().format()); // This will now correctly log the current time in Baghdad  
+  try {
+      // Step 1: Connect to the free MongoDB cluster
+      const freeConnection = await mongoose.createConnection(FREE_URI, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+      }).asPromise();
+      console.log('Connected to the free MongoDB cluster.');
 
+      // Step 2: Get all collections from the free cluster
+      // const freeDb = freeConnection.useDb('Pointage'); // Pointage is the database name
+      const freeDb = freeConnection.db; // Get the native MongoDB DB object
+      const collections = await freeDb.listCollections().toArray();
+      console.log(`Found ${collections.length} collections to copy.`);
+
+      // Step 3: Connect to the paid MongoDB cluster
+      const paidConnection = await mongoose.createConnection(PAID_URI, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+      }).asPromise();
+      console.log('Connected to the paid MongoDB cluster.');
+      // const paidDb = paidConnection.useDb('Pointage');
+
+      const paidDb = paidConnection.db; // Get the native MongoDB DB object
+
+      // Step 4: Copy data from each collection
+      for (let collection of collections) {
+          const collectionName = collection.name;
+          console.log(`Copying collection: ${collectionName}`);
+
+          // Get the collection data from the free cluster
+          const freeCollection = freeDb.collection(collectionName);
+          const documents = await freeCollection.find({}).toArray();
+
+          // Insert the data into the same collection in the paid cluster
+          const paidCollection = paidDb.collection(collectionName);
+          if (documents.length > 0) {
+              await paidCollection.insertMany(documents);
+              console.log(`Copied ${documents.length} documents to the collection: ${collectionName}`);
+          } else {
+              console.log(`No documents to copy for collection: ${collectionName}`);
+          }
+      }
+
+      // Step 5: Close both connections
+      await freeConnection.close();
+      await paidConnection.close();
+      console.log('All collections copied and connections closed.');
+
+  } catch (err) {
+      console.error('Error during data copy:', err);
+  }
 }
+
+
+
+
 
 // Function to clone data from one collection to another using native MongoDB methods
 async function cloneCollectionData(sourceCollectionName, targetCollectionName) {

@@ -16,4 +16,4 @@ const Status = mongoose.Schema({
     start_break: String,
     end_break:String
 })
-module.exports = mongoose.model('cstatusTest',Status);
+module.exports = mongoose.model('cstatus',Status);
