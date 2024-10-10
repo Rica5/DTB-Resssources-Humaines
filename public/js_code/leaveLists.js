@@ -108,7 +108,7 @@ function rendu_header() { //active
       <option value="Repos Maladie">Repos Maladie</option>
       <option value="Consultation médicale">Consultation médicale</option>
       <option value="Assistance maternelle">Assistance maternelle</option>
-      <option value="Absent">Absent</option>
+      <option value="Absent">Absent ou retart</option>
       <option value="Congé de maternité">Congé de maternité</option>
       <option value="Mise a Pied">Mise à pied</option>
       <option value="Récupération">Récupération</option>
@@ -148,6 +148,13 @@ function reset() {
   year_month.setAttribute("class", "col-md-2 text-center disabled");
   year.value = moment().format("YYYY")
 }
+
+function beauty(str) {
+  if (str === 'Absent ( a déduire sur salaire )')
+    return "Absent ou retard ( à déduire sur salaire)";
+  
+}
+
 function rendu_conge(temp_conge) {
   return `<div class="col-md-6 leavelist  mb-3">
                                 <div class="row hovered">
@@ -157,7 +164,7 @@ function rendu_conge(temp_conge) {
                                 <p class="title-text mt-3"><i class="fa-solid fa-star"></i>${temp_conge.m_code}</p>
                                   </div>
                                   <div class="col-sm-6">
-                                      <p class="title-text">${temp_conge.type}</p>
+                                      <p class="title-text" style="text-transform: none !important;">${temp_conge.type === "Absent ( a déduire sur salaire )" ? "Absent ou retard ( à déduire sur salaire)": temp_conge.type}</p>
                                       <div class="info-text">
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Début: ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_start) + " à " + temp_conge.hour_begin : date_conversion(temp_conge.date_start)}</p>
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Fin : ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_end) + " à " + temp_conge.hour_end : date_conversion(temp_conge.date_end)}</p>
