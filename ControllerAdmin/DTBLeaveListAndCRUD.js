@@ -15,7 +15,7 @@ const getPageLeavelist = async (req, res) => {
   if (session.occupation_a == "Admin") {
     var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
     var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
-    var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
+    var allPermission = await LeaveSchema.find({ exceptType: { $ne: "", $exists: true }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
     res.render("PageAdministration/ListeConges.html", {
       notif: dataUser.myNotifications,
       username: session.mailing,
@@ -621,6 +621,7 @@ const createLeave = async (req, res) => {
         type == "Permission exceptionelle" ||
         type == "Repos Maladie" ||
         type == "Assistance maternelle" ||
+        type == "Consultation médicale" ||
         type == "Congé de maternité" ||
         type == "Absent" ||
         type == "Congé sans solde" ||
