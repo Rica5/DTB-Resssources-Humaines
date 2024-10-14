@@ -12,7 +12,6 @@ const Leave = mongoose.Schema({
     status:String,
     rest:Number,
     acc:Number,
-    exceptType:String,
     motif:String,
     validation:Boolean,
     hour_begin:String,

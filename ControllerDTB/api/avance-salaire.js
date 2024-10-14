@@ -40,7 +40,7 @@ async function getListByUserId(req, res) {
                     ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$date_of_avance" }, +year] },
-                            { $eq: [{ $month: "$date_of_avance" }, +month] }
+                            { $eq: [{ $month: "$date_of_avance" }, +month-1] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
                         $eq: [{ $year: "$date_of_avance" }, +year]
