@@ -348,8 +348,15 @@
                             <h3 class="text-center" id="date-display">Août 2025</h3>  
                             <h3 class="text-center">Total: <b id="total-display">0</b></h3>
                         </div>
-                        <button class="switch-button active-btn" id="avance-liste">Avance</button>
-                        <button class=" switch-button " id="non-avance" >Autre</button>  
+                        <div class="d-flex align-items-center justify-between space-x-4">
+                          <button class="switch-button active-btn m-2" id="avance-liste">Avance</button>
+                          <button class=" switch-button m-2" id="non-avance" >Autre</button> 
+                          <div class="text-center m-auto" style="font-size: large;">
+                            <span id="envoyer" style="color: #28a745;">0</span> Demandes envoyées -
+                            <span id="payer" style="color: #007bff;">0</span> Demandes payées -
+                            <span id="refuser" style="color: #dc3545;">0</span> Demandes refusées 
+                          </div>
+                        </div> 
                         <div id="wrapper">
                           
                         </div>  

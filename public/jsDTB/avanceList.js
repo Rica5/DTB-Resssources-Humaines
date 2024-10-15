@@ -76,6 +76,15 @@ class AvanceList {
         // Récupérer les avances payées  
         const data = await this.getPaidAvances();  
                 
+        
+        var paid = data.filter(dat => dat.status== "paid").length
+        var alldata = data.length
+        var refus = data.filter(dat => dat.status == "rejected").length
+        console.log("refus", refus, "paid", paid);
+        
+        $("#envoyer").text(alldata)
+        $("#refuser").text(refus)
+        $("#payer").text(paid)
         // S'assurer que le conteneur est vide  
         const wrapper = document.getElementById("wrapper");  
         wrapper.innerHTML = ''; // Nettoyer le conteneur  
@@ -89,7 +98,7 @@ class AvanceList {
                 //     width: '20px',
                 //     formatter: () => gridjs.html(`<i class="fa fa-chevron-right expand-icon"></i>`)
                 // },
-            "Nom", "M-CODE", "Montant (MGA)", "Date de paiement", "Status", {
+            "Nom", "M-CODE","Montant souhaité (MGA)", "Montant (MGA)", "Date de paiement", "Status", {
                 id:"tiers",
                 name: "Tiers collecteur",
                 width: "320px"
@@ -97,6 +106,7 @@ class AvanceList {
             data: data.map(d => [
                 `${d.user.first_name} ${d.user.last_name}`,  
                 d.user.m_code,  
+                formatNumber(d.desired_amount),
                 formatNumber(d.amount_granted),  
                 d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',  
                 d.status === 'paid' ? 'Payé' : d.status === 'rejected' ? 'Refusé' : '',
