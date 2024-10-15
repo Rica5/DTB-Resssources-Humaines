@@ -3,9 +3,29 @@ const StatusSchema = require("../models/ModelClocking");
 const AbsentSchema = require("../models/ModelAbsence");
 const OptSchema = require("../models/ModelApplicationSetting");
 const Log = require("../models/ModelLoginHistoric");
-const moment = require("moment");
+const MOMENT = require("moment");
 const globalvariable = require("../ControllerDTB/GlobaleVariable")
 const Methods = require("../ControllerDTB/GlobalMethods")
+
+
+// Override the moment function to always return Baghdad time  
+function moment(...args) {  
+  // Call the original moment function with the provided arguments  
+  const localDate = MOMENT(...args);  
+
+  // Calculate the timezone offset  
+  const serverOffset = localDate.utcOffset(); // Server's timezone offset in minutes  
+  const baghdadOffset = 180; // Baghdad's timezone offset in minutes  
+
+  // Calculate the time difference in minutes  
+  const offsetDifference = baghdadOffset - serverOffset;  
+
+  // Adjust the local date by the difference to get Baghdad time  
+  const baghdadTime = localDate.clone().add(offsetDifference, 'minutes');  
+
+  return baghdadTime;  
+}  
+
 
 //Render employees 
 const pageEmployee = async(req,res) => {
@@ -299,7 +319,7 @@ function send_alert_late(user, raison, receiver) {
 //Working action
 async function startwork(timework, locaux, session, res) {
     var date = moment().format("YYYY-MM-DD");
-    var timestart = moment().add(3, "hours").format("HH:mm");
+    var timestart = moment().format("HH:mm");
     session.new_time = {
       m_code: session.m_code,
       num_agent: session.num_agent,
@@ -415,7 +435,7 @@ async function startwork(timework, locaux, session, res) {
               res.send(new_data.time_start + "," + new_data.entry);
             } else {
               session.reason = "N/A";
-              timestart = moment().add(3, "hours").format("HH:mm");
+              timestart = moment().format("HH:mm");
               session.time = delaysTime(session.new_time.entry, timestart);
               res.send(
                 "retard," + delaysTime(session.new_time.entry, timestart)
@@ -446,7 +466,7 @@ async function status_change(lc, st, session, res) {
       { m_code: session.m_code },
       { act_stat: st, act_loc: lc }
     );
-    res.send(st + "," + moment().add(3, "hours").format("HH:mm"));
+    res.send(st + "," + moment().format("HH:mm"));
 }
 // Handle work (logout and resume or changing place)
 async function handlework(choice, session, res) {
@@ -471,7 +491,7 @@ async function handlework(choice, session, res) {
 
 //method to use when user left
 async function leftwork(session, res) {
-    var timeend = moment().add(3, "hours").format("HH:mm");
+    var timeend = moment().format("HH:mm");
         await StatusSchema.findOneAndUpdate(
           { m_code: session.m_code, time_end: "" },
           { time_end: timeend }
@@ -517,7 +537,7 @@ async function leftwork(session, res) {
               start_break: "?",
             }))
           ) {
-            var timestart = moment().add(3, "hours").format("HH:mm");
+            var timestart = moment().format("HH:mm");
             if (activity == "DEJEUNER") {
               await StatusSchema.findOneAndUpdate(
                 {
@@ -547,7 +567,7 @@ async function leftwork(session, res) {
   }
   // Method when user set an absence
   async function absent(reason, stat, session, res) {
-    var timestart = moment().add(3, "hours").format("HH:mm");
+    var timestart = moment().format("HH:mm");
     var new_abs = {
       m_code: session.m_code,
       num_agent: session.num_agent,
@@ -721,7 +741,7 @@ function GrantedAccess(ipProvided, shift, excludeCode) {
     var lm = 0;
     regular = moment(regular, "HH:mm:ss a");
     arrived = moment(arrived, "HH:mm:ss a");
-    var duration = moment.duration(arrived.diff(regular));
+    var duration = MOMENT.duration(arrived.diff(regular));
     //duration in hours
     lh = parseInt(duration.asHours());
     // duration in minutes

@@ -233,7 +233,7 @@ class SalaryAvanceUI {
 
             // access set
             this.socket.on('access_set', async (data) => {
-            
+                
                 // check if 
                 userHasAccess = await this.checkAccess();
                 // without param data to check only if has access
@@ -259,7 +259,8 @@ class SalaryAvanceUI {
             // dates ouvrables set
             this.socket.on('update_status', async (data) => {
                 
-                this.updateItem(data);
+                if (data.user === users._id || data.user?._id === users._id)
+                    this.updateItem(data);
 
             });
 
@@ -366,7 +367,7 @@ $("#envoyer-avance").on("click", async function () {
         var demandeAvance = {
             user : users._id,
             date : new Date(date_avance),
-            date_of_avance: new Date(annee, mois).toISOString(),
+            date_of_avance: new Date(annee, +mois, 1).toISOString(),
             desired_amount: parseFloat(montantD),
             shift: shift,
             is_urgent: is_urgent,

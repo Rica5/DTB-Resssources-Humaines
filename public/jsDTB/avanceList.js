@@ -89,7 +89,7 @@ class AvanceList {
                 //     width: '20px',
                 //     formatter: () => gridjs.html(`<i class="fa fa-chevron-right expand-icon"></i>`)
                 // },
-            "Nom", "M-CODE", "Montant", "Date de paiement", "Status", {
+            "Nom", "M-CODE", "Montant (MGA)", "Date de paiement", "Status", {
                 id:"tiers",
                 name: "Tiers collecteur",
                 width: "320px"
@@ -165,7 +165,7 @@ class AvanceList {
     
         // Initialiser la grille pour les utilisateurs non inclus  
         this.nonAvGrid = new gridjs.Grid({  
-            columns: ["Nom", "M-CODE", "Montant"],  
+            columns: ["Nom", "M-CODE", "Montant (MGA)"],  
             data: usersNotInResults.map(d => [  
                 `${d.first_name} ${d.last_name}`,  
                 d.m_code,  
