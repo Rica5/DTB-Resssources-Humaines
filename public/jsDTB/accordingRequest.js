@@ -143,10 +143,15 @@ function renderAllRequest(Leave){
     let code = leave.m_code;
     let acc = userActive.leave_taked;
     let rest = userActive.remaining_leave
+    // condition for ask and rest
+    if (leave.rest === 0 && leave.acc === 0 && leave.type !== '' && ["Congé Payé"].includes(leave.type)) {
+        rest -= leave.duration;
+    }
+
     let duration = leave.duration;
 
     // rien a deduire 
-    let deduction = ["Congé Payé"].includes(Leave.type) ? acc - duration : acc;
+    let deduction = ["Congé Payé"].includes(leave.type) ? acc - duration : acc;
     let auth = userActive.leave_stat
     let save = userActive.save_at
     return `
@@ -220,7 +225,7 @@ function renderAllRequest(Leave){
                                 </h1>
                                 <div class="ask">
                                     <span>${moment().add(-1,"years").format("YYYY")}: ${rest}</span>
-                                    <span>${moment().format("YYYY")}: ${(acc - rest)}</span>
+                                    <span>${moment().format("YYYY")}: ${(deduction - rest)}</span>
                                     <span>Reste après autorisation: ${(deduction)}</span>
                                 </div>
                             </div>
