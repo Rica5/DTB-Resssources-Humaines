@@ -232,23 +232,25 @@ async function exportFile(req, res) {
             for (const entry of data) {  
                 const fullName = `${entry.user.first_name} ${entry.user.last_name}`.trim();  
                 const mcode = `${entry.user.m_code}`
-                
-                // Match the full name with the cell value  
-                if (rowData[1] === fullName || rowData[2] == mcode) {  
-                    if (entry.amount_granted > 0)
-                        worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
-                    if (entry.status == "paid") {
-                        worksheet.getCell(`D${rowIndex}`).value = "Payé"
-                    } else if (entry.status == "rejected") {
-                        worksheet.getCell(`D${rowIndex}`).value = "Refusé"
-                    }
-                    break; // Exit loop after finding a match  
-                }  
+                if (entry.status !== "rejected") {
+
+                    // Match the full name with the cell value  
+                    if (rowData[1] === fullName || rowData[2] == mcode) {  
+                        if (entry.amount_granted > 0)
+                            worksheet.getCell(`C${rowIndex}`).value = Number(entry.amount_granted); // Write to column C  
+                        if (entry.status == "paid") {
+                            worksheet.getCell(`D${rowIndex}`).value = "Payé"
+                        } else if (entry.status == "rejected") {
+                            worksheet.getCell(`D${rowIndex}`).value = "Refusé"
+                        }
+                        break; // Exit loop after finding a match  
+                    }  
+                }
             }   
         }  
 
         // get total of amount_granted (la cell "C142" est à modifier s'il ya une changement sur le données du fichier excel)
-        const total = data.reduce((total, item) => total + item.amount_granted, 0);
+        const total = data.filter(d => d.status !== 'rejected').reduce((total, item) => total + item.amount_granted, 0);
         worksheet.getCell(`C142`).value = Number(total);
 
         // Write buffer and prepare response  

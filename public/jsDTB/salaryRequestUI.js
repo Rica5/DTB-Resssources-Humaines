@@ -70,18 +70,16 @@ class RequestSalary {
 
     async filterUserPerShift(shift){
         var data = await this.fetchAllRequests()
-        var dataShift
-        console.log("soft", data);
-        
-        if (shift !== "other" || shift !== "all") {
-            dataShift = data.filter(user => user.user.shift === shift);
-        }
-        if (shift == "other") {
-            dataShift = data.filter(user => !["SHIFT 1", "SHIFT 2", "SHIFT 3"].includes(user.user.shift));
-            // await User.find({shift: {$nin: ["SHIFT 1","SHIFT 2","SHIFT 3"]}})
-        }
-        if (shift == "all") {
-            dataShift = data
+        var dataShift = data;
+
+        if (["1", "2", "3", "w"].includes(shift)) {
+            dataShift = data.filter(user => {
+                if (["I", "01", "Matin"].includes(user.shift)) user.shift = "1";
+                if (["II", "02", "Soir"].includes(user.shift)) user.shift = "2";
+                return user.shift.includes(shift)
+            });
+        } else if (shift === "jours") {
+            dataShift = data.filter(user => ["1", "2", "1 - 2", "1/2", "1 / 2", "1-2", "Matin", "Soir", "3", "w", "I", "II", "01", "02", "03", "Weekend", "Week-end"].every(str => !str.toLowerCase().includes(user.shift.toLowerCase())));
         }
         
         // const {data} = await result.json()
@@ -137,6 +135,7 @@ class RequestSalary {
         const li = document.createElement('li');
         
         div.setAttribute("key", props.user.m_code);
+        div.setAttribute("style", "position: relative;");
         li.id = isForSearch ? `search-item-${props._id}` : `item-${props._id}`;
 
         // li.setAttribute('style', `--ol-cards-color-accent:#${props.is_urgent ? 'cacaca' : '92D13F'}`);
@@ -144,6 +143,10 @@ class RequestSalary {
 
         li.innerHTML = `
             <div class="step" m-code="${props.user.m_code}"><i class="far fa-user" style="background: aliceblue"></i></div>
+            <div class="content flexy" style="position: absolute;top: 106px;left: 10px;font-size: 0.85rem;">
+                <label style="color: #817679;">Shift:</label>
+                <label class="ellipsis">${props.shift}</label>
+            </div>
             <div class="title">
                 <div class="timestamps flexy">
                     <span>${moment(props.date).format('DD/MM/YYYY')}</span>
@@ -161,8 +164,8 @@ class RequestSalary {
                 </div>` :''}
             </div>
             <div class="content flexy">
-                    <label style="color: #817679; font-size: 0.75rem;">Par:</label>
-                    <label class="ellipsis">${props.user.last_name} ${props.user.first_name}</label>
+                <label style="color: #817679; font-size: 0.75rem;">Par:</label>
+                <label class="ellipsis">${props.user.last_name} ${props.user.first_name}</label>
             </div>
             <div class="changeMontant-${props._id} hide" style="grid-column: span 2;">
                 <div class="input-group-mod">
