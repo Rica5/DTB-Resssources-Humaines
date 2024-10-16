@@ -193,7 +193,7 @@ async function copyNonExistingRecords(sourceCollectionName, destinationCollectio
 
 // generer des codes à 4 chiffres
 async function generate4digitsCode() {
-  const SourceCollection = mongoose.connection.db.collection('newcusertests'); // Use .db to access native methods
+  const SourceCollection = mongoose.connection.db.collection('cusertests'); // Use .db to access native methods
 
   // Fetch all records from the source collection
   const sourceRecords = await SourceCollection.find({

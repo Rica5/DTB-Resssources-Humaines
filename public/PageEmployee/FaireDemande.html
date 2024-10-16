@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="../assets/fontawesome-free-6.4.0-web/css/all.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/2.9.3/introjs.min.css" />
     <script>
-        var users = JSON.parse(`<%-JSON.stringify(users)%>`)
+        var users = JSON.parse(String.raw`<%-JSON.stringify(users)%>`)
         var accumulate = parseFloat('<%= user.leave_taked %>');
         var openLeave = parseFloat('<%= user.remaining_leave %>');
     </script>
@@ -550,17 +550,14 @@
             }
         })
         function findAndDeleteObject(arr, property, value) {
-    
-    var index = arr.findIndex(obj => obj[property] === value);
-
-    
-    if (index !== -1) {
-        arr.splice(index, 1);
-        console.log(`Object with ${property} ${value} found and deleted from the array.`);
-    } else {
-        console.log(`Object with ${property} ${value} not found in the array.`);
-    }
-}
+            var index = arr.findIndex(obj => obj[property] === value);
+            if (index !== -1) {
+                arr.splice(index, 1);
+                console.log(`Object with ${property} ${value} found and deleted from the array.`);
+            } else {
+                console.log(`Object with ${property} ${value} not found in the array.`);
+            }
+        }
         function pushNotification(theNotif){
             // Add a notification according to socket
             var notifElement = `
