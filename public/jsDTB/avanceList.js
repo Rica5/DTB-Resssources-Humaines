@@ -107,7 +107,7 @@ class AvanceList {
                 `${d.user.first_name} ${d.user.last_name}`,  
                 d.user.m_code,  
                 formatNumber(d.desired_amount),
-                formatNumber(d.amount_granted),  
+                d.status === 'rejected' ? 0 : formatNumber(d.amount_granted),  
                 d.validation ? moment(d.validation.received_on).format('DD/MM/YYYY [à] HH:mm') : '',  
                 d.status === 'paid' ? 'Payé' : d.status === 'rejected' ? 'Refusé' : '',
                 d.autruiInfo
@@ -247,7 +247,7 @@ class AvanceList {
         
         // Affichage de la date et du montant total  
         $("#date-display").html(`${this.months[this.month]} ${this.year}`);  
-        const totalAmount = data.reduce((acc, s) => acc + s.amount_granted, 0);  
+        const totalAmount = data.filter(d => d.status !== 'rejected').reduce((acc, s) => acc + s.amount_granted, 0);  
         $("#total-display").html(formatNumber(totalAmount));  
     
         // Gestion de l'affichage du conteneur de période  

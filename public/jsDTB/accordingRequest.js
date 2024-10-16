@@ -168,7 +168,7 @@ function renderAllRequest(Leave){
             <div class="leave-infos">
                 <small id="since" class="text-end"><b>${dateDiffers(leave.datetime,moment().format("DD/MM/YYYY HH:mm:ss"))}</b></small>
                 <p id="motif" class="text-center">
-                    <b>Demande:</b> ${leaveModeValue[leave.mode]} <span class="mx-2">|</span> <b>Motif:</b>  ${(leave.recovery !== "" && leave.motif === "") ? leave.recovery : leave.motif}
+                    <b>Demande:</b> ${leaveModeValue[leave.mode]} <span class="mx-2">|</span> <b>Motif:</b> <span style="white-space: normal;">${(leave.recovery !== "" && leave.motif === "") ? leave.recovery : leave.motif}</span>
                 </p>
                 <div class="date-heure">
                     <div class="ask-content">
