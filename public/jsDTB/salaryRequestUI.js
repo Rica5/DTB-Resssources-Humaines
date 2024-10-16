@@ -71,7 +71,7 @@ class RequestSalary {
     async filterUserPerShift(shift){
         var data = await this.fetchAllRequests()
         var dataShift
-        console.log("soft", shift);
+        console.log("soft", data);
         
         if (shift !== "other" || shift !== "all") {
             dataShift = data.filter(user => user.user.shift === shift);
