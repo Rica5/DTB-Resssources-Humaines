@@ -451,7 +451,6 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $("#nbr-day").val(duration);
         
         var typeL = $('#typeLeave').val();
-        console.log("typeL", typeL);
         $('#nbr-day').on('change', () => {
             let nDuration = parseFloat($('#nbr-day').val())
             console.log('ato', userActive.leave_stat)
@@ -467,7 +466,6 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
     $("#project").html(renderProject(userActive.project));
     duration = parseFloat(duration)
     var typeL = $('#typeLeave').val();
-    console.log("typeL", typeL);
     if (role == "Admin"){
         reset()
         renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,typeL);
@@ -788,8 +786,23 @@ function closePiece(){
     $("#PieceContent").html("")
 }
 function renderPiece(piece){
-    $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data="../PieceJointe/${piece}">
-  </object>`)
+//     $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data="../PieceJointe/${piece}">
+//   </object>`)
+    const imagePath = `../PieceJointe/${piece}`;
+    fetch(imagePath)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch image');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data=${ URL.createObjectURL(blob)}>
+            </object>`)
+        })
+        .catch(error => {
+            console.error('Error fetching image:', error);
+        });
 }
 function addPiece(id){
     idForFile = id;
@@ -977,6 +990,7 @@ $('#join').on('change', function (event) {
  }
  function renderSolde(code,acc,rest,duration,auth,save,typeL){
     
+    console.log("nn == ", auth);
     
     var html = `
     <div>
@@ -1016,6 +1030,7 @@ $('#join').on('change', function (event) {
  function setNumberPermission(code){
     $('#thisYearPerm').text(moment().format("YYYY"));
     var myPermission = allPermission.filter(permission => permission.m_code == code);
+    
     var cumulPermission = 0;
     for (let index = 0; index < myPermission.length; index++) {
         const element = myPermission[index];
