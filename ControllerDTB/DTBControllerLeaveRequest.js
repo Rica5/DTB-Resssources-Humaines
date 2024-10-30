@@ -266,7 +266,7 @@ const seePending = async (req, res) => {
     }
     else if (session.occupation_a == "Admin") {
         var user = await UserSchema.find({ status: "Actif", occupation: "User" }).select('m_code project leave_taked remaining_leave leave_stat save_at');
-        var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
+        var allPermission = await LeaveSchema.find({ exceptType: { $ne: "" }, validation: false, type: "Permission exceptionelle ( rien à deduire )", date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
         var role = "Admin";
         role = session.idUser == id_gerant ? "Gerant" : "Admin";
         var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
