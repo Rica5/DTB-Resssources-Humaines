@@ -40,7 +40,7 @@ async function getListByUserId(req, res) {
                     ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$date_of_avance" }, +year] },
-                            { $eq: [{ $month: "$date_of_avance" }, +month-1] }
+                            { $eq: [{ $month: "$date_of_avance" }, +month] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
                         $eq: [{ $year: "$date_of_avance" }, +year]
@@ -109,6 +109,30 @@ async function updateAvance(req, res) {
 async function createAvance(req, res) {
     
     try {
+        const { date_of_avance } = req.body;
+        const [year, month] = date_of_avance.split('-');
+        const exists = await Avance.aggregate([
+            {
+                $addFields: {
+                    year: { $year: "$date_of_avance" },
+                    month: { $month: "$date_of_avance" },
+                }
+            },
+            {
+                $match: {
+                    year: +year,
+                    user: new mongoose.Types.ObjectId(req.session.idUser),
+                    month: +month // Filter records where the month is October (10)
+                }
+            }
+        ]);
+
+        
+        if (exists.length > 0) {
+            return res.json({ok: false, message: 'Vous avez déjà envoyé une demande.'})
+        }
+        // find avance if exists
+        // const exists = await Avance.find
         const result = await Avance.create(req.body)  
 
         // Emission de l'événement Socket.io à l'admin
@@ -163,7 +187,7 @@ async function getPaidDemands(req, res) {
                     ...(month > 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$date_of_avance" }, +year] },
-                            { $eq: [{ $month: "$date_of_avance" }, +month-1] }
+                            { $eq: [{ $month: "$date_of_avance" }, +month] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
                         $eq: [{ $year: "$date_of_avance" }, +year]
@@ -200,6 +224,7 @@ async function exportFile(req, res) {
         // Extract year and month from query, default to current year and month 0  
         var { year = new Date().getFullYear(), month = 0 } = req.query;  
         console.log("Year:", year, "Month:", month);  
+        worksheet.getCell('A1').value = `Avance ${moisNoms[month-1]}`;
         
         // Fetch data based on the year and month  
         const data = await Avance.find({  
@@ -207,11 +232,11 @@ async function exportFile(req, res) {
                 $expr: {  
                     ...(month != 0 ? {  
                         $and: [  
-                            { $eq: [{ $year: "$date" }, +year] },  
-                            { $eq: [{ $month: "$date" }, +month] }  
+                            { $eq: [{ $year: "$date_of_avance" }, +year] },  
+                            { $eq: [{ $month: "$date_of_avance" }, +month] }  
                         ]  
                     } : {  
-                        $eq: [{ $year: "$date" }, +year]  
+                        $eq: [{ $year: "$date_of_avance" }, +year]  
                     })  
                 }  
             })  
@@ -224,9 +249,15 @@ async function exportFile(req, res) {
         });  
 
         // Loop through specified rows in the worksheet  
-        for (let rowIndex = 3; rowIndex < 102; rowIndex++) {  
+        let rowIndex = 3;
+        while (true) {
+            
             const row = worksheet.getRow(rowIndex);  
-            const rowData = row.values;  
+            const rowData = row.values;
+
+            if (rowData.length === 0) {
+                break;
+            }
 
             // Check for matches in the database  
             for (const entry of data) {  
@@ -246,9 +277,10 @@ async function exportFile(req, res) {
                         break; // Exit loop after finding a match  
                     }  
                 }
-            }   
-        }  
+            }  
 
+            rowIndex++;
+        }
         // get total of amount_granted (la cell "C142" est à modifier s'il ya une changement sur le données du fichier excel)
         const total = data.filter(d => d.status !== 'rejected').reduce((total, item) => total + item.amount_granted, 0);
         worksheet.getCell(`C142`).value = Number(total);
@@ -866,12 +898,13 @@ async function notifyAdmin(title, content, req) {
         console.error(err)
     }
 }
+// Créer un tableau des mois en français
+const moisNoms = [
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+];
+
 function afficherMoisAnnee(dateInput) {
-    // Créer un tableau des mois en français
-    const moisNoms = [
-        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-    ];
 
     let date;
     
