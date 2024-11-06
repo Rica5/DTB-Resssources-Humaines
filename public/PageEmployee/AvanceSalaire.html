@@ -161,7 +161,7 @@
                             <div class="col-lg-5">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <select class="form-select" aria-label="Default select example" id="year">
+                                        <select class="form-select" aria-label="Default select example" id="year" disabled>
                                             <!-- <option selected>Open this select menu</option> -->
                                             <% years.forEach((year, i)=> { %>
                                                 <option value="<%= year %>" <%=i===years.length - 2 ? 'selected' : "" %>>
@@ -172,7 +172,7 @@
         
                                     </div>
                                     <div class="col-md-8">
-                                        <select class="form-select" aria-label="Default select example" id="month">
+                                        <select class="form-select" aria-label="Default select example" id="month" disabled>
                                             <!-- <option selected>Open this select menu</option> -->
                                             <% months.forEach((month, i)=> {  const moonLanding = new Date().getMonth()  %>
                                                 <option value="<%= i %>" <%=i === moonLanding ? 'selected' : "" %>>
@@ -259,7 +259,7 @@
                             <div class="col-lg-5">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <select class="form-select" aria-label="Default select example" id="year-update">
+                                        <select class="form-select" aria-label="Default select example" id="year-update" disabled>
                                             <!-- <option selected>Open this select menu</option> -->
                                             <% years.forEach((year, i)=> { %>
                                                 <option value="<%= year %>" <%=i===years.length - 2 ? 'selected' : "" %>>
@@ -270,7 +270,7 @@
         
                                     </div>
                                     <div class="col-md-8">
-                                        <select class="form-select" aria-label="Default select example" id="month-update">
+                                        <select class="form-select" aria-label="Default select example" id="month-update" disabled>
                                             <!-- <option selected>Open this select menu</option> -->
                                             <% months.forEach((month, i)=> { const moonLanding = new Date().getMonth() %>
                                                 <option value="<%= i %>" <%=i===moonLanding ? 'selected' : "" %>>

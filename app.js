@@ -12,7 +12,8 @@ const cron = require('node-cron');
 const axios = require('axios');
 const leaveS = require('./models/ModelLeave.js')
 const moment = require('moment');
-const Status = require('./models/ModelClocking.js')
+const Status = require('./models/ModelClocking.js');
+const ModelAvance = require("./models/ModelAvance.js");
 require('dotenv').config();
 // Connect to MongoDB using Mongoose
 mongoose.connect(process.env.DB_URI, {});
@@ -20,7 +21,7 @@ mongoose.connect(process.env.DB_URI, {});
 // Handle MongoDB connection events
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
-db.once('open', () => {
+db.once('open', async () => {
   console.log('Connected to MongoDB');
   // BE CAREFULL, NEVER CALL THIS SH*T
   // cloneCollectionData('cusers', 'newcusertests')
@@ -33,7 +34,10 @@ db.once('open', () => {
   // copyAllCollections();
   // Call the function
   // findDuplicateRecords();
-
+  const data = await ModelAvance.updateMany(
+    { date_of_avance: new Date("2024-09-30T21:00:00.000+00:00") },
+    { $set: { date_of_avance: new Date("2024-10-15T00:00:00.000+00:00") } }
+  );
 });
 
 const findDuplicateRecords = async () => {

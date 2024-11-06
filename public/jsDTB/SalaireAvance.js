@@ -182,6 +182,7 @@ class SalaryAvanceUI {
 
     async loadList(id, url) {
         let $div = $(`#${id}`);
+        console.log(url)
         $div.html('');
         const data = await this.getMyRequestsOfThisMonth(url);
 
@@ -208,21 +209,21 @@ class SalaryAvanceUI {
         $year.val(date.getFullYear());
         $month.val(String(date.getMonth() + 1).padStart(2, '0'));
 
-        self.monthQuery = `${self.baseurl}?month=${date.getMonth() - 1}&year=${date.getFullYear()}`;
+        self.monthQuery = `${self.baseurl}?month=${date.getMonth()}&year=${date.getFullYear()}`;
 
         $month.on('change', function() {
-            self.queries = `${self.baseurl}?month=${$(this).val() - 1}&year=${$("#f-year").val()}`;
+            self.queries = `${self.baseurl}?month=${$(this).val()}&year=${$("#f-year").val()}`;
             self.loadList("salary-list", self.queries);
         });
 
 
         $year.on('change', function() {
-            self.queries = `${self.baseurl}?month=${$("#f-month").val() - 1}&year=${$(this).val()}`;
+            self.queries = `${self.baseurl}?month=${$("#f-month").val()}&year=${$(this).val()}`;
             self.loadList("salary-list", self.queries);
         });
 
         // default queries after binding
-        self.queries = `${self.baseurl}?month=${$("#f-month").val() - 1}&year=${$("#f-year").val()}`;
+        self.queries = `${self.baseurl}?month=${$("#f-month").val()}&year=${$("#f-year").val()}`;
 
     }
 
@@ -367,15 +368,17 @@ $("#envoyer-avance").on("click", async function () {
         var demandeAvance = {
             user : users._id,
             date : new Date(date_avance),
-            date_of_avance: new Date(annee, +mois, 1).toISOString(),
+            date_of_avance: new Date(`${annee}-${(+mois)+1}-${new Date().getDate()}`).toISOString(),
             desired_amount: parseFloat(montantD),
             shift: shift,
             is_urgent: is_urgent,
         }
         // verify if employee has already sent a request of this month
-        const myRequestsOfThisMonth = await ui.getMyRequestsOfThisMonth();
+        const myRequestsOfThisMonth = 0 //await ui.getMyRequestsOfThisMonth();
 
-        if (myRequestsOfThisMonth.length !== 0) {
+        console.log(myRequestsOfThisMonth)
+
+        if (myRequestsOfThisMonth !== 0) {
             // alert
             Toastify({
                 text: "Vous avez déjà envoyé une demande.",
@@ -389,12 +392,14 @@ $("#envoyer-avance").on("click", async function () {
             return;
         }
 
-        const { data } = await ui.send(demandeAvance);
+        const { data, ok, message } = await ui.send(demandeAvance);
+
+        if (!ok && message) alert(message)
         
         // Ajouter dans la page si la date de l'avance "Avance du mois du" est séléctionnée
         const [year, month] = data.date_of_avance.split('T')[0].split('-');
         console.log(year, $('#f-year').val(), month, $('#f-month').val())
-        if (($('#f-month').val() == 0 && year == $('#f-year').val()) || (year == $('#f-year').val() && month == $('#f-month').val() - 1)) {
+        if (($('#f-month').val() == 0 && year == $('#f-year').val()) || (year == $('#f-year').val() && month == $('#f-month').val())) {
             // ajouter 
             ui.addItem("salary-list", data);
         }
@@ -439,7 +444,7 @@ $("#envoyer-avance-update").on("click",async function () {
         var demandeAvance = {
             user : users._id,
             date : new Date(date_avance_update),
-            date_of_avance: new Date(annee_update, mois_update),
+            date_of_avance: new Date(`${annee_update}-${mois_update}-${new Date().getDate()}`).toISOString(),
             desired_amount: parseFloat(montantD_update),
             shift: shift_update,
             is_urgent: is_urgent_update,
