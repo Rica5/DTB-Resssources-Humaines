@@ -1,10 +1,18 @@
 class RequestSalary {
+    months = [  
+        "Les 12 mois", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",  
+        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"  
+    ];  
     constructor() {
         this.typedCode = '';
         this.countUrgent =  Number($("#UrgentBtn span").text() || 0);
         this.countNUrgent =  Number($("#NUrgentBtn span").text() || 0);
         this.modifTextContent = 'Modifier';
+        this.month = new Date().getMonth() + 1;  
+        this.year = new Date().getFullYear();
     }
+
+
 
     updateCounts() {
         $("#UrgentBtn span").text(this.countUrgent);
@@ -12,11 +20,37 @@ class RequestSalary {
     }
 
     async fetchAllRequests(){
-        var result = await fetch("/api/avance/all") // add /true if urgent or /false if non-urgent
+        // var result = await fetch("/api/avance/all") // add /true if urgent or /false if non-urgent
+        
+        var result = await fetch(`/api/avance/request?month=${this.month}&year=${this.year}`)
         const {data} = await result.json()
         return data
     }
     
+    addFilters() {  
+        // Création des options pour le mois et l'année  
+        const monthOptions = this.months.map((month, index) => `<option value="${index}">${month}</option>`).join('');  
+        const currentYear = new Date().getFullYear();  
+        const yearOptions = Array.from({ length: currentYear - 2023 + 1 }, (_, i) => 2024 + i)  
+                                  .map(year => `<option value="${year}">${year}</option>`)  
+                                  .join('');  
+
+        $('#f-month').html(monthOptions).val(new Date().getMonth() + 1);  
+        $('#f-year').html(yearOptions).val(currentYear);  
+
+        // Ajout des écouteurs d'événements  
+        $('#f-month').on('change', () => {  
+            this.month = +$('#f-month').val();  
+            $("#exportBtn").toggle(this.month !== 0);  
+            this.renderAllRequest();  
+        });  
+
+        $('#f-year').on('change', () => {  
+            this.year = +$('#f-year').val();  
+            this.renderAllRequest();  
+        });  
+    }  
+
     async getOneDemande(id){
         const response = await fetch(`/api/avance/demande/${id}`)
         return response.json()
@@ -79,7 +113,7 @@ class RequestSalary {
                 return user.shift.includes(shift)
             });
         } else if (shift === "jours") {
-            dataShift = data.filter(user => ["1", "2", "1 - 2", "1/2", "1 / 2", "1-2", "Matin", "Soir", "3", "w", "I", "II", "01", "02", "03", "Weekend", "Week-end"].every(str => !str.toLowerCase().includes(user.shift.toLowerCase())));
+            dataShift = data.filter(user => ["1", "2", "1 - 2", "1/2", "1 / 2", "1-2", "Matin", "Soir", "3", "w", "I", "II", "01", "02", "03", "Weekend", "Week-end", "WE", "we", "We", "W.E"].every(str => !str.toLowerCase().includes(user.shift.toLowerCase())));
         }
         
         // const {data} = await result.json()
@@ -447,6 +481,7 @@ class RequestSalary {
 
 
 var ui = new RequestSalary()
+ui.addFilters()
 ui.renderAllRequest();
 ui.bindGlobalSearch();
 ui.bindSocket()
