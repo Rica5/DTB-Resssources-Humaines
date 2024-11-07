@@ -39,11 +39,11 @@ async function getListByUserId(req, res) {
                 $expr: {
                     ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
-                            { $eq: [{ $year: "$date_of_avance" }, +year] },
-                            { $eq: [{ $month: "$date_of_avance" }, +month] }
+                            { $eq: [{ $year: "$createdAt" }, +year] },
+                            { $eq: [{ $month: "$createdAt" }, +month ] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
-                        $eq: [{ $year: "$date_of_avance" }, +year]
+                        $eq: [{ $year: "$createdAt" }, +year]
                     })
                 }
             })
@@ -114,8 +114,8 @@ async function createAvance(req, res) {
         const exists = await Avance.aggregate([
             {
                 $addFields: {
-                    year: { $year: "$date_of_avance" },
-                    month: { $month: "$date_of_avance" },
+                    year: { $year: "$createdAt" },
+                    month: { $month: "$createdAt" },
                 }
             },
             {
@@ -126,6 +126,8 @@ async function createAvance(req, res) {
                 }
             }
         ]);
+
+        console.log(year, month)
 
         
         if (exists.length > 0) {
@@ -144,7 +146,7 @@ async function createAvance(req, res) {
         // notify admin
         notifyAdmin(
             "Demande d'avance",
-            `${avance.user?.m_code} a envoyé une demande d'avance du mois ${afficherMoisAnnee(avance.date_of_avance)}.`,
+            `${avance.user?.m_code} a envoyé une demande d'avance du mois ${afficherMoisAnnee(avance.createdAt)}.`,
             req
         );
         
@@ -166,7 +168,7 @@ async function deleteAvance(req, res) {
         // notify admin
         notifyAdmin(
             "Demande d'avance",
-            `${result.user?.m_code} a annulé sa demande d'avance du mois ${afficherMoisAnnee(result.date_of_avance)}.`,
+            `${result.user?.m_code} a annulé sa demande d'avance du mois ${afficherMoisAnnee(result.createdAt)}.`,
             req
         );
         res.json({ok: true, data: result})
@@ -186,11 +188,11 @@ async function getPaidDemands(req, res) {
                 $expr: {
                     ...(month > 0 ? {  // Use month check to determine condition
                         $and: [
-                            { $eq: [{ $year: "$date_of_avance" }, +year] },
-                            { $eq: [{ $month: "$date_of_avance" }, +month] }
+                            { $eq: [{ $year: "$createdAt" }, +year] },
+                            { $eq: [{ $month: "$createdAt" }, +month] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
-                        $eq: [{ $year: "$date_of_avance" }, +year]
+                        $eq: [{ $year: "$createdAt" }, +year]
                     })
                 }
             })
@@ -232,11 +234,11 @@ async function exportFile(req, res) {
                 $expr: {  
                     ...(month != 0 ? {  
                         $and: [  
-                            { $eq: [{ $year: "$date_of_avance" }, +year] },  
-                            { $eq: [{ $month: "$date_of_avance" }, +month] }  
+                            { $eq: [{ $year: "$createdAt" }, +year] },  
+                            { $eq: [{ $month: "$createdAt" }, +month] }  
                         ]  
                     } : {  
-                        $eq: [{ $year: "$date_of_avance" }, +year]  
+                        $eq: [{ $year: "$createdAt" }, +year]  
                     })  
                 }  
             })  
@@ -598,7 +600,7 @@ async function refuseRequest(req, res) {
         // send socket to user to update his request status
         sendSocket(req, 'update_status', updateAvance);
 
-        let displayMonth = afficherMoisAnnee(updateAvance.date_of_avance); // eg: d'Octobre 2024
+        let displayMonth = afficherMoisAnnee(updateAvance.createdAt); // eg: d'Octobre 2024
 
         // send notification to user concerned
         notifyEmployee(
@@ -660,7 +662,7 @@ async function completeRequest(req, res) {
         // send socket to user to update his request status
         sendSocket(req, 'update_status', updateAvance);
 
-        let displayMonth = afficherMoisAnnee(updateAvance.date_of_avance); // eg: d'Octobre 2024
+        let displayMonth = afficherMoisAnnee(updateAvance.createdAt); // eg: d'Octobre 2024
 
         // send notification to users
         await notifyEmployee(
