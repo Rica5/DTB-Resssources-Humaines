@@ -18,7 +18,7 @@ const mongoose = require('mongoose');
 const defaultPage = async (req, res) => {
   var session = req.session;
   if (session.occupation_u == "User") {
-    res.redirect("/mySpace");
+    res.redirect("/employee");
   } else if (session.occupation_a == "Admin") {
     res.redirect("/home");
   } else if (session.occupation_tl == "Surveillant") {
@@ -199,7 +199,7 @@ async function login(username, pwd, session, res, req) {
             logger.late = "n";
           }
           session.reason = "N/A";
-          res.redirect(back_url || "/mySpace");
+          res.redirect(back_url || "/employee");
         } else if (logger.occupation == "Admin") {
           session.occupation_a = logger.occupation;
           globalVariable.filtrage = {};

@@ -298,14 +298,22 @@ iframe {
 }
 
 .login100-form-title {
-  font-family: Poppins-medium;
-  font-size: 18px;
+  /* font-family: Poppins-medium;
+  font-size: 24px;
   color: #333333;
   line-height: 1.2;
   text-align: center;
 
   width: 100%;
+  display: block; */
+  font-family: Poppins-Bold;
+  font-size: 24px;
+  color: #333333;
+  line-height: 1.2;
+  text-align: center;
+  width: 100%;
   display: block;
+  padding-bottom: 20px;
 }
 .login101-form-title {
   font-family: Poppins-medium;
@@ -319,7 +327,7 @@ iframe {
   padding-bottom: 54px;
 }
 
-wrap-input100
+/* wrap-input100 */
 /*---------------------------------------------*/
 .wrap-input100 {
   position: relative;
@@ -701,8 +709,8 @@ wrap-input100
   font-weight:bold ;
   text-transform: uppercase;
 
-  width: 70%;
-  height: 70%;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   display: -webkit-box;
   display: -webkit-flex;
