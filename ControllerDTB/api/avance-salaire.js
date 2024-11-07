@@ -40,7 +40,7 @@ async function getListByUserId(req, res) {
                     ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$createdAt" }, +year] },
-                            { $eq: [{ $month: "$createdAt" }, +month + 1] }
+                            { $eq: [{ $month: "$createdAt" }, +month ] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
                         $eq: [{ $year: "$createdAt" }, +year]
@@ -126,6 +126,8 @@ async function createAvance(req, res) {
                 }
             }
         ]);
+
+        console.log(year, month)
 
         
         if (exists.length > 0) {
