@@ -306,6 +306,33 @@ const mobileAccessMiddleware = (req, res, next) => {
   next();
 };
 
+const UserSchema = require("./models/ModelMember");
+const ancienUser = require("./models/User");
+
+// This function fetches data from UserAncien
+(async () => {
+  try {
+    const userAnc = await ancienUser.find();  // Correct usage
+    var userNew = await UserSchema.find()
+    // for (let anc of userAnc) {
+    //   // Trouver l'utilisateur correspondant dans userNew
+    //   const newUser = userNew.find(u => u._id.equals(anc._id)); // Supposant que `_id` est l'identifiant commun
+    //   console.log("loading...");
+      
+    //   if (newUser) {
+    //     // Mettre à jour le status et user_ht de userNew
+    //     await UserSchema.updateOne(
+    //       { _id: newUser._id },
+    //       { $set: { status: anc.status, entry: anc.entry, user_ht: anc.user_ht, act_loc: anc.act_loc, act_stat: anc.act_stat, late: anc.late } }
+    //     );
+    //   }
+    // }
+    console.log("fin");
+  } catch (error) {
+    console.error("Error fetching userAnc data:", error);
+  }
+})();
+
 // Use the mobile access middleware
 app.use(mobileAccessMiddleware);
 server.listen(PORT, () => {
