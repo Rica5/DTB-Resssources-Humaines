@@ -40,7 +40,7 @@ async function getListByUserId(req, res) {
                     ...(month >= 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$createdAt" }, +year] },
-                            { $eq: [{ $month: "$createdAt" }, +month + 1] }
+                            { $eq: [{ $month: "$createdAt" }, +month ] }
                         ]
                     } : {  // If month is not provided or 0, only use year condition
                         $eq: [{ $year: "$createdAt" }, +year]
@@ -126,6 +126,8 @@ async function createAvance(req, res) {
                 }
             }
         ]);
+
+        console.log(year, month)
 
         
         if (exists.length > 0) {
@@ -301,25 +303,65 @@ async function exportFile(req, res) {
 
 
 async function getAllDemand(req, res) {
-    try {
-        var { urgent } = req.params;
-        const result = await Avance.find({
-            ...(urgent && { is_urgent: urgent}),
-            status:{$nin: ["paid", "rejected"]}
-        })
-        .populate('user')
-        .populate('confirmed_by')
-        .populate({
-            path: 'validation.user',
-            select: 'last_name occupation'
-        });
+    // try {
+    //     var { urgent } = req.params;
+    //     const result = await Avance.find({
+    //         ...(urgent && { is_urgent: urgent}),
+    //         status:{$nin: ["paid", "rejected"]}
+    //     })
+    //     .populate('user')
+    //     .populate('confirmed_by')
+    //     .populate({
+    //         path: 'validation.user',
+    //         select: 'last_name occupation'
+    //     });
         
+    //     res.status(200).json({ ok: true, data: result });
+    // } catch (error) {
+    //     console.error("Error getting list:", error);
+    //     res.json({  ok: false, data: [] });
+    // }
+
+    try {
+        const { urgent, month, year } = req.query;
+        
+        // Création de l'objet de filtre de base
+        let filters = {
+            status: { $nin: ["paid", "rejected"] },
+        };
+
+        // Filtrage par urgence si spécifié
+        if (urgent) {
+            filters.is_urgent = urgent === 'true'; // Convertir en booléen si nécessaire
+        }
+
+        if (month === '0') {
+            // Pas de filtre sur le mois, donc cela retournera toutes les années
+            filters.createdAt = {
+                $gte: new Date(`${year}-01-01`), // Début de l'année
+                $lt: new Date(`${parseInt(year) + 1}-01-01`) // Début de l'année suivante
+            };
+        } else if (month && year) {
+            filters.createdAt = {
+                $gte: new Date(`${year}-${month}-01`), // Début du mois
+                $lt: new Date(`${year}-${parseInt(month) + 1}-01`) // Début du mois suivant
+            };
+        }
+        
+
+        const result = await Avance.find(filters)
+            .populate('user')
+            .populate('confirmed_by')
+            .populate({
+                path: 'validation.user',
+                select: 'last_name occupation'
+            });
+
         res.status(200).json({ ok: true, data: result });
     } catch (error) {
         console.error("Error getting list:", error);
-        res.json({  ok: false, data: [] });
+        res.json({ ok: false, data: [] });
     }
-
 }
 
 async function validateAvance(req, res) {

@@ -311,14 +311,16 @@ function decided(decision) {
     else if (decision.includes("Permission exceptionelle")) {
         return "Permission exceptionnelle"
     }
-    else if (decision.includes("Repos Maladie")) {
+    else if (decision.includes("Repos Maladie") || decision.includes("Consultation médicale")) {
         return "Rien à déduire"
     }
     else if (decision.includes("Congé de maternité")) {
         return "Congé de maternité/paternité"
     } else if (decision.includes("Récupération")) {   
         return "Récupération" 
-    } else {
+    } else if(decision.includes("Assistance maternelle")) {
+        return "Assistance maternelle"
+    }else{
         return "A déduire sur salaire"
     }
 }

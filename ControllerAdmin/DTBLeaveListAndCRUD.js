@@ -15,14 +15,16 @@ const getPageLeavelist = async (req, res) => {
   if (session.occupation_a == "Admin") {
     var dataUser = await UserSchema.findOne({ _id: session.idUser }).select("profil usuel myNotifications");
     var role = session.idUser == "645a417e9d34ed8965caea9e" ? "Gerant" : "Admin";
-    var allPermission = await LeaveSchema.find({ exceptType: { $ne: "", $exists: true }, date_start: { $regex: moment().format("YYYY") } }).select("m_code exceptType duration")
+    var allPermission = await LeaveSchema.find({exceptType: { $ne: "", $exists: true }, type: "Permission exceptionelle ( rien à deduire )",  validation: false , date_start: { $regex: moment().format("YYYY") } }).select("m_code type exceptType duration")
+    
     res.render("PageAdministration/ListeConges.html", {
       notif: dataUser.myNotifications,
-      username: session.mailing,
+      username: session.mailing, 
       role: role,
       dataUser: dataUser,
       allPermission: allPermission
     });
+
   } else {
     res.redirect("/");
   }
@@ -759,7 +761,7 @@ const createLeave = async (req, res) => {
     res.redirect("/");
   }
 }
-console.log(Methods.date_diff('2024-09-10', '2024-09-13'))
+// console.log(Methods.date_diff('2024-09-10', '2024-09-13'))
 //Edit leave 
 const editLeave = async (req, res) => {
   var session = req.session;
@@ -1730,7 +1732,7 @@ async function checkleave(req) {
 }
 //
 async function leave_permission() {
-  var user_allowed = await UserSchema.find({ lave_stat: "n" });
+  var user_allowed = await UserSchema.find({ leave_stat: "n" });
   for (a = 0; a < user_allowed.length; a++) {
     if (moment(user_allowed[a].save_at).add(1, "years").format("YYYY-MM") == moment().format("YYYY-MM")) {
       await UserSchema.findOneAndUpdate(

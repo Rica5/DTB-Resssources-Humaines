@@ -80,7 +80,6 @@ class AvanceList {
         var paid = data.filter(dat => dat.status== "paid").length
         var alldata = data.length
         var refus = data.filter(dat => dat.status == "rejected").length
-        console.log("refus", refus, "paid", paid);
         
         $("#envoyer").text(alldata)
         $("#refuser").text(refus)

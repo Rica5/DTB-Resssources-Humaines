@@ -73,6 +73,7 @@ routeExpDTB.route('/api/leave-requests').get(API.getLeaves);
 // avance API
 routeExpDTB.route('/api/avance').post(API_Avance.createAvance);
 routeExpDTB.route('/api/avance/all/:urgent?').get(API_Avance.getAllDemand)
+routeExpDTB.route('/api/avance/request').get(API_Avance.getAllDemand)
 routeExpDTB.route('/api/avance/demande/:id?').get(API_Avance.getOneDemande)
 routeExpDTB.route('/api/avance/paid').get(API_Avance.getPaidDemands)
 routeExpDTB.route('/api/avance/check_access').get(API_Avance.checkUrgenceAccess)
