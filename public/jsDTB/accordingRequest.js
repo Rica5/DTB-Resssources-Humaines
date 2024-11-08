@@ -569,7 +569,19 @@ function ApproveLast(){
     // leave duration
     let lDuration = parseFloat($('#nbr-day').val());
 
-    console.log(checking)
+
+    const result = {};
+
+        // Récupérer les valeurs des checkboxes et des inputs
+        result['conger_payer'] = $('#conger_payer').is(':checked') ? parseFloat($('#input_conger_payer').val()) : 0;
+        result['deduire_salaire'] = $('#deduire_salaire').is(':checked') ? parseFloat($('#input_deduire_salaire').val()) : 0;
+        result['permission_exceptionnelle'] = $('#permission_exceptionnelle').is(':checked') ? parseFloat($('#input_permission_except').val()) : 0;
+        result['rien_a_deduire'] = $('#rien_a_deduire').is(':checked') ? parseFloat($('#input_permission_except').val()) : 0;
+
+        // var total = Object.values(result).reduce((acc, valeur)=>acc+ valeur, 0)
+        const total = Object.values(result).reduce((acc, valeur) => acc + valeur, 0);
+
+
     // condition
     if (checking !== 'n') {
         if (checking === 0.25) {
@@ -609,8 +621,13 @@ function ApproveLast(){
 
 
     if (role == "Admin"){
-        if ($('#typeLeave').val() != ""){
+        
+        if (total !== lDuration) {
+            $('#erreurNbreDecision').removeAttr('hidden');
+        }
+        if ($('#typeLeave').val() != "" && total == lDuration){
             $("#waitingApprove").css('opacity','1')
+            $('#erreurNbreDecision').attr('hidden', true);
             var data = {
                 id:idActive,
                 response:true,
@@ -626,76 +643,79 @@ function ApproveLast(){
                 typeleave: $('#typeLeave').val(),
                 order:order,
                 exceptType: permissionType ? $("#exceptType").val(): "",
-                motif: changeMotif && rmType !== '' ?  rmType :  newMotif
+                motif: changeMotif && rmType !== '' ?  rmType :  newMotif,
+                ... result
             };
+            
+            console.log("data", data)
 
             // changeMotif ? "" : delete data.motif;
-                $.ajax({
-                    url:"/requestAnswer",
-                    method:"POST",
-                    data:data,
-                    success: function(data) {
-                        if (data.type.includes("Congé Payé")){
-                            let indexUser = users.findIndex(element => element.m_code == data.m_code);
-                            if (indexUser !== -1) {
-                                users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
-                                users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
-                            }
-                        }
-                        
-                        data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
-                        if (order){
-                            // vérifier si le congé a été traité par rh (type !== "")
-                            // ou status de la demande n'est pas réfusé (status !== "declined")
-                            if (data.type === '' && data.status !== 'declined') return;
-
-                            $.ajax({
-                                url:"/takeleave",
-                                method:"POST",
-                                data:{
-                                    code:data.m_code,
-                                    type:data.type,
-                                    exceptType:data.exceptType,
-                                    leavestart:data.date_start,
-                                    leaveend:data.date_end,
-                                    begin:data.hour_begin,
-                                    end:data.hour_end,
-                                    court:data.duration,
-                                    motif:data.motif,
-                                    idRequest:data._id
-                                },
-                                success: function(res) {
-                                    UpdateRequest();
-                                    $("#waitingApprove").css('opacity','0')
-                                    closeModal();
-                                    $('#notification').text("Requête approuver par ordre du gerant");
-                                    $("#notification").attr("class","notice-success")
-                                    $('#notification').show();
-                                    setTimeout(() => {
-                                        $('#notification').hide();
-                                    }, 5000);
-                                }   
-                            })
-                        }
-                        else {
-                            UpdateRequest();
-                            $("#waitingApprove").css('opacity','0')
-                            closeModal();
-                            $('#notification').text("Requête accepter avec success");
-                            $("#notification").attr("class","notice-success")
-                            $('#notification').show();
-                            setTimeout(() => {
-                                $('#notification').hide();
-                            }, 5000);
-                        }
-                        reset();
-                    }   
+            // $.ajax({
+            //     url:"/requestAnswer",
+            //     method:"POST",
+            //     data:data,
+            //     success: function(data) {
+            //         if (data.type.includes("Congé Payé")){
+            //             let indexUser = users.findIndex(element => element.m_code == data.m_code);
+            //             if (indexUser !== -1) {
+            //                 users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
+            //                 users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
+            //             }
+            //         }
                     
-                })
-           }
-           else {
-            $('#typeLeave').css('borderColor','red')
-           }
+            //         data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
+            //         if (order){
+            //             // vérifier si le congé a été traité par rh (type !== "")
+            //             // ou status de la demande n'est pas réfusé (status !== "declined")
+            //             if (data.type === '' && data.status !== 'declined') return;
+
+            //             $.ajax({
+            //                 url:"/takeleave",
+            //                 method:"POST",
+            //                 data:{
+            //                     code:data.m_code,
+            //                     type:data.type,
+            //                     exceptType:data.exceptType,
+            //                     leavestart:data.date_start,
+            //                     leaveend:data.date_end,
+            //                     begin:data.hour_begin,
+            //                     end:data.hour_end,
+            //                     court:data.duration,
+            //                     motif:data.motif,
+            //                     idRequest:data._id
+            //                 },
+            //                 success: function(res) {
+            //                     UpdateRequest();
+            //                     $("#waitingApprove").css('opacity','0')
+            //                     closeModal();
+            //                     $('#notification').text("Requête approuver par ordre du gerant");
+            //                     $("#notification").attr("class","notice-success")
+            //                     $('#notification').show();
+            //                     setTimeout(() => {
+            //                         $('#notification').hide();
+            //                     }, 5000);
+            //                 }   
+            //             })
+            //         }
+            //         else {
+            //             UpdateRequest();
+            //             $("#waitingApprove").css('opacity','0')
+            //             closeModal();
+            //             $('#notification').text("Requête accepter avec success");
+            //             $("#notification").attr("class","notice-success")
+            //             $('#notification').show();
+            //             setTimeout(() => {
+            //                 $('#notification').hide();
+            //             }, 5000);
+            //         }
+            //         reset();
+            //     }   
+                
+            // })
+        }
+        else {
+        $('#typeLeave').css('borderColor','red')
+        }
     }
     else {
      registerLeave()

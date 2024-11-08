@@ -479,6 +479,11 @@ const answerRequest = async (req, res) => {
         var newEndDate = req.body.newEndDate;
         var refus_order = req.body.refus_order;
 
+        var conger_payer = req.body.conger_payer;
+        var deduire_salaire = req.body.deduire_salaire;
+        var permission_exceptionnelle = req.body.permission_exceptionnelle;
+        var rien_a_deduire = req.body.rien_a_deduire;
+
 
         const io = req.app.get("io");
 

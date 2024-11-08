@@ -306,14 +306,14 @@ const mobileAccessMiddleware = (req, res, next) => {
   next();
 };
 
-const UserSchema = require("./models/ModelMember");
-const ancienUser = require("./models/User");
+// const UserSchema = require("./models/ModelMember");
+// const ancienUser = require("./models/User");
 
 // This function fetches data from UserAncien
 (async () => {
   try {
-    const userAnc = await ancienUser.find();  // Correct usage
-    var userNew = await UserSchema.find()
+    // const userAnc = await ancienUser.find();  // Correct usage
+    // var userNew = await UserSchema.find()
     // for (let anc of userAnc) {
     //   // Trouver l'utilisateur correspondant dans userNew
     //   const newUser = userNew.find(u => u._id.equals(anc._id)); // Supposant que `_id` est l'identifiant commun
