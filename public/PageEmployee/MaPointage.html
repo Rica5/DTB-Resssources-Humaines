@@ -84,14 +84,6 @@
         <div class="limiter" id="login">
           <div class="container-login100">
             <div class="wrap-login100">
-              <!-- <div>
-                <img
-                  width="100%"
-                  height="100%"
-                  src="assets/images1/ls.jpg"
-                  alt="IMG"
-                />
-              </div> -->
               <center>
                 <div class="login101-pic">
                   <div
@@ -201,6 +193,7 @@
                   <form action="/change_interface" method="post">
                     <input type="hidden" name="mail" value="<%= user?.username %>" />
                     <input type="hidden" name="opt" value="s" />
+                    <input type="hidden" name="poste" value="<%= status_poste %>" />
                     <button type="submit" class="btn btn-md btn-success">
                       STATUS EMPLOYER <i class="fa-solid fa-users"></i>
                     </button>
@@ -498,6 +491,8 @@
               </div>
           </div>
         </div>
+
+
         <!-- <div class="limiter" id="login">
             <div class="container-login100">
               <div class="wrap-login100">
@@ -506,9 +501,6 @@
                     <div
                       style="
                         position: relative;
-                        width: 325px;
-                        height: 325px;
-                        overflow: auto;
                         display: flex;
                         justify-content: center;
                         align-items: center;
@@ -518,14 +510,17 @@
                       style="
                         border-radius: 50%;
                         object-fit: cover;
-                        width: 100%;
-                        height: 100%;
+                        width: 325px;
+                        height: 325px; padding: 10px;
+                        margin-bottom: 50px;
                       "
                       src="Profil/<%= user?.profil %>"
                       id="my_profil"
                       alt="IMG"
                     />
-                    <button id="s" class="login101-form-btn">PARTI</button>
+                    <button id="s" class="login101-form-btn" style="position: absolute; font-size: small; 
+                    bottom: 17px;
+                    border: 8px solid white;">PARTI</button>
                     </div>
                     <span id="time" class="login100-form-title mt-3"> </span>
                     <div id="profil_status" class="" style="display: none"></div>
@@ -890,6 +885,8 @@
                 </div>
             </div>
           </div> -->
+          
+          
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
           <script src="/js_code/socket.js"></script>
