@@ -40,6 +40,74 @@
     .search > input {
       width: 100%;
     }
+
+
+
+
+
+
+
+
+
+    
+    .form-container {
+            border: 1px solid #2EB4E7;
+            border-radius: 7px;
+            padding: 5px;
+            /* width: 300px; */
+            text-align: center;
+        }
+
+
+        .checkbox-group {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"]:checked ~ input[type="Number"] {  
+          display: block;
+
+        }
+        
+        .checkbox-group input[type="Number"] {
+            flex-grow: 1;
+            margin-left: 10px;
+            border: none;
+            border-bottom: 1px dashed #000;
+            outline: none;
+            text-align: center;
+            display: none;
+        }
+
+        .checkbox-decision::before{
+          box-shadow: none !important;
+        }
+
+        .input-decision{
+          margin-left: 16px;
+        }
+
+        .signature {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        .signature div {
+            border-top: 1px solid #000;
+            width: 100px;
+            margin: 0 auto;
+            margin-top: 10px;
+        }
   </style>
 </head>
 
@@ -546,7 +614,9 @@
                     <input id="motif-input" class="input-choice2 my-3" type="text" placeholder="Motif du congé (optionelle)" >
                   </div>
                   <!-- Q -->
+             
                   <div class="form-group row">
+                    <!-- <div class="col-md-6 col-sm-6"> -->
                     <label class="col-md-3" ><p style="font-size:14px;font-weight: 500;">Quart / Démi / Une journée</p></label>
                     <div class="col-md-9">
                       <div class="form-check mr-sm-2">
@@ -569,6 +639,8 @@
                       </div>
 
                     </div>
+
+                    <!-- </div> -->
                   </div>
                   <div class="row">
                     <div class="col-sm-6">
@@ -601,6 +673,36 @@
                         </div>
                     </div>
                 </div>
+
+                      
+                <p class="mt-3" style="color: red;" id="erreurNbreDecision" hidden>Le nombre de jours et le total du décision ne sont pas le même</p>
+      <p class="mt-3" >Décision de la direction</p>
+    <div class="form-container">
+      <div class="checkbox-group">
+          <label>
+              <input type="checkbox" name="decision1" class="checkbox-decision" id="conger_payer">
+              A déduire s/ congés payés
+              <input type="number" name="congesPayes" class="input-decision" id="input_conger_payer" placeholder="………………………………………" min="0" step="0.25">
+          </label>
+          <label>
+              <input type="checkbox" name="decision2" class="checkbox-decision" id="deduire_salaire">
+              A déduire s/ salaire
+              <input type="number" name="salaire" class="input-decision" id="input_deduire_salaire" placeholder="………………………………………" min="0" step="0.25">
+          </label>
+          <label>
+              <input type="checkbox" name="decision3" class="checkbox-decision" id="permission_exceptionnelle">
+              Permission exceptionnelle
+              <input type="number" name="permission" class="input-decision" id="input_permission_except" placeholder="………………………………………" min="0" step="0.25">
+          </label>
+          <label>
+              <input type="checkbox" name="decision4" class="checkbox-decision" id="rien_a_deduire">
+              Rien à déduire
+              <input type="number" name="rien à deduire" class="input-decision" id="input_rien_a_deduire" placeholder="………………………………………" min="0" step="0.25">
+
+          </label>
+      </div>
+  </div>
+
                   <p class="mt-3" id="begin_delete" class="">Le(s) projet(s) ou section impactés seront : </p>
                   <div class="allProject row" id="project">
                       
