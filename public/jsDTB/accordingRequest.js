@@ -628,6 +628,7 @@ function ApproveLast(){
         if ($('#typeLeave').val() != "" && total == lDuration){
             $("#waitingApprove").css('opacity','1')
             $('#erreurNbreDecision').attr('hidden', true);
+            $('#typeLeave').css('borderColor','#2EB4E7')
             var data = {
                 id:idActive,
                 response:true,
@@ -1069,6 +1070,16 @@ $('#join').on('change', function (event) {
     $("#typeLeave").val("");
     $("#exceptType").val("Férié");
     $("#rmType").val("");
+
+    $('#conger_payer').prop('checked', false);
+    $('#deduire_salaire').prop('checked', false);
+    $('#permission_exceptionnelle').prop('checked', false);
+    $('#rien_a_deduire').prop('checked', false);
+    $("#input_conger_payer").val("");
+    $("#input_deduire_salaire").val("");
+    $("#input_permission_except").val("");
+    $("#input_rien_a_deduire").val("");
+    $('#erreurNbreDecision').attr('hidden', true);
     activatePermission(false)
     activateCp(false);
     activateRm(false)

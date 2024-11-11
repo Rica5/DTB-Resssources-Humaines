@@ -471,7 +471,7 @@ const answerRequest = async (req, res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
-        var checking = req.body.checking;
+        var checking = req.body.checking; //duration
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
         var newDuration = parseFloat(req.body.newduration);
@@ -480,7 +480,7 @@ const answerRequest = async (req, res) => {
         var refus_order = req.body.refus_order;
 
         var conger_payer = req.body.conger_payer;
-        var deduire_salaire = req.body.deduire_salaire;
+        var deduire_sur_salaire = req.body.deduire_salaire;
         var permission_exceptionnelle = req.body.permission_exceptionnelle;
         var rien_a_deduire = req.body.rien_a_deduire;
 
@@ -504,7 +504,7 @@ const answerRequest = async (req, res) => {
             // update leave
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },
                 { $push: { validation: approbator },
-                comment: comment, status: status },
+                comment: comment, status: status, },
                 { new: true }
             );
 
@@ -599,7 +599,10 @@ const answerRequest = async (req, res) => {
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
-                ...Data
+                ...Data,
+                conger_payer: conger_payer,  deduire_sur_salaire : deduire_sur_salaire,
+                permission_exceptionnelle: permission_exceptionnelle, rien_a_deduire : rien_a_deduire,
+                
             }, { new: true })
             .populate({ path: "validation.user", select: "usuel" });
 
