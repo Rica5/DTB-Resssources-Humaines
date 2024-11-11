@@ -376,14 +376,27 @@
             <div class="col-12">
               <div class="card">
                 <div class="card-body">
-                  <div class="mb-3">
+                  <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <button class="btn btn-md btn-primary mx-5" onclick="openModal()">
+                      Vérification <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <div class="d-flex align-items-center">
+                      Week End<input type="number" class="form-control me-2" min="0.75" max="9" style="width: auto;" id="congeWeekEnd" />
+                      Week<input type="number" class="form-control me-2" min="2.5" max="30" style="width: auto;" id="congeNormal" />
+                      <button id="updateCongeAnnee" onclick="conger_anuelle()" class="btn btn-primary">Mis à jours année</button>
+                    </div>
+                  </div>
+                  
+                  <!-- <div class="mb-3">
                     <button
                       class="btn btn-md btn-primary mx-5"
                       onclick="openModal()"
                     >
                       Vérification <i class="fa-solid fa-plus"></i>
                     </button>
-                  </div>
+                    <input type="number"/> 
+                    <button>Mis à jours année 2024</button>
+                  </div> -->
                   <hr />
                   <div class="row">
                     <div class="col-sm-4 top_down mb-5 text-center">
@@ -577,12 +590,12 @@
                       <div class="tab-pane active" id="disabled-tabpanel-0" role="tabpanel" aria-labelledby="disabled-tab-0">
                         <!-- Form to modify solde -->
                         <div class="col-md-12">
-                          <div class="form-group">
-                            <label for="reste_auto">RESTE APRES AUTORISATION</label>
+                          <div class="form-group" hidden>
+                            <label for="reste_auto">2024</label>
                             <input type="number" id="u-reste-auto" class="form-control input-choice2" step="0.25" value="0">
                           </div>
                           <div class="form-group">
-                            <label for="reste_auto">DROIS AQUIS RESTANT:</label>
+                            <label for="reste_auto">DROIS AQUIS RESTANT 2023:</label>
                             <input type="number" id="u-droit-rest" class="form-control input-choice2" step="0.25" value="0">
                           </div>
                           <!-- id of the employee -->

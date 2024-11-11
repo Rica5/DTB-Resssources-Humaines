@@ -24,7 +24,13 @@ var waiting = document.getElementById("waiting");
 var waiting_add = document.getElementById("waiting-add");
 var hour_absence = document.getElementById("hour_absence");
 var begin = document.getElementById("begin");
+var number_conge_annuel_normal = document.getElementById("congeNormal")
+var number_conge_annuel_weekEnd = document.getElementById("congeWeekEnd")
 var end = document.getElementById("end");
+const anneeActuelle = new Date().getFullYear();
+const buttonConge = document.getElementById("congeNormal");
+buttonConge.textContent = `Mis à jours congée ${anneeActuelle}`;
+ 
 var oneDay = false;
 waiting.style.opacity = 0;
 waiting_add.style.opacity = 0;
@@ -141,6 +147,24 @@ function counting(){
   // console.log(employees["list7"])
   render_element(employees["list7"],"list7")
 }
+function conger_anuelle() {
+  const initialText = updateCongeAnnee.textContent
+  buttonConge.textContent = "Chargement...";
+
+  console.log("number_conge_annuel_weekEnd", number_conge_annuel_weekEnd.value);
+  console.log("number_conge_annuel_normal", number_conge_annuel_normal.value);
+  var http = new XMLHttpRequest()
+  http.open("POST", "/api/avance/updateAllCongeAnnee", true)
+  http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  http.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      // var data = JSON.parse(this.responseText)
+      // initData = data[0];
+      buttonConge.textContent = initialText
+    }
+  };
+  http.send(`congeWeekEnd=${number_conge_annuel_weekEnd.value}&congeNormal=${number_conge_annuel_normal.value}`)
+}
 counting();
 set_values();
 function set_values() {
@@ -234,7 +258,7 @@ function getdata(code) {
           sum.innerHTML = "Reste après autorisation : ".toUpperCase() + initData[d].leave_taked;
           // update by njato
           employee_id.value =initData[d]._id; 
-          reste_apres_auto.value = initData[d].leave_taked; 
+          reste_apres_auto.value = initData[d].leave_taked - initData[d].remaining_leave; 
           droit_rest.value = initData[d].remaining_leave; 
 
           if (data[1]) {
@@ -553,8 +577,8 @@ function Abreviation(given){
 
 async function edit_solde() {
   let empId = employee_id.value;
-  let restAuto = reste_apres_auto.value;
   let droitRest = droit_rest.value;
+  // let restAuto = reste_apres_auto.value + droitRest;
 
   const res = await fetch('/api/solde/' + empId, {
     method: 'PUT',
@@ -563,7 +587,7 @@ async function edit_solde() {
     },
     body: JSON.stringify({
       remaining_leave: droitRest,
-      leave_taked: restAuto
+      // leave_taked: restAuto
     })
   })
 
