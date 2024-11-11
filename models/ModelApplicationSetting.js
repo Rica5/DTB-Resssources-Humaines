@@ -11,4 +11,4 @@ const Opt = mongoose.Schema({
    transport_value:Number,
    warn_user:Array
 })
-module.exports = mongoose.model('optionTest',Opt);
+module.exports = mongoose.model('option',Opt);
