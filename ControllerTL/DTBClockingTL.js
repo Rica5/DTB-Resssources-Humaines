@@ -217,6 +217,44 @@ const allUserForTL = async(req,res) => {
     }
 }
 
+
+function calcul_timediff_absencetl(startTime, endTime) {
+  if (startTime != "") {
+      startTime = moment(startTime, "HH:mm:ss a");
+      endTime = moment(endTime, "HH:mm:ss a");
+      var duration = moment.duration(endTime.diff(startTime));
+      //duration in hours
+      var hours_fictif = 0;
+      var minutes_fictif = 0;
+      hours_fictif += parseInt(duration.asHours());
+
+      // duration in minutes
+      minutes_fictif += parseInt(duration.asMinutes()) % 60;
+      if (minutes_fictif < 0) {
+          hours_fictif = hours_fictif - 1;
+          minutes_fictif = 60 + minutes_fictif;
+      }
+      while (minutes_fictif > 60) {
+          hours_fictif += 1;
+          minutes_fictif = minutes_fictif - 60;
+      }
+      if (hours_fictif < 0) {
+          hours_fictif = hours_fictif + 24;
+      }
+      if (hours_fictif == 0) {
+          return minutes_fictif + " minutes";
+      }
+      else if (minutes_fictif == 0) {
+          return hours_fictif + " heures";
+      }
+      else {
+          return hours_fictif + " heures " + minutes_fictif + " minutes";
+      }
+  }
+  else {
+      return "heure non défini"
+  }
+}
 //Method to use
 function retrieve_shift(users, code) {
     var shift_change = ["SHIFT 1", "SHIFT 2", "SHIFT 3"];

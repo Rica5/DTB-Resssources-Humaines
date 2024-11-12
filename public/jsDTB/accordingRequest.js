@@ -573,7 +573,7 @@ function ApproveLast(){
     const result = {};
 
         // Récupérer les valeurs des checkboxes et des inputs
-        result['conger_payer'] = $('#conger_payer').is(':checked') ? parseFloat($('#input_conger_payer').val()) : 0;
+        result['conge_payer'] = $('#conger_payer').is(':checked') ? parseFloat($('#input_conger_payer').val()) : 0;
         result['deduire_salaire'] = $('#deduire_salaire').is(':checked') ? parseFloat($('#input_deduire_salaire').val()) : 0;
         result['permission_exceptionnelle'] = $('#permission_exceptionnelle').is(':checked') ? parseFloat($('#input_permission_except').val()) : 0;
         result['rien_a_deduire'] = $('#rien_a_deduire').is(':checked') ? parseFloat($('#input_rien_a_deduire').val()) : 0;
@@ -689,7 +689,13 @@ function ApproveLast(){
                                 end:data.hour_end,
                                 court:data.duration,
                                 motif:data.motif,
-                                idRequest:data._id
+                                idRequest:data._id,
+
+                                deduire_sur_salaire: data.deduire_sur_salaire,
+                                conge_payer: data.conge_payer,
+                                permission_exceptionnelle: data.permission_exceptionnelle,
+                                rien_a_deduire: data.rien_a_deduire
+
                             },
                             success: function(res) {
                                 UpdateRequest();
@@ -837,23 +843,40 @@ $('#typeLeave').on('change', function () {
     $("#typeLeave").css('borderColor', '#5AC4EC');
 
     const actions = {
-        "Permission exceptionelle": { permission: true, cp: ["ndeduire", true], rm: false },
-        "Congé Payé": { permission: false, cp: ["deduire", true], rm: false },
-        "Repos Maladie": { permission: false, cp: ["ndeduire", true], rm: true },
-        "Consultation médicale": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Congé de maternité": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Assistance maternelle": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Récupération": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Congé sans solde": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Absent": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Mise a Pied": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Absence Injustifiée": { permission: false, cp: ["ndeduire", true], rm: false },
-        "": { permission: false, cp: ["deduire", false], rm: false },
-        "default": { permission: false, cp: ["deduire", true], rm: false }
+        "Permission exceptionelle": { permission: true, cp: ["ndeduire", true], rm: false, congePayer: false },
+        "Congé Payé": { permission: false, cp: ["deduire", true], rm: false , congePayer: true},
+        "Repos Maladie": { permission: false, cp: ["ndeduire", true], rm: true, congePayer: false },
+        "Consultation médicale": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false},
+        "Congé de maternité": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false},
+        "Assistance maternelle": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
+        "Récupération": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false },
+        "Congé sans solde": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false },
+        "Absent": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
+        "Mise a Pied": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
+        "Absence Injustifiée": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
+        "": { permission: false, cp: ["deduire", false], rm: false , congePayer: false},
+        "default": { permission: false, cp: ["deduire", true], rm: false , congePayer: false}
     };
 
-    const currentAction = actions[leaveType] || actions['default'];
+    const currentAction = actions[leaveType] || actions['default']
+    $('.decision').css('display', 'block');
+
+    console.log("actions", actions["Congé Payé"].congePayer);
     
+    if (actions[leaveType].congePayer) {
+        $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
+        .prop('disabled', false); // 
+
+    }else{
+
+    $('#deduire_salaire').prop('checked', false);
+    $('#permission_exceptionnelle').prop('checked', false);
+    $('#rien_a_deduire').prop('checked', false);
+        $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
+        .prop('disabled', true); // 
+
+
+    }
     activatePermission(currentAction.permission);
     activateCp(currentAction.cp[1], currentAction.cp[0]);
     activateRm(currentAction.rm);
@@ -975,6 +998,7 @@ $('#join').on('change', function (event) {
     if (choice){
         permissionType = true;
         $("#typeGranted").attr("class","d-flex justify-content-between")
+        // checkbox.disabled = isChecked;
     }
     else {
         permissionType = false;
@@ -1083,6 +1107,8 @@ $('#join').on('change', function (event) {
     $("#input_permission_except").val("");
     $("#input_rien_a_deduire").val("");
     $('#erreurNbreDecision').attr('hidden', true);
+
+    $('.decision').css('display', 'none');
     activatePermission(false)
     activateCp(false);
     activateRm(false)
