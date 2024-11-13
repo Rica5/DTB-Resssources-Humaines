@@ -290,17 +290,14 @@ function Approved(data) {
                     </div>
                     <div class="d-flex justify-content-between">
                     <div class="duration">
-                        <div>
                         <span>Durée:</span>
                         <span>${element.duration} ${element.duration > 1 ? "jours" : "jour"}</span>
-                        </div>
-                        <div><span>Décision : ${decided(element.type)}</span></div>
                     </div>
                     <div class="duration">
-                        ${itCount(element.type) == true ? `<div><span> ${_date.getFullYear()}: ${(element.acc + element.duration) - (element.rest + element.duration)} | ${_date.getFullYear() - 1}: ${element.rest + element.duration} |</span> </div>
-                        <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>` :
-                        `<div><span>| ${_date.getFullYear()}: ${element.acc - element.rest} | ${_date.getFullYear() - 1}: ${element.rest} |</span></div>
-                        <div><span>Reste après autorisation | </span>${element.acc} |</span></div>`}
+                    <div><span> ${_date.getFullYear()}: ${(element.acc + element.conge_payer) - (element.rest + element.conge_payer)} | ${_date.getFullYear() - 1}: ${element.rest} </span> </div>
+                    </div>
+                    <div class="duration">
+                    <div><span>Rest après autorisation | </span><span>${element.acc} </span> </div>
                     </div>
                     </div>
                 </div>
