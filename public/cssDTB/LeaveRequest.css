@@ -606,6 +606,19 @@ input:focus {
     flex-grow: 1;
 }
 
+.decision-direction{
+    border: 1px dashed #e0e0e0;
+    position: relative;
+    padding-top: 1rem;
+    border-radius: .6rem;
+    padding: 1rem .5rem;
+    margin-top: .7rem;
+    flex-grow: 1;
+    height: 70px;
+}
+.decision-direction > div{
+    display: flex;
+}
 .date-heure .d>div,
 .date-heure .h>div {
     display: grid;

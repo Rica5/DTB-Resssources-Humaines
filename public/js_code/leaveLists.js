@@ -173,6 +173,12 @@ function rendu_conge(temp_conge) {
                                         | 2024: ${(temp_conge.acc - temp_conge.rest).toString().replace(".",",")} | 2023: ${itCount(temp_conge.type) ? (temp_conge.rest /* - temp_conge.duration */).toString().replace(".",",") :  temp_conge.rest.toString().replace(".",",")} |</p>
                                       <p class="info-text text-center">Reste aprés autorisation | ${(temp_conge.acc.toString().replace(".",","))}</p>
                                       </div>
+                                      <div class="checkbox-group decision">
+                                        ${temp_conge.conge_payer !== 0 ? `<p class="text-center">A déduire s/ congés payés : ${temp_conge.conge_payer} jours</p>` : ''}
+                                        ${temp_conge.deduire_sur_salaire !== 0 ? `<p>A déduire s/ salaire : ${temp_conge.deduire_sur_salaire} jours</p>` : ''}
+                                        ${temp_conge.permission_exceptionnelle !== 0 ? `<p>Permission exceptionnelle : ${temp_conge.permission_exceptionnelle} jours</p>` : ''}
+                                        ${temp_conge.rien_a_deduire !== 0 ? `<p>Rien à déduire : ${temp_conge.rien_a_deduire} jours</p>` : ''}
+                                      </div>
                                       <div class="text-center">
                                         ${render_button(temp_conge)}
                                       </div>

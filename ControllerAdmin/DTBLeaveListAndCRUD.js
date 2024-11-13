@@ -454,6 +454,13 @@ const createLeave = async (req, res) => {
     var deduction = " ( rien à deduire )";
     var user = await UserSchema.findOne({ m_code: code });
     var taked;
+
+    var {
+      deduire_sur_salaire = 0,
+      conge_payer = 0,
+      permission_exceptionnelle = 0,
+      rien_a_deduire = 0 } = req.body
+
     var leave_specific = await LeaveSchema.find({
       m_code: user.m_code,
       date_start: {
@@ -495,29 +502,29 @@ const createLeave = async (req, res) => {
           if (Methods.date_diff(leavestart, leave_specific[c].date_start) > 0) {
             if (leave_specific[c - 1]) {
               if (rest == "") {
-                rest = leave_specific[c - 1].rest - taked;
-                last_acc = leave_specific[c - 1].acc - taked
+                rest = leave_specific[c - 1].rest - conge_payer;
+                last_acc = leave_specific[c - 1].acc - conge_payer
               }
             } else {
               if (rest == "") {
-                if (leave_specific[c].type.includes("Congé Payé")) {
+                // if (leave_specific[c].type.includes("Congé Payé")) {
                   rest =
                     leave_specific[c].rest +
-                    leave_specific[c].duration -
-                    taked;
-                  last_acc = leave_specific[c].acc + leave_specific[c].duration - taked
-                } else {
-                  rest = leave_specific[c].rest - taked;
-                  last_acc = leave_specific[c].acc - taked
-                }
+                    leave_specific[c].conge_payer -
+                    conge_payer;
+                  last_acc = leave_specific[c].acc + leave_specific[c].conge_payer - conge_payer
+                // } else {
+                //   rest = leave_specific[c].rest - conge_payer;
+                //   last_acc = leave_specific[c].acc - conge_payer
+                // }
               }
             }
             indice_change.push(c);
           }
         }
         if (rest == "") {
-          rest = user.remaining_leave - taked;
-          last_acc = user.leave_taked - taked
+          rest = user.remaining_leave - conge_payer;
+          last_acc = user.leave_taked - conge_payer
         }
         var new_leave = {
           m_code: user.m_code,
@@ -536,13 +543,18 @@ const createLeave = async (req, res) => {
           validation: false,
           acc: last_acc,
           request: idRequest,
-          exceptType: exceptType
+          exceptType: exceptType,
+          
+          deduire_sur_salaire : deduire_sur_salaire,
+          conge_payer : conge_payer,
+          permission_exceptionnelle : permission_exceptionnelle,
+          rien_a_deduire : rien_a_deduire
         };
         !idRequest ? delete new_leave.request : ""
         var last_rest = rest;
         indice_change.forEach(async (change) => {
+          last_rest = last_rest - leave_specific[change].conge_payer;
           if (leave_specific[change].type.includes("Congé Payé")) {
-            last_rest = last_rest - leave_specific[change].duration;
             await LeaveSchema.findOneAndUpdate(
               { _id: leave_specific[change]._id },
               {
@@ -576,7 +588,7 @@ const createLeave = async (req, res) => {
         });
         await UserSchema.findOneAndUpdate(
           { m_code: user.m_code },
-          { $inc: { remaining_leave: -taked, leave_taked: -taked } }
+          { $inc: { remaining_leave: -conge_payer, leave_taked: -conge_payer } }
         );
         var d1 = moment(leavestart).format("YYYY-MM-DD");
         var d2 = moment(leaveend).format("YYYY-MM-DD");
@@ -648,11 +660,11 @@ const createLeave = async (req, res) => {
               if (rest == "") {
                 if (leave_specific[c].type.includes("Congé Payé")) {
                   rest =
-                    leave_specific[c].rest + leave_specific[c].duration;
-                  last_acc = leave_specific[c].acc + leave_specific[c].duration
+                    leave_specific[c].rest + leave_specific[c].conge_payer;
+                  last_acc = leave_specific[c].acc + leave_specific[c].conge_payer
                 } else {
-                  rest = leave_specific[c].rest;
-                  last_acc = leave_specific[c].acc
+                  rest = leave_specific[c].rest + leave_specific[c].conge_payer;
+                  last_acc = leave_specific[c].acc + leave_specific[c].conge_payer
                 }
               }
             }
@@ -679,7 +691,12 @@ const createLeave = async (req, res) => {
           validation: false,
           acc: last_acc,
           request: idRequest,
-          exceptType: exceptType
+          exceptType: exceptType,
+          
+          deduire_sur_salaire : deduire_sur_salaire,
+          conge_payer : conge_payer,
+          permission_exceptionnelle : permission_exceptionnelle,
+          rien_a_deduire : rien_a_deduire
         };
         !idRequest ? delete new_leave.request : ""
         var d1 = moment(leavestart).format("YYYY-MM-DD");
@@ -741,7 +758,12 @@ const createLeave = async (req, res) => {
           validation: false,
           acc: user.leave_taked,
           request: idRequest,
-          exceptType: exceptType
+          exceptType: exceptType,
+
+          deduire_sur_salaire : deduire_sur_salaire,
+          conge_payer : conge_payer,
+          permission_exceptionnelle : permission_exceptionnelle,
+          rien_a_deduire : rien_a_deduire
         };
         
         var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: idRequest }, {

@@ -275,6 +275,19 @@ function Approved(data) {
                             </div>
                         </div>
                     </div>
+                    <div class="date-heure">
+                        <div class="decision-direction">
+                            <h1>
+                                <i class="fa-solid fa-calendar"></i>
+                                Décision de la direction
+                            </h1>
+                                ${element.conge_payer !== 0 ? `<div><span> A déduire s/ congés payés : </span> <span> ${element.conge_payer} jours</span> </div>` : ''}
+                                ${element.deduire_sur_salaire !== 0 ? `<div><span>A déduire s/ salaire : </span> <span> ${element.deduire_sur_salaire} jours </span></div>` : ''}
+                                ${element.permission_exceptionnelle !== 0 ? `<div><span>Permission exceptionnelle :</span> <span>  ${element.permission_exceptionnelle} jours</span></div>` : ''}
+                                ${element.rien_a_deduire !== 0 ? `<div><span>Rien à déduire :</span> <span>  ${element.rien_a_deduire} jours</span></div>` : ''}
+                               
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-between">
                     <div class="duration">
                         <div>

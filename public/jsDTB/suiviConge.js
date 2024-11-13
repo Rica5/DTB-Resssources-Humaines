@@ -35,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             .then(response => response.json())
             .then(data => {
                 Data = transformedData([...data.data]);
+                console.log("data", Data);
+                
                 grid.resetData(Data); // Update grid with fetched data
             })
             .catch(error => console.error('Error fetching data:', error));
@@ -212,8 +214,16 @@ document.addEventListener('DOMContentLoaded', async function() {
                     // type: ObservationRenderer,
                 },
                 formatter: function({ row }) {
-                    const { duration, type } = row;
-                    return `${duration}j ${type ? getFrPrefix(type).toLowerCase() : ''}`
+                    // const { duration, type } = row;
+                    // return `${duration}j ${type ? getFrPrefix(type).toLowerCase() : ''}`
+                    const {conge_payer, deduire_sur_salaire, permission_exceptionnelle, rien_a_deduire} = row;
+                    return `
+                    ${conge_payer !== 0 ? `${conge_payer} jours de congés payés` : ''},
+                    ${deduire_sur_salaire !== 0 ? `${deduire_sur_salaire} jours à réduire sur salaire` : ''},
+                    ${permission_exceptionnelle !== 0 ? `${permission_exceptionnelle} jours de permission exceptionnelle` : ''},
+                    ${rien_a_deduire !== 0 ? `${rien_a_deduire} jours rien à déduire` : ''}
+                                      
+                    `
                 },
                 align: 'left'
             },

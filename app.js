@@ -23,6 +23,19 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', async () => {
   console.log('Connected to MongoDB');
+  // var allconge = await leaveS.find()
+  // allconge.forEach(conge => {
+  //   if (conge.type == "Congé Payé ( rien à deduire )") {
+  //     conge.conge_payer = conge.duration
+  //   }else{
+  //     conge.conge_payer = 0
+  //   }
+  //   console.log("conge", conge.type);
+    
+  //   conge.save()
+  // });
+  // console.log("fini");
+  
   // BE CAREFULL, NEVER CALL THIS SH*T
   // cloneCollectionData('cusers', 'newcusertests')
   //   .then(() => console.log('Cloning completed'))
