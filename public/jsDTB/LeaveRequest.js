@@ -222,6 +222,8 @@ function Approved(data) {
     myUpcomingContent = '<div class="row p-3">'
     var approvedNumber = 0;
     data.forEach(element => {
+        console.log("elemen", element);
+        
         myUpcomingContent += `
             <div class="col-md-6 p-1">
             <div class="card-item">

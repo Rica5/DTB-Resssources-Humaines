@@ -58,11 +58,6 @@
       /* width: 300px; */
       text-align: center;
     }
-
-    .decision{
-      display: none;
-      
-    }
     .checkbox-group {
       text-align: left;
       margin-bottom: 15px;
@@ -450,16 +445,16 @@
                         <label id="title" for="type_leave">Veuillez séléctionner le type de congé:</label>
                         <select class="mt-3 typeLeave" id="typeLeave">
                           <option value="">Type de congé</option>
-                          <option value="Congé Payé">
-                            Congé Payé ( rien à déduire )
+                          <option value="congé">
+                            Congé
                           </option>
-                          <option value="Congé sans solde">
-                            Congé Sans Solde ( à déduire sur salaire )
+                          <option value="régularisation">
+                            Régularisation d'absence
                           </option>
-                          <option value="Permission exceptionelle">
-                            Permission exceptionelle ( rien à déduire )
+                          <option value="récupération">
+                            Récupération
                           </option>
-                          <option value="Repos Maladie">
+                          <!-- <option value="Repos Maladie">
                             Repos Médical ( rien à déduire )
                           </option>
                           <option value="Consultation médicale">
@@ -482,7 +477,7 @@
                           </option>
                           <option value="Récupération">
                             Récupération
-                          </option>
+                          </option> -->
                         </select>
                       </div>
                       <div id="orderCheck" class="col-md-4 container-order">
@@ -627,28 +622,28 @@
                     <div class="form-container decision">
                       <div class="checkbox-group decision">
                         <label>
-                          <input type="checkbox" name="decision1" class="checkbox-decision" id="conger_payer">
+                          <input type="checkbox" name="decision1" class="checkbox-decision" id="conger_payer" onchange="onDecision('conger_payer', 'input_conger_payer')">
                           A déduire s/ congés payés
-                          <input type="number" name="congesPayes" class="input-decision" id="input_conger_payer"
+                          <input type="number" name="congesPayes" class="input-decision" id="input_conger_payer" oninput="onDecision('conger_payer', 'input_conger_payer')"
                             placeholder="………………………………………" min="0" step="0.25">
                         </label>
                         <label>
-                          <input type="checkbox" name="decision2" class="checkbox-decision" id="deduire_salaire">
+                          <input type="checkbox" name="decision2" class="checkbox-decision" id="deduire_salaire" onchange="onDecision('deduire_salaire', 'input_deduire_salaire')">
                           A déduire s/ salaire
-                          <input type="number" name="salaire" class="input-decision" id="input_deduire_salaire"
+                          <input type="number" name="salaire" class="input-decision" id="input_deduire_salaire" oninput="onDecision('deduire_salaire', 'input_deduire_salaire')"
                             placeholder="………………………………………" min="0" step="0.25">
                         </label>
                         <label>
-                          <input type="checkbox" name="decision3" class="checkbox-decision"
+                          <input type="checkbox" name="decision3" class="checkbox-decision" onchange="onDecision('permission_exceptionnelle', 'input_permission_except')"
                             id="permission_exceptionnelle">
                           Permission exceptionnelle
-                          <input type="number" name="permission" class="input-decision" id="input_permission_except"
+                          <input type="number" name="permission" class="input-decision" id="input_permission_except" oninput="onDecision('permission_exceptionnelle', 'input_permission_except')"
                             placeholder="………………………………………" min="0" step="0.25">
                         </label>
                         <label>
-                          <input type="checkbox" name="decision4" class="checkbox-decision" id="rien_a_deduire">
+                          <input type="checkbox" name="decision4" class="checkbox-decision" id="rien_a_deduire" onchange="onDecision('rien_a_deduire', 'input_rien_a_deduire')">
                           Rien à déduire
-                          <input type="number" name="rien à deduire" class="input-decision" id="input_rien_a_deduire"
+                          <input type="number" name="rien à deduire" class="input-decision" id="input_rien_a_deduire" oninput="onDecision('rien_a_deduire', 'input_rien_a_deduire')"
                             placeholder="………………………………………" min="0" step="0.25">
 
                         </label>

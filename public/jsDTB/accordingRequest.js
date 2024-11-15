@@ -295,17 +295,17 @@ const escapedMotif = (str) => new String(str)
   .replace(/\n/g, ' ');
 
 function renderButton(role,leave){
-    var button = ""
+    var button = ""    
     switch(role){
-        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Refusée <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Refusée <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin": case "Gerant": button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Refusée <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -324,13 +324,13 @@ function renderButton(role,leave){
 function renderButtonNoDenied(role,leave){
     var button = ""
     switch(role){
-        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin": case "Gerant": button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button disabled onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -412,15 +412,19 @@ function dateDiffers(created, now) {
         }
   }
 
-function According(id,code,type,duration, motif, datestart, dateend, hourBegin, hourEnd){
+function According(id,code,type,duration, motif, datestart, dateend, hourBegin, hourEnd, mode){
+    reset()
     // method to disable field in array
     const disable = arr => arr.map(id => $(`#${id}`).prop('disabled', true));
     const appr = $(`#val-${id}`).val();
     const misyGerant = appr.split('|').includes(GerantId);
 
+    console.log("mmm", mode);
+    
     userActive = users.find(user => user.m_code == code);
+        
     if (role == 'Gerant' ){
-        $("#typeLeave").val(type);
+        $("#typeLeave").val(mode);
         $("#orderCheck").hide();
         $("#title").text("Le type de congé décidé par la ressource humaine est:");
 
@@ -443,37 +447,38 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         
     }
     else {
-        $('#typeLeave').val("");
+        $('#typeLeave').val(mode);
         $("#motif-input").val(motif);
         $("#datestart").val(datestart);
         $("#dateend").val(dateend);
         $("#default-nbr-day").val(duration);
         $("#nbr-day").val(duration);
-        
-        var typeL = $('#typeLeave').val();
-        $('#nbr-day').on('change', () => {
-            let nDuration = parseFloat($('#nbr-day').val())
-            console.log('ato', userActive.leave_stat)
-            if ($('#typeLeave').val() == "Congé Payé" || $('#typeLeave').val() == ""){
-                renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
-            }
-    
-        });
+
+        if ($('#typeLeave').val() == "congé"){
+            $('#conger_payer').prop("checked", true)
+            $('#input_conger_payer').val(duration)
+            renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,mode);
+        }else  {
+            $('#rien_a_deduire').prop("checked", true)
+            $('#input_rien_a_deduire').val(duration)
+        }
     }
     idActive = id;
     // userActive = users.find(user => user.m_code == code);
     $("#codeAccept").text(`Voulez vous vraiment accepter l'absence de ${code}`)
     $("#project").html(renderProject(userActive.project));
     duration = parseFloat(duration)
-    var typeL = $('#typeLeave').val();
+    
+    
     if (role == "Admin"){
-        reset()
-        renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,typeL);
+        $("#typeCp").removeAttr("class");
+        // renderSolde(code,userActive.leave_taked,userActive.remaining_leave,0,userActive.leave_stat,userActive.save_at,mode);
         setNumberPermission(code)
     }
     $("#ModalAccord").show();
     $('#modal-duration').val(duration);
 
+    console.log("===> ", $('#typeLeave').val());
     
     if (misyGerant) {
         $("#orderCheck").attr('hidden', '');
@@ -482,6 +487,27 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $("#orderCheck").removeAttr('hidden', '');
         $("#sayYes").prop('checked', false);
     }
+
+}
+
+var decisions = []
+function onDecision(idCheckbox, idInput) {
+
+    let checkDecisions = decisions.find(d=>d.desicion == idCheckbox )
+    if($("#"+idCheckbox).prop("checked") ){
+        let duration = $("#"+idInput).val()
+        if(checkDecisions) 
+            checkDecisions.duration = duration
+        else
+            decisions.push({desicion: idCheckbox, duration : duration})
+    }else{
+        decisions = decisions.filter(d=>d.desicion!=idCheckbox)
+    }
+    
+    let findDuration = decisions.find(d=>d.desicion == "conger_payer" )?.duration||0
+    
+    let modeL = $("typeLeave").val()
+    renderSolde(userActive.m_code,userActive.leave_taked,userActive.remaining_leave,findDuration,userActive.leave_stat,userActive.save_at,modeL);
 
 }
 function Declined(id,code){
@@ -607,11 +633,14 @@ function ApproveLast(){
         // lDuration -= checking;
 
     } else { // checking value eq "n"
+        console.log("lDuration!==date_diff(startDate, endDate)", lDuration, date_diff(startDate, endDate));
+        
         if (startDate === '') {
             return alert("Veuillez remplir correctement toutes les informations nécessaires!");
         } else if (date_diff(startDate, endDate) < 0) {
             return alert("Erreur de différence entre la date de début et celle de fin!");
-        } else {
+        } else if(lDuration!==(date_diff(startDate, endDate) + 1)) {
+            return alert("Erreur de différence entre la date et le nombre de jours!");
             // do the update
             
         }
@@ -827,8 +856,8 @@ function renderPiece(piece){
             return response.blob();
         })
         .then(blob => {
-            $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data=${ URL.createObjectURL(blob)}>
-            </object>`)
+            $("#PieceContent").html(`<img class="object-content mt-3 overflow-auto" src=${ URL.createObjectURL(blob)}>
+            `)
         })
         .catch(error => {
             console.error('Error fetching image:', error);
@@ -861,25 +890,25 @@ $('#typeLeave').on('change', function () {
     const currentAction = actions[leaveType] || actions['default']
     $('.decision').css('display', 'block');
 
-    console.log("actions", actions["Congé Payé"].congePayer);
+    // console.log("actions", actions["Congé Payé"].congePayer);
     
-    if (actions[leaveType].congePayer) {
-        $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
-        .prop('disabled', false); // 
+    // if (actions[leaveType].congePayer) {
+    //     $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
+    //     .prop('disabled', false); // 
 
-    }else{
+    // }else{
 
-    $('#deduire_salaire').prop('checked', false);
-    $('#permission_exceptionnelle').prop('checked', false);
-    $('#rien_a_deduire').prop('checked', false);
-        $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
-        .prop('disabled', true); // 
+    // $('#deduire_salaire').prop('checked', false);
+    // $('#permission_exceptionnelle').prop('checked', false);
+    // $('#rien_a_deduire').prop('checked', false);
+    //     $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
+    //     .prop('disabled', true); // 
 
 
-    }
-    activatePermission(currentAction.permission);
-    activateCp(currentAction.cp[1], currentAction.cp[0]);
-    activateRm(currentAction.rm);
+    // }
+    // activatePermission(currentAction.permission);
+    // activateCp(currentAction.cp[1], currentAction.cp[0]);
+    // activateRm(currentAction.rm);
 });
 
 // $('#typeLeave').on('change', function () {
@@ -1108,7 +1137,7 @@ $('#join').on('change', function (event) {
     $("#input_rien_a_deduire").val("");
     $('#erreurNbreDecision').attr('hidden', true);
 
-    $('.decision').css('display', 'none');
+    // $('.decision').css('display', 'none');
     activatePermission(false)
     activateCp(false);
     activateRm(false)

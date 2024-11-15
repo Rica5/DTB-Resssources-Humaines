@@ -17,6 +17,11 @@ const Leave = mongoose.Schema({
     hour_begin:String,
     hour_end:String,
     piece:String,
+    mode: {
+        type: String,
+        enum: ["congé", "régularisation", "récupération"],
+        default: 'congé'
+    },
     conge_payer : {
         type: Number,
         default: 0
