@@ -483,9 +483,7 @@ const answerRequest = async (req, res) => {
         var deduire_sur_salaire = req.body.deduire_salaire;
         var permission_exceptionnelle = req.body.permission_exceptionnelle;
         var rien_a_deduire = req.body.rien_a_deduire;
-        
-        console.log("req.body", req.body);
-        
+            
 
 
         const io = req.app.get("io");
@@ -599,13 +597,6 @@ const answerRequest = async (req, res) => {
                 if (newStartDate) Data.date_start = newStartDate;
                 if (newEndDate) Data.date_end = newEndDate;
             }
-
-            console.log({
-                deduire_sur_salaire,
-                conge_payer,
-                permission_exceptionnelle,
-                rien_a_deduire
-            })
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
