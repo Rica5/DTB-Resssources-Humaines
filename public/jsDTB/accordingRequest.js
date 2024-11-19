@@ -457,6 +457,8 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         if ($('#typeLeave').val() == "congé"){
             $('#conger_payer').prop("checked", true)
             $('#input_conger_payer').val(duration)
+            console.log("atp ve 1");
+            
             renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,mode);
         }else  {
             $('#rien_a_deduire').prop("checked", true)
@@ -506,7 +508,11 @@ function onDecision(idCheckbox, idInput) {
     
     let findDuration = decisions.find(d=>d.desicion == "conger_payer" )?.duration||0
     
+    console.log("find", findDuration);
+    
     let modeL = $("typeLeave").val()
+    console.log("ato ve .. 2");
+    
     renderSolde(userActive.m_code,userActive.leave_taked,userActive.remaining_leave,findDuration,userActive.leave_stat,userActive.save_at,modeL);
 
 }
@@ -872,19 +878,10 @@ $('#typeLeave').on('change', function () {
     $("#typeLeave").css('borderColor', '#5AC4EC');
 
     const actions = {
-        "Permission exceptionelle": { permission: true, cp: ["ndeduire", true], rm: false, congePayer: false },
-        "Congé Payé": { permission: false, cp: ["deduire", true], rm: false , congePayer: true},
-        "Repos Maladie": { permission: false, cp: ["ndeduire", true], rm: true, congePayer: false },
-        "Consultation médicale": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false},
-        "Congé de maternité": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false},
-        "Assistance maternelle": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
-        "Récupération": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false },
-        "Congé sans solde": { permission: false, cp: ["ndeduire", true], rm: false, congePayer: false },
-        "Absent": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
-        "Mise a Pied": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
-        "Absence Injustifiée": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: false},
-        "": { permission: false, cp: ["deduire", false], rm: false , congePayer: false},
-        "default": { permission: false, cp: ["deduire", true], rm: false , congePayer: false}
+        "congé": { permission: true, cp: ["deduire", true], rm: false, congePayer: false },
+        "régularisation": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: true},
+        "récupération": { permission: false, cp: ["ndeduire", true], rm: true, congePayer: false },
+        
     };
 
     const currentAction = actions[leaveType] || actions['default']
@@ -1047,27 +1044,34 @@ $('#join').on('change', function (event) {
  }
  // Congé payé
  function activateCp(choice, typeL){
-    // var typeL = $('#typeLeave').val();
-    // console.log("typeL", typeL);
-    let nDuration
-    if (typeL == "ndeduire") {
-        nDuration = 0
-    }else{
-         nDuration = parseFloat($('#nbr-day').val())
+    setTimeout(function () {
+        var typeL = $('#typeLeave').val();
+        console.log("typeL", typeL);
+        let nDuration
+        if (typeL == "congé") {
+            nDuration = parseFloat($('#nbr-day').val())
+        }else{
+            nDuration = 0
 
-    }
-    renderSolde(userActive.m_code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
+        }
+        console.log("ato ve 3");
+        
+        renderSolde(userActive.m_code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
 
-    if (choice){
-        $("#typeCp").attr("class","d-flex justify-content-between")
-    }
-    else {
-        $("#typeCp").attr("class","d-none")
-    }
+        if (choice){
+            $("#typeCp").attr("class","d-flex justify-content-between")
+        }
+        else {
+            $("#typeCp").attr("class","d-none")
+        }
+        
+    }, 400)
  }
  function renderSolde(code,acc,rest,duration,auth,save,typeL){
     
     console.log("nn == ", auth);
+    console.log("code,acc,rest,duration,auth,save,typeL", code,acc,rest,duration,auth,save,typeL);
+    
     
     var html = `
     <div>
@@ -1139,7 +1143,7 @@ $('#join').on('change', function (event) {
 
     // $('.decision').css('display', 'none');
     activatePermission(false)
-    activateCp(false);
+    activateCp(true);
     activateRm(false)
  }
 
