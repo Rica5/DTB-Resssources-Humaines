@@ -597,6 +597,14 @@ var nombreDeJours = document.getElementById("nombreDeJours")
 var nombreDeJoursInitial = document.getElementById("nombreDeJoursInitial")
 var btnsave = document.getElementById("save_leave");
 function dissapearq() {
+  conge_payer.checked = false
+  deduire_salaire.checked = false
+  permission_exceptionnelle.checked = false
+  rien_a_deduire.checked = false
+  input_conger_payer.value = ""
+  input_deduire_salaire.value = ""
+  input_permission_except.value = ""
+  input_rien_a_deduire.value = ""
   if (update_quart.checked) {
     hour_absence.setAttribute("class", "d-flex top_down");
     update_dateend.style.display = "none";
@@ -656,6 +664,7 @@ function dissapearo() {
 //Modal
 function openModal() {
   document.getElementById("ModalConge").style.display = "block"
+
 }
 
 function edit(id, code, pieceJointe) {
@@ -670,7 +679,9 @@ function edit(id, code, pieceJointe) {
   waiting_edit.style.opacity = 0;
   openModal();
   leaves.forEach(act_leave => {
+    
     if (act_leave._id == id) {
+    console.log("act_leave", act_leave);
       switch (act_leave.duration) {
         case 0.25:
           update_quart.checked = true;
@@ -700,7 +711,7 @@ function edit(id, code, pieceJointe) {
           dissapearo();
           break;
       }
-      update_type_leave.value = act_leave.type.split("(")[0].trim();
+      update_type_leave.value = act_leave.type //.split("(")[0].trim();
       update_motif.value = act_leave.motif;
       update_datestart.value = act_leave.date_start;
       update_profil.setAttribute("src", `Profil/${retrieve_profil(act_leave.m_code)}`);
@@ -754,10 +765,12 @@ function date_diff(starting, ending) {
   return parseInt(dayl.toFixed(0));
 }
 function Editing() {
-  var totalNbreConge = input_conger_payer.value + input_deduire_salaire.value + input_permission_except.value + input_rien_a_deduire.value
-
+  var totalNbreConge = Number(input_conger_payer.value) + Number(input_deduire_salaire.value) + Number(input_permission_except.value) + Number(input_rien_a_deduire.value)
+  
+  console.log("nombreDeJours.value",totalNbreConge, nombreDeJours.value, input_conger_payer.value, input_rien_a_deduire.value);
   
   if (checking != "n") { 
+    
     if (checking == 0.25 && totalNbreConge == 0.25  ) {
       
       if (update_type_leave.value == "" || update_datestart.value == "" || update_dateend.value == "" || begin.value == "" || end.value == "") {
@@ -768,10 +781,14 @@ function Editing() {
       }
       else {
         btnsave.disabled = true;
+        console.log("editLeave 1", input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
+        
         edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, begin.value, end.value,permissionValue, input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
       }
     }
-    else if(totalNbreConge !== nombreDeJours.value) {
+    else if(totalNbreConge !== Number(nombreDeJours.value)) {
+      console.log("nbre different");
+      
       info.innerHTML = "Veuillez vérifier le nombre du décision et le nombre du jours";
       info.style.display = "block";
       waiting_edit.style.opacity = 0;
@@ -785,14 +802,25 @@ function Editing() {
         btnsave.disabled = false;
       }
       else {
-        btnsave.disabled = true;
+        btnsave.disabled = true;        
+        console.log("editLeave 2", input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
+
         edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, "", "",permissionValue,  input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
       }
     }
 
   }
   else {
-    if (update_type_leave.value == "" && update_datestart.value == "") {
+   if(totalNbreConge !== Number(nombreDeJours.value)) {
+      console.log("nbre different");
+      
+      info.innerHTML = "Veuillez vérifier le nombre du décision et le nombre du jours";
+      info.style.display = "block";
+      waiting_edit.style.opacity = 0;
+      btnsave.disabled = false;
+
+    }
+    else if (update_type_leave.value == "" && update_datestart.value == "") {
       info.innerHTML = "Veuillez remplir tout les informations necessaires";
       info.style.display = "block";
       waiting_edit.style.opacity = 0;
@@ -806,6 +834,8 @@ function Editing() {
     }
     else {
       btnsave.disabled = true;
+      console.log("editLeave 3", input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire);
+
       edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_dateend.value, "n", update_motif.value, update_id, "", "",permissionValue,  input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
     }
   }
@@ -866,7 +896,7 @@ function edit_leave(url, type, startings, endings, val, mt, id, begin, end,excep
   };
   http.send("id=" + id + "&code=" + code_selected + "&type=" + type + "&leavestart=" + startings + "&leaveend=" + endings + "&court=" + val + "&motif=" + mt 
   + "&begin=" + begin + "&end=" + end + "&exceptType=" + exceptType + "&conger_payer=" + conger_payer + "&deduire_salaire=" + deduire_salaire 
-  + "&permission_except=" + permission_except + "&rien_a_deduire" + rien_a_deduire );
+  + "&permission_except=" + permission_except + "&rien_a_deduire=" + rien_a_deduire );
 }
 function null_val(gived, start) {
   if (gived == "" || start == gived) {
