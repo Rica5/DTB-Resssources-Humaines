@@ -156,10 +156,10 @@ function renderAllRequest(Leave){
                         </h1>
                         <div class="ask">
                         
-                                ${leave.conge_payer !== 0 ? `<div><span> A déduire s/ congés payés : </span> <span> ${leave.conge_payer} jours</span> </div>` : ''}
-                                ${leave.deduire_sur_salaire !== 0 ? `<div><span>A déduire s/ salaire : </span> <span> ${leave.deduire_sur_salaire} jours </span></div>` : ''}
-                                ${leave.permission_exceptionnelle !== 0 ? `<div><span>Permission exceptionnelle :</span> <span>  ${leave.permission_exceptionnelle} jours</span></div>` : ''}
-                                ${leave.rien_a_deduire !== 0 ? `<div><span>Rien à déduire :</span> <span>  ${leave.rien_a_deduire} jours</span></div>` : ''}
+                            <div> ${leave.conge_payer !== 0 ? `<span> A déduire s/ congés payés : </span> <span> ${leave.conge_payer} jours</span> ` : ''}</div>
+                            <div>${leave.deduire_sur_salaire !== 0 ? `<span>A déduire s/ salaire : </span> <span> ${leave.deduire_sur_salaire} jours </span>` : ''}</div>
+                            <div>${leave.permission_exceptionnelle !== 0 ? `<span>Permission exceptionnelle :</span> <span>  ${leave.permission_exceptionnelle} jours</span>` : ''}</div>
+                            <div> ${leave.rien_a_deduire !== 0 ? `<span>Rien à déduire :</span> <span>  ${leave.rien_a_deduire} jours</span>` : ''}</div>
                                
                         </div>
                     </div>
