@@ -853,20 +853,62 @@ function closePiece(){
 function renderPiece(piece){
 //     $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data="../PieceJointe/${piece}">
 //   </object>`)
-    const imagePath = `../PieceJointe/${piece}`;
-    fetch(imagePath)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to fetch image');
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            $("#PieceContent").html(`<img class="object-content mt-3 overflow-auto" src=${ URL.createObjectURL(blob)}>
-            `)
-        })
-        .catch(error => {
-            console.error('Error fetching image:', error);
+    const imagePath = `../PieceJointe/${piece}`;  
+
+    // Fonction pour déterminer le type de fichier  
+    function getFileType(url) {  
+        const extension = url.split('.').pop().toLowerCase();  
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {  
+            return 'image';  
+        } else if (extension === 'pdf') {  
+            return 'pdf';  
+        }  
+        return 'other'; // Pour d'autres types de fichiers  
+    }  
+
+    // Fetch du fichier  
+    fetch(imagePath)  
+        .then(response => {  
+            if (!response.ok) {  
+                throw new Error('Failed to fetch the file');  
+            }  
+            return response.blob();  
+        })  
+        .then(blob => {  
+            const blobUrl = URL.createObjectURL(blob);  
+            const fileType = getFileType(imagePath); // Déterminer le type de fichier  
+
+            // Afficher l'élément approprié selon le type de fichier  
+            if (fileType === 'image') {  
+                $("#PieceContent").html(`  
+                    <img class="object-content mt-3 overflow-auto"   
+                        src="${blobUrl}"   
+                        alt="Image de ${piece}"   
+                        onerror="this.onerror=null; this.src='../default-image.jpg'"/>  
+                `);  
+            } else if (fileType === 'pdf') {  
+                $("#PieceContent").html(`  
+                    <iframe class="mt-3"   
+                            src="${blobUrl}"   
+                            width="100%"   
+                            height="600px">  
+                        <p><a href="${blobUrl}">Télécharger le PDF</a></p>  
+                    </iframe>  
+                `);  
+            } else {  
+                $("#PieceContent").html(`  
+                    <p>Ce fichier n'est pas pris en charge. <a href="${blobUrl}" download>Télécharger le fichier</a></p>  
+                `);  
+            }  
+
+            // Libérer l'URL après utilisation  
+            setTimeout(() => {  
+                URL.revokeObjectURL(blobUrl);  
+            }, 100);  
+        })  
+        .catch(error => {  
+            console.error('Error fetching file:', error);  
+            $("#PieceContent").html('<p style="color: red;">Erreur lors du chargement du fichier. Veuillez réessayer.</p>');  
         });
 }
 function addPiece(id){

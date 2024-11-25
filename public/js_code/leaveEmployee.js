@@ -238,6 +238,7 @@ function remove() {
     name_element[r].remove();
   }
 }
+var total_conge = 0
 // For setting leave
 function getdata(code) {
   reloading();
@@ -250,6 +251,9 @@ function getdata(code) {
       initData = data[0];
       for (d = 0; d < initData.length; d++) {
         if (initData[d].m_code == code) {
+          total_conge = initData[d].leave_taked - initData[d].remaining_leave
+          console.log("total", total_conge);
+          
           code_selected = code;
           profil.setAttribute("src", `Profil/${initData[d].profil}`)
           full_name.innerHTML = `${initData[d].first_name} ${initData[d].last_name}`;
@@ -578,7 +582,7 @@ function Abreviation(given){
 async function edit_solde() {
   let empId = employee_id.value;
   let droitRest = droit_rest.value;
-  // let restAuto = reste_apres_auto.value + droitRest;
+  let restAuto = total_conge + Number(droitRest);
 
   const res = await fetch('/api/solde/' + empId, {
     method: 'PUT',
@@ -587,7 +591,7 @@ async function edit_solde() {
     },
     body: JSON.stringify({
       remaining_leave: droitRest,
-      // leave_taked: restAuto
+      leave_taked: restAuto
     })
   })
 

@@ -252,6 +252,7 @@ const LeaveReport = async (req, res) => {
       
       for (i = 0; i < splitedLeaves.length; i++) {
         let getUser = splitedLeaves[i]
+        
         if (getUser.num_agent == m_leave[m]) {
           if (getUser.motif.includes("Congé de maternité")) {
 
@@ -294,12 +295,12 @@ const LeaveReport = async (req, res) => {
               populateAll.populateConge[9] = populateAll.populateConge[9] + 1;
             }
             if (getUser.deduire_sur_salaire != 0) {
-              if (getUser.duration == 0.25) {
-                getUser.duration = 0;
-                var hourCalculate = calcul_timediff_absencereport_spec(getUser.hour_begin, getUser.hour_end);
-                populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + hourCalculate[0];
-                populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] + hourCalculate[1];
-              }
+              // if (getUser.duration == 0.25) {
+              //   getUser.duration = 0;
+              //   var hourCalculate = calcul_timediff_absencereport_spec(getUser.hour_begin, getUser.hour_end);
+              //   populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + hourCalculate[0];
+              //   populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] + hourCalculate[1];
+              // }
               populateAll.populateSansSolde[0] = getUser.num_agent;
               populateAll.populateSansSolde[1] = getUser.m_code;
               populateAll.populateSansSolde[5] = populateAll.populateSansSolde[5] + getUser.deduire_sur_salaire;
@@ -387,7 +388,8 @@ const LeaveReport = async (req, res) => {
         
         // if (m_leave[m] == "0108") {
           // console.log("populateAll", populateAll);
-          console.log("", renderResult(populateAll.populateRepos[5], populateAll.populateRepos[7], populateAll.populateRepos[8]));
+
+          console.log("", renderResult(populateAll.populateRepos[4], populateAll.populateRepos[7], populateAll.populateRepos[8]));
           console.log("pop 7, 8", populateAll.populateRepos[7], populateAll.populateRepos[8]);
           
           
@@ -1918,31 +1920,63 @@ function renderResult_old(day, theHour, theMin) {
   return result
 }
 
-function renderResult(day, theHour, theMin) {
-  // Convert minutes to hours and remaining minutes
-  const additionalHours = Math.abs(theMin / 60);
-  const remainingMinutes = theMin % 60;
+function renderResult(day, theHour, theMin) {  
+  // Convert minutes to hours and remaining minutes  
+  const additionalHours = Math.floor(theMin / 60); // on utilise ici des heures entières  
+  const remainingMinutes = theMin % 60;  
+
+  // Add the additional hours to theHour  
+  const totalHours = theHour + additionalHours;  
+
+  let result = "";  
   
-  // Add the additional hours to theHour
-  const totalHours = theHour + additionalHours;
+  // Combine days and remaining hours only if they make sens  
+  if (day > 0) {  
+    result += `${day}j`;  
+    
+    if (totalHours > 0 || remainingMinutes > 0) {  
+      result += " et ";  
+    }  
+  }  
   
-  // console.log("day", day, theHour , additionalHours);
+  if (totalHours > 0) {  
+    result += `${formatNumber(totalHours)}H`;  
+  }  
   
-  let result = "";
-  result += day > 0 ? `${day}j ` : "";
-  
-  result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";
-  result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";
-  
-  result = result.replace(/\d+\.\d+/g, function (match) {
-    return match.replace('.', '.');
-  });
-  
-  // console.log("resu ==", result);
-  // console.log("****");
-  
-  return result;
+  if (remainingMinutes > 0) {  
+    if (result.length > 0) {  
+      result += " et ";  
+    }  
+    result += `${remainingMinutes}min`;  
+  }  
+
+  return result.trim();  
 }
+// function renderResult(day, theHour, theMin) {
+//   // Convert minutes to hours and remaining minutes
+//   const additionalHours = Math.abs(theMin / 60);
+//   const remainingMinutes = theMin % 60;
+  
+//   // Add the additional hours to theHour
+//   const totalHours = theHour + additionalHours;
+  
+//   // console.log("day", day, theHour , additionalHours);
+  
+//   let result = "";
+//   result += day > 0 ? `${day}j ` : "";
+  
+//   result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";
+//   result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";
+  
+//   result = result.replace(/\d+\.\d+/g, function (match) {
+//     return match.replace('.', '.');
+//   });
+  
+//   // console.log("resu ==", result);
+//   // console.log("****");
+  
+//   return result;
+// }
 
   function precede(letter) {
     console.log("ccc", letter);
