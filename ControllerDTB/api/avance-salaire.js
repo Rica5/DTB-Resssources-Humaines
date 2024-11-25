@@ -37,7 +37,7 @@ async function getListByUserId(req, res) {
             user: id,
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
-                    ...(month >= 0 ? {  // Use month check to determine condition
+                    ...(+month > 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$createdAt" }, +year] },
                             { $eq: [{ $month: "$createdAt" }, +month ] }
@@ -442,6 +442,46 @@ async function payerAvance(req, res) {
     await Avance.findByIdAndUpdate(id, {status: "paid"}, {new: true})
 
     res.status(200).json({ok: true})
+}
+
+//TANDREMO AN !!!
+async function updateAllCongeAnnee(req, res) {
+    var allUser = await User.find()
+    var congeWeekEnd = req.body.congeWeekEnd;
+    var congeNormal = req.body.congeNormal
+    console.log("congeWeekEnd", congeWeekEnd);
+    console.log("congeNormal", congeNormal);
+    return ;
+    for (let i = 0; i < allUser.length; i++) {
+        const element = allUser[i];
+            
+        var new_leave_taked_WeekEnd = Number(element.remaining_leave) + congeWeekEnd
+        var new_leave_taked_Week = Number(element.remaining_leave) + congeNormal   // 27.5 + 
+            
+        if (element.shift=="SHIFT WEEKEND" && element.remaining_leave < 0){
+                // console.log("eleme====", element.leave_taked);
+                // console.log("eleme now==", Number(element.remaining_leave) + Number(congeWeekEnd));
+                
+            if (element.leave_taked !== new_leave_taked_WeekEnd) {
+                console.log("mcode", element.m_code);
+            }
+            await User.findByIdAndUpdate({_id: element._id}, {leave_taked: new_leave_taked_WeekEnd})
+        }else if(element.remaining_leave < 0) {
+            // console.log("eleme====", element.leave_taked);
+            // console.log("eleme now==", Number(element.remaining_leave) + Number(congeNormal));
+            if (element.leave_taked !== new_leave_taked_Week) {
+                console.log("mcode", element.m_code);
+            }
+            await User.findByIdAndUpdate({_id: element._id}, {leave_taked: new_leave_taked_Week})
+        }
+            // console.log("*************");
+            // console.log();
+        
+    }
+
+    console.log("finif");
+    
+    
 }
 
 function generateTokenWithId(id) {
@@ -953,5 +993,6 @@ module.exports = {
     exportFile,
     giveAccess,
     checkUrgenceAccess,
-    refuseRequest
+    refuseRequest,
+    updateAllCongeAnnee
 }

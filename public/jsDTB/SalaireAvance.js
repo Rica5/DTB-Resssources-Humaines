@@ -374,7 +374,7 @@ $("#envoyer-avance").on("click", async function () {
             is_urgent: is_urgent,
         }
         // verify if employee has already sent a request of this month
-        const myRequestsOfThisMonth = await ui.getMyRequestsOfThisMonth();
+        const myRequestsOfThisMonth = 0 //await ui.getMyRequestsOfThisMonth();
 
         console.log(myRequestsOfThisMonth)
 

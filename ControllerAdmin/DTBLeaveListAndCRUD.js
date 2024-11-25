@@ -470,16 +470,25 @@ const createLeave = async (req, res) => {
     ) {
       res.json({ status: "duplicata" });
     } else {
+
+      // ETO NO MANOMBOKA NY ASA
       if (val == "n") {
-        taked = Methods.date_diff(leavestart, leaveend) + 1;
+        taked = Methods.date_diff(leavestart, leaveend) + 1; // duration avy amin'ny daty
       } else {
         if (val <= 1) {
-          leaveend = leavestart;
+          leaveend = leavestart; // mitovy ny date roa (start, end)
         }
-        taked = val;
+        taked = val; // egal 1 na 0 na negatif
       }
+
+      // taked: duration
+
       var last_acc = 0;
-      if (according_leave(user.leave_stat, moment(user.save_at).format("YYYY-MM"), moment(leavestart).format('YYYY-MM')) && type == "Congé Payé") {
+      if (
+          according_leave(user.leave_stat, moment(user.save_at).format("YYYY-MM"), moment(leavestart).format('YYYY-MM'))
+          &&
+          type == "Congé Payé"
+      ) {
         if (globaleVariable.deduire.includes(type)) {
           deduction = " ( a déduire sur salaire )";
         }
@@ -595,6 +604,7 @@ const createLeave = async (req, res) => {
           new_leave.rest = new_leave.rest + second[2];
           new_leave.acc = new_leave.acc + second[2];
           var theLeave = await LeaveSchema(new_leave).save();
+          
           new_leave.date_start = second[0];
           new_leave.date_end = second[1];
           new_leave.duration = second[2];
