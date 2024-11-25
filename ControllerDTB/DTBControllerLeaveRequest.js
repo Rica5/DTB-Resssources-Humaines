@@ -205,6 +205,31 @@ const attachedFile = async (req, res) => {
         res.redirect("/");
     }
 }
+
+const deleteFile = async (req, res) => {
+    var session = req.session;
+            console.log("id", req.body);
+    if (session.occupation_a == "Admin") {
+        try {
+            var idLeave = req.body.idForFile;
+            await LeaveRequestTest.findOneAndUpdate({ _id: idLeave }, { piece: '' });
+            
+            res.json({
+                status: "Success",
+            })
+        }
+        catch (err) {
+            res.json({
+                status: "Error",
+                err: err
+            })
+        }
+    }
+    else {
+        res.redirect("/");
+    }
+}
+
 const attachedFileAnother = async (req,res) => {
     var session = req.session;
     if ( session.occupation_a == "Admin"){
@@ -944,5 +969,5 @@ module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seePending, getPending, answerRequest, getNotifications,
     removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,
     getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother, seeTreatedLeave, getLeaveRequestFiltered,
-    leaveTracking
+    leaveTracking, deleteFile
 }
