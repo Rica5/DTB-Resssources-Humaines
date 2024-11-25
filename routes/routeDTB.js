@@ -108,6 +108,7 @@ routeExpDTB.route("/makeRequest").post(Controller.makeLeaveRequest);
 //Attached file
 routeExpDTB.route("/joinFileLeave").post(Controller.attachedFile);
 routeExpDTB.route("/joinFileLeaveAnother").post(Controller.attachedFileAnother);
+routeExpDTB.route("/deleteFileLeave").post(Controller.deleteFile)
 //Get all request
 routeExpDTB.route("/MyRequest").post(Controller.getMyRequest);
 //See pending request

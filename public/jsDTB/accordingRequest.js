@@ -1019,6 +1019,39 @@ $('#join').on('change', function (event) {
  function replacePiece(){
     addPiece(idForFile);
  }
+
+ function deletePiece() {
+    // supPiece(idForFile);
+    console.log("idForFile", idForFile);
+    
+    $.ajax({
+        url: "/deleteFileLeave",
+        method: "POST",
+        data: {idForFile: idForFile},
+        success: function (res) {
+            
+            if (res.status == "Success"){
+                
+                // Utilise setTimeout pour cacher le modal après 3 secondes (3000 millisecondes)  
+                setTimeout(function() {  
+                    UpdateRequest()
+                    $("#ModalPiece").hide();
+                }, 3000);  
+            }
+            else {
+                $("#sendRequest").prop("disabled",false);
+                $('#loading').hide();
+                $("#notification").attr("class","notice-denied");
+                $("#notification").text("Une erreur est survenue lors du supprimer du fichier");
+                $("#notification").show();
+                setTimeout(() => {
+                    $("#notification").hide();
+                }, 5000);
+            }
+           
+        }
+    })
+ }
  //Permission exceptionelle
  function activatePermission(choice){
     if (choice){
