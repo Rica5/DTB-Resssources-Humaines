@@ -91,6 +91,7 @@ routeExpDTB.route('/api/avance/:id?').get(API_Avance.getListByUserId).put(API_Av
 routeExpDTB.route('/api/solde/:id?').put(API_Solde.updateSolde)
 routeExpDTB.route('/api/avance/verification/:id?').get(API_Avance.verificationDemand)
 routeExpDTB.route('/api/avance/payer/:id?').get(API_Avance.payerAvance)
+routeExpDTB.route('/api/avance/updateAllCongeAnnee').post(API_Avance.updateAllCongeAnnee)
 routeExpDTB.route("/api/avance/updateCode").post(ControllerMember.updateCode)
 routeExpDTB.route('/avance/verification/:id?').get(ControllerAvance.getVerificationPage)
 //administrator avance
@@ -107,6 +108,7 @@ routeExpDTB.route("/makeRequest").post(Controller.makeLeaveRequest);
 //Attached file
 routeExpDTB.route("/joinFileLeave").post(Controller.attachedFile);
 routeExpDTB.route("/joinFileLeaveAnother").post(Controller.attachedFileAnother);
+routeExpDTB.route("/deleteFileLeave").post(Controller.deleteFile)
 //Get all request
 routeExpDTB.route("/MyRequest").post(Controller.getMyRequest);
 //See pending request

@@ -205,6 +205,31 @@ const attachedFile = async (req, res) => {
         res.redirect("/");
     }
 }
+
+const deleteFile = async (req, res) => {
+    var session = req.session;
+            console.log("id", req.body);
+    if (session.occupation_a == "Admin") {
+        try {
+            var idLeave = req.body.idForFile;
+            await LeaveRequestTest.findOneAndUpdate({ _id: idLeave }, { piece: '' });
+            
+            res.json({
+                status: "Success",
+            })
+        }
+        catch (err) {
+            res.json({
+                status: "Error",
+                err: err
+            })
+        }
+    }
+    else {
+        res.redirect("/");
+    }
+}
+
 const attachedFileAnother = async (req,res) => {
     var session = req.session;
     if ( session.occupation_a == "Admin"){
@@ -471,13 +496,19 @@ const answerRequest = async (req, res) => {
         var id = req.body.id;
         var response = req.body.response;
         var comment = req.body.reason;
-        var checking = req.body.checking;
+        var checking = req.body.checking; //duration
         var newStartTime = req.body.newStartTime;
         var newEndTime = req.body.newEndTime;
         var newDuration = parseFloat(req.body.newduration);
         var newStartDate = req.body.newStartDate;
         var newEndDate = req.body.newEndDate;
         var refus_order = req.body.refus_order;
+
+        var conge_payer = req.body.conge_payer;
+        var deduire_sur_salaire = req.body.deduire_salaire;
+        var permission_exceptionnelle = req.body.permission_exceptionnelle;
+        var rien_a_deduire = req.body.rien_a_deduire;
+            
 
 
         const io = req.app.get("io");
@@ -499,7 +530,7 @@ const answerRequest = async (req, res) => {
             // update leave
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },
                 { $push: { validation: approbator },
-                comment: comment, status: status },
+                comment: comment, status: status, },
                 { new: true }
             );
 
@@ -594,11 +625,15 @@ const answerRequest = async (req, res) => {
 
             // update the leave request
             var thisLeave = await LeaveRequestTest.findOneAndUpdate({ _id: id },{
-                ...Data
+                ...Data,
+                deduire_sur_salaire,
+                conge_payer,
+                permission_exceptionnelle,
+                rien_a_deduire
             }, { new: true })
             .populate({ path: "validation.user", select: "usuel" });
 
-            var title = `Absence pour ${thisLeave.motif}`
+            // var title = `Absence pour ${thisLeave.motif}`
             var content = "";
             
             if (response != "true") {
@@ -934,5 +969,5 @@ module.exports = {
     getHomePage, getLeaveRequest, makeLeaveRequest, getMyRequest, seePending, getPending, answerRequest, getNotifications,
     removeAllNotification, removeNotification, markAsReadAllNotification, markAsReadNotification, attachedFile,
     getLeaveRequestById, updateLeaveRequest, cancelLeaveRequest, attachedFileAnother, seeTreatedLeave, getLeaveRequestFiltered,
-    leaveTracking
+    leaveTracking, deleteFile
 }

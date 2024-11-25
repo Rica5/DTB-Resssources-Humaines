@@ -282,7 +282,7 @@
     transform: translate(-50%, -50%);
     transform-origin: center;
     width: 950px;
-    height: auto;
+    height: 100%;
     padding: 25px 25px;
     animation: flating 1s ease-in;
 }
@@ -498,4 +498,9 @@ p {
 
 #gerantList button{
     display: none !important;
+}
+
+#PieceContent{
+    overflow-y: scroll;
+    max-height: 80vh;
 }

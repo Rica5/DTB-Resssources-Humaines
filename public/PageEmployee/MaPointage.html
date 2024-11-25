@@ -54,9 +54,6 @@
                     </div>
                 </div>
                 <div class="menu mt-1">
-                    <a href="/mySpace" class="text-menu mx-2">
-                        Accueil
-                    </a>
                     <a href="/employee" class="text-menu active-menu mx-2">
                         Pointage
                     </a>
@@ -82,6 +79,418 @@
             </div>
         </div>
         <div class="limiter" id="login">
+          <div class="container-login100">
+            <div class="wrap-login100">
+              <center>
+                <div class="login101-pic">
+                  <div
+                    style="
+                      position: relative;
+                      width: 325px;
+                      height: 325px;
+                      overflow: auto;
+                    "
+                  >
+                    <img
+                      style="
+                        border-radius: 50%;
+                        object-fit: cover;
+                        width: 100%;
+                        height: 100%;
+                      "
+                      src="Profil/<%= user?.profil %>"
+                      id="my_profil"
+                      alt="IMG"
+                    />
+                    <button
+                      onclick="profil_click()"
+                      class="transparent-button"
+                      style="
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                      "
+                    >
+                      Modifier Profil
+                    </button>
+                    <input
+                      id="file-upload"
+                      style="display: none"
+                      type="file"
+                      name="uploadFile"
+                    />
+                  </div>
+    
+                  <span class="login100-form-title" style="margin-top: 20px">
+                    <%= user?.first_name %> <%= user?.last_name %>
+                  </span>
+                  <div id="profil_status" class="" style="display: none"></div>
+    
+                  <div class="text-center">
+                    <a href="/exit_u"
+                      ><button class="login10l-form-btn">DECONNEXION</button></a
+                    >
+                  </div>
+    
+                  <div id="entry_agent" style="display: none">
+                    <hr />
+                    <label for="standard">
+                      Heure d'entrée pour aujourd'hui
+                      <br />
+                      <b>( A remplir a chaque début du shift )</b>
+                      <br />
+                      <i
+                        style="font-size: 50px"
+                        class="fa-solid fa-hand-point-down fa-bounce mt-3"
+                      ></i>
+                    </label>
+                    <br />
+                    <div class="row">
+                      <div class="col-md-8">
+                        <input
+                          type="time"
+                          value="<%= user?.entry %>"
+                          id="time_entry"
+                        />
+                      </div>
+                      <div class="col-md-4 ok-button">
+                        <button class="btn btn-primary" onclick="change_entry()">
+                          OK
+                        </button>
+                      </div>
+                    </div>
+    
+                    <hr />
+                  </div>
+                  <div id="entry_other" style="display: none">
+                    <hr />
+                    <label for="standard"> Heure d'entrée fixe </label>
+                    <br />
+                    <input
+                      type="time"
+                      value="<%= user?.entry %>"
+                      id="time_entry2"
+                      disabled
+                    />
+                    <hr />
+                  </div>
+                  <% if (another != "n") { %>
+                  <hr />
+                  <form action="/change_interface" method="post">
+                    <input type="hidden" name="mail" value="<%= user?.username %>" />
+                    <input type="hidden" name="opt" value="c" />
+                    <button type="submit" class="btn btn-md btn-primary">
+                      INFOS CONGES
+                      <i class="fa-solid fa-person-walking-luggage"></i>
+                    </button>
+                  </form>
+                  <hr />
+                  <% } %> <% if (status_poste != "n") { %>
+                  <form action="/change_interface" method="post">
+                    <input type="hidden" name="mail" value="<%= user?.username %>" />
+                    <input type="hidden" name="opt" value="s" />
+                    <input type="hidden" name="poste" value="<%= status_poste %>" />
+                    <button type="submit" class="btn btn-md btn-success">
+                      STATUS EMPLOYER <i class="fa-solid fa-users"></i>
+                    </button>
+                  </form>
+                  <hr />
+                  <% } %> <% if ( administrator != "n") { %>
+                  <form action="/change_interface" method="post">
+                    <input type="hidden" name="mail" value="<%= user?.username %>" />
+                    <input type="hidden" name="opt" value="a" />
+                    <button type="submit" class="btn btn-md btn-info">
+                      ADMINISTRATION <i class="fa-solid fa-book-open"></i>
+                    </button>
+                  </form>
+                  <hr />
+                  <% } %>
+                </div>
+              </center>
+    
+              <div class="login100-form validate-form mt-3">
+                <span id="time" class="login100-form-title"> </span>
+                <span class="login100-form-title"> Definissez votre status </span>
+                <div id="forgetpage" style="display: none; margin-top: 20px">
+                  <div id="forget" class="alert alert-info" role="alert">
+                    Vous avez oublie de cliquer sur parti le :
+                  </div>
+                  <div class="wrap-input100 validate-input mb-3 mt-3">
+                    <label for="exampleFormControlTextarea1" class="form-label"
+                      >Vous avez quitté le travail à :
+                    </label>
+                    <input type="time" id="timeforget" />
+                  </div>
+                  <div class="wrap-input100 validate-input">
+                    <button
+                      id="bntsf"
+                      onclick="timeforget()"
+                      class="login100-form-btn"
+                    >
+                      ENVOYER
+                    </button>
+                  </div>
+                </div>
+                <div id="latepage" style="display: none; margin-top: 20px">
+                  <% if (latelist.length != 0) { %>
+                  <div class="alert alert-danger" role="alert">
+                    <h6>Liste de vos retard enregistrés ce mois-ci :</h6>
+                    <ol>
+                      <% latelist.forEach(element => { %>
+                      <li><%= element %></li>
+                      <% }) %>
+                    </ol>
+                    <% if (latelist.length == 2) { %> "Faite attention a vos
+                    retards" <% } %> <% if (latelist.length == 4) { %> "Retard trop
+                    frequent, un alerte a été envoyé" <% } %>
+                  </div>
+                  <% } %>
+    
+                  <div id="late" class="alert alert-info" role="alert"></div>
+                  <div class="wrap-input100 validate-input">
+                    <label for="exampleFormControlTextarea1" class="form-label"
+                      >La raison de votre retard :</label
+                    >
+                    <textarea
+                      id="latereason"
+                      style="background: rgba(30, 152, 233, 0.5)"
+                      class="form-control"
+                    >
+                    </textarea>
+                  </div>
+                  <div class="wrap-input100 validate-input">
+                    <button id="bntsr" onclick="reason()" class="login100-form-btn">
+                      ENVOYER
+                    </button>
+                  </div>
+                </div>
+                <div id="statpage">
+                  <div class="wrap-input100 validate-input">
+                    <div hidden
+                      style="
+                        border-top-right-radius: 75px;
+                        border-bottom-left-radius: 75px;
+                        border-top-left-radius: 15px;
+                        border-bottom-right-radius: 15px;
+                      "
+                      id="consigne"
+                      class="alert alert-info"
+                      role="alert"
+                    >
+                      <h6 class="text-center">Motivation du jour &#128578;</h6>
+                      <ul class="mt-3">
+                        <li>
+                          <small id="citation_jour">
+                          >
+                        </li>
+                        <h6 class="text-center mt-3">Ensemble nous avançons !!!</h6>
+                      </ul>
+                    </div>
+                    <select
+                      id="locaux"
+                      class="input100"
+                      onchange="passed()"
+                      style="border-color: transparent"
+                    >
+                      <option value="Not defined">Ou vous etes ?</option>
+                      <option value="S2 Ivandry">S2 Ivandry</option>
+                      <option value="Travaille a domicile">
+                        Travaille à domicile
+                      </option>
+                      <option value="En dehors du bureau">
+                        En dehors du bureau
+                      </option>
+                    </select>
+                    <br />
+                    <select
+                      id="hour"
+                      class="input100"
+                      onchange="passed()"
+                      style="border-color: transparent"
+                    >
+                      <option value="">Choisissez l'heure de travaille</option>
+                      <option value="2">2 heures</option>
+                       <option value="3">3 heures</option>
+                      <option value="4">4 heures</option>
+                      <option value="5">5 heures</option>
+                      <option value="6">6 heures</option>
+                      <option value="7">7 heures</option>
+                      <option value="8">8 heures</option>
+                      <option value="9">9 heures</option>
+                      <option value="10">10 heures</option>
+                    </select>
+                    <div
+                      id="info"
+                      style="display: none; margin-top: 20px"
+                      class="alert alert-info"
+                      role="alert"
+                    >
+                      Here is an information
+                    </div>
+                    <div id="waiting" style="display: none" class="text-center">
+                      <p>Prise en compte du pointage</p>
+                      <i class="fa-solid fa-spinner fa-spin"></i>
+                    </div>
+                  </div>
+                  <br />
+                  <select
+                    id="changing_hour"
+                    class="input100"
+                    onchange="changing_hour()"
+                    style="border-color: transparent; display: none"
+                  >
+                    <option value="">Changer l'heure de travaille</option>
+                     <option value="2">2 heures</option>
+                       <option value="3">3 heures</option>
+                      <option value="4">4 heures</option>
+                      <option value="5">5 heures</option>
+                      <option value="6">6 heures</option>
+                      <option value="7">7 heures</option>
+                      <option value="8">8 heures</option>
+                      <option value="9">9 heures</option>
+                      <option value="10">10 heures</option>
+                  </select>
+                  <br />
+                  <div class="wrap-input100 validate-input">
+                    <button
+                      id="w"
+                      style="display: none"
+                      onclick="working()"
+                      class="login100-form-btn"
+                    >
+                      TRAVAILLER
+                    </button>
+                  </div>
+                  <div class="wrap-input100">
+                    <select
+                      id="a"
+                      style="display: none; border: 0 !important"
+                      class="login10a-form-btn text-center"
+                      onchange="away()"
+                    >
+                      <option value="">ABSENT(E)</option>
+                      <option value="BREAK">Petit Break</option>
+                      <option value="DEJEUNER">Parti dejeuner</option>
+                      <option value="PAUSE">Parti en pause</option>
+                      <option value="ABSENT">Autre raison</option>
+                    </select>
+                    <div
+                      id="abr"
+                      class="wrap-input100 validate-input"
+                      style="display: none"
+                    >
+                      <label for="exampleFormControlTextarea1" class="form-label"
+                        >La raison de votre absence :</label
+                      >
+                      <textarea
+                        id="awayreason"
+                        style="background: rgba(30, 152, 233, 0.5)"
+                        class="form-control"
+                      >
+                      </textarea>
+                      <div class="row my-2">
+                        <div class="col-md-6">
+                          <button
+                            id="btnarp"
+                            onclick="away_complete()"
+                            class="login102s-form-btn float-left"
+                          >
+                            PARTI
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="wrap-input100 validate-input">
+                    <select
+                      id="l"
+                      style="display: none; border: 0 !important"
+                      class="login10l-form-btn text-center"
+                      onchange="left()"
+                    >
+                      <option value="">PARTI</option>
+                      <option value="POSTE">Changer de poste</option>
+                      <option value="S2 Ivandry">Deplacement chez S2 Ivandry</option>
+                      <option value="Travaille a domicile">
+                        Changement en travaille à domicile
+                      </option>
+                      <option value="En dehors du bureau">
+                        Travailler en dehors du bureau
+                      </option>
+                      <option value="QUITTER">Fini pour aujourd'hui</option>
+                    </select>
+                  </div>
+                  <span class="login100-form-title"> STATUS ACTUEL </span>
+                  <div class="wrap-input100 validate-input">
+                    <center>
+                      <button id="s" class="login10w-form-btn" style="background:#57b846;font-size:12px;"></button>
+                    </center>
+                  </div>
+                </div>
+                <div
+                  id="denie"
+                  class="alert alert-danger"
+                  role="alert"
+                  style="display: none; margin-top: 20px"
+                ></div>
+    
+                <div class="text-center p-t-10">
+                  <h1 class="txt2">Application Solumada, Copyright 2022</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="modalForm" class="modal-employee">
+          <div class="modal-element">
+            <h1 id="title_break" class="text-title">
+              VOTRE HEURE DE PAUSE SE TERMINE DANS
+            </h1>
+            <div class="timer-content mt-5">
+              <div class="box-hour mx-3">
+                <h1 id="minutes" class="text-timer"></h1>
+              </div>
+              <div class="box-hour mx-3">
+                <h1 id="secondes" class="text-timer"></h1>
+              </div>
+              <div class="box-hour mx-3">
+                <h1 id="tiers" class="text-timer"></h1>
+              </div>
+            </div>
+            <div class="advise-content mt-5">
+              <div class="box-advice">
+                <h3 id="advice_for_you" class="text-advice">
+                  Les pauses permettent à l'esprit de se reposer et peuvent stimuler
+                  la créativité. En prenant du recul par rapport à une tâche, vous
+                  pourriez revenir avec des idées nouvelles et innovantes.
+                </h3>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center align-items-center mt-5">
+              <button class="btn btn-md btn-secondary" onclick="closeModal()">
+                RETOURNER TRAVAILLER <i class="fa-solid fa-desktop"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="warning" class="modal-warning">
+          <div class="modal-element-warning">
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="card-warning">
+                  <h3>Bonjour <%= user?.usuel %></h3>
+                  <h6 class="mt-3">Suite à la demande des ressources humaines concernant à ce que notre photo de profil sur le pointage soit notre photo récente, la votre ne correspond pas au type de photo attendu.</h6>
+                  <h6 class="mt-2">Veuillez mettre une photo de profil qui vous représente vous.</h6>
+                  <h6 class="mt-2">NB: Si vous ne pouvez pas copier votre photo de profil dans votre ordinateur, veuillez demander aux ADMIN.</h6>
+                  <h6 class="mt-2">Merci!!!</h6>
+                  <button onclick="closeWarn()" class="btn btn-sm btn-info mt-3">BIEN RECU <i class="fa-solid fa-thumbs-up fa-bounce"></i></button>
+            </div>
+              </div>
+          </div>
+        </div>
+
+
+        <!-- <div class="limiter" id="login">
             <div class="container-login100">
               <div class="wrap-login100">
                 <center>
@@ -89,15 +498,26 @@
                     <div
                       style="
                         position: relative;
-                        width: 325px;
-                        height: 325px;
-                        overflow: auto;
                         display: flex;
                         justify-content: center;
                         align-items: center;
                       "
                     >
-                    <button id="s" class="login101-form-btn">PARTI</button>
+                    <img
+                      style="
+                        border-radius: 50%;
+                        object-fit: cover;
+                        width: 325px;
+                        height: 325px; padding: 10px;
+                        margin-bottom: 50px;
+                      "
+                      src="Profil/<%= user?.profil %>"
+                      id="my_profil"
+                      alt="IMG"
+                    />
+                    <button id="s" class="login101-form-btn" style="position: absolute; font-size: small; 
+                    bottom: 17px;
+                    border: 8px solid white;">PARTI</button>
                     </div>
                     <span id="time" class="login100-form-title mt-3"> </span>
                     <div id="profil_status" class="" style="display: none"></div>
@@ -159,7 +579,7 @@
                     <form action="/change_interface" method="post">
                       <input type="hidden" name="mail" value="<%= user.username %>" />
                       <input type="hidden" name="opt" value="s" />
-                      <input typte="hidden" name="poste" value="<%= status_poste %>" />
+                      <input type="hidden" name="poste" value="<%= status_poste %>" />
                       <button type="submit" class="btn btn-md btn-success">
                         STATUS EMPLOYER <i class="fa-solid fa-users"></i>
                       </button>
@@ -398,7 +818,7 @@
                 </div>
               </div>
             </div>
-             <!-- notification modal -->
+             <!-- notification modal - ->
            <div class="notification-modal">
             <h2>
                 <i class="fa-solid fa-bell icons"></i>
@@ -409,7 +829,7 @@
                 <button type="button" onclick="removeAllNotifications()">Effacer les notifications</button>
             </div>
             <div id="notifContent" class="notification-list">
-                <!-- notification item -->
+                <!-- notification item - ->
 
             </div>
 
@@ -461,7 +881,9 @@
               </div>
                 </div>
             </div>
-          </div>
+          </div>  -->
+          
+          
           <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
           <script src="/js_code/socket.js"></script>
@@ -480,6 +902,9 @@
             var time_entry = document.getElementById("time_entry");
             var locatenow = document.getElementById("locaux");
             var shift_exclude = ["COURSIER", "MANAGER", "RH", "DEV", "ENG", "GERANT"];
+
+            
+    
             if (
               time_entry.value == "" &&
               shift_exclude.includes(user_occup) === false
@@ -973,6 +1398,99 @@
                 }
             });
         }
+    </script>
+    <script>
+      
+      var profil_input = document.getElementById("file-upload")
+        function profil_click() {
+        profil_input.click();
+        }
+        
+        var imageUrl = "";
+
+(function () {
+  function Init() {
+    var fileSelect = document.getElementById('file-upload');
+    fileSelect.addEventListener('change', fileSelectHandler, false);
+
+  }
+
+  function fileSelectHandler(e) {
+    // Fetch FileList object
+    var files = e.target.files || e.dataTransfer.files;
+
+    // Process all File objects
+    for (var i = 0, f; f = files[i]; i++) {
+      resizeImage(f, 640 * 480, function (blob) {
+
+        // Do something with the resized image blob.
+        imageUrl = URL.createObjectURL(blob);
+        uploadFile(blob, files[0].name);
+      });
+
+    }
+  }
+  function resizeImage(file, maxSize, callback) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const image = new Image();
+      image.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        let width = image.width;
+        let height = image.height;
+        let scale = 1;
+
+        // Scale the image down to fit within the maximum file size.
+        while ((width * height * scale * scale) > maxSize) {
+          scale -= 0.1;
+        }
+
+        // Resize the image using the canvas element.
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        // Convert the canvas back to a Blob and pass it to the callback function.
+        canvas.toBlob(function (blob) {
+          callback(blob);
+        }, file.type, 0.8);
+      }
+      image.src = reader.result;
+    }
+    reader.readAsDataURL(file);
+  }
+
+
+
+  function uploadFile(file, name) {
+
+    var xhr = new XMLHttpRequest();
+
+    // File received / failed
+    xhr.onreadystatechange = function (e) {
+      if (xhr.readyState == 4) {
+        if (xhr.responseText == "Ok") {
+          document.getElementById("my_profil").setAttribute("src", imageUrl);
+        }
+      }
+    };
+
+    // Start upload
+    xhr.open('POST', "profil", true);
+    var filedata = new FormData();
+    filedata.append("fileup", file);
+    filedata.append("names", name);
+    xhr.send(filedata);
+  }
+
+  // Check for the various File API support.
+  if (window.File && window.FileList && window.FileReader) {
+    Init();
+  } else {
+
+  }
+})();
     </script>
     <script src="../jsDTB/no-connection.js"></script>
   </body>

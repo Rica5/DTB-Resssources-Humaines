@@ -59,6 +59,22 @@ const Leave = mongoose.Schema({
             default: ""
         }
     }],
+    conge_payer : {
+        type: Number,
+        default: 0
+    },
+    deduire_sur_salaire: {
+        type: Number,
+        default: 0
+    },
+    permission_exceptionnelle: {
+        type: Number,
+        default: 0
+    },
+    rien_a_deduire: {
+        type: Number,
+        default: 0
+    }
 
 }, {
     toJSON: { virtuals: true },

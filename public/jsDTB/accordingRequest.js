@@ -295,17 +295,17 @@ const escapedMotif = (str) => new String(str)
   .replace(/\n/g, ' ');
 
 function renderButton(role,leave){
-    var button = ""
+    var button = ""    
     switch(role){
-        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Refusée <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Refusée <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin": case "Gerant": button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Refusée <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Acceptée <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -324,13 +324,13 @@ function renderButton(role,leave){
 function renderButtonNoDenied(role,leave){
     var button = ""
     switch(role){
-        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
-        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
+        case "Surveillant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Aperçu <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Opération" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>
                                      <button onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
         case "Admin": case "Gerant": button = `${renderPiece(leave)}
-                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
+                                 <button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">Approuver <i class="fa-solid fa-thumbs-up"></i></button>
                                  <button disabled onclick="Declined('${leave._id}','${leave.m_code}')" class="btn btn-sm btn-danger btn-response">Réfuser <i class="fa-solid fa-ban"></i></button>`;break;
-        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
+        case "Gerant" : button = `<button onclick="According('${leave._id}','${leave.m_code}','${leave.type}','${leave.duration}', \`${escapedMotif(leave.motif)}\`, '${leave.date_start}', '${leave.date_end}', '${leave.hour_begin}', '${leave.hour_end}', '${leave.mode}')" class="btn btn-sm btn-success btn-response  mx-3">OK pour moi <i class="fa-solid fa-thumbs-up"></i></button>`;break;
         default : "" 
     }
     return button
@@ -412,15 +412,19 @@ function dateDiffers(created, now) {
         }
   }
 
-function According(id,code,type,duration, motif, datestart, dateend, hourBegin, hourEnd){
+function According(id,code,type,duration, motif, datestart, dateend, hourBegin, hourEnd, mode){
+    reset()
     // method to disable field in array
     const disable = arr => arr.map(id => $(`#${id}`).prop('disabled', true));
     const appr = $(`#val-${id}`).val();
     const misyGerant = appr.split('|').includes(GerantId);
 
+    console.log("mmm", mode);
+    
     userActive = users.find(user => user.m_code == code);
+        
     if (role == 'Gerant' ){
-        $("#typeLeave").val(type);
+        $("#typeLeave").val(mode);
         $("#orderCheck").hide();
         $("#title").text("Le type de congé décidé par la ressource humaine est:");
 
@@ -443,37 +447,40 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         
     }
     else {
-        $('#typeLeave').val("");
+        $('#typeLeave').val(mode);
         $("#motif-input").val(motif);
         $("#datestart").val(datestart);
         $("#dateend").val(dateend);
         $("#default-nbr-day").val(duration);
         $("#nbr-day").val(duration);
-        
-        var typeL = $('#typeLeave').val();
-        $('#nbr-day').on('change', () => {
-            let nDuration = parseFloat($('#nbr-day').val())
-            console.log('ato', userActive.leave_stat)
-            if ($('#typeLeave').val() == "Congé Payé" || $('#typeLeave').val() == ""){
-                renderSolde(code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
-            }
-    
-        });
+
+        if ($('#typeLeave').val() == "congé"){
+            $('#conger_payer').prop("checked", true)
+            $('#input_conger_payer').val(duration)
+            console.log("atp ve 1");
+            
+            renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,mode);
+        }else  {
+            $('#rien_a_deduire').prop("checked", true)
+            $('#input_rien_a_deduire').val(duration)
+        }
     }
     idActive = id;
     // userActive = users.find(user => user.m_code == code);
     $("#codeAccept").text(`Voulez vous vraiment accepter l'absence de ${code}`)
     $("#project").html(renderProject(userActive.project));
     duration = parseFloat(duration)
-    var typeL = $('#typeLeave').val();
+    
+    
     if (role == "Admin"){
-        reset()
-        renderSolde(code,userActive.leave_taked,userActive.remaining_leave,duration,userActive.leave_stat,userActive.save_at,typeL);
+        $("#typeCp").removeAttr("class");
+        // renderSolde(code,userActive.leave_taked,userActive.remaining_leave,0,userActive.leave_stat,userActive.save_at,mode);
         setNumberPermission(code)
     }
     $("#ModalAccord").show();
     $('#modal-duration').val(duration);
 
+    console.log("===> ", $('#typeLeave').val());
     
     if (misyGerant) {
         $("#orderCheck").attr('hidden', '');
@@ -482,6 +489,31 @@ function According(id,code,type,duration, motif, datestart, dateend, hourBegin, 
         $("#orderCheck").removeAttr('hidden', '');
         $("#sayYes").prop('checked', false);
     }
+
+}
+
+var decisions = []
+function onDecision(idCheckbox, idInput) {
+
+    let checkDecisions = decisions.find(d=>d.desicion == idCheckbox )
+    if($("#"+idCheckbox).prop("checked") ){
+        let duration = $("#"+idInput).val()
+        if(checkDecisions) 
+            checkDecisions.duration = duration
+        else
+            decisions.push({desicion: idCheckbox, duration : duration})
+    }else{
+        decisions = decisions.filter(d=>d.desicion!=idCheckbox)
+    }
+    
+    let findDuration = decisions.find(d=>d.desicion == "conger_payer" )?.duration||0
+    
+    console.log("find", findDuration);
+    
+    let modeL = $("typeLeave").val()
+    console.log("ato ve .. 2");
+    
+    renderSolde(userActive.m_code,userActive.leave_taked,userActive.remaining_leave,findDuration,userActive.leave_stat,userActive.save_at,modeL);
 
 }
 function Declined(id,code){
@@ -569,7 +601,21 @@ function ApproveLast(){
     // leave duration
     let lDuration = parseFloat($('#nbr-day').val());
 
-    console.log(checking)
+
+    const result = {};
+
+        // Récupérer les valeurs des checkboxes et des inputs
+        result['conge_payer'] = $('#conger_payer').is(':checked') ? parseFloat($('#input_conger_payer').val()) : 0;
+        result['deduire_salaire'] = $('#deduire_salaire').is(':checked') ? parseFloat($('#input_deduire_salaire').val()) : 0;
+        result['permission_exceptionnelle'] = $('#permission_exceptionnelle').is(':checked') ? parseFloat($('#input_permission_except').val()) : 0;
+        result['rien_a_deduire'] = $('#rien_a_deduire').is(':checked') ? parseFloat($('#input_rien_a_deduire').val()) : 0;
+
+        console.log("res", result);
+        
+        // var total = Object.values(result).reduce((acc, valeur)=>acc+ valeur, 0)
+        const total = Object.values(result).reduce((acc, valeur) => acc + valeur, 0);
+
+
     // condition
     if (checking !== 'n') {
         if (checking === 0.25) {
@@ -593,11 +639,14 @@ function ApproveLast(){
         // lDuration -= checking;
 
     } else { // checking value eq "n"
+        console.log("lDuration!==date_diff(startDate, endDate)", lDuration, date_diff(startDate, endDate));
+        
         if (startDate === '') {
             return alert("Veuillez remplir correctement toutes les informations nécessaires!");
         } else if (date_diff(startDate, endDate) < 0) {
             return alert("Erreur de différence entre la date de début et celle de fin!");
-        } else {
+        } else if(lDuration!==(date_diff(startDate, endDate) + 1)) {
+            return alert("Erreur de différence entre la date et le nombre de jours!");
             // do the update
             
         }
@@ -609,8 +658,20 @@ function ApproveLast(){
 
 
     if (role == "Admin"){
-        if ($('#typeLeave').val() != ""){
+        
+        if (total !== lDuration) {
+            $('#erreurNbreDecision').removeAttr('hidden');
+            $('#typeLeave').css('borderColor','none')
+        }
+        
+        if ($('#typeLeave').val() == "") {
+            $('#typeLeave').css('borderColor','red')
+            
+        }
+        if ($('#typeLeave').val() != "" && total == lDuration){
             $("#waitingApprove").css('opacity','1')
+            $('#erreurNbreDecision').attr('hidden', true);
+            $('#typeLeave').css('borderColor','#2EB4E7')
             var data = {
                 id:idActive,
                 response:true,
@@ -626,76 +687,80 @@ function ApproveLast(){
                 typeleave: $('#typeLeave').val(),
                 order:order,
                 exceptType: permissionType ? $("#exceptType").val(): "",
-                motif: changeMotif && rmType !== '' ?  rmType :  newMotif
+                motif: changeMotif && rmType !== '' ?  rmType :  newMotif,
+                ... result
             };
 
-            // changeMotif ? "" : delete data.motif;
-                $.ajax({
-                    url:"/requestAnswer",
-                    method:"POST",
-                    data:data,
-                    success: function(data) {
-                        if (data.type.includes("Congé Payé")){
-                            let indexUser = users.findIndex(element => element.m_code == data.m_code);
-                            if (indexUser !== -1) {
-                                users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
-                                users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
-                            }
+            changeMotif ? "" : delete data.motif;
+            $.ajax({
+                url:"/requestAnswer",
+                method:"POST",
+                data:data,
+                success: function(data) {
+                    if (data.type.includes("Congé Payé")){
+                        let indexUser = users.findIndex(element => element.m_code == data.m_code);
+                        if (indexUser !== -1) {
+                            users[indexUser].leave_taked = users[indexUser].leave_taked - data.duration;
+                            users[indexUser].remaining_leave = users[indexUser].remaining_leave - data.duration;
                         }
-                        
-                        data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
-                        if (order){
-                            // vérifier si le congé a été traité par rh (type !== "")
-                            // ou status de la demande n'est pas réfusé (status !== "declined")
-                            if (data.type === '' && data.status !== 'declined') return;
-
-                            $.ajax({
-                                url:"/takeleave",
-                                method:"POST",
-                                data:{
-                                    code:data.m_code,
-                                    type:data.type,
-                                    exceptType:data.exceptType,
-                                    leavestart:data.date_start,
-                                    leaveend:data.date_end,
-                                    begin:data.hour_begin,
-                                    end:data.hour_end,
-                                    court:data.duration,
-                                    motif:data.motif,
-                                    idRequest:data._id
-                                },
-                                success: function(res) {
-                                    UpdateRequest();
-                                    $("#waitingApprove").css('opacity','0')
-                                    closeModal();
-                                    $('#notification').text("Requête approuver par ordre du gerant");
-                                    $("#notification").attr("class","notice-success")
-                                    $('#notification').show();
-                                    setTimeout(() => {
-                                        $('#notification').hide();
-                                    }, 5000);
-                                }   
-                            })
-                        }
-                        else {
-                            UpdateRequest();
-                            $("#waitingApprove").css('opacity','0')
-                            closeModal();
-                            $('#notification').text("Requête accepter avec success");
-                            $("#notification").attr("class","notice-success")
-                            $('#notification').show();
-                            setTimeout(() => {
-                                $('#notification').hide();
-                            }, 5000);
-                        }
-                        reset();
-                    }   
+                    }
                     
-                })
-           }
-           else {
-            $('#typeLeave').css('borderColor','red')
-           }
+                    data.type.includes("Permission exceptionelle") ? allPermission.push({m_code:data.m_code,exceptType:data.exceptType,duration:data.duration}) : "";
+                    if (order){
+                        // vérifier si le congé a été traité par rh (type !== "")
+                        // ou status de la demande n'est pas réfusé (status !== "declined")
+                        if (data.type === '' && data.status !== 'declined') return;
+
+                        $.ajax({
+                            url:"/takeleave",
+                            method:"POST",
+                            data:{
+                                code:data.m_code,
+                                type:data.type,
+                                exceptType:data.exceptType,
+                                leavestart:data.date_start,
+                                leaveend:data.date_end,
+                                begin:data.hour_begin,
+                                end:data.hour_end,
+                                court:data.duration,
+                                motif:data.motif,
+                                idRequest:data._id,
+
+                                deduire_sur_salaire: data.deduire_sur_salaire,
+                                conge_payer: data.conge_payer,
+                                permission_exceptionnelle: data.permission_exceptionnelle,
+                                rien_a_deduire: data.rien_a_deduire
+
+                            },
+                            success: function(res) {
+                                UpdateRequest();
+                                $("#waitingApprove").css('opacity','0')
+                                closeModal();
+                                $('#notification').text("Requête approuver par ordre du gerant");
+                                $("#notification").attr("class","notice-success")
+                                $('#notification').show();
+                                setTimeout(() => {
+                                    $('#notification').hide();
+                                }, 5000);
+                            }   
+                        })
+                    }
+                    else {
+                        UpdateRequest();
+                        $("#waitingApprove").css('opacity','0')
+                        closeModal();
+                        $('#notification').text("Requête accepter avec success");
+                        $("#notification").attr("class","notice-success")
+                        $('#notification').show();
+                        setTimeout(() => {
+                            $('#notification').hide();
+                        }, 5000);
+                    }
+                    reset();
+                }   
+                
+            })
+        }
     }
     else {
      registerLeave()
@@ -797,8 +862,8 @@ function renderPiece(piece){
             return response.blob();
         })
         .then(blob => {
-            $("#PieceContent").html(`<object class="object-content mt-3 overflow-auto" data=${ URL.createObjectURL(blob)}>
-            </object>`)
+            $("#PieceContent").html(`<img class="object-content mt-3 overflow-auto" src=${ URL.createObjectURL(blob)}>
+            `)
         })
         .catch(error => {
             console.error('Error fetching image:', error);
@@ -813,26 +878,34 @@ $('#typeLeave').on('change', function () {
     $("#typeLeave").css('borderColor', '#5AC4EC');
 
     const actions = {
-        "Permission exceptionelle": { permission: true, cp: ["ndeduire", true], rm: false },
-        "Congé Payé": { permission: false, cp: ["deduire", true], rm: false },
-        "Repos Maladie": { permission: false, cp: ["ndeduire", true], rm: true },
-        "Consultation médicale": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Congé de maternité": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Assistance maternelle": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Récupération": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Congé sans solde": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Absent": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Mise a Pied": { permission: false, cp: ["ndeduire", true], rm: false },
-        "Absence Injustifiée": { permission: false, cp: ["ndeduire", true], rm: false },
-        "": { permission: false, cp: ["deduire", false], rm: false },
-        "default": { permission: false, cp: ["deduire", true], rm: false }
+        "congé": { permission: true, cp: ["deduire", true], rm: false, congePayer: false },
+        "régularisation": { permission: false, cp: ["ndeduire", true], rm: false , congePayer: true},
+        "récupération": { permission: false, cp: ["ndeduire", true], rm: true, congePayer: false },
+        
     };
 
-    const currentAction = actions[leaveType] || actions['default'];
+    const currentAction = actions[leaveType] || actions['default']
+    $('.decision').css('display', 'block');
+
+    // console.log("actions", actions["Congé Payé"].congePayer);
     
-    activatePermission(currentAction.permission);
-    activateCp(currentAction.cp[1], currentAction.cp[0]);
-    activateRm(currentAction.rm);
+    // if (actions[leaveType].congePayer) {
+    //     $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
+    //     .prop('disabled', false); // 
+
+    // }else{
+
+    // $('#deduire_salaire').prop('checked', false);
+    // $('#permission_exceptionnelle').prop('checked', false);
+    // $('#rien_a_deduire').prop('checked', false);
+    //     $('#deduire_salaire, #input_deduire_salaire, #permission_exceptionnelle, #input_permission_except, #rien_a_deduire, #input_rien_a_deduire')
+    //     .prop('disabled', true); // 
+
+
+    // }
+    // activatePermission(currentAction.permission);
+    // activateCp(currentAction.cp[1], currentAction.cp[0]);
+    // activateRm(currentAction.rm);
 });
 
 // $('#typeLeave').on('change', function () {
@@ -946,11 +1019,45 @@ $('#join').on('change', function (event) {
  function replacePiece(){
     addPiece(idForFile);
  }
+
+ function deletePiece() {
+    // supPiece(idForFile);
+    console.log("idForFile", idForFile);
+    
+    $.ajax({
+        url: "/deleteFileLeave",
+        method: "POST",
+        data: {idForFile: idForFile},
+        success: function (res) {
+            
+            if (res.status == "Success"){
+                
+                // Utilise setTimeout pour cacher le modal après 3 secondes (3000 millisecondes)  
+                setTimeout(function() {  
+                    UpdateRequest()
+                    $("#ModalPiece").hide();
+                }, 3000);  
+            }
+            else {
+                $("#sendRequest").prop("disabled",false);
+                $('#loading').hide();
+                $("#notification").attr("class","notice-denied");
+                $("#notification").text("Une erreur est survenue lors du supprimer du fichier");
+                $("#notification").show();
+                setTimeout(() => {
+                    $("#notification").hide();
+                }, 5000);
+            }
+           
+        }
+    })
+ }
  //Permission exceptionelle
  function activatePermission(choice){
     if (choice){
         permissionType = true;
         $("#typeGranted").attr("class","d-flex justify-content-between")
+        // checkbox.disabled = isChecked;
     }
     else {
         permissionType = false;
@@ -970,27 +1077,34 @@ $('#join').on('change', function (event) {
  }
  // Congé payé
  function activateCp(choice, typeL){
-    // var typeL = $('#typeLeave').val();
-    // console.log("typeL", typeL);
-    let nDuration
-    if (typeL == "ndeduire") {
-        nDuration = 0
-    }else{
-         nDuration = parseFloat($('#nbr-day').val())
+    setTimeout(function () {
+        var typeL = $('#typeLeave').val();
+        console.log("typeL", typeL);
+        let nDuration
+        if (typeL == "congé") {
+            nDuration = parseFloat($('#nbr-day').val())
+        }else{
+            nDuration = 0
 
-    }
-    renderSolde(userActive.code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
+        }
+        console.log("ato ve 3");
+        
+        renderSolde(userActive.m_code,userActive.leave_taked,userActive.remaining_leave,nDuration,userActive.leave_stat,userActive.save_at,typeL);
 
-    if (choice){
-        $("#typeCp").attr("class","d-flex justify-content-between")
-    }
-    else {
-        $("#typeCp").attr("class","d-none")
-    }
+        if (choice){
+            $("#typeCp").attr("class","d-flex justify-content-between")
+        }
+        else {
+            $("#typeCp").attr("class","d-none")
+        }
+        
+    }, 400)
  }
  function renderSolde(code,acc,rest,duration,auth,save,typeL){
     
     console.log("nn == ", auth);
+    console.log("code,acc,rest,duration,auth,save,typeL", code,acc,rest,duration,auth,save,typeL);
+    
     
     var html = `
     <div>
@@ -1049,8 +1163,20 @@ $('#join').on('change', function (event) {
     $("#typeLeave").val("");
     $("#exceptType").val("Férié");
     $("#rmType").val("");
+
+    $('#conger_payer').prop('checked', false);
+    $('#deduire_salaire').prop('checked', false);
+    $('#permission_exceptionnelle').prop('checked', false);
+    $('#rien_a_deduire').prop('checked', false);
+    $("#input_conger_payer").val("");
+    $("#input_deduire_salaire").val("");
+    $("#input_permission_except").val("");
+    $("#input_rien_a_deduire").val("");
+    $('#erreurNbreDecision').attr('hidden', true);
+
+    // $('.decision').css('display', 'none');
     activatePermission(false)
-    activateCp(false);
+    activateCp(true);
     activateRm(false)
  }
 

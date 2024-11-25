@@ -107,7 +107,7 @@ const filterData = async(req,res) => {
               getdata = await StatusSchema.find({
                 $or: [
                   { m_code: { $regex: searchit, $options: "i" } },
-                  { nom: { $regex: searchit, $options: "i" } },
+                  // { nom: { $regex: searchit, $options: "i" } },
                   { locaux: { $regex: searchit, $options: "i" } },
                 ],
                 date: globaleVariable.filtrage.date,
@@ -174,7 +174,7 @@ const filterData = async(req,res) => {
               datatosend = await StatusSchema.find({
                 $or: [
                   { m_code: { $regex: searchit, $options: "i" } },
-                  { nom: { $regex: searchit, $options: "i" } },
+                  // { nom: { $regex: searchit, $options: "i" } },
                   { locaux: { $regex: searchit, $options: "i" } },
                 ],
                 date: globaleVariable.filtrage.date,
@@ -207,7 +207,7 @@ const filterData = async(req,res) => {
               datatosend = await StatusSchema.find({
                 $or: [
                   { m_code: { $regex: searchit, $options: "i" } },
-                  { nom: { $regex: searchit, $options: "i" } },
+                  // { nom: { $regex: searchit, $options: "i" } },
                   { locaux: { $regex: searchit, $options: "i" } },
                 ],
                 date: globaleVariable.filtrage.date,
@@ -235,7 +235,7 @@ const filterData = async(req,res) => {
           datatosend = await StatusSchema.find({
             $or: [
               { m_code: { $regex: searchit, $options: "i" } },
-              { nom: { $regex: searchit, $options: "i" } },
+              // { nom: { $regex: searchit, $options: "i" } },
               { locaux: { $regex: searchit, $options: "i" } },
             ],
           }).sort({ _id: -1 });

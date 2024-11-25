@@ -222,6 +222,8 @@ function Approved(data) {
     myUpcomingContent = '<div class="row p-3">'
     var approvedNumber = 0;
     data.forEach(element => {
+        console.log("elemen", element);
+        
         myUpcomingContent += `
             <div class="col-md-6 p-1">
             <div class="card-item">
@@ -275,19 +277,29 @@ function Approved(data) {
                             </div>
                         </div>
                     </div>
+                    <div class="date-heure">
+                        <div class="decision-direction">
+                            <h1>
+                                <i class="fa-solid fa-calendar"></i>
+                                Décision de la direction
+                            </h1>
+                                ${element.conge_payer !== 0 ? `<div><span> A déduire s/ congés payés : </span> <span> ${element.conge_payer} jours</span> </div>` : ''}
+                                ${element.deduire_sur_salaire !== 0 ? `<div><span>A déduire s/ salaire : </span> <span> ${element.deduire_sur_salaire} jours </span></div>` : ''}
+                                ${element.permission_exceptionnelle !== 0 ? `<div><span>Permission exceptionnelle :</span> <span>  ${element.permission_exceptionnelle} jours</span></div>` : ''}
+                                ${element.rien_a_deduire !== 0 ? `<div><span>Rien à déduire :</span> <span>  ${element.rien_a_deduire} jours</span></div>` : ''}
+                               
+                        </div>
+                    </div>
                     <div class="d-flex justify-content-between">
                     <div class="duration">
-                        <div>
                         <span>Durée:</span>
                         <span>${element.duration} ${element.duration > 1 ? "jours" : "jour"}</span>
-                        </div>
-                        <div><span>Décision : ${decided(element.type)}</span></div>
                     </div>
                     <div class="duration">
-                        ${itCount(element.type) == true ? `<div><span> ${_date.getFullYear()}: ${(element.acc + element.duration) - (element.rest + element.duration)} | ${_date.getFullYear() - 1}: ${element.rest + element.duration} |</span> </div>
-                        <div><span>Rest après autorisation | </span><span>${element.acc} |</span></div>` :
-                        `<div><span>| ${_date.getFullYear()}: ${element.acc - element.rest} | ${_date.getFullYear() - 1}: ${element.rest} |</span></div>
-                        <div><span>Reste après autorisation | </span>${element.acc} |</span></div>`}
+                    <div><span> ${_date.getFullYear()}: ${(element.acc + element.conge_payer) - (element.rest + element.conge_payer)} | ${_date.getFullYear() - 1}: ${element.rest} </span> </div>
+                    </div>
+                    <div class="duration">
+                    <div><span>Rest après autorisation | </span><span>${element.acc} </span> </div>
                     </div>
                     </div>
                 </div>

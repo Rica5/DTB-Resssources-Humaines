@@ -164,7 +164,7 @@ function rendu_conge(temp_conge) {
                                 <p class="title-text mt-3"><i class="fa-solid fa-star"></i>${temp_conge.m_code}</p>
                                   </div>
                                   <div class="col-sm-6">
-                                      <p class="title-text" style="text-transform: none !important;">${temp_conge.type === "Absent ( a déduire sur salaire )" ? "Absent ou retard ( à déduire sur salaire)": temp_conge.type}</p>
+                                      <p class="title-text" style="text-transform: uppercase !important; font-weight: 600">${temp_conge.type === "Absent ( a déduire sur salaire )" ? "Absent ou retard ( à déduire sur salaire)": temp_conge.type}</p>
                                       <div class="info-text">
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Début: ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_start) + " à " + temp_conge.hour_begin : date_conversion(temp_conge.date_start)}</p>
                                       <p class="info-text"><i class="fa-solid fa-calendar mx-3"></i> Fin : ${temp_conge.duration == 0.25 ? date_conversion(temp_conge.date_end) + " à " + temp_conge.hour_end : date_conversion(temp_conge.date_end)}</p>
@@ -172,6 +172,12 @@ function rendu_conge(temp_conge) {
                                       <p class="info-text text-center">Durée : ${temp_conge.duration == 0.25 ? calcul_timediff_absencetl(temp_conge.hour_begin, temp_conge.hour_end) : temp_conge.duration.toString().replace(".",",") + " jour(s)"}
                                         | 2024: ${(temp_conge.acc - temp_conge.rest).toString().replace(".",",")} | 2023: ${itCount(temp_conge.type) ? (temp_conge.rest /* - temp_conge.duration */).toString().replace(".",",") :  temp_conge.rest.toString().replace(".",",")} |</p>
                                       <p class="info-text text-center">Reste aprés autorisation | ${(temp_conge.acc.toString().replace(".",","))}</p>
+                                      </div>
+                                      <div class="checkbox-group decision">
+                                        ${temp_conge.conge_payer !== 0 ? `<p class="text-center">A déduire s/ congés payés : ${temp_conge.conge_payer} jours</p>` : ''}
+                                        ${temp_conge.deduire_sur_salaire !== 0 ? `<p>A déduire s/ salaire : ${temp_conge.deduire_sur_salaire} jours</p>` : ''}
+                                        ${temp_conge.permission_exceptionnelle !== 0 ? `<p>Permission exceptionnelle : ${temp_conge.permission_exceptionnelle} jours</p>` : ''}
+                                        ${temp_conge.rien_a_deduire !== 0 ? `<p>Rien à déduire : ${temp_conge.rien_a_deduire} jours</p>` : ''}
                                       </div>
                                       <div class="text-center">
                                         ${render_button(temp_conge)}
@@ -577,13 +583,34 @@ var hour_absence = document.getElementById("hour_absence");
 var begin = document.getElementById("begin");
 var end = document.getElementById("end");
 var info = document.getElementById("info");
+
+var conge_payer = document.getElementById("conge_payer")
+var input_conger_payer = document.getElementById("input_conger_payer")
+var deduire_salaire = document.getElementById("deduire_salaire")
+var input_deduire_salaire = document.getElementById("input_deduire_salaire")
+var permission_exceptionnelle = document.getElementById("permission_exceptionnelle")
+var input_permission_except = document.getElementById("input_permission_except")
+var rien_a_deduire = document.getElementById("rien_a_deduire")
+var input_rien_a_deduire = document.getElementById("input_rien_a_deduire")
+
+var nombreDeJours = document.getElementById("nombreDeJours")
+var nombreDeJoursInitial = document.getElementById("nombreDeJoursInitial")
 var btnsave = document.getElementById("save_leave");
 function dissapearq() {
+  conge_payer.checked = false
+  deduire_salaire.checked = false
+  permission_exceptionnelle.checked = false
+  rien_a_deduire.checked = false
+  input_conger_payer.value = ""
+  input_deduire_salaire.value = ""
+  input_permission_except.value = ""
+  input_rien_a_deduire.value = ""
   if (update_quart.checked) {
     hour_absence.setAttribute("class", "d-flex top_down");
     update_dateend.style.display = "none";
     update_demi.checked = false;
     update_one.checked = false;
+    nombreDeJours.value = 0.25
     checking = 0.25;
   }
   else {
@@ -593,6 +620,10 @@ function dissapearq() {
     }, 2000);
     update_dateend.style.display = "block";
     checking = "n";
+    if (!update_quart.checked && !update_demi.checked && !update_one.checked) {
+      
+      nombreDeJours.value = nombreDeJoursInitial.value
+    }
   }
 }
 function dissapeard() {
@@ -601,10 +632,15 @@ function dissapeard() {
     update_quart.checked = false;
     update_one.checked = false;
     checking = 0.5;
+    nombreDeJours.value = 0.5
   }
   else {
     update_dateend.style.display = "block";
     checking = "n";
+    if (!update_quart.checked && !update_demi.checked && !update_one.checked) {
+      
+      nombreDeJours.value = nombreDeJoursInitial.value
+    }
   }
 }
 function dissapearo() {
@@ -613,17 +649,25 @@ function dissapearo() {
     update_demi.checked = false;
     update_dateend.style.display = "none";
     checking = 1;
+    nombreDeJours.value = 1
   }
   else {
     update_dateend.style.display = "block";
     checking = "n";
+    if (!update_quart.checked && !update_demi.checked && !update_one.checked) {
+      
+      nombreDeJours.value = nombreDeJoursInitial.value
+    }
+    
   }
 }
 //Modal
 function openModal() {
   document.getElementById("ModalConge").style.display = "block"
+
 }
-function edit(id, code,pieceJointe) {
+
+function edit(id, code, pieceJointe) {
   update_id = id;
   code_selected = code;
   userActive = users.filter(us => us.m_code == code);
@@ -635,7 +679,9 @@ function edit(id, code,pieceJointe) {
   waiting_edit.style.opacity = 0;
   openModal();
   leaves.forEach(act_leave => {
+    
     if (act_leave._id == id) {
+    console.log("act_leave", act_leave);
       switch (act_leave.duration) {
         case 0.25:
           update_quart.checked = true;
@@ -643,6 +689,7 @@ function edit(id, code,pieceJointe) {
           end.value = act_leave.hour_end;
           dissapearq();
           update_dateend.value = act_leave.date_end;
+
           break;
         case 0.5:
           update_demi.checked = true;
@@ -664,7 +711,7 @@ function edit(id, code,pieceJointe) {
           dissapearo();
           break;
       }
-      update_type_leave.value = act_leave.type.split("(")[0].trim();
+      update_type_leave.value = act_leave.type //.split("(")[0].trim();
       update_motif.value = act_leave.motif;
       update_datestart.value = act_leave.date_start;
       update_profil.setAttribute("src", `Profil/${retrieve_profil(act_leave.m_code)}`);
@@ -672,9 +719,41 @@ function edit(id, code,pieceJointe) {
       changinType()
       pieceJointe == "" || pieceJointe.toString() == "undefined" ? onFile = "" : onFile = pieceJointe
       onFile != "" ? $('#fileOk').css("display","block")  :  $('#fileOk').css("display","none")
-    }
+
+      if(act_leave.conge_payer>0){
+        $('#conge_payer').prop('checked', true);
+        input_conger_payer.value = act_leave.conge_payer
+      }
+      if(act_leave.deduire_sur_salaire>0){
+        $('#deduire_salaire').prop('checked', true);
+        input_deduire_salaire.value = act_leave.deduire_sur_salaire
+      }
+      if(act_leave.permission_exceptionnelle>0){
+        $('#permission_exceptionnelle').prop('checked', true);
+        input_permission_except.value = act_leave.permission_exceptionnelle
+      }
+      if(act_leave.rien_a_deduire>0){
+        $('#rien_a_deduire').prop('checked', true);
+        input_rien_a_deduire.value = act_leave.rien_a_deduire
+      }
+      nombreDeJours.value = act_leave.duration
+      nombreDeJoursInitial.value = act_leave.duration
+
+      // conge_payer
+      // const result = {};
+
+      // // Récupérer les valeurs des checkboxes et des inputs
+      // result['conge_payer'] = $('#conger_payer').is(':checked') ? parseFloat($('#input_conger_payer').val()) : 0;
+      // result['deduire_salaire'] = $('#deduire_salaire').is(':checked') ? parseFloat($('#input_deduire_salaire').val()) : 0;
+      // result['permission_exceptionnelle'] = $('#permission_exceptionnelle').is(':checked') ? parseFloat($('#input_permission_except').val()) : 0;
+      // result['rien_a_deduire'] = $('#rien_a_deduire').is(':checked') ? parseFloat($('#input_rien_a_deduire').val()) : 0;
+
+      // console.log("res", result);
+      }
   });
 }
+
+
 function closeModal() {
   document.getElementById("ModalConge").style.display = "none"
 }
@@ -686,8 +765,14 @@ function date_diff(starting, ending) {
   return parseInt(dayl.toFixed(0));
 }
 function Editing() {
+  var totalNbreConge = Number(input_conger_payer.value) + Number(input_deduire_salaire.value) + Number(input_permission_except.value) + Number(input_rien_a_deduire.value)
+  
+  console.log("nombreDeJours.value",totalNbreConge, nombreDeJours.value, input_conger_payer.value, input_rien_a_deduire.value);
+  
   if (checking != "n") { 
-    if (checking == 0.25) {
+    
+    if (checking == 0.25 && totalNbreConge == 0.25  ) {
+      
       if (update_type_leave.value == "" || update_datestart.value == "" || update_dateend.value == "" || begin.value == "" || end.value == "") {
         info.innerHTML = "Veuillez remplir correctement tout les informations necessaires";
         info.style.display = "block";
@@ -696,25 +781,46 @@ function Editing() {
       }
       else {
         btnsave.disabled = true;
-        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, begin.value, end.value,permissionValue);
+        console.log("editLeave 1", input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
+        
+        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, begin.value, end.value,permissionValue, input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
       }
     }
-    else {
-      if (update_type_leave.value == "" || update_datestart.value == "" || update_dateend.value == "") {
+    else if(totalNbreConge !== Number(nombreDeJours.value)) {
+      console.log("nbre different");
+      
+      info.innerHTML = "Veuillez vérifier le nombre du décision et le nombre du jours";
+      info.style.display = "block";
+      waiting_edit.style.opacity = 0;
+      btnsave.disabled = false;
+
+    }else{
+      if (update_type_leave.value == "" || update_datestart.value == "" || update_dateend.value == "" ) {
         info.innerHTML = "Veuillez remplir correctement tout les informations necessaires";
         info.style.display = "block";
         waiting_edit.style.opacity = 0;
         btnsave.disabled = false;
       }
       else {
-        btnsave.disabled = true;
-        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, "", "",permissionValue);
+        btnsave.disabled = true;        
+        console.log("editLeave 2", input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
+
+        edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_datestart.value, checking, update_motif.value, update_id, "", "",permissionValue,  input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
       }
     }
 
   }
   else {
-    if (update_type_leave.value == "" && update_datestart.value == "") {
+   if(totalNbreConge !== Number(nombreDeJours.value)) {
+      console.log("nbre different");
+      
+      info.innerHTML = "Veuillez vérifier le nombre du décision et le nombre du jours";
+      info.style.display = "block";
+      waiting_edit.style.opacity = 0;
+      btnsave.disabled = false;
+
+    }
+    else if (update_type_leave.value == "" && update_datestart.value == "") {
       info.innerHTML = "Veuillez remplir tout les informations necessaires";
       info.style.display = "block";
       waiting_edit.style.opacity = 0;
@@ -728,12 +834,14 @@ function Editing() {
     }
     else {
       btnsave.disabled = true;
-      edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_dateend.value, "n", update_motif.value, update_id, "", "",permissionValue);
+      console.log("editLeave 3", input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire);
+
+      edit_leave("/editleave", update_type_leave.value, update_datestart.value, update_dateend.value, "n", update_motif.value, update_id, "", "",permissionValue,  input_conger_payer.value, input_deduire_salaire.value, input_permission_except.value, input_rien_a_deduire.value);
     }
   }
 
 }
-function edit_leave(url, type, startings, endings, val, mt, id, begin, end,exceptType) {
+function edit_leave(url, type, startings, endings, val, mt, id, begin, end,exceptType, conger_payer, deduire_salaire, permission_except, rien_a_deduire) {
   waiting_edit.style.opacity = 1;
   var http = new XMLHttpRequest();
   http.open("POST", url, true);
@@ -787,7 +895,8 @@ function edit_leave(url, type, startings, endings, val, mt, id, begin, end,excep
     }
   };
   http.send("id=" + id + "&code=" + code_selected + "&type=" + type + "&leavestart=" + startings + "&leaveend=" + endings + "&court=" + val + "&motif=" + mt 
-  + "&begin=" + begin + "&end=" + end + "&exceptType=" + exceptType);
+  + "&begin=" + begin + "&end=" + end + "&exceptType=" + exceptType + "&conger_payer=" + conger_payer + "&deduire_salaire=" + deduire_salaire 
+  + "&permission_except=" + permission_except + "&rien_a_deduire=" + rien_a_deduire );
 }
 function null_val(gived, start) {
   if (gived == "" || start == gived) {

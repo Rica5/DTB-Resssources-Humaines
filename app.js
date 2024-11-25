@@ -11,6 +11,7 @@ const mongoose = require('mongoose');
 const cron = require('node-cron');
 const axios = require('axios');
 const leaveS = require('./models/ModelLeave.js')
+const leaveTest = require('./models/ModelLeaveRequest.js')
 const moment = require('moment');
 const Status = require('./models/ModelClocking.js');
 const ModelAvance = require("./models/ModelAvance.js");
@@ -23,6 +24,27 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', async () => {
   console.log('Connected to MongoDB');
+  // var allconge = await leaveTest.find()
+  // allconge.forEach( async (conge) => {
+  //   if (conge.type == "Congé Payé") {
+  //     conge.conge_payer =conge.duration
+  //     conge.permission_exceptionnelle = 0
+  //     console.log("conge.duration", conge.duration);
+      
+  //   }else if(conge.type == "Permission exceptionelle"){
+  //     conge.conge_payer = 0
+  //     conge.permission_exceptionnelle = conge.duration
+  //   }else{
+  //     conge.rien_a_deduire = conge.duration
+  //     conge.conge_payer = 0
+  //     conge.permission_exceptionnelle = 0
+  //   }
+  //   console.log("conge", conge.type);
+    
+  //   await conge.save()
+  // });
+  // console.log("fini...");
+  
   // BE CAREFULL, NEVER CALL THIS SH*T
   // cloneCollectionData('cusers', 'newcusertests')
   //   .then(() => console.log('Cloning completed'))
@@ -306,8 +328,32 @@ const mobileAccessMiddleware = (req, res, next) => {
   next();
 };
 
-const UserSchema = require("./models/ModelMember");
-const ancienUser = require("./models/User");
+// const UserSchema = require("./models/ModelMember");
+// const ancienUser = require("./models/User");
+
+// This function fetches data from UserAncien
+(async () => {
+  try {
+    // const userAnc = await ancienUser.find();  // Correct usage
+    // var userNew = await UserSchema.find()
+    // for (let anc of userAnc) {
+    //   // Trouver l'utilisateur correspondant dans userNew
+    //   const newUser = userNew.find(u => u._id.equals(anc._id)); // Supposant que `_id` est l'identifiant commun
+    //   console.log("loading...");
+      
+    //   if (newUser) {
+    //     // Mettre à jour le status et user_ht de userNew
+    //     await UserSchema.updateOne(
+    //       { _id: newUser._id },
+    //       { $set: { status: anc.status, entry: anc.entry, user_ht: anc.user_ht, act_loc: anc.act_loc, act_stat: anc.act_stat, late: anc.late } }
+    //     );
+    //   }
+    // }
+    console.log("fin");
+  } catch (error) {
+    console.error("Error fetching userAnc data:", error);
+  }
+})();
 
 // Use the mobile access middleware
 app.use(mobileAccessMiddleware);
