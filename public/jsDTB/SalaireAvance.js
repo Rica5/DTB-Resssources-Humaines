@@ -98,7 +98,7 @@ class SalaryAvanceUI {
         li.innerHTML = `
         <div class="details">
             <div class="info">
-                <span class="date-envoie mb-1" style="text-transform: capitalize; display: block;">${moment(props.date_of_avance).locale('fr').format('MMMM YYYY')}</span>
+                <span class="date-envoie mb-1" style="text-transform: capitalize; display: block;">${moment(props.date).locale('fr').format('MMMM YYYY')}</span>
                 <span class="date-envoie">${moment(props.date).format('DD/MM/YYYY')}</span>
             </div>
             <div class="amounts">
@@ -374,7 +374,7 @@ $("#envoyer-avance").on("click", async function () {
             is_urgent: is_urgent,
         }
         // verify if employee has already sent a request of this month
-        const myRequestsOfThisMonth = await ui.getMyRequestsOfThisMonth();
+        const myRequestsOfThisMonth = 0 //await ui.getMyRequestsOfThisMonth();
 
         console.log(myRequestsOfThisMonth)
 

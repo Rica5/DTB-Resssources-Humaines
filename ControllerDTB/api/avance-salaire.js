@@ -37,7 +37,7 @@ async function getListByUserId(req, res) {
             user: id,
             ...(year && {  // Only add $expr if year is provided
                 $expr: {
-                    ...(month >= 0 ? {  // Use month check to determine condition
+                    ...(+month > 0 ? {  // Use month check to determine condition
                         $and: [
                             { $eq: [{ $year: "$createdAt" }, +year] },
                             { $eq: [{ $month: "$createdAt" }, +month ] }

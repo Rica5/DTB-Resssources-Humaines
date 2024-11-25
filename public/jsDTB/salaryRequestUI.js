@@ -108,9 +108,8 @@ class RequestSalary {
 
         if (["1", "2", "3", "w"].includes(shift)) {
             dataShift = data.filter(user => {
-                if (["I", "01", "Matin", "1"].includes(user.shift)) user.shift = "1";
-                if (["II", "02", "Soir", "2"].includes(user.shift)) user.shift = "2";
-                if (["Weekend", "Week-end", "W.E", 'w.e'].includes(user.shift)) user.shift = "w";
+                if (["I", "01", "Matin"].includes(user.shift)) user.shift = "1";
+                if (["II", "02", "Soir"].includes(user.shift)) user.shift = "2";
                 return user.shift.includes(shift)
             });
         } else if (shift === "jours") {
