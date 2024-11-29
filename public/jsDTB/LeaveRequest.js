@@ -102,7 +102,7 @@ $("#sendRequest").on('click', () => {
     formData.append("fileIn", fileIn)
     formData.append("mode", $("#request-type").val());
 
-    $("#sendRequest").prop("disabled", false)
+    // $("#sendRequest").prop("disabled", false)
     if (startDate && endDate /* && startTime && endTime */ && reason && shift) {
         if (checkduplicata(allLeave, startDate, endDate, startTime, endTime)) {
             $("#notification").attr("class", "notice-denied");

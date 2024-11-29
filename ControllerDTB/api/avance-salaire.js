@@ -451,7 +451,7 @@ async function updateAllCongeAnnee(req, res) {
     var congeNormal = req.body.congeNormal
     console.log("congeWeekEnd", congeWeekEnd);
     console.log("congeNormal", congeNormal);
-    return ;
+    // return ;
     for (let i = 0; i < allUser.length; i++) {
         const element = allUser[i];
             

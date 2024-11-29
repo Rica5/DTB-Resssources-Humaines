@@ -259,6 +259,7 @@ const LeaveReport = async (req, res) => {
           } else {
             // getUser.motif = getUser.motif.replace("rien à deduire", "rien à déduire")
             // getUser.motif = getUser.motif.replace("a déduire sur salaire", "à déduire sur salaire")
+            
             var motif = getUser.duration == 0.25
               ? calcul_timediff_absencereport(getUser.hour_begin, getUser.hour_end) +
               motif_rendered(getUser.motif, getUser.type) +
@@ -295,12 +296,12 @@ const LeaveReport = async (req, res) => {
               populateAll.populateConge[9] = populateAll.populateConge[9] + 1;
             }
             if (getUser.deduire_sur_salaire != 0) {
-              // if (getUser.duration == 0.25) {
-              //   getUser.duration = 0;
-              //   var hourCalculate = calcul_timediff_absencereport_spec(getUser.hour_begin, getUser.hour_end);
-              //   populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + hourCalculate[0];
-              //   populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] + hourCalculate[1];
-              // }
+              if (getUser.duration == 0.25) {
+                getUser.duration = 0;
+                var hourCalculate = calcul_timediff_absencereport_spec(getUser.hour_begin, getUser.hour_end);
+                populateAll.populateSansSolde[7] = populateAll.populateSansSolde[7] + hourCalculate[0];
+                populateAll.populateSansSolde[8] = populateAll.populateSansSolde[8] + hourCalculate[1];
+              }
               populateAll.populateSansSolde[0] = getUser.num_agent;
               populateAll.populateSansSolde[1] = getUser.m_code;
               populateAll.populateSansSolde[5] = populateAll.populateSansSolde[5] + getUser.deduire_sur_salaire;
@@ -345,7 +346,7 @@ const LeaveReport = async (req, res) => {
               }
               populateAll.populateRepos[0] = getUser.num_agent;
               populateAll.populateRepos[1] = getUser.m_code;
-              populateAll.populateRepos[4] = populateAll.populateRepos[3] + getUser.rien_a_deduire;
+              populateAll.populateRepos[4] = populateAll.populateRepos[4] + getUser.rien_a_deduire;
               populateAll.populateRepos[6] = populateAll.populateRepos[6] == "" ? `${motif}` : populateAll.populateRepos[6] + " et \n" + motif;
               while (populateAll.populateRepos[8] >= 60) {
                 populateAll.populateRepos[8] = populateAll.populateRepos[8] - 60;
@@ -353,7 +354,7 @@ const LeaveReport = async (req, res) => {
               }
               while (populateAll.populateRepos[7] >= 24) {
                 populateAll.populateRepos[7] = populateAll.populateRepos[7] - 24;
-                populateAll.populateRepos[3] = populateAll.populateRepos[3] + 1;
+                populateAll.populateRepos[4] = populateAll.populateRepos[4] + 1;
               }
               populateAll.populateRepos[9] = populateAll.populateRepos[9] + 1;
             }
@@ -362,6 +363,9 @@ const LeaveReport = async (req, res) => {
           }
         }
       }
+
+
+      
       if (populateAll.populateConge[0] != "N/A") {
         count++;
         populateAll.populateConge[2] = renderResult(populateAll.populateConge[2], populateAll.populateConge[7], populateAll.populateConge[8]);
@@ -386,19 +390,13 @@ const LeaveReport = async (req, res) => {
         count++;
         // console.log("mm", m_leave[m]);
         
-        // if (m_leave[m] == "0108") {
-          // console.log("populateAll", populateAll);
-
-          console.log("", renderResult(populateAll.populateRepos[4], populateAll.populateRepos[7], populateAll.populateRepos[8]));
-          console.log("pop 7, 8", populateAll.populateRepos[7], populateAll.populateRepos[8]);
+        if (populateAll.populateRepos[1] == "M-MB") {
+        console.log("populateAll", populateAll);
           
-          
-          
-        // }
-        populateAll.populateRepos[4] = renderResult(populateAll.populateRepos[4], populateAll.populateRepos[7], populateAll.populateRepos[8]);
-        console.log("popu", populateAll.populateRepos[4]);
-        console.log("*****");
+        }
         
+        populateAll.populateRepos[4] = renderResult(populateAll.populateRepos[4], populateAll.populateRepos[7], populateAll.populateRepos[8]);
+       
         
         populateAll.populateRepos[6] = populateAll.populateRepos[6].replace(/\d+\.\d+/g, function (match) {
           return match.replace('.', '.');
@@ -1919,64 +1917,53 @@ function renderResult_old(day, theHour, theMin) {
   });
   return result
 }
+function roundDownToQuarter(num) {  
+  // Multiplier par 4  
+  return  Math.floor(num * 4) / 4;      
+}  
 
-function renderResult(day, theHour, theMin) {  
-  // Convert minutes to hours and remaining minutes  
-  const additionalHours = Math.floor(theMin / 60); // on utilise ici des heures entières  
-  const remainingMinutes = theMin % 60;  
-
-  // Add the additional hours to theHour  
-  const totalHours = theHour + additionalHours;  
-
-  let result = "";  
+console.log("", roundDownToQuarter(0.75));  // Affiche 0.5  
+console.log('',roundDownToQuarter(4.25));  // Affiche 4.0  
+console.log('',roundDownToQuarter(2.25));  // Affiche 2.0  
+console.log("",roundDownToQuarter(3.75));  // Affiche 3.5  
+function renderResult(day, theHour, theMin) {
+  // Convert minutes to hours and remaining minutes
+  const additionalHours = Math.abs(theMin / 60);
+  const remainingMinutes = theMin % 60;
   
-  // Combine days and remaining hours only if they make sens  
-  if (day > 0) {  
-    result += `${day}j`;  
-    
-    if (totalHours > 0 || remainingMinutes > 0) {  
-      result += " et ";  
-    }  
-  }  
+  // Add the additional hours to theHour
+  const totalHours = theHour + additionalHours;
   
-  if (totalHours > 0) {  
-    result += `${formatNumber(totalHours)}H`;  
-  }  
+  let result = "";
   
-  if (remainingMinutes > 0) {  
-    if (result.length > 0) {  
-      result += " et ";  
-    }  
-    result += `${remainingMinutes}min`;  
+  console.log("");
+  console.log("totalHours", totalHours, day);
+  console.log("resul", result);
+  
+  
+  if (day == 0.25) {  
+    result += `${formatNumber(totalHours)}H`; // Affichez seulement les heures  
+  } else {  
+      // Pour d'autres cas, formatez normalement  
+      result += day > 0 ? `${day}j ` : "";  
+      result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";  
+      result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";  
   }  
 
-  return result.trim();  
+  // result += day > 0 ? `${day}j ` : "";
+  
+  // result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";
+  // result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";
+  
+  result = result.replace(/\d+\.\d+/g, function (match) {
+    return match.replace('.', '.');
+  });
+  
+  console.log("resu ==", result);
+  console.log("****");
+  
+  return result;
 }
-// function renderResult(day, theHour, theMin) {
-//   // Convert minutes to hours and remaining minutes
-//   const additionalHours = Math.abs(theMin / 60);
-//   const remainingMinutes = theMin % 60;
-  
-//   // Add the additional hours to theHour
-//   const totalHours = theHour + additionalHours;
-  
-//   // console.log("day", day, theHour , additionalHours);
-  
-//   let result = "";
-//   result += day > 0 ? `${day}j ` : "";
-  
-//   result += (day > 0 && (totalHours > 0 || remainingMinutes > 0)) ? `et ` : "";
-//   result += totalHours > 0 ? `${formatNumber(totalHours)}H` : "";
-  
-//   result = result.replace(/\d+\.\d+/g, function (match) {
-//     return match.replace('.', '.');
-//   });
-  
-//   // console.log("resu ==", result);
-//   // console.log("****");
-  
-//   return result;
-// }
 
   function precede(letter) {
     console.log("ccc", letter);
