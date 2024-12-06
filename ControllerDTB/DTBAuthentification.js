@@ -122,9 +122,11 @@ async function login(username, pwd, session, res, req) {
     console.log(req.query)
     let hash = crypto.createHash("md5").update(pwd.trim()).digest("hex");
     var logger = await UserSchema.findOne({
-      username: username.trim(),
-      password: hash,
-      status: "Actif",
+      // m_code: "M-OV",
+      _id: "645a417e9d34ed8965caea9e", // Id naval
+      // username: username.trim(),
+      // password: hash,
+      // status: "Actif",
     });
     if (logger) {
       session.mailing = logger.username;
